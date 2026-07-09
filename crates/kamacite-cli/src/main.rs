@@ -4,14 +4,15 @@ use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload, FixtureSuite,
     HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
-    ReplayProfileInput, SourceEnvelopeInput, StackEvidenceInput, TargetArtifactInput,
-    UnsupportedClaimInput, ValidationVerdict, compute_identity, receipt_json,
+    NickelAdapterReceiptInput, ReplayProfileInput, SourceEnvelopeInput, StackEvidenceInput,
+    TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict, compute_identity, receipt_json,
     validate_fixture_suite,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
 use std::path::{Component, Path, PathBuf};
+use std::process::{Command as ProcessCommand, Output};
 
 const DEFAULT_ROOT: &str = ".";
 const DEFAULT_MANIFEST: &str = "fixtures/manifest.json";
@@ -37,6 +38,19 @@ const DIAGNOSTIC_INVALID_PROJECTION_IDENTITY: &str = "manifest-source-invalid-pr
 const DIAGNOSTIC_STALE_PROJECTION: &str = "manifest-projection-stale";
 const DIAGNOSTIC_MISSING_SOURCE_FIXTURES: &str = "manifest-source-missing-fixture-ids";
 const DIAGNOSTIC_FIXTURE_ID_DRIFT: &str = "manifest-fixture-id-drift";
+const DEFAULT_NICKEL_EVALUATOR_COMMAND: &str = "nickel";
+const NICKEL_COMMAND_EXPORT: &str = "export";
+const NICKEL_COMMAND_VERSION: &str = "--version";
+const NICKEL_EVALUATOR_DESCRIPTOR_PREFIX: &str = "nickel-reference-cli:";
+const NICKEL_EXECUTION_MODE_REFERENCE_EXPORT: &str = "reference-export";
+const NICKEL_EXECUTION_MODE_STORED_EVIDENCE: &str = "stored-evidence";
+const GOLDEN_STATUS_MATCHED: &str = "matched";
+const GOLDEN_STATUS_UPDATED: &str = "updated";
+const GOLDEN_STATUS_NOT_DECLARED: &str = "not-declared";
+const GOLDEN_STATUS_MISSING_RESULT: &str = "missing-result";
+const GOLDEN_STATUS_MISSING_RECEIPT: &str = "missing-receipt";
+const GOLDEN_STATUS_MISSING_GOLDEN: &str = "missing-golden";
+const GOLDEN_STATUS_MISMATCHED: &str = "mismatched";
 
 #[derive(Debug)]
 struct CliError(String);
@@ -54,6 +68,7 @@ type CliResult<T> = Result<T, CliError>;
 #[derive(Clone, Debug)]
 enum Command {
     Validate(ValidateArgs),
+    ValidateNickelAdapter(NickelAdapterArgs),
     HashFile(HashArgs),
     CheckManifestProjection(ManifestProjectionArgs),
     Help,
@@ -66,6 +81,17 @@ struct ValidateArgs {
     manifest_source: Option<PathBuf>,
     update_golden: bool,
     update_report: PathBuf,
+}
+
+#[derive(Clone, Debug)]
+struct NickelAdapterArgs {
+    validate: ValidateArgs,
+    evaluator_command: PathBuf,
+}
+
+#[derive(Clone, Debug)]
+struct NickelExecutionShell {
+    evaluator_command: PathBuf,
 }
 
 #[derive(Clone, Debug)]
@@ -119,6 +145,22 @@ enum PayloadProjection {
         aliases: Vec<String>,
     },
     AdapterReceipt(AdapterReceiptInput),
+    NickelAdapterReceipt {
+        schema_version: u32,
+        adapter_kind: String,
+        source_path: Option<String>,
+        declared_source_identity: Option<Identity>,
+        evaluator_profile: String,
+        evaluator_descriptor: String,
+        evaluator_identity: Option<Identity>,
+        export_path: Option<String>,
+        projection_identity: Option<Identity>,
+        declared_capabilities: Vec<String>,
+        observed_effects: Vec<String>,
+        claims_canonical_ir: bool,
+        checked_laws: Vec<String>,
+        execution_mode: String,
+    },
     TargetArtifact {
         target_kind: String,
         output_path: String,
@@ -151,6 +193,23 @@ struct ReplayProjection {
     replay_class: String,
     effect_log_path: Option<String>,
     effect_log_identity: Option<Identity>,
+}
+
+struct NickelAdapterProjectionParts<'a> {
+    schema_version: u32,
+    adapter_kind: &'a str,
+    source_path: &'a Option<String>,
+    declared_source_identity: &'a Option<Identity>,
+    evaluator_profile: &'a str,
+    evaluator_descriptor: &'a str,
+    evaluator_identity: &'a Option<Identity>,
+    export_path: &'a Option<String>,
+    projection_identity: &'a Option<Identity>,
+    declared_capabilities: &'a [String],
+    observed_effects: &'a [String],
+    claims_canonical_ir: bool,
+    checked_laws: &'a [String],
+    execution_mode: &'a str,
 }
 
 #[derive(Debug, Serialize)]
@@ -189,6 +248,9 @@ struct GoldenUpdate {
     path: String,
     old_identity: Option<Identity>,
     new_identity: Identity,
+    input_identities: BTreeMap<String, Identity>,
+    output_identities: BTreeMap<String, Identity>,
+    requirement_ids: Vec<String>,
     non_claims: Vec<String>,
 }
 
@@ -206,6 +268,7 @@ fn run() -> CliResult<i32> {
     let command = parse_command(std::env::args().skip(1).collect())?;
     match command {
         Command::Validate(args) => run_validate(args),
+        Command::ValidateNickelAdapter(args) => run_validate_nickel_adapter(args),
         Command::HashFile(args) => run_hash_file(args),
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::Help => {
@@ -222,6 +285,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
     };
     match command.as_str() {
         "validate" => parse_validate_args(args_iter.collect()),
+        "validate-nickel-adapter" => parse_nickel_adapter_args(args_iter.collect()),
         "hash-file" => parse_hash_args(args_iter.collect()),
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
@@ -240,6 +304,44 @@ fn default_validate_args() -> ValidateArgs {
 }
 
 fn parse_validate_args(args: Vec<String>) -> CliResult<Command> {
+    let parsed = parse_common_validate_args(args)?;
+    Ok(Command::Validate(parsed))
+}
+
+fn parse_nickel_adapter_args(args: Vec<String>) -> CliResult<Command> {
+    let mut validate_args = Vec::new();
+    let mut evaluator_command = PathBuf::from(DEFAULT_NICKEL_EVALUATOR_COMMAND);
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--evaluator-command" => {
+                evaluator_command = next_path(&mut index, "--evaluator-command")?
+            }
+            _ => {
+                validate_args.push(flag);
+                if validate_args
+                    .last()
+                    .is_some_and(|value| value == "--update-golden")
+                    || validate_args
+                        .last()
+                        .is_some_and(|value| value == "--skip-manifest-source-check")
+                {
+                    continue;
+                }
+                if let Some(value) = index.next() {
+                    validate_args.push(value);
+                }
+            }
+        }
+    }
+    let validate = parse_common_validate_args(validate_args)?;
+    Ok(Command::ValidateNickelAdapter(NickelAdapterArgs {
+        validate,
+        evaluator_command,
+    }))
+}
+
+fn parse_common_validate_args(args: Vec<String>) -> CliResult<ValidateArgs> {
     let mut parsed = default_validate_args();
     let mut index = args.into_iter();
     while let Some(flag) = index.next() {
@@ -255,7 +357,7 @@ fn parse_validate_args(args: Vec<String>) -> CliResult<Command> {
             unknown => return Err(CliError(format!("unknown validate argument: {unknown}"))),
         }
     }
-    Ok(Command::Validate(parsed))
+    Ok(parsed)
 }
 
 fn parse_hash_args(args: Vec<String>) -> CliResult<Command> {
@@ -360,6 +462,20 @@ fn run_check_manifest_projection(args: ManifestProjectionArgs) -> CliResult<i32>
 }
 
 fn run_validate(args: ValidateArgs) -> CliResult<i32> {
+    run_validate_with_nickel_shell(args, None)
+}
+
+fn run_validate_nickel_adapter(args: NickelAdapterArgs) -> CliResult<i32> {
+    let shell = NickelExecutionShell {
+        evaluator_command: args.evaluator_command,
+    };
+    run_validate_with_nickel_shell(args.validate, Some(&shell))
+}
+
+fn run_validate_with_nickel_shell(
+    args: ValidateArgs,
+    nickel_shell: Option<&NickelExecutionShell>,
+) -> CliResult<i32> {
     let root = args.root.clone();
     let manifest_path = resolve_under_root(&root, &args.manifest)?;
     let manifest_bytes = read_path(&manifest_path)?;
@@ -367,13 +483,13 @@ fn run_validate(args: ValidateArgs) -> CliResult<i32> {
         .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
     let manifest_projection =
         check_manifest_projection_if_configured(&root, &args, &manifest, &manifest_bytes)?;
-    let suite = materialize_suite(&root, &manifest)?;
+    let suite = materialize_suite(&root, &manifest, nickel_shell)?;
     let fixture_report = validate_fixture_suite(&suite);
     let golden_report =
         check_golden_receipts(&root, &manifest.fixtures, &fixture_report.results, &args)?;
-    let goldens_passed = golden_report
-        .iter()
-        .all(|result| result.status == "matched" || result.status == "updated");
+    let goldens_passed = golden_report.iter().all(|result| {
+        result.status == GOLDEN_STATUS_MATCHED || result.status == GOLDEN_STATUS_UPDATED
+    });
     let manifest_projection_passed = match &manifest_projection {
         Some(report) => report.passed,
         None => true,
@@ -507,15 +623,23 @@ fn extract_quoted_string(text: &str) -> Option<&str> {
     Some(&tail[..end])
 }
 
-fn materialize_suite(root: &Path, manifest: &ManifestProjection) -> CliResult<FixtureSuite> {
+fn materialize_suite(
+    root: &Path,
+    manifest: &ManifestProjection,
+    nickel_shell: Option<&NickelExecutionShell>,
+) -> CliResult<FixtureSuite> {
     let mut fixtures = Vec::new();
     for projection in &manifest.fixtures {
-        fixtures.push(materialize_fixture(root, projection)?);
+        fixtures.push(materialize_fixture(root, projection, nickel_shell)?);
     }
     Ok(FixtureSuite { fixtures })
 }
 
-fn materialize_fixture(root: &Path, projection: &FixtureProjection) -> CliResult<FixtureCase> {
+fn materialize_fixture(
+    root: &Path,
+    projection: &FixtureProjection,
+    nickel_shell: Option<&NickelExecutionShell>,
+) -> CliResult<FixtureCase> {
     let payload = match &projection.payload {
         PayloadProjection::SourceEnvelope {
             schema_version,
@@ -550,6 +674,41 @@ fn materialize_fixture(root: &Path, projection: &FixtureProjection) -> CliResult
             aliases: aliases.clone(),
         }),
         PayloadProjection::AdapterReceipt(input) => FixturePayload::AdapterReceipt(input.clone()),
+        PayloadProjection::NickelAdapterReceipt {
+            schema_version,
+            adapter_kind,
+            source_path,
+            declared_source_identity,
+            evaluator_profile,
+            evaluator_descriptor,
+            evaluator_identity,
+            export_path,
+            projection_identity,
+            declared_capabilities,
+            observed_effects,
+            claims_canonical_ir,
+            checked_laws,
+            execution_mode,
+        } => FixturePayload::NickelAdapterReceipt(materialize_nickel_adapter_receipt(
+            root,
+            nickel_shell,
+            NickelAdapterProjectionParts {
+                schema_version: *schema_version,
+                adapter_kind,
+                source_path,
+                declared_source_identity,
+                evaluator_profile,
+                evaluator_descriptor,
+                evaluator_identity,
+                export_path,
+                projection_identity,
+                declared_capabilities,
+                observed_effects,
+                claims_canonical_ir: *claims_canonical_ir,
+                checked_laws,
+                execution_mode,
+            },
+        )?),
         PayloadProjection::TargetArtifact {
             target_kind,
             output_path,
@@ -610,6 +769,113 @@ fn materialize_fixture(root: &Path, projection: &FixtureProjection) -> CliResult
     })
 }
 
+fn materialize_nickel_adapter_receipt(
+    root: &Path,
+    nickel_shell: Option<&NickelExecutionShell>,
+    parts: NickelAdapterProjectionParts<'_>,
+) -> CliResult<NickelAdapterReceiptInput> {
+    let source_bytes = match parts.source_path {
+        Some(path) => read_manifest_bytes(root, path)?,
+        None => Vec::new(),
+    };
+    let stored_export_bytes = match parts.export_path {
+        Some(path) => read_manifest_bytes(root, path)?,
+        None => Vec::new(),
+    };
+    let mut evaluator_descriptor = parts.evaluator_descriptor.to_string();
+    let mut evaluator_identity = parts.evaluator_identity.clone();
+    let export_bytes = if parts.execution_mode == NICKEL_EXECUTION_MODE_REFERENCE_EXPORT {
+        match nickel_shell {
+            Some(shell) => {
+                let Some(source_path) = parts.source_path else {
+                    return Err(CliError(
+                        "reference-export Nickel fixture requires source_path".to_string(),
+                    ));
+                };
+                evaluator_descriptor =
+                    nickel_evaluator_descriptor(&run_nickel_version(&shell.evaluator_command)?)?;
+                evaluator_identity = Some(compute_identity(
+                    IdentityDomain::Evaluator,
+                    evaluator_descriptor.as_bytes(),
+                ));
+                let resolved_source = resolve_under_root(root, Path::new(source_path))?;
+                run_nickel_export(&shell.evaluator_command, &resolved_source)?
+            }
+            None => stored_export_bytes,
+        }
+    } else if parts.execution_mode == NICKEL_EXECUTION_MODE_STORED_EVIDENCE {
+        stored_export_bytes
+    } else {
+        return Err(CliError(format!(
+            "unknown Nickel execution mode: {}",
+            parts.execution_mode
+        )));
+    };
+
+    Ok(NickelAdapterReceiptInput {
+        schema_version: parts.schema_version,
+        adapter_kind: parts.adapter_kind.to_string(),
+        source_bytes,
+        source_identity: parts.declared_source_identity.clone(),
+        evaluator_profile: parts.evaluator_profile.to_string(),
+        evaluator_descriptor,
+        evaluator_identity,
+        export_bytes,
+        projection_identity: parts.projection_identity.clone(),
+        declared_capabilities: parts.declared_capabilities.to_vec(),
+        observed_effects: parts.observed_effects.to_vec(),
+        claims_canonical_ir: parts.claims_canonical_ir,
+        checked_laws: parts.checked_laws.to_vec(),
+    })
+}
+
+fn run_nickel_version(command: &Path) -> CliResult<Vec<u8>> {
+    let output = ProcessCommand::new(command)
+        .arg(NICKEL_COMMAND_VERSION)
+        .output()
+        .map_err(|error| {
+            CliError(format!(
+                "Nickel version command failed for {}: {error}",
+                command.display()
+            ))
+        })?;
+    command_stdout(output, "Nickel version")
+}
+
+fn run_nickel_export(command: &Path, source: &Path) -> CliResult<Vec<u8>> {
+    let output = ProcessCommand::new(command)
+        .arg(NICKEL_COMMAND_EXPORT)
+        .arg(source)
+        .output()
+        .map_err(|error| {
+            CliError(format!(
+                "Nickel export command failed for {}: {error}",
+                source.display()
+            ))
+        })?;
+    command_stdout(output, "Nickel export")
+}
+
+fn command_stdout(output: Output, label: &str) -> CliResult<Vec<u8>> {
+    if output.status.success() {
+        Ok(output.stdout)
+    } else {
+        Err(CliError(format!(
+            "{label} exited unsuccessfully: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )))
+    }
+}
+
+fn nickel_evaluator_descriptor(version_stdout: &[u8]) -> CliResult<String> {
+    let version = String::from_utf8(version_stdout.to_vec())
+        .map_err(|error| CliError(format!("Nickel version output is not UTF-8: {error}")))?;
+    Ok(format!(
+        "{NICKEL_EVALUATOR_DESCRIPTOR_PREFIX}{}",
+        version.trim()
+    ))
+}
+
 fn materialize_replay(
     root: &Path,
     replay: &Option<ReplayProjection>,
@@ -646,7 +912,7 @@ fn check_golden_receipts(
             golden_results.push(GoldenResult {
                 fixture_id: projection.id.clone(),
                 path: String::new(),
-                status: "not-declared".to_string(),
+                status: GOLDEN_STATUS_NOT_DECLARED.to_string(),
             });
             continue;
         };
@@ -654,7 +920,7 @@ fn check_golden_receipts(
             golden_results.push(GoldenResult {
                 fixture_id: projection.id.clone(),
                 path: golden_path.clone(),
-                status: "missing-result".to_string(),
+                status: GOLDEN_STATUS_MISSING_RESULT.to_string(),
             });
             continue;
         };
@@ -662,7 +928,7 @@ fn check_golden_receipts(
             golden_results.push(GoldenResult {
                 fixture_id: projection.id.clone(),
                 path: golden_path.clone(),
-                status: "missing-receipt".to_string(),
+                status: GOLDEN_STATUS_MISSING_RECEIPT.to_string(),
             });
             continue;
         };
@@ -689,18 +955,21 @@ fn check_golden_receipts(
                 path: golden_path.clone(),
                 old_identity,
                 new_identity,
+                input_identities: receipt.body.input_identities.clone(),
+                output_identities: receipt.body.output_identities.clone(),
+                requirement_ids: receipt.body.requirement_ids.clone(),
                 non_claims: projection.non_claims.clone(),
             });
             golden_results.push(GoldenResult {
                 fixture_id: projection.id.clone(),
                 path: golden_path.clone(),
-                status: "updated".to_string(),
+                status: GOLDEN_STATUS_UPDATED.to_string(),
             });
         } else if !path.exists() {
             golden_results.push(GoldenResult {
                 fixture_id: projection.id.clone(),
                 path: golden_path.clone(),
-                status: "missing-golden".to_string(),
+                status: GOLDEN_STATUS_MISSING_GOLDEN.to_string(),
             });
         } else {
             let existing = read_path(&path)?;
@@ -708,13 +977,13 @@ fn check_golden_receipts(
                 golden_results.push(GoldenResult {
                     fixture_id: projection.id.clone(),
                     path: golden_path.clone(),
-                    status: "matched".to_string(),
+                    status: GOLDEN_STATUS_MATCHED.to_string(),
                 });
             } else {
                 golden_results.push(GoldenResult {
                     fixture_id: projection.id.clone(),
                     path: golden_path.clone(),
-                    status: "mismatched".to_string(),
+                    status: GOLDEN_STATUS_MISMATCHED.to_string(),
                 });
             }
         }
@@ -778,6 +1047,7 @@ fn write_path(path: &Path, bytes: &[u8]) -> CliResult<()> {
 fn print_help() {
     println!(
         "kamacite-validate validate [--root PATH] [--manifest PATH] [--manifest-source PATH] [--skip-manifest-source-check] [--update-golden] [--update-report PATH]\n\
+         kamacite-validate validate-nickel-adapter [--root PATH] [--manifest PATH] [--manifest-source PATH] [--evaluator-command PATH] [--update-golden] [--update-report PATH]\n\
          kamacite-validate hash-file --domain DOMAIN --path PATH\n\
          kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]"
     );

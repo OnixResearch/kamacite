@@ -41,6 +41,26 @@ const REQUIREMENT_HOST_CONFUSION: &str =
 const REQUIREMENT_REPLAY: &str = "r[kamacite.algebraic_effects.replay_profile.recorded_log]";
 const REQUIREMENT_STACK_BOUNDARY: &str =
     "r[kamacite.lossless_ir.stack_evidence_boundary.octet_checks]";
+const REQUIREMENT_NICKEL_MISSING_SOURCE: &str =
+    "r[kamacite.nickel_adapter_suite.negative_fixtures.missing_source]";
+const REQUIREMENT_NICKEL_STALE_PROJECTION: &str =
+    "r[kamacite.nickel_adapter_suite.negative_fixtures.stale_projection]";
+const REQUIREMENT_NICKEL_JSON_NOT_CANONICAL: &str =
+    "r[kamacite.nickel_adapter_suite.source_export_separation.json_not_canonical]";
+const REQUIREMENT_NICKEL_MISSING_EVALUATOR: &str =
+    "r[kamacite.nickel_adapter_suite.evaluator_identity.missing]";
+const REQUIREMENT_NICKEL_UNSUPPORTED_EVALUATOR: &str =
+    "r[kamacite.nickel_adapter_suite.evaluator_identity.unsupported]";
+const REQUIREMENT_NICKEL_MALFORMED_OUTPUT: &str =
+    "r[kamacite.nickel_adapter_suite.negative_fixtures.malformed_export]";
+const REQUIREMENT_NICKEL_UNDECLARED_EFFECT: &str =
+    "r[kamacite.nickel_adapter_suite.negative_fixtures.undeclared_effect]";
+const REQUIREMENT_NICKEL_SOURCE_EXPORT: &str =
+    "r[kamacite.nickel_adapter_suite.source_export_separation]";
+const REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY: &str =
+    "r[kamacite.nickel_adapter_suite.capability_boundary]";
+const NICKEL_ADAPTER_KIND: &str = "nickel-export";
+const NICKEL_REFERENCE_EVALUATOR_PROFILE: &str = "nickel-reference-cli";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -117,6 +137,7 @@ pub enum FixturePayload {
     SourceEnvelope(SourceEnvelopeInput),
     CanonicalValue(CanonicalValueInput),
     AdapterReceipt(AdapterReceiptInput),
+    NickelAdapterReceipt(NickelAdapterReceiptInput),
     TargetArtifact(TargetArtifactInput),
     UnsupportedClaim(UnsupportedClaimInput),
     IdentityUse(IdentityUseInput),
@@ -150,6 +171,23 @@ pub struct CanonicalValueInput {
 pub struct AdapterReceiptInput {
     pub adapter_kind: String,
     pub has_conformance_entry: bool,
+    pub declared_capabilities: Vec<String>,
+    pub observed_effects: Vec<String>,
+    pub claims_canonical_ir: bool,
+    pub checked_laws: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct NickelAdapterReceiptInput {
+    pub schema_version: u32,
+    pub adapter_kind: String,
+    pub source_bytes: Vec<u8>,
+    pub source_identity: Option<Identity>,
+    pub evaluator_profile: String,
+    pub evaluator_descriptor: String,
+    pub evaluator_identity: Option<Identity>,
+    pub export_bytes: Vec<u8>,
+    pub projection_identity: Option<Identity>,
     pub declared_capabilities: Vec<String>,
     pub observed_effects: Vec<String>,
     pub claims_canonical_ir: bool,
@@ -323,6 +361,9 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         FixturePayload::SourceEnvelope(input) => validate_source_envelope(input, &mut accumulator),
         FixturePayload::CanonicalValue(input) => validate_canonical_value(input, &mut accumulator),
         FixturePayload::AdapterReceipt(input) => validate_adapter_receipt(input, &mut accumulator),
+        FixturePayload::NickelAdapterReceipt(input) => {
+            validate_nickel_adapter_receipt(input, &mut accumulator)
+        }
         FixturePayload::TargetArtifact(input) => validate_target_artifact(input, &mut accumulator),
         FixturePayload::UnsupportedClaim(input) => {
             validate_unsupported_claim(input, &mut accumulator)
@@ -488,6 +529,233 @@ fn validate_adapter_receipt(input: &AdapterReceiptInput, accumulator: &mut Valid
         ));
     }
     accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_nickel_adapter_receipt(
+    input: &NickelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_supported_schema(input.schema_version, accumulator);
+    validate_nickel_adapter_kind(input, accumulator);
+    validate_nickel_source(input, accumulator);
+    validate_nickel_evaluator(input, accumulator);
+    validate_nickel_projection(input, accumulator);
+    validate_nickel_capabilities(input, accumulator);
+    if input.claims_canonical_ir {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::CanonicalIrOverclaim,
+            REQUIREMENT_NICKEL_JSON_NOT_CANONICAL,
+            "nickel.claims_canonical_ir",
+            "Nickel JSON export is derived projection evidence, not canonical Kamacite IR",
+        ));
+    }
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_nickel_adapter_kind(
+    input: &NickelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.adapter_kind != NICKEL_ADAPTER_KIND {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedArtifactClass,
+                REQUIREMENT_NICKEL_SOURCE_EXPORT,
+                "nickel.adapter_kind",
+                "Nickel adapter receipt must name the reference export adapter kind",
+            )
+            .with_detail("adapter_kind", input.adapter_kind.clone()),
+        );
+    }
+}
+
+fn validate_nickel_source(
+    input: &NickelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let Some(source_identity) = &input.source_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_NICKEL_MISSING_SOURCE,
+            "nickel.source_identity",
+            "Nickel adapter receipt must bind preserved source-envelope identity",
+        ));
+        if input.source_bytes.is_empty() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::MissingSourceBytes,
+                REQUIREMENT_NICKEL_MISSING_SOURCE,
+                "nickel.source_bytes",
+                "Nickel adapter receipt must preserve source bytes before trusting export evidence",
+            ));
+        }
+        return;
+    };
+    validate_identity_domain(
+        source_identity,
+        IdentityDomain::Source,
+        "nickel.source_identity",
+        accumulator,
+    );
+    accumulator
+        .input_identities
+        .insert("nickel-source".to_string(), source_identity.clone());
+    if input.source_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingSourceBytes,
+            REQUIREMENT_NICKEL_MISSING_SOURCE,
+            "nickel.source_bytes",
+            "Nickel adapter receipt must preserve source bytes before trusting export evidence",
+        ));
+        return;
+    }
+    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
+    accumulator
+        .output_identities
+        .insert("computed-nickel-source".to_string(), computed.clone());
+    if source_identity.domain == IdentityDomain::Source && source_identity.hex != computed.hex {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_NICKEL_MISSING_SOURCE,
+            "nickel.source_identity.hex",
+            "declared Nickel source identity does not match source bytes",
+        ));
+    }
+}
+
+fn validate_nickel_evaluator(
+    input: &NickelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.evaluator_profile != NICKEL_REFERENCE_EVALUATOR_PROFILE {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedEvaluatorIdentity,
+                REQUIREMENT_NICKEL_UNSUPPORTED_EVALUATOR,
+                "nickel.evaluator_profile",
+                "Nickel export evidence must use the accepted reference CLI evaluator profile",
+            )
+            .with_detail("profile", input.evaluator_profile.clone()),
+        );
+    }
+    if input.evaluator_descriptor.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_NICKEL_MISSING_EVALUATOR,
+            "nickel.evaluator_descriptor",
+            "Nickel evaluator identity must include deterministic version/profile data",
+        ));
+    }
+    let Some(evaluator_identity) = &input.evaluator_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_NICKEL_MISSING_EVALUATOR,
+            "nickel.evaluator_identity",
+            "trusted Nickel export evidence must bind evaluator identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        evaluator_identity,
+        IdentityDomain::Evaluator,
+        "nickel.evaluator_identity",
+        accumulator,
+    );
+    accumulator
+        .input_identities
+        .insert("nickel-evaluator".to_string(), evaluator_identity.clone());
+    let computed = compute_identity(
+        IdentityDomain::Evaluator,
+        input.evaluator_descriptor.as_bytes(),
+    );
+    accumulator
+        .output_identities
+        .insert("computed-nickel-evaluator".to_string(), computed.clone());
+    if evaluator_identity.domain == IdentityDomain::Evaluator
+        && evaluator_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_NICKEL_MISSING_EVALUATOR,
+            "nickel.evaluator_identity.hex",
+            "declared Nickel evaluator identity does not match descriptor bytes",
+        ));
+    }
+}
+
+fn validate_nickel_projection(
+    input: &NickelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let Some(projection_identity) = &input.projection_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_NICKEL_STALE_PROJECTION,
+            "nickel.projection_identity",
+            "Nickel adapter receipt must bind export projection identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        projection_identity,
+        IdentityDomain::Projection,
+        "nickel.projection_identity",
+        accumulator,
+    );
+    accumulator.input_identities.insert(
+        "nickel-export-projection".to_string(),
+        projection_identity.clone(),
+    );
+    let computed = compute_identity(IdentityDomain::Projection, &input.export_bytes);
+    accumulator.output_identities.insert(
+        "computed-nickel-export-projection".to_string(),
+        computed.clone(),
+    );
+    if projection_identity.domain == IdentityDomain::Projection
+        && projection_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_NICKEL_STALE_PROJECTION,
+            "nickel.projection_identity.hex",
+            "declared Nickel export projection identity does not match export bytes",
+        ));
+    }
+    if serde_json::from_slice::<serde_json::Value>(&input.export_bytes).is_err() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_NICKEL_MALFORMED_OUTPUT,
+            "nickel.export_bytes",
+            "Nickel export bytes must decode under the declared JSON projection schema",
+        ));
+    }
+}
+
+fn validate_nickel_capabilities(
+    input: &NickelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.declared_capabilities.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY,
+            "nickel.declared_capabilities",
+            "Nickel adapter receipts must declare shell capabilities before execution evidence is trusted",
+        ));
+    }
+    let declared: BTreeSet<&String> = input.declared_capabilities.iter().collect();
+    for observed in &input.observed_effects {
+        if !declared.contains(observed) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredCapability,
+                    REQUIREMENT_NICKEL_UNDECLARED_EFFECT,
+                    "nickel.observed_effects",
+                    "observed Nickel adapter host effect was not declared",
+                )
+                .with_detail("effect", observed.clone()),
+            );
+        }
+    }
 }
 
 fn validate_target_artifact(input: &TargetArtifactInput, accumulator: &mut ValidationAccumulator) {
@@ -1038,6 +1306,21 @@ mod tests {
         "r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]";
     const NON_CLAIM: &str = "not Nickel evaluation semantics";
     const LAW: &str = "source-envelope-preservation";
+    const NICKEL_FIXTURE_ID: &str = "unit.nickel.adapter.valid";
+    const NICKEL_REQUIREMENT_ID: &str =
+        "r[kamacite.nickel_adapter_suite.positive_fixtures.valid_export]";
+    const NICKEL_NON_CLAIM: &str = "Nickel export is derived projection only";
+    const NICKEL_ADAPTER_LAW: &str = "source-export-separation";
+    const NICKEL_EVALUATOR_DESCRIPTOR: &str =
+        "nickel-reference-cli:nickel-lang-cli nickel test-version";
+    const NICKEL_EVALUATOR_PROFILE: &str = "nickel-reference-cli";
+    const UNSUPPORTED_EVALUATOR_PROFILE: &str = "third-party-nickel-wrapper";
+    const FIXTURE_READ_CAPABILITY: &str = "fixture-read";
+    const NICKEL_EXPORT_CAPABILITY: &str = "nickel-reference-export";
+    const CAPTURE_STDOUT_CAPABILITY: &str = "capture-stdout";
+    const NETWORK_CAPABILITY: &str = "network";
+    const VALID_EXPORT: &[u8] = b"1\n";
+    const STALE_EXPORT: &[u8] = b"0\n";
 
     fn valid_source_fixture() -> FixtureCase {
         let declared_identity = compute_identity(IdentityDomain::Source, VALID_SOURCE);
@@ -1118,6 +1401,140 @@ mod tests {
                 .diagnostics
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::IdentityDomainMismatch)
+        );
+    }
+
+    fn valid_nickel_adapter_fixture() -> FixtureCase {
+        FixtureCase {
+            id: NICKEL_FIXTURE_ID.to_string(),
+            fixture_class: FixtureClass::Positive,
+            artifact_class: ArtifactClass::AdapterReceipt,
+            requirement_ids: vec![NICKEL_REQUIREMENT_ID.to_string()],
+            non_claims: vec![NICKEL_NON_CLAIM.to_string()],
+            expected_verdict: ValidationVerdict::Accepted,
+            checked_laws: vec![NICKEL_ADAPTER_LAW.to_string()],
+            payload: FixturePayload::NickelAdapterReceipt(NickelAdapterReceiptInput {
+                schema_version: SUPPORTED_SCHEMA_VERSION,
+                adapter_kind: NICKEL_ADAPTER_KIND.to_string(),
+                source_bytes: VALID_SOURCE.to_vec(),
+                source_identity: Some(compute_identity(IdentityDomain::Source, VALID_SOURCE)),
+                evaluator_profile: NICKEL_EVALUATOR_PROFILE.to_string(),
+                evaluator_descriptor: NICKEL_EVALUATOR_DESCRIPTOR.to_string(),
+                evaluator_identity: Some(compute_identity(
+                    IdentityDomain::Evaluator,
+                    NICKEL_EVALUATOR_DESCRIPTOR.as_bytes(),
+                )),
+                export_bytes: VALID_EXPORT.to_vec(),
+                projection_identity: Some(compute_identity(
+                    IdentityDomain::Projection,
+                    VALID_EXPORT,
+                )),
+                declared_capabilities: vec![
+                    FIXTURE_READ_CAPABILITY.to_string(),
+                    NICKEL_EXPORT_CAPABILITY.to_string(),
+                    CAPTURE_STDOUT_CAPABILITY.to_string(),
+                ],
+                observed_effects: vec![
+                    FIXTURE_READ_CAPABILITY.to_string(),
+                    NICKEL_EXPORT_CAPABILITY.to_string(),
+                    CAPTURE_STDOUT_CAPABILITY.to_string(),
+                ],
+                claims_canonical_ir: false,
+                checked_laws: vec![NICKEL_ADAPTER_LAW.to_string()],
+            }),
+        }
+    }
+
+    #[test]
+    fn accepts_nickel_adapter_export_evidence() {
+        let result = validate_fixture(&valid_nickel_adapter_fixture());
+        assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.is_empty());
+    }
+
+    #[test]
+    fn rejects_nickel_adapter_missing_source() {
+        let mut fixture = valid_nickel_adapter_fixture();
+        fixture.id = "unit.nickel.adapter.missing-source".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::NickelAdapterReceipt(input) = &mut fixture.payload {
+            input.source_bytes = Vec::new();
+            input.source_identity = None;
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::MissingSourceBytes)
+        );
+    }
+
+    #[test]
+    fn rejects_nickel_adapter_stale_projection_identity() {
+        let mut fixture = valid_nickel_adapter_fixture();
+        fixture.id = "unit.nickel.adapter.stale-projection".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::NickelAdapterReceipt(input) = &mut fixture.payload {
+            input.projection_identity =
+                Some(compute_identity(IdentityDomain::Projection, STALE_EXPORT));
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::StaleIdentity)
+        );
+    }
+
+    #[test]
+    fn rejects_nickel_adapter_unsupported_evaluator_profile() {
+        let mut fixture = valid_nickel_adapter_fixture();
+        fixture.id = "unit.nickel.adapter.unsupported-evaluator".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::NickelAdapterReceipt(input) = &mut fixture.payload {
+            input.evaluator_profile = UNSUPPORTED_EVALUATOR_PROFILE.to_string();
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result.diagnostics.iter().any(|diagnostic| {
+                diagnostic.code == DiagnosticCode::UnsupportedEvaluatorIdentity
+            })
+        );
+    }
+
+    #[test]
+    fn rejects_nickel_adapter_undeclared_effect() {
+        let mut fixture = valid_nickel_adapter_fixture();
+        fixture.id = "unit.nickel.adapter.undeclared-effect".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::NickelAdapterReceipt(input) = &mut fixture.payload {
+            input.observed_effects.push(NETWORK_CAPABILITY.to_string());
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::UndeclaredCapability)
         );
     }
 

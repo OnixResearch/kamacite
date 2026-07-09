@@ -6,23 +6,61 @@
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[kamacite.lossless_ir.adapter_boundaries.nickel_projection]",
-      "r[kamacite.lossless_ir.nickel_adapter_conformance.source_export_separation]"
+      "r[kamacite.nickel_adapter_suite.capability_boundary.evaluator_invocation]",
+      "r[kamacite.nickel_adapter_suite.evaluator_identity.bound]",
+      "r[kamacite.nickel_adapter_suite.positive_fixtures.valid_export]",
+      "r[kamacite.nickel_adapter_suite.source_export_separation.derived_projection]"
     ],
-    "input_identities": {},
-    "output_identities": {},
+    "input_identities": {
+      "nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      },
+      "nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "output_identities": {
+      "computed-nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "computed-nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      },
+      "computed-nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
     "checked_laws": [
+      "declared-evaluator-invocation",
       "evaluator-identity-bound",
+      "root-relative-fixture-read",
       "source-export-separation"
     ],
     "diagnostics": [],
     "non_claims": [
-      "nickel export is derived projection"
+      "nickel export is derived projection",
+      "not Nickel semantic-equivalence proof",
+      "not canonical Kamacite IR"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "be7fccd01fe7fedac7a6a39f823687def41bd394f95fa5ee2b4f4318e2a67b5f"
+    "hex": "8069e7dc37bdef1e09a62187754993b891d8dc9295c4f0600dbe694d7cd83bc0"
   }
 }

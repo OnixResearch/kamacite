@@ -1,0 +1,63 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.nickel-missing-source-envelope",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.nickel_adapter_suite.negative_fixtures.missing_source]"
+    ],
+    "input_identities": {
+      "nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      }
+    },
+    "output_identities": {
+      "computed-nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "computed-nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      }
+    },
+    "checked_laws": [
+      "source-envelope-required"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.negative_fixtures.missing_source]",
+        "field": "nickel.source_identity",
+        "message": "Nickel adapter receipt must bind preserved source-envelope identity",
+        "details": {}
+      },
+      {
+        "code": "missing-source-bytes",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.negative_fixtures.missing_source]",
+        "field": "nickel.source_bytes",
+        "message": "Nickel adapter receipt must preserve source bytes before trusting export evidence",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "Nickel export projection is not source preservation evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "564d2e025b9802c427d1a38c12d9a773518d61a90f62fb1292c80e8286186cd7"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.nickel-unsupported-evaluator-identity",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.nickel_adapter_suite.evaluator_identity.unsupported]"
+    ],
+    "input_identities": {
+      "nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      },
+      "nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "output_identities": {
+      "computed-nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "computed-nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      },
+      "computed-nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "checked_laws": [
+      "unsupported-evaluator-fails-closed"
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported-evaluator-identity",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.evaluator_identity.unsupported]",
+        "field": "nickel.evaluator_profile",
+        "message": "Nickel export evidence must use the accepted reference CLI evaluator profile",
+        "details": {
+          "profile": "third-party-nickel-wrapper"
+        }
+      }
+    ],
+    "non_claims": [
+      "unsupported evaluator identity is external untrusted evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "8796ce666cc077265a1610362c6df2608cdae1b6e707bfcc0791b2fac10e5c6b"
+  }
+}

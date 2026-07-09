@@ -30,7 +30,7 @@ let Manifest = {
 {
   schema_version = 1,
   runtime_projection = "fixtures/manifest.json",
-  projection_identity_hex = "891e7d9983c9bc55ec4168bb21e98abe863913cb4d6095712c3727e0da8dbd25",
+  projection_identity_hex = "cdaf5df3ef1ccd2a034b6de5651ad831c73607b44c57d8a32a71a24784d2422a",
   authority_non_claims = [
     "manifest source is review authority",
     "json projection is runtime compatibility input only",
@@ -331,6 +331,8 @@ let Manifest = {
       checked_laws = [
         "source-export-separation",
         "evaluator-identity-bound",
+        "root-relative-fixture-read",
+        "declared-evaluator-invocation",
       ],
       expected_verdict = "accepted",
       fixture_class = "positive",
@@ -338,21 +340,433 @@ let Manifest = {
       id = "adapter.positive.nickel-source-export-separated",
       non_claims = [
         "nickel export is derived projection",
+        "not Nickel semantic-equivalence proof",
+        "not canonical Kamacite IR",
       ],
       payload = {
         adapter_kind = "nickel-export",
         checked_laws = [
           "source-export-separation",
+          "evaluator-identity-bound",
         ],
         claims_canonical_ir = false,
-        declared_capabilities = [],
-        has_conformance_entry = true,
-        kind = "adapter-receipt",
-        observed_effects = [],
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "reference-export",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
       },
       requirement_ids = [
-        "r[kamacite.lossless_ir.adapter_boundaries.nickel_projection]",
-        "r[kamacite.lossless_ir.nickel_adapter_conformance.source_export_separation]",
+        "r[kamacite.nickel_adapter_suite.positive_fixtures.valid_export]",
+        "r[kamacite.nickel_adapter_suite.source_export_separation.derived_projection]",
+        "r[kamacite.nickel_adapter_suite.evaluator_identity.bound]",
+        "r[kamacite.nickel_adapter_suite.capability_boundary.evaluator_invocation]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "source-envelope-required",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-missing-source-envelope.receipt.json",
+      id = "adapter.negative.nickel-missing-source-envelope",
+      non_claims = [
+        "Nickel export projection is not source preservation evidence",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "source-envelope-required",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = null,
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9",
+        },
+        schema_version = 1,
+        source_path = null,
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.negative_fixtures.missing_source]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "projection-identity-matches-export-bytes",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-stale-projection-identity.receipt.json",
+      id = "adapter.negative.nickel-stale-projection-identity",
+      non_claims = [
+        "stale Nickel export bytes are not trusted projection evidence",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "projection-identity-matches-export-bytes",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "0000000000000000000000000000000000000000000000000000000000000000",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.negative_fixtures.stale_projection]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "json-export-not-canonical-ir",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-json-canonical-ir-overclaim.receipt.json",
+      id = "adapter.negative.nickel-json-canonical-ir-overclaim",
+      non_claims = [
+        "Nickel JSON export is not canonical Kamacite IR",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "json-export-not-canonical-ir",
+        ],
+        claims_canonical_ir = true,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.source_export_separation.json_not_canonical]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "evaluator-identity-required",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-missing-evaluator-identity.receipt.json",
+      id = "adapter.negative.nickel-missing-evaluator-identity",
+      non_claims = [
+        "Nickel export evidence is untrusted without evaluator identity",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "evaluator-identity-required",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = null,
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.evaluator_identity.missing]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "unsupported-evaluator-fails-closed",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-unsupported-evaluator-identity.receipt.json",
+      id = "adapter.negative.nickel-unsupported-evaluator-identity",
+      non_claims = [
+        "unsupported evaluator identity is external untrusted evidence",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "unsupported-evaluator-fails-closed",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "third-party-nickel-wrapper",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.evaluator_identity.unsupported]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "export-output-decodes-as-json",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-malformed-export-output.receipt.json",
+      id = "adapter.negative.nickel-malformed-export-output",
+      non_claims = [
+        "malformed export bytes are not trusted projection evidence",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "export-output-decodes-as-json",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/malformed-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "0dea94cdddc2781473066572c89204968f46c27e6e6d390d9e5c8db75869cff9",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.negative_fixtures.malformed_export]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "undeclared-host-effects-fail-closed",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.nickel-undeclared-host-effect.receipt.json",
+      id = "adapter.negative.nickel-undeclared-host-effect",
+      non_claims = [
+        "declaring Nickel execution does not grant ambient host authority",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "undeclared-host-effects-fail-closed",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+        ],
+        declared_source_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        evaluator_descriptor = "nickel-reference-cli:nickel-lang-cli nickel 1.16.0 (rev cargore)",
+        evaluator_identity = {
+          algorithm = "blake3",
+          domain = "evaluator",
+          hex = "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b",
+        },
+        evaluator_profile = "nickel-reference-cli",
+        execution_mode = "stored-evidence",
+        export_path = "fixtures/adapters/nickel/valid-export.json",
+        kind = "nickel-adapter-receipt",
+        observed_effects = [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout",
+          "network",
+        ],
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9",
+        },
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.nickel_adapter_suite.negative_fixtures.undeclared_effect]",
+        "r[kamacite.nickel_adapter_suite.capability_boundary]",
       ],
     },
 {
@@ -1521,6 +1935,7 @@ let Manifest = {
       },
       requirement_ids = [
         "r[kamacite.lossless_ir.nickel_reference_boundary.parser_spans]",
+        "r[kamacite.nickel_adapter_suite.positive_fixtures.parser_non_claim]",
       ],
     },
 {

@@ -6,7 +6,8 @@
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[kamacite.lossless_ir.nickel_reference_boundary.parser_spans]"
+      "r[kamacite.lossless_ir.nickel_reference_boundary.parser_spans]",
+      "r[kamacite.nickel_adapter_suite.positive_fixtures.parser_non_claim]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -21,6 +22,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "4ec0dd47d95832509d97f44510ff13653cb75cbf67eda0c94354a1e959283b19"
+    "hex": "9c9dec633b5a3020ff2552a9284b2c38edb4499df047a6a1f602270bbac34ef5"
   }
 }

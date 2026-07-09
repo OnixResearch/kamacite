@@ -1,0 +1,66 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.nickel-stale-projection-identity",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.nickel_adapter_suite.negative_fixtures.stale_projection]"
+    ],
+    "input_identities": {
+      "nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "output_identities": {
+      "computed-nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+      },
+      "computed-nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+      },
+      "computed-nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "checked_laws": [
+      "projection-identity-matches-export-bytes"
+    ],
+    "diagnostics": [
+      {
+        "code": "stale-identity",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.negative_fixtures.stale_projection]",
+        "field": "nickel.projection_identity.hex",
+        "message": "declared Nickel export projection identity does not match export bytes",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "stale Nickel export bytes are not trusted projection evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "b930f09119e0e8a71d10d0d6e197b2676e7fe9a9f78e7bc2e401bb37300fe363"
+  }
+}

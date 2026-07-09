@@ -1,6 +1,8 @@
 # Deferred adapter suites
 
-The walking-skeleton harness intentionally avoids executing Nickel, Steel, WASM, LLVM, GHC, Rust MIR, Valence, Octet, or algebraic-effect runtimes. Current fixtures validate preserved source bytes, deterministic DTOs, target/provenance metadata, declared capabilities, and receipt/non-claim boundaries only.
+The walking-skeleton harness now includes one explicit Nickel adapter suite. That suite may run the Nickel reference CLI only through `kamacite-cli validate-nickel-adapter`, records evaluator/source/export identities, and keeps Nickel execution outside `kamacite-core`. The default harness still validates stored evidence without executing external evaluators.
+
+All other execution suites remain deferred: Steel, WASM, LLVM, GHC, Rust MIR, Valence, Octet, and algebraic-effect runtimes are not executed by the harness. Current non-Nickel fixtures validate preserved source bytes, deterministic DTOs, target/provenance metadata, declared capabilities, and receipt/non-claim boundaries only.
 
 A future adapter suite must add all of the following before its behavior is trusted:
 

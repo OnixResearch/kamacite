@@ -15,7 +15,7 @@ Crate rails:
 
 ## Shell role
 
-`kamacite-cli` is allowed to read files, materialize fixture bytes, compare golden receipts, write explicit update artifacts, and render JSON. Shells normalize observations into DTOs before calling the core. If a future shell admits filesystem-backed user paths, it should use `cap-std`, WASI, or equivalent root-capability APIs and must keep capability handles out of the core.
+`kamacite-cli` is allowed to read files, materialize fixture bytes, run explicitly declared Nickel reference-export fixtures, compare golden receipts, write explicit update artifacts, and render JSON. Shells normalize observations into DTOs before calling the core. If a future shell admits filesystem-backed user paths, it should use `cap-std`, WASI, or equivalent root-capability APIs and must keep capability handles out of the core.
 
 The current shell includes negative fixture evidence for parent traversal, absolute paths, symlink escape, and undeclared filesystem authority. These are admission fixtures for future capability-safe shells; they are not a sandbox claim.
 

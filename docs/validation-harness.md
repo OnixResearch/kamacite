@@ -16,21 +16,29 @@ A focused source/projection freshness check is available with:
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- check-manifest-projection --source fixtures/manifest.ncl --projection fixtures/manifest.json'
 ```
 
+The explicit Nickel adapter execution mode is:
+
+```bash
+nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate-nickel-adapter --root . --manifest fixtures/manifest.json'
+```
+
+Only fixtures that declare `execution_mode = "reference-export"` run the Nickel reference CLI. The shell records `fixture-read`, `nickel-reference-export`, and `capture-stdout` as declared capabilities, captures `nickel --version` as evaluator identity material, runs `nickel export` outside `kamacite-core`, and passes source bytes, export bytes, evaluator identity, projection identity, diagnostics, checked laws, and non-claims to the pure core. Default `validate` remains stored-evidence-only and does not silently treat prerecorded export bytes as a fresh Nickel run.
+
 The explicit golden receipt update workflow is:
 
 ```bash
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate --root . --manifest fixtures/manifest.json --update-golden --update-report target/kamacite-golden-update-receipt.json'
 ```
 
-That mode writes checked golden receipt projections and emits `target/kamacite-golden-update-receipt.json` with old and new receipt identities. It is the only harness mode that rewrites golden fixture evidence; manifest projection changes remain reviewed source/projection file changes and are not rewritten implicitly by validation.
+That mode writes checked golden receipt projections and emits `target/kamacite-golden-update-receipt.json` with old/new receipt identities, input/output identities, covered requirement IDs, and non-claims. It is the only harness mode that rewrites golden fixture evidence; manifest projection changes remain reviewed source/projection file changes and are not rewritten implicitly by validation.
 
 ## Boundary
 
 - `crates/kamacite-core` is the pure deterministic core. It receives in-memory DTOs and bytes, returns deterministic diagnostics and receipts, and does not read files, inspect environment, spawn processes, print, access clocks, access randomness, or mutate state.
-- `crates/kamacite-cli` is the thin imperative shell. It reads the manifest projection and fixture bytes, compares or writes golden receipts, and renders JSON reports.
+- `crates/kamacite-cli` is the thin imperative shell. It reads the manifest projection and fixture bytes, optionally invokes the Nickel reference evaluator for explicitly declared Nickel fixtures, compares or writes golden receipts, and renders JSON reports.
 - `fixtures/manifest.ncl` is the reviewed Nickel manifest source for the fixture corpus. `fixtures/manifest.json` is the runtime projection consumed by the shell after source-declared projection identity and fixture-ID freshness checks pass.
-- `fixtures/core/**` contains pure in-memory fixtures. Adapter/probe execution suites are deferred until their own changes add declared capabilities and receipt-only modes.
+- `fixtures/core/**` contains pure in-memory fixtures. `fixtures/adapters/nickel/**` contains Nickel export projection bytes for the executable Nickel adapter suite. Other adapter/probe execution suites remain deferred until their own changes add declared capabilities and receipt-only modes.
 
 ## Current seed evidence
 
-The seed corpus includes a positive source-envelope fixture, stale source-hash rejection, wrong identity-domain rejection, unsupported schema rejection, missing source-bytes rejection, positive and negative canonical value cases, shell capability escape cases, stack role cases, and algebraic-effect positive/negative fixtures. Each fixture has a checked golden receipt under `fixtures/golden/`.
+The seed corpus includes a positive source-envelope fixture, stale source-hash rejection, wrong identity-domain rejection, unsupported schema rejection, missing source-bytes rejection, positive and negative canonical value cases, Nickel adapter positive/negative execution-boundary fixtures, shell capability escape cases, stack role cases, and algebraic-effect positive/negative fixtures. Each fixture has a checked golden receipt under `fixtures/golden/`.
