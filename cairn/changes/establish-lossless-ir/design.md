@@ -34,19 +34,27 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rationale:** Arbitrary source-to-source translation is not lossless in a useful sense. Preserving source plus declaring narrower derived claims is honest and testable.
 
-### 5. Constrain adapter claims to explicit artifact classes
+### 5. Integrate Nickel through reference semantics and fixtures
+
+**Choice:** Braid uses nickel-lang components as Nickel-facing adapter references: the Nickel CLI or reference crates for evaluation/export semantics, tree-sitter Nickel for syntax and span indexing, json-schema-to-nickel for schema-to-contract design patterns, json-scanner for JSON projection spans, and generated contract corpora such as nickel-schemastore as stress fixtures. Braid does not fork Nickel semantics.
+
+**Rationale:** Nickel is already the source language for human-authored contracts/config. Braid needs faithful source preservation and bounded projections, not a competing evaluator. Using upstream Nickel tooling as references keeps Nickel semantics external while giving Braid enough fixture coverage to test source envelopes, exports, spans, and contract-generation boundaries.
+
+**Rejected alternative:** Reimplement Nickel evaluation inside Braid. This would create semantic drift and make Braid responsible for a language it is meant to preserve and adapt.
+
+### 6. Constrain adapter claims to explicit artifact classes
 
 **Choice:** Braid recognizes source envelopes, canonical values, constrained policy DSL values, and unsupported arbitrary source translation as distinct classes.
 
 **Rationale:** The same bytes may support different claims. A constrained DSL can round-trip through adapters, while arbitrary Rust or Steel source can only be preserved unless a specific parser/projection contract exists.
 
-### 6. Keep Rust as the pure validation core
+### 7. Keep Rust as the pure validation core
 
 **Choice:** Rust owns pure deterministic validation, canonicalization, hash material construction, adapter DTO validation, and receipt checks. Nickel and Steel adapters stay at the boundary.
 
 **Rationale:** This preserves functional-core / imperative-shell boundaries and gives tests a pure unit under test. Nickel remains the reviewable authoring language for configs/contracts. Steel remains bounded dynamic predicate/probe logic without ambient host authority.
 
-### 7. Use WebAssembly only as a target or sandbox boundary
+### 8. Use WebAssembly only as a target or sandbox boundary
 
 **Choice:** Braid does not use WebAssembly as the canonical IR. WASM may be used later as a portable target for validators, conformance probes, or untrusted adapters whose inputs and outputs are Braid IR/source-envelope bytes plus deterministic receipts.
 
@@ -54,7 +62,7 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
 
-### 8. Integrate with Valence and Octet through receipts first
+### 9. Integrate with Valence and Octet through receipts first
 
 **Choice:** Braid uses Valence closely as the evidence/linkage integration target and Octet closely as the checked Rust/provenance rail, but neither repo owns Braid's canonical IR. Initial integration is by exported Braid receipts, source spans, stable IDs, and fixtures rather than direct crate dependencies.
 

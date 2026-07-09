@@ -29,6 +29,17 @@ Braid should use Octet closely as the checked Rust path once Rust crates exist. 
 
 Initial coupling should be by exported receipts and fixtures, not hard dependencies. Add direct crate dependencies only after the receipt schemas stabilize and the integration needs tested APIs rather than reference behavior.
 
+## Nickel integration boundary
+
+Braid should integrate Nickel as a source language and adapter, not fork or reimplement Nickel semantics.
+
+- Use the Nickel CLI or reference crates for checked export/evaluation fixtures.
+- Use Nickel source envelopes to preserve original `.ncl` bytes, parser identity, spans, and BLAKE3 source hashes.
+- Treat `nickel export` results as derived projections into Braid IR or compatibility JSON, not as source identity.
+- Adapt schema-to-Nickel-contract generation ideas for Braid's constrained policy vocabulary, while preserving non-claims when strict predicates are required.
+- Use tree-sitter Nickel for syntax/spans and editor-grade source indexing; do not treat syntax parsing as evaluation.
+- Use generated contract corpora, such as SchemaStore-derived contracts, as stress fixtures rather than as Braid-owned schema authority.
+
 ## Current status
 
 This repo is bootstrapped with native Cairn lifecycle artifacts. The first active change is:
@@ -54,6 +65,11 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 
 - [`../valence/`](../valence/) — sibling evidence identity layer that should consume or wrap Braid receipts without owning Braid's source/value interchange semantics.
 - [`../octet/`](../octet/) — sibling Rust checked path and provenance rail for future Braid Rust validators and adapters.
+- [nickel-lang/nickel](https://github.com/nickel-lang/nickel) — reference implementation and CLI for Nickel evaluation/export, formatting, contracts, and source-language semantics.
+- [nickel-lang/json-schema-to-nickel](https://github.com/nickel-lang/json-schema-to-nickel) — reference for converting schema predicates into Nickel contracts and distinguishing lazy/inspectable contracts from strict predicate fallbacks.
+- [nickel-lang/tree-sitter-nickel](https://github.com/nickel-lang/tree-sitter-nickel) — reference parser for Nickel syntax, spans, and source-envelope indexing without claiming evaluation semantics.
+- [nickel-lang/json-scanner](https://github.com/nickel-lang/json-scanner) — reference for JSON projection parsing with byte positions and number lexeme preservation.
+- [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated Nickel contract corpus suitable for stress fixtures and schema-conversion regression cases.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
 - [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.

@@ -23,6 +23,7 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 - Preserves is the canonical encoded IR candidate for Braid value/envelope identity.
 - JSON is a compatibility projection only; do not treat JSON export as the authority for losslessness.
 - Nickel remains the preferred human-authored contract/config language.
+- Nickel integration must preserve source envelopes separately from `nickel export` projections; use Nickel's reference CLI/crates for evaluation semantics instead of reimplementing them.
 - Rust owns pure validation cores, canonicalization, hashing, adapter DTOs, and receipts.
 - Steel Scheme is bounded adapter/probe logic only; do not grant ambient filesystem, process, network, credential, or mutation authority.
 - WebAssembly is an optional adapter/validator target, not Braid's IR. WASM inputs and outputs must remain Braid IR/source-envelope bytes plus deterministic receipts.

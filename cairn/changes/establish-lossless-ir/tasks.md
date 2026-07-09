@@ -9,7 +9,9 @@
 
 - [ ] [serial] Define the first Preserves schema or equivalent fixture vocabulary for source envelopes and canonical values. r[braid.lossless_ir.format_strategy]
 - [ ] [serial] Implement a pure Rust core model for source envelopes, BLAKE3 source identity, artifact classes, and bounded non-claim receipts. r[braid.lossless_ir.source_preservation]
-- [ ] [parallel] Add Nickel positive and negative fixtures that distinguish source envelopes from exported projections. r[braid.lossless_ir.adapter_boundaries.nickel_projection]
+- [ ] [parallel] Add Nickel positive and negative fixtures that distinguish source envelopes from exported projections and record the Nickel evaluator identity. r[braid.lossless_ir.adapter_boundaries.nickel_projection] r[braid.lossless_ir.nickel_reference_boundary.reference_eval]
+- [ ] [parallel] Add tree-sitter Nickel span fixtures that support source indexing without claiming evaluation semantics. r[braid.lossless_ir.nickel_reference_boundary.parser_spans]
+- [ ] [parallel] Add schema-generated Nickel contract fixtures, including generated-corpus stress cases, that remain fixture inputs rather than Braid schema authority. r[braid.lossless_ir.nickel_reference_boundary.generated_contracts]
 - [ ] [parallel] Add Steel positive and negative fixtures that prove DTO-only evaluation and fail closed for undeclared host authority. r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
 - [ ] [parallel] Add canonical value fixtures that round-trip through Preserves and reject stale hashes or lossy JSON projections. r[braid.lossless_ir.round_trip_evidence]
 - [ ] [parallel] Add WASM target fixtures that prove adapter receipts stay Preserves-backed and reject compiled WASM as canonical IR. r[braid.lossless_ir.wasm_target_boundary]

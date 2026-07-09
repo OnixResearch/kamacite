@@ -106,6 +106,34 @@ r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
 - WHEN Braid validates the evaluation request or receipt
 - THEN validation MUST deny the request or receipt deterministically without evaluating the undeclared host action.
 
+### Requirement: Nickel reference integration boundary
+
+r[braid.lossless_ir.nickel_reference_boundary] Braid MUST treat upstream Nickel tooling as the authority for Nickel evaluation/export semantics while Braid owns source-envelope preservation, projection classification, and receipt identity. Nickel syntax parsers, schema-to-contract generators, and generated contract corpora MAY be used as adapters or fixtures, but they MUST NOT replace Braid's Preserves-backed canonical identity.
+
+#### Scenario: Nickel evaluation stays external
+
+r[braid.lossless_ir.nickel_reference_boundary.reference_eval]
+
+- GIVEN a Nickel source envelope is evaluated or exported for a Braid fixture
+- WHEN Braid records the projection
+- THEN the receipt MUST identify the Nickel evaluator or CLI used and MUST classify the exported value as derived from the preserved source envelope.
+
+#### Scenario: Nickel parser is span evidence only
+
+r[braid.lossless_ir.nickel_reference_boundary.parser_spans]
+
+- GIVEN tree-sitter Nickel or another syntax parser records spans for a Nickel source envelope
+- WHEN Braid validates the envelope
+- THEN the parser output MAY support source indexing and diagnostics but MUST NOT be treated as proof of Nickel evaluation semantics.
+
+#### Scenario: Schema-generated contracts are fixtures
+
+r[braid.lossless_ir.nickel_reference_boundary.generated_contracts]
+
+- GIVEN a Nickel contract is generated from JSON Schema or SchemaStore inputs
+- WHEN Braid uses it in tests
+- THEN the generated contract MUST be classified as fixture or adapter input and MUST NOT become Braid's schema authority unless a Braid schema contract explicitly adopts it.
+
 ### Requirement: WASM target boundary
 
 r[braid.lossless_ir.wasm_target_boundary] Braid MUST treat WebAssembly as an optional adapter, validator, or conformance target rather than the canonical IR. WASM components or modules MAY consume Braid IR/source-envelope bytes and emit deterministic receipts, but they MUST NOT replace Preserves as the authoritative value or source-envelope identity.
