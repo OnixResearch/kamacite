@@ -1,0 +1,119 @@
+# Lossless IR Specification
+
+## Purpose
+
+Defines Braid's initial format strategy for lossless interchange across Nickel, Rust, and Steel Scheme.
+
+## Requirements
+
+### Requirement: Preserves-backed canonical format strategy
+
+r[braid.lossless_ir.format_strategy] Braid MUST use Preserves as the canonical encoded IR candidate for stack-owned value-level interchange, source envelopes, and receipt hash material. Braid MAY emit JSON as a compatibility projection, but JSON MUST NOT be the authority for losslessness when Preserves bytes are available.
+
+#### Scenario: Canonical Preserves value round-trips
+
+r[braid.lossless_ir.format_strategy.preserves_roundtrip]
+
+- GIVEN a Braid canonical value has been encoded as Preserves bytes with a supported schema label
+- WHEN an adapter decodes and re-encodes the value without changing the declared value
+- THEN the canonical Preserves identity MUST be preserved or the adapter MUST emit a deterministic mismatch diagnostic.
+
+#### Scenario: JSON projection is not authoritative
+
+r[braid.lossless_ir.format_strategy.json_projection]
+
+- GIVEN a Braid value has both canonical Preserves bytes and a JSON projection
+- WHEN the two disagree or the JSON projection cannot represent the full value identity
+- THEN validation MUST treat the Preserves value as authoritative and mark the JSON projection as invalid or incomplete.
+
+### Requirement: Explicit losslessness classes
+
+r[braid.lossless_ir.losslessness_classes] Braid MUST classify each artifact claim as `source-envelope`, `canonical-value`, `constrained-policy`, or `unsupported-source-translation` before accepting a round-trip or conversion claim.
+
+#### Scenario: Arbitrary source translation is denied as lossless
+
+r[braid.lossless_ir.losslessness_classes.arbitrary_source_denied]
+
+- GIVEN arbitrary Nickel, Rust, or Steel source is requested as a lossless translation into another host language
+- WHEN no constrained Braid schema and adapter contract is declared
+- THEN Braid MUST reject the lossless translation claim and MAY preserve the original source as a source envelope.
+
+#### Scenario: Constrained policy round-trip names the schema
+
+r[braid.lossless_ir.losslessness_classes.constrained_policy]
+
+- GIVEN a policy is authored in a constrained Braid schema
+- WHEN adapters render it to Nickel, Rust, or Steel-facing forms and parse it back
+- THEN the receipt MUST name the schema and compare the resulting canonical IR instead of claiming arbitrary host-language equivalence.
+
+### Requirement: Source preservation envelope
+
+r[braid.lossless_ir.source_preservation] Braid MUST preserve original source bytes, declared language, parser or normalizer identity, and BLAKE3 source hash for source-bearing Nickel, Rust, and Steel artifacts.
+
+#### Scenario: Normalization does not replace source
+
+r[braid.lossless_ir.source_preservation.normalization]
+
+- GIVEN a Nickel, Rust, or Steel source artifact has a normalized projection
+- WHEN Braid stores or validates the artifact
+- THEN the original source bytes and source hash MUST remain available as the source identity and the normalized projection MUST be marked as derived evidence.
+
+#### Scenario: Source hash mismatch fails closed
+
+r[braid.lossless_ir.source_preservation.hash_mismatch]
+
+- GIVEN a source envelope declares a BLAKE3 source hash
+- WHEN the stored source bytes hash to a different value
+- THEN validation MUST fail closed with a deterministic source-hash diagnostic.
+
+### Requirement: Nickel, Rust, and Steel adapter boundaries
+
+r[braid.lossless_ir.adapter_boundaries] Braid adapters for Nickel, Rust, and Steel MUST cross the trust boundary through Braid IR values, source envelopes, and deterministic receipts rather than ambient host-language state.
+
+#### Scenario: Nickel export is a derived projection
+
+r[braid.lossless_ir.adapter_boundaries.nickel_projection]
+
+- GIVEN a Nickel-authored contract exports a runtime value
+- WHEN Braid ingests the export
+- THEN the receipt MUST distinguish the Nickel source envelope from the exported Braid IR or compatibility JSON projection.
+
+#### Scenario: Steel adapter has no ambient authority
+
+r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
+
+- GIVEN a Steel adapter requests filesystem, process, network, credential, clock, or mutation authority not declared in the adapter contract
+- WHEN Braid validates the evaluation request or receipt
+- THEN validation MUST deny the request or receipt deterministically without evaluating the undeclared host action.
+
+### Requirement: Round-trip evidence
+
+r[braid.lossless_ir.round_trip_evidence] Braid MUST require positive and negative fixtures for every implemented conversion, adapter, or validation claim before the claim is accepted.
+
+#### Scenario: Positive fixture proves stable identity
+
+r[braid.lossless_ir.round_trip_evidence.positive]
+
+- GIVEN a valid source envelope, canonical value, or constrained policy fixture
+- WHEN the declared round-trip check runs
+- THEN the fixture MUST pass and preserve the declared canonical identity.
+
+#### Scenario: Negative fixture fails closed
+
+r[braid.lossless_ir.round_trip_evidence.negative]
+
+- GIVEN a fixture with stale hash, malformed schema, unsupported class, lossy projection, missing source bytes, or undeclared authority
+- WHEN the declared round-trip check runs
+- THEN validation MUST fail closed with deterministic diagnostics naming the rejected claim.
+
+### Requirement: Non-claim boundary
+
+r[braid.lossless_ir.non_claims] Passing Braid validation MUST NOT prove compiler correctness, evaluator soundness, verifier soundness, runtime behavior, authorization, security policy satisfaction, or semantic equivalence for arbitrary Nickel, Rust, or Steel programs.
+
+#### Scenario: Receipt states bounded claim
+
+r[braid.lossless_ir.non_claims.receipt]
+
+- GIVEN a Braid validation or round-trip receipt passes
+- WHEN an operator reads the supported claim
+- THEN the receipt MUST state only the artifact class, identity preservation claim, adapter boundary, and explicit non-claims.

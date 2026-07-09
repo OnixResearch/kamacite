@@ -1,0 +1,35 @@
+# Braid
+
+Braid is an OnixResearch repo for lossless interchange boundaries across Nickel, Rust, and Steel Scheme.
+
+Yes: Braid should use Preserves too. Preserves is the canonical encoded IR candidate for value-level interchange and source envelopes because plain JSON cannot preserve enough identity for this problem. Nickel exports, Rust Serde DTOs, and Steel data can all project through the Braid IR, but the IR must keep original source bytes and hashes when source fidelity matters.
+
+## Losslessness classes
+
+| Class | Claim | Boundary |
+|---|---|---|
+| Source envelope | Original Nickel/Rust/Steel bytes are preserved with BLAKE3 identity and parser metadata. | No arbitrary semantic equivalence claim. |
+| Canonical value | A Braid IR value round-trips through Preserves bytes and adapters. | Preserves bytes are authoritative; JSON is compatibility output. |
+| Constrained policy DSL | A policy authored in the Braid schema can render to Nickel/Rust/Steel adapters and round-trip back to the same IR. | Only for the constrained schema, not arbitrary host-language code. |
+| Unsupported source translation | Arbitrary Nickel, Rust, or Steel source is translated into another language. | Out of scope unless represented as preserved source plus explicit non-claims. |
+
+## Current status
+
+This repo is bootstrapped with native Cairn lifecycle artifacts. The first active change is:
+
+```text
+cairn/changes/establish-lossless-ir/
+```
+
+Run lifecycle validation with the sibling Cairn repo:
+
+```bash
+nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
+nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- gate proposal establish-lossless-ir --root .
+nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- gate design establish-lossless-ir --root .
+nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- gate tasks establish-lossless-ir --root .
+```
+
+## Non-claims
+
+Braid validation does not prove compiler correctness, evaluator soundness, verifier soundness, runtime behavior, authorization, or semantic equivalence of arbitrary programs. It proves only the bounded claim named by the artifact class and receipt.
