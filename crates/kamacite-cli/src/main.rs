@@ -1,7 +1,7 @@
 #![forbid(unsafe_code)]
 
 use kamacite_core::{
-    AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, CanonicalValueInput,
+    AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload, FixtureSuite,
     HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
     ReplayProfileInput, SourceEnvelopeInput, StackEvidenceInput, TargetArtifactInput,
@@ -15,6 +15,7 @@ use std::path::{Component, Path, PathBuf};
 
 const DEFAULT_ROOT: &str = ".";
 const DEFAULT_MANIFEST: &str = "fixtures/manifest.json";
+const DEFAULT_MANIFEST_SOURCE: &str = "fixtures/manifest.ncl";
 const DEFAULT_UPDATE_REPORT: &str = "target/kamacite-golden-update-receipt.json";
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_FAILURE: i32 = 1;
@@ -29,6 +30,13 @@ const DOMAIN_RECEIPT: &str = "receipt";
 const DOMAIN_ALGEBRAIC_EFFECT: &str = "algebraic-effect";
 const DOMAIN_EFFECT_OPERATION: &str = "effect-operation";
 const DOMAIN_EFFECT_LOG: &str = "effect-log";
+const PROJECTION_IDENTITY_FIELD: &str = "projection_identity_hex";
+const FIXTURE_ID_FIELD_PREFIX: &str = "id = \"";
+const DIAGNOSTIC_MISSING_PROJECTION_IDENTITY: &str = "manifest-source-missing-projection-identity";
+const DIAGNOSTIC_INVALID_PROJECTION_IDENTITY: &str = "manifest-source-invalid-projection-identity";
+const DIAGNOSTIC_STALE_PROJECTION: &str = "manifest-projection-stale";
+const DIAGNOSTIC_MISSING_SOURCE_FIXTURES: &str = "manifest-source-missing-fixture-ids";
+const DIAGNOSTIC_FIXTURE_ID_DRIFT: &str = "manifest-fixture-id-drift";
 
 #[derive(Debug)]
 struct CliError(String);
@@ -47,6 +55,7 @@ type CliResult<T> = Result<T, CliError>;
 enum Command {
     Validate(ValidateArgs),
     HashFile(HashArgs),
+    CheckManifestProjection(ManifestProjectionArgs),
     Help,
 }
 
@@ -54,6 +63,7 @@ enum Command {
 struct ValidateArgs {
     root: PathBuf,
     manifest: PathBuf,
+    manifest_source: Option<PathBuf>,
     update_golden: bool,
     update_report: PathBuf,
 }
@@ -62,6 +72,12 @@ struct ValidateArgs {
 struct HashArgs {
     domain: IdentityDomain,
     path: PathBuf,
+}
+
+#[derive(Clone, Debug)]
+struct ManifestProjectionArgs {
+    source: PathBuf,
+    projection: PathBuf,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -140,6 +156,7 @@ struct ReplayProjection {
 #[derive(Debug, Serialize)]
 struct CliReport {
     passed: bool,
+    manifest_projection: Option<ManifestProjectionReport>,
     fixture_report: kamacite_core::FixtureSuiteReport,
     golden_results: Vec<GoldenResult>,
 }
@@ -149,6 +166,16 @@ struct GoldenResult {
     fixture_id: String,
     path: String,
     status: String,
+}
+
+#[derive(Debug, Serialize)]
+struct ManifestProjectionReport {
+    passed: bool,
+    declared_projection_identity: Option<Identity>,
+    computed_projection_identity: Identity,
+    source_fixture_count: usize,
+    projection_fixture_count: usize,
+    diagnostics: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -180,6 +207,7 @@ fn run() -> CliResult<i32> {
     match command {
         Command::Validate(args) => run_validate(args),
         Command::HashFile(args) => run_hash_file(args),
+        Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::Help => {
             print_help();
             Ok(EXIT_SUCCESS)
@@ -195,6 +223,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
     match command.as_str() {
         "validate" => parse_validate_args(args_iter.collect()),
         "hash-file" => parse_hash_args(args_iter.collect()),
+        "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
         unknown => Err(CliError(format!("unknown command: {unknown}"))),
     }
@@ -204,6 +233,7 @@ fn default_validate_args() -> ValidateArgs {
     ValidateArgs {
         root: PathBuf::from(DEFAULT_ROOT),
         manifest: PathBuf::from(DEFAULT_MANIFEST),
+        manifest_source: Some(PathBuf::from(DEFAULT_MANIFEST_SOURCE)),
         update_golden: false,
         update_report: PathBuf::from(DEFAULT_UPDATE_REPORT),
     }
@@ -216,6 +246,10 @@ fn parse_validate_args(args: Vec<String>) -> CliResult<Command> {
         match flag.as_str() {
             "--root" => parsed.root = next_path(&mut index, "--root")?,
             "--manifest" => parsed.manifest = next_path(&mut index, "--manifest")?,
+            "--manifest-source" => {
+                parsed.manifest_source = Some(next_path(&mut index, "--manifest-source")?)
+            }
+            "--skip-manifest-source-check" => parsed.manifest_source = None,
             "--update-golden" => parsed.update_golden = true,
             "--update-report" => parsed.update_report = next_path(&mut index, "--update-report")?,
             unknown => return Err(CliError(format!("unknown validate argument: {unknown}"))),
@@ -245,6 +279,26 @@ fn parse_hash_args(args: Vec<String>) -> CliResult<Command> {
         return Err(CliError("hash-file requires --path".to_string()));
     };
     Ok(Command::HashFile(HashArgs { domain, path }))
+}
+
+fn parse_manifest_projection_args(args: Vec<String>) -> CliResult<Command> {
+    let mut parsed = ManifestProjectionArgs {
+        source: PathBuf::from(DEFAULT_MANIFEST_SOURCE),
+        projection: PathBuf::from(DEFAULT_MANIFEST),
+    };
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--source" => parsed.source = next_path(&mut index, "--source")?,
+            "--projection" => parsed.projection = next_path(&mut index, "--projection")?,
+            unknown => {
+                return Err(CliError(format!(
+                    "unknown check-manifest-projection argument: {unknown}"
+                )));
+            }
+        }
+    }
+    Ok(Command::CheckManifestProjection(parsed))
 }
 
 fn next_value(index: &mut impl Iterator<Item = String>, flag: &str) -> CliResult<String> {
@@ -283,12 +337,36 @@ fn run_hash_file(args: HashArgs) -> CliResult<i32> {
     Ok(EXIT_SUCCESS)
 }
 
+fn run_check_manifest_projection(args: ManifestProjectionArgs) -> CliResult<i32> {
+    let source_bytes = read_path(&args.source)?;
+    let projection_bytes = read_path(&args.projection)?;
+    let source = String::from_utf8(source_bytes).map_err(|error| {
+        CliError(format!(
+            "manifest source is not UTF-8 for {}: {error}",
+            args.source.display()
+        ))
+    })?;
+    let projection: ManifestProjection = serde_json::from_slice(&projection_bytes)
+        .map_err(|error| CliError(format!("manifest projection parse failed: {error}")))?;
+    let report = check_manifest_projection(&source, &projection, &projection_bytes);
+    let json = serde_json::to_string_pretty(&report)
+        .map_err(|error| CliError(format!("projection report serialization failed: {error}")))?;
+    println!("{json}");
+    if report.passed {
+        Ok(EXIT_SUCCESS)
+    } else {
+        Ok(EXIT_FAILURE)
+    }
+}
+
 fn run_validate(args: ValidateArgs) -> CliResult<i32> {
     let root = args.root.clone();
     let manifest_path = resolve_under_root(&root, &args.manifest)?;
     let manifest_bytes = read_path(&manifest_path)?;
     let manifest: ManifestProjection = serde_json::from_slice(&manifest_bytes)
         .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
+    let manifest_projection =
+        check_manifest_projection_if_configured(&root, &args, &manifest, &manifest_bytes)?;
     let suite = materialize_suite(&root, &manifest)?;
     let fixture_report = validate_fixture_suite(&suite);
     let golden_report =
@@ -296,9 +374,14 @@ fn run_validate(args: ValidateArgs) -> CliResult<i32> {
     let goldens_passed = golden_report
         .iter()
         .all(|result| result.status == "matched" || result.status == "updated");
-    let passed = fixture_report.passed && goldens_passed;
+    let manifest_projection_passed = match &manifest_projection {
+        Some(report) => report.passed,
+        None => true,
+    };
+    let passed = manifest_projection_passed && fixture_report.passed && goldens_passed;
     let report = CliReport {
         passed,
+        manifest_projection,
         fixture_report,
         golden_results: golden_report,
     };
@@ -310,6 +393,118 @@ fn run_validate(args: ValidateArgs) -> CliResult<i32> {
     } else {
         Ok(EXIT_FAILURE)
     }
+}
+
+fn check_manifest_projection_if_configured(
+    root: &Path,
+    args: &ValidateArgs,
+    manifest: &ManifestProjection,
+    manifest_bytes: &[u8],
+) -> CliResult<Option<ManifestProjectionReport>> {
+    let Some(source_path) = &args.manifest_source else {
+        return Ok(None);
+    };
+    let resolved = resolve_under_root(root, source_path)?;
+    let source_bytes = read_path(&resolved)?;
+    let source = String::from_utf8(source_bytes).map_err(|error| {
+        CliError(format!(
+            "manifest source is not UTF-8 for {}: {error}",
+            resolved.display()
+        ))
+    })?;
+    Ok(Some(check_manifest_projection(
+        &source,
+        manifest,
+        manifest_bytes,
+    )))
+}
+
+fn check_manifest_projection(
+    source: &str,
+    projection: &ManifestProjection,
+    projection_bytes: &[u8],
+) -> ManifestProjectionReport {
+    let computed_projection_identity =
+        compute_identity(IdentityDomain::Projection, projection_bytes);
+    let mut diagnostics = Vec::new();
+    let declared_projection_identity =
+        match extract_string_assignment(source, PROJECTION_IDENTITY_FIELD) {
+            Some(hex) => match Blake3Hex::parse(hex) {
+                Ok(parsed) => Some(Identity::new(IdentityDomain::Projection, parsed)),
+                Err(_) => {
+                    diagnostics.push(DIAGNOSTIC_INVALID_PROJECTION_IDENTITY.to_string());
+                    None
+                }
+            },
+            None => {
+                diagnostics.push(DIAGNOSTIC_MISSING_PROJECTION_IDENTITY.to_string());
+                None
+            }
+        };
+    if let Some(declared) = &declared_projection_identity
+        && declared.hex != computed_projection_identity.hex
+    {
+        diagnostics.push(DIAGNOSTIC_STALE_PROJECTION.to_string());
+    }
+
+    let source_fixture_ids = extract_source_fixture_ids(source);
+    let projection_fixture_ids: Vec<&str> = projection
+        .fixtures
+        .iter()
+        .map(|fixture| fixture.id.as_str())
+        .collect();
+    if source_fixture_ids.is_empty() {
+        diagnostics.push(DIAGNOSTIC_MISSING_SOURCE_FIXTURES.to_string());
+    }
+    if source_fixture_ids != projection_fixture_ids {
+        diagnostics.push(DIAGNOSTIC_FIXTURE_ID_DRIFT.to_string());
+    }
+    diagnostics.sort();
+    diagnostics.dedup();
+
+    ManifestProjectionReport {
+        passed: diagnostics.is_empty(),
+        declared_projection_identity,
+        computed_projection_identity,
+        source_fixture_count: source_fixture_ids.len(),
+        projection_fixture_count: projection_fixture_ids.len(),
+        diagnostics,
+    }
+}
+
+fn extract_string_assignment(source: &str, field_name: &str) -> Option<String> {
+    for line in source.lines() {
+        let trimmed = line.trim_start();
+        if !trimmed.starts_with(field_name) {
+            continue;
+        }
+        let Some((_, assignment)) = trimmed.split_once('=') else {
+            continue;
+        };
+        return extract_quoted_string(assignment).map(ToOwned::to_owned);
+    }
+    None
+}
+
+fn extract_source_fixture_ids(source: &str) -> Vec<&str> {
+    let mut fixture_ids = Vec::new();
+    for line in source.lines() {
+        let trimmed = line.trim_start();
+        if !trimmed.starts_with(FIXTURE_ID_FIELD_PREFIX) {
+            continue;
+        }
+        if let Some(id) = extract_quoted_string(trimmed) {
+            fixture_ids.push(id);
+        }
+    }
+    fixture_ids
+}
+
+fn extract_quoted_string(text: &str) -> Option<&str> {
+    let start = text.find('"')?;
+    let tail = &text[start + 1..];
+    let end = tail.find('"')?;
+    Some(&tail[..end])
 }
 
 fn materialize_suite(root: &Path, manifest: &ManifestProjection) -> CliResult<FixtureSuite> {
@@ -582,7 +777,85 @@ fn write_path(path: &Path, bytes: &[u8]) -> CliResult<()> {
 
 fn print_help() {
     println!(
-        "kamacite-validate validate [--root PATH] [--manifest PATH] [--update-golden] [--update-report PATH]\n\
-         kamacite-validate hash-file --domain DOMAIN --path PATH"
+        "kamacite-validate validate [--root PATH] [--manifest PATH] [--manifest-source PATH] [--skip-manifest-source-check] [--update-golden] [--update-report PATH]\n\
+         kamacite-validate hash-file --domain DOMAIN --path PATH\n\
+         kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]"
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_FIXTURE_ID: &str = "unit.fixture";
+    const TEST_OTHER_FIXTURE_ID: &str = "unit.other";
+    const TEST_ZERO_HEX: &str = "0000000000000000000000000000000000000000000000000000000000000000";
+
+    fn projection_json(fixture_id: &str) -> String {
+        format!(
+            "{{\"fixtures\":[{{\"id\":\"{fixture_id}\",\"fixture_class\":\"negative\",\"artifact_class\":\"receipt\",\"requirement_ids\":[\"r[kamacite.validation_harness.fixture_manifest.projection_freshness]\"],\"non_claims\":[\"not projection authority\"],\"expected_verdict\":\"rejected\",\"checked_laws\":[],\"payload\":{{\"kind\":\"identity-use\",\"required_domain\":\"receipt\",\"supplied_identity\":{{\"domain\":\"source\",\"algorithm\":\"blake3\",\"hex\":\"{TEST_ZERO_HEX}\"}}}}}}]}}"
+        )
+    }
+
+    fn source_manifest(projection_hex: &str, fixture_id: &str) -> String {
+        format!(
+            "projection_identity_hex = \"{projection_hex}\"\nfixtures = [\n  {{\n    id = \"{fixture_id}\",\n  }},\n]\n"
+        )
+    }
+
+    fn parse_projection(json: &str) -> ManifestProjection {
+        match serde_json::from_str(json) {
+            Ok(parsed) => parsed,
+            Err(error) => panic!("test projection must parse: {error}"),
+        }
+    }
+
+    #[test]
+    fn accepts_matching_manifest_projection_identity() {
+        let json = projection_json(TEST_FIXTURE_ID);
+        let computed = compute_identity(IdentityDomain::Projection, json.as_bytes());
+        let source = source_manifest(computed.hex.as_str(), TEST_FIXTURE_ID);
+        let projection = parse_projection(&json);
+
+        let report = check_manifest_projection(&source, &projection, json.as_bytes());
+
+        assert!(report.passed);
+        assert!(report.diagnostics.is_empty());
+        assert_eq!(report.source_fixture_count, report.projection_fixture_count);
+    }
+
+    #[test]
+    fn rejects_stale_manifest_projection_identity() {
+        let json = projection_json(TEST_FIXTURE_ID);
+        let source = source_manifest(TEST_ZERO_HEX, TEST_FIXTURE_ID);
+        let projection = parse_projection(&json);
+
+        let report = check_manifest_projection(&source, &projection, json.as_bytes());
+
+        assert!(!report.passed);
+        assert!(
+            report
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic == DIAGNOSTIC_STALE_PROJECTION)
+        );
+    }
+
+    #[test]
+    fn rejects_manifest_projection_fixture_id_drift() {
+        let json = projection_json(TEST_FIXTURE_ID);
+        let computed = compute_identity(IdentityDomain::Projection, json.as_bytes());
+        let source = source_manifest(computed.hex.as_str(), TEST_OTHER_FIXTURE_ID);
+        let projection = parse_projection(&json);
+
+        let report = check_manifest_projection(&source, &projection, json.as_bytes());
+
+        assert!(!report.passed);
+        assert!(
+            report
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic == DIAGNOSTIC_FIXTURE_ID_DRIFT)
+        );
+    }
 }

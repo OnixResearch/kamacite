@@ -8,21 +8,27 @@ Run it through the sibling Cairn dev shell until Kamacite grows its own package:
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate --root . --manifest fixtures/manifest.json'
 ```
 
-The default mode is non-mutating. Golden receipts are compared exactly and mismatches fail validation.
+The default mode is non-mutating. Before fixture execution is trusted, the CLI checks `fixtures/manifest.ncl` for the source-declared BLAKE3 projection identity and fixture ID list, compares them to `fixtures/manifest.json`, and fails closed on stale projection bytes or fixture-ID drift. Golden receipts are then compared exactly and mismatches fail validation.
 
-The explicit update workflow is:
+A focused source/projection freshness check is available with:
+
+```bash
+nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- check-manifest-projection --source fixtures/manifest.ncl --projection fixtures/manifest.json'
+```
+
+The explicit golden receipt update workflow is:
 
 ```bash
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate --root . --manifest fixtures/manifest.json --update-golden --update-report target/kamacite-golden-update-receipt.json'
 ```
 
-That mode writes checked golden receipt projections and emits `target/kamacite-golden-update-receipt.json` with old and new receipt identities. It is the only harness mode that rewrites fixture evidence.
+That mode writes checked golden receipt projections and emits `target/kamacite-golden-update-receipt.json` with old and new receipt identities. It is the only harness mode that rewrites golden fixture evidence; manifest projection changes remain reviewed source/projection file changes and are not rewritten implicitly by validation.
 
 ## Boundary
 
 - `crates/kamacite-core` is the pure deterministic core. It receives in-memory DTOs and bytes, returns deterministic diagnostics and receipts, and does not read files, inspect environment, spawn processes, print, access clocks, access randomness, or mutate state.
 - `crates/kamacite-cli` is the thin imperative shell. It reads the manifest projection and fixture bytes, compares or writes golden receipts, and renders JSON reports.
-- `fixtures/manifest.ncl` is the reviewed Nickel manifest source for the seed gate. `fixtures/manifest.json` is the runtime projection consumed by the shell.
+- `fixtures/manifest.ncl` is the reviewed Nickel manifest source for the fixture corpus. `fixtures/manifest.json` is the runtime projection consumed by the shell after source-declared projection identity and fixture-ID freshness checks pass.
 - `fixtures/core/**` contains pure in-memory fixtures. Adapter/probe execution suites are deferred until their own changes add declared capabilities and receipt-only modes.
 
 ## Current seed evidence

@@ -1,5 +1,5 @@
-# Human-authored fixture manifest authority for the walking-skeleton gate.
-# Runtime Rust consumes fixtures/manifest.json as a deterministic projection.
+# Human-authored fixture manifest authority for the Kamacite validation harness.
+# Runtime Rust consumes fixtures/manifest.json only after this source-declared projection identity is checked.
 
 let Identity = {
   domain | String,
@@ -11,74 +11,1736 @@ let Fixture = {
   id | String,
   fixture_class | String,
   artifact_class | String,
-  input_artifacts | Array String,
-  expected_verdict | String,
-  expected_diagnostics | Array String,
-  non_claims | Array String,
-  dependency_identities | Array Identity,
   requirement_ids | Array String,
+  non_claims | Array String,
+  expected_verdict | String,
+  checked_laws | Array String,
   golden_receipt | String,
+  payload | Dyn,
+} in
+
+let Manifest = {
+  schema_version | Number,
+  runtime_projection | String,
+  projection_identity_hex | String,
+  authority_non_claims | Array String,
+  fixtures | Array Fixture,
 } in
 
 {
-  schema_version | Number = 1,
-  runtime_projection | String = "fixtures/manifest.json",
-  authority_non_claims | Array String = [
+  schema_version = 1,
+  runtime_projection = "fixtures/manifest.json",
+  projection_identity_hex = "891e7d9983c9bc55ec4168bb21e98abe863913cb4d6095712c3727e0da8dbd25",
+  authority_non_claims = [
     "manifest source is review authority",
     "json projection is runtime compatibility input only",
+    "projection identity must match before fixture receipts are trusted",
     "manifest does not execute Nickel, Steel, WASM, compilers, or host effects",
   ],
-  fixtures | Array Fixture = [
-    {
-      id = "source-envelope.valid.nickel-minimal",
-      fixture_class = "positive",
+  fixtures = [
+{
       artifact_class = "source-envelope",
-      input_artifacts = ["fixtures/core/source-envelopes/valid.nickel"],
-      expected_verdict = "accepted",
-      expected_diagnostics = [],
-      non_claims = ["not Nickel evaluation semantics", "not arbitrary source translation"],
-      dependency_identities = [
-        { domain = "source", algorithm = "blake3", hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93" },
+      checked_laws = [
+        "source-envelope-preservation",
+        "names-as-metadata",
       ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+      id = "source-envelope.valid.nickel-minimal",
+      non_claims = [
+        "not Nickel evaluation semantics",
+        "not arbitrary source translation",
+      ],
+      payload = {
+        aliases = [
+          "seed-valid",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        kind = "source-envelope",
+        language = "nickel",
+        media_type = "text/x-nickel",
+        parser_identity = "nickel-reference-deferred",
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
       requirement_ids = [
         "r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]",
         "r[kamacite.lossless_ir.positive_fixtures.source_bytes]",
+        "r[kamacite.rust_determinism.first_slice.source_envelope]",
       ],
-      golden_receipt = "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
     },
-    {
-      id = "source-envelope.negative.stale-source-hash",
-      fixture_class = "negative",
+{
       artifact_class = "source-envelope",
-      input_artifacts = ["fixtures/core/source-envelopes/stale.nickel"],
-      expected_verdict = "rejected",
-      expected_diagnostics = ["stale-identity"],
-      non_claims = ["not trusted source identity"],
-      dependency_identities = [
-        { domain = "source", algorithm = "blake3", hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93" },
+      checked_laws = [
+        "fail-closed-stale-identity",
       ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/source-envelope.negative.stale-source-hash.receipt.json",
+      id = "source-envelope.negative.stale-source-hash",
+      non_claims = [
+        "not trusted source identity",
+      ],
+      payload = {
+        aliases = [
+          "seed-stale",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        kind = "source-envelope",
+        language = "nickel",
+        media_type = "text/x-nickel",
+        parser_identity = "nickel-reference-deferred",
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/stale.nickel",
+      },
       requirement_ids = [
         "r[kamacite.validation_harness.seed_fixtures.stale_source_hash]",
         "r[kamacite.rust_determinism.total_diagnostics.stale_hash]",
       ],
-      golden_receipt = "fixtures/golden/source-envelope.negative.stale-source-hash.receipt.json",
     },
-    {
-      id = "source-envelope.negative.wrong-identity-domain",
-      fixture_class = "negative",
+{
       artifact_class = "source-envelope",
-      input_artifacts = ["fixtures/core/source-envelopes/wrong-domain.nickel"],
-      expected_verdict = "rejected",
-      expected_diagnostics = ["identity-domain-mismatch"],
-      non_claims = ["not cross-domain coercion"],
-      dependency_identities = [
-        { domain = "projection", algorithm = "blake3", hex = "afe694dfcd747b297c6638d11318a9a5063015cb50123a9bae763d160e2ad2b5" },
+      checked_laws = [
+        "typed-identity-domain",
       ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/source-envelope.negative.wrong-identity-domain.receipt.json",
+      id = "source-envelope.negative.wrong-identity-domain",
+      non_claims = [
+        "not cross-domain coercion",
+      ],
+      payload = {
+        aliases = [
+          "seed-wrong-domain",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "afe694dfcd747b297c6638d11318a9a5063015cb50123a9bae763d160e2ad2b5",
+        },
+        kind = "source-envelope",
+        language = "nickel",
+        media_type = "text/x-nickel",
+        parser_identity = "nickel-reference-deferred",
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/wrong-domain.nickel",
+      },
       requirement_ids = [
         "r[kamacite.validation_harness.seed_fixtures.wrong_identity_domain]",
         "r[kamacite.rust_determinism.typed_identity_domains.constructor_validation]",
       ],
-      golden_receipt = "fixtures/golden/source-envelope.negative.wrong-identity-domain.receipt.json",
+    },
+{
+      artifact_class = "source-envelope",
+      checked_laws = [
+        "fail-closed-version",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/source-envelope.negative.unsupported-version.receipt.json",
+      id = "source-envelope.negative.unsupported-version",
+      non_claims = [
+        "not compatibility defaulting",
+      ],
+      payload = {
+        aliases = [
+          "seed-unsupported-version",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        kind = "source-envelope",
+        language = "nickel",
+        media_type = "text/x-nickel",
+        parser_identity = "nickel-reference-deferred",
+        schema_version = 2,
+        source_path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.schema_vocabulary.unsupported_version]",
+      ],
+    },
+{
+      artifact_class = "source-envelope",
+      checked_laws = [
+        "source-bytes-required",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/source-envelope.negative.missing-source-bytes.receipt.json",
+      id = "source-envelope.negative.missing-source-bytes",
+      non_claims = [
+        "not source preservation",
+      ],
+      payload = {
+        aliases = [
+          "seed-missing-source",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+        kind = "source-envelope",
+        language = "nickel",
+        media_type = "text/x-nickel",
+        parser_identity = "nickel-reference-deferred",
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/missing-source.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.source_envelope_vocabulary.missing_bytes]",
+      ],
+    },
+{
+      artifact_class = "canonical-value",
+      checked_laws = [
+        "preserves-bytes-authoritative",
+        "projection-derived",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/canonical-value.positive.preserves-minimal.receipt.json",
+      id = "canonical-value.positive.preserves-minimal",
+      non_claims = [
+        "JSON projection is compatibility only",
+      ],
+      payload = {
+        aliases = [
+          "minimal",
+        ],
+        canonical_path = "fixtures/core/canonical-values/minimal.preserves",
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "canonical-value",
+          hex = "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31",
+        },
+        kind = "canonical-value",
+        projection_claims_authority = false,
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87",
+        },
+        schema_version = 1,
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.format_strategy.preserves_roundtrip]",
+        "r[kamacite.rust_determinism.canonical_identity.blake3]",
+      ],
+    },
+{
+      artifact_class = "canonical-value",
+      checked_laws = [
+        "projection-not-authority",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/canonical-value.negative.lossy-json-authority.receipt.json",
+      id = "canonical-value.negative.lossy-json-authority",
+      non_claims = [
+        "JSON is not canonical identity",
+      ],
+      payload = {
+        aliases = [
+          "lossy-json",
+        ],
+        canonical_path = "fixtures/core/canonical-values/lossy-json.preserves",
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "canonical-value",
+          hex = "2b9579ca093fb1ca47516d0cdac8fe5dccf015400f642230a4a14eed7e0cc3ae",
+        },
+        kind = "canonical-value",
+        projection_claims_authority = true,
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87",
+        },
+        schema_version = 1,
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.negative_fixtures.lossy_projection]",
+      ],
+    },
+{
+      artifact_class = "receipt",
+      checked_laws = [
+        "typed-domain-rejection",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/identity.negative.projection-as-canonical.receipt.json",
+      id = "identity.negative.projection-as-canonical",
+      non_claims = [
+        "not identity-domain substitution",
+      ],
+      payload = {
+        kind = "identity-use",
+        required_domain = "canonical-value",
+        supplied_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87",
+        },
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.typed_identity_domains.projection_not_canonical]",
+      ],
+    },
+{
+      artifact_class = "receipt",
+      checked_laws = [
+        "receipt-identity-separation",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/identity.negative.source-as-receipt.receipt.json",
+      id = "identity.negative.source-as-receipt",
+      non_claims = [
+        "receipt identity is separate domain",
+      ],
+      payload = {
+        kind = "identity-use",
+        required_domain = "receipt",
+        supplied_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+        },
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.typed_identity_domains.source_not_receipt]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "source-export-separation",
+        "evaluator-identity-bound",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/adapter.positive.nickel-source-export-separated.receipt.json",
+      id = "adapter.positive.nickel-source-export-separated",
+      non_claims = [
+        "nickel export is derived projection",
+      ],
+      payload = {
+        adapter_kind = "nickel-export",
+        checked_laws = [
+          "source-export-separation",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [],
+        has_conformance_entry = true,
+        kind = "adapter-receipt",
+        observed_effects = [],
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.adapter_boundaries.nickel_projection]",
+        "r[kamacite.lossless_ir.nickel_adapter_conformance.source_export_separation]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "declared-host-functions",
+        "dto-only-evaluation",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/adapter.positive.steel-dto-only.receipt.json",
+      id = "adapter.positive.steel-dto-only",
+      non_claims = [
+        "not ambient Steel scripting authority",
+      ],
+      payload = {
+        adapter_kind = "steel-dto-probe",
+        checked_laws = [
+          "declared-host-functions",
+          "dto-only-evaluation",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "dto-evaluation",
+        ],
+        has_conformance_entry = true,
+        kind = "adapter-receipt",
+        observed_effects = [
+          "dto-evaluation",
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.steel_adapter_conformance.dto_only]",
+        "r[kamacite.lossless_ir.steel_adapter_boundary.host_functions]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "deny-undeclared-authority",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.steel-ambient-filesystem.receipt.json",
+      id = "adapter.negative.steel-ambient-filesystem",
+      non_claims = [
+        "ambient filesystem denied",
+      ],
+      payload = {
+        adapter_kind = "steel-dto-probe",
+        checked_laws = [
+          "deny-undeclared-authority",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [
+          "dto-evaluation",
+        ],
+        has_conformance_entry = true,
+        kind = "adapter-receipt",
+        observed_effects = [
+          "filesystem",
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.steel_adapter_boundary.ambient_libraries]",
+        "r[kamacite.lossless_ir.steel_adapter_conformance.ambient_authority]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "conformance-entry-required",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.untrusted-without-conformance.receipt.json",
+      id = "adapter.negative.untrusted-without-conformance",
+      non_claims = [
+        "no adapter-specific trust without conformance",
+      ],
+      payload = {
+        adapter_kind = "unknown-adapter",
+        checked_laws = [
+          "conformance-entry-required",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [],
+        has_conformance_entry = false,
+        kind = "adapter-receipt",
+        observed_effects = [],
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.adapter_conformance.untrusted_without_entry]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "canonical-ir-overclaim-rejected",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/adapter.negative.wasm-canonical-ir-overclaim.receipt.json",
+      id = "adapter.negative.wasm-canonical-ir-overclaim",
+      non_claims = [
+        "compiled WASM is target artifact only",
+      ],
+      payload = {
+        adapter_kind = "wasm-adapter",
+        checked_laws = [
+          "canonical-ir-overclaim-rejected",
+        ],
+        claims_canonical_ir = true,
+        declared_capabilities = [],
+        has_conformance_entry = true,
+        kind = "adapter-receipt",
+        observed_effects = [],
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.wasm_adapter_conformance.not_ir]",
+      ],
+    },
+{
+      artifact_class = "target-artifact",
+      checked_laws = [
+        "target-provenance-bound",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/target.positive.wasm-receipt-bounded.receipt.json",
+      id = "target.positive.wasm-receipt-bounded",
+      non_claims = [
+        "WASM artifact is not canonical Kamacite IR",
+      ],
+      payload = {
+        claims_canonical_ir = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "target-artifact",
+          hex = "073709f60d49930fa5e855ecaad567aed0d3c8aa91885934c2f566067ad0601b",
+        },
+        kind = "target-artifact",
+        metadata = {
+          "adapter-role" = "validator",
+          target = "wasm32-wasi",
+        },
+        output_path = "fixtures/core/targets/validator.wasm.txt",
+        target_kind = "wasm-component",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.wasm_adapter_conformance.receipt]",
+      ],
+    },
+{
+      artifact_class = "target-artifact",
+      checked_laws = [
+        "compiler-target-provenance",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/target.positive.llvm-provenance-bounded.receipt.json",
+      id = "target.positive.llvm-provenance-bounded",
+      non_claims = [
+        "LLVM IR is target evidence only",
+      ],
+      payload = {
+        claims_canonical_ir = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "target-artifact",
+          hex = "1f2f5a5f9ff7f04d8a8e9e79890df6c797599ec381c1bba47ae615d9a2922dd5",
+        },
+        kind = "target-artifact",
+        metadata = {
+          compiler = "rustc-deferred",
+          "debug-info" = "not-recorded",
+          "optimization-level" = "0",
+          "target-triple" = "x86_64-unknown-linux-gnu",
+        },
+        output_path = "fixtures/core/targets/validator.ll",
+        target_kind = "llvm-ir",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.compiler_target_conformance.llvm_metadata]",
+      ],
+    },
+{
+      artifact_class = "unsupported-claim",
+      checked_laws = [
+        "unsupported-claim-fails-closed",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/claim.negative.arbitrary-source-translation.receipt.json",
+      id = "claim.negative.arbitrary-source-translation",
+      non_claims = [
+        "not arbitrary host-language equivalence",
+      ],
+      payload = {
+        claim_class = "unsupported-source-translation",
+        claim_text = "lossless arbitrary Nickel to Steel translation",
+        kind = "unsupported-claim",
+        preserve_source_only = true,
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.negative_fixtures.unsupported_translation]",
+      ],
+    },
+{
+      artifact_class = "unsupported-claim",
+      checked_laws = [
+        "ambiguous-claim-rejected",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/claim.negative.ambiguous-semantic-equivalence.receipt.json",
+      id = "claim.negative.ambiguous-semantic-equivalence",
+      non_claims = [
+        "not semantic equivalence proof",
+      ],
+      payload = {
+        claim_class = "semantic-equivalence",
+        claim_text = "compiler and evaluator semantics are equivalent",
+        kind = "unsupported-claim",
+        preserve_source_only = false,
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.total_diagnostics.ambiguous_claim]",
+      ],
+    },
+{
+      artifact_class = "capability-shell",
+      checked_laws = [
+        "root-relative-path",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/capability.positive.normal-root-relative.receipt.json",
+      id = "capability.positive.normal-root-relative",
+      non_claims = [
+        "capability shell evidence is not core filesystem authority",
+      ],
+      payload = {
+        declared_filesystem = true,
+        kind = "capability-shell",
+        observation = "normal-relative",
+        path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.capability_shells.filesystem_root]",
+      ],
+    },
+{
+      artifact_class = "capability-shell",
+      checked_laws = [
+        "path-escape-denied",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/capability.negative.parent-traversal.receipt.json",
+      id = "capability.negative.parent-traversal",
+      non_claims = [
+        "path traversal denied",
+      ],
+      payload = {
+        declared_filesystem = true,
+        kind = "capability-shell",
+        observation = "parent-traversal",
+        path = "../outside",
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.capability_shells.escape_fixtures]",
+      ],
+    },
+{
+      artifact_class = "capability-shell",
+      checked_laws = [
+        "path-escape-denied",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/capability.negative.absolute-path.receipt.json",
+      id = "capability.negative.absolute-path",
+      non_claims = [
+        "absolute paths are not artifact authority",
+      ],
+      payload = {
+        declared_filesystem = true,
+        kind = "capability-shell",
+        observation = "absolute-path",
+        path = "/etc/passwd",
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.capability_shells.escape_fixtures]",
+      ],
+    },
+{
+      artifact_class = "capability-shell",
+      checked_laws = [
+        "path-escape-denied",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/capability.negative.symlink-escape.receipt.json",
+      id = "capability.negative.symlink-escape",
+      non_claims = [
+        "symlink escape denied",
+      ],
+      payload = {
+        declared_filesystem = true,
+        kind = "capability-shell",
+        observation = "symlink-escape",
+        path = "fixtures/symlink-to-outside",
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.capability_shells.escape_fixtures]",
+      ],
+    },
+{
+      artifact_class = "capability-shell",
+      checked_laws = [
+        "undeclared-filesystem-denied",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/capability.negative.undeclared-filesystem.receipt.json",
+      id = "capability.negative.undeclared-filesystem",
+      non_claims = [
+        "filesystem authority denied by default",
+      ],
+      payload = {
+        declared_filesystem = false,
+        kind = "capability-shell",
+        observation = "undeclared-filesystem",
+        path = "fixtures/core/source-envelopes/valid.nickel",
+      },
+      requirement_ids = [
+        "r[kamacite.rust_determinism.explicit_capabilities.filesystem]",
+      ],
+    },
+{
+      artifact_class = "stack-evidence",
+      checked_laws = [
+        "bounded-valence-export",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/stack.positive.valence-wrap-receipt.receipt.json",
+      id = "stack.positive.valence-wrap-receipt",
+      non_claims = [
+        "Valence export does not broaden Kamacite claim",
+      ],
+      payload = {
+        bounded_claim = "wrap Kamacite receipt identity and non-claims",
+        broadens_claim = false,
+        kind = "stack-evidence",
+        referenced_identities = [
+          {
+            algorithm = "blake3",
+            domain = "source",
+            hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93",
+          },
+        ],
+        role = "valence-export",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.stack_evidence_boundary.valence_receipts]",
+      ],
+    },
+{
+      artifact_class = "stack-evidence",
+      checked_laws = [
+        "octet-source-shape-only",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/stack.positive.octet-source-shape-only.receipt.json",
+      id = "stack.positive.octet-source-shape-only",
+      non_claims = [
+        "Octet check is source-shape evidence only",
+      ],
+      payload = {
+        bounded_claim = "Rust profile source-shape evidence",
+        broadens_claim = false,
+        kind = "stack-evidence",
+        referenced_identities = [],
+        role = "octet-check-plan",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.evidence_integration_conformance.octet]",
+      ],
+    },
+{
+      artifact_class = "stack-evidence",
+      checked_laws = [
+        "trellis-supporting-only",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/stack.positive.trellis-supporting-evidence.receipt.json",
+      id = "stack.positive.trellis-supporting-evidence",
+      non_claims = [
+        "Trellis proof reference does not replace Kamacite receipt",
+      ],
+      payload = {
+        bounded_claim = "supporting proof evidence for finite effect facts",
+        broadens_claim = false,
+        kind = "stack-evidence",
+        referenced_identities = [],
+        role = "trellis-proof-reference",
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.stack_roles.trellis.supporting_evidence]",
+      ],
+    },
+{
+      artifact_class = "stack-evidence",
+      checked_laws = [
+        "runtime-consumes-kamacite-identity",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/stack.positive.aspen-handler-profile-reference.receipt.json",
+      id = "stack.positive.aspen-handler-profile-reference",
+      non_claims = [
+        "Aspen runtime evidence does not redefine Kamacite effect schema",
+      ],
+      payload = {
+        bounded_claim = "runtime evidence references Kamacite handler descriptor identity",
+        broadens_claim = false,
+        kind = "stack-evidence",
+        referenced_identities = [
+          {
+            algorithm = "blake3",
+            domain = "algebraic-effect",
+            hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+          },
+        ],
+        role = "aspen-runtime-consumption",
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.stack_roles.aspen.handler_profile]",
+      ],
+    },
+{
+      artifact_class = "stack-evidence",
+      checked_laws = [
+        "stack-overclaim-rejected",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/stack.negative.valence-runtime-correctness-overclaim.receipt.json",
+      id = "stack.negative.valence-runtime-correctness-overclaim",
+      non_claims = [
+        "Valence wrapping is not runtime correctness",
+      ],
+      payload = {
+        bounded_claim = "runtime correctness",
+        broadens_claim = true,
+        kind = "stack-evidence",
+        referenced_identities = [],
+        role = "valence-export",
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.stack_roles.valence.wrap_receipt]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "exact-discharge",
+        "recorded-replay-log-bound",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/algebraic.positive.declared-discharge-recorded-replay.receipt.json",
+      id = "algebraic.positive.declared-discharge-recorded-replay",
+      non_claims = [
+        "effect log is replay evidence only",
+        "not host authorization",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+        },
+        handler = {
+          claims_discharge = true,
+          continuation_policy = "no-continuation",
+          handled_operations = [
+            "op.read-config",
+          ],
+          host_capability_requirements = [],
+          name = "memory-config-handler",
+          residual_operations = [],
+        },
+        input_row = [
+          "op.read-config",
+        ],
+        kind = "algebraic-effect",
+        receipt = {
+          checked_laws = [
+            "exact-discharge",
+          ],
+          continuation_evidence = null,
+          continuation_policy = "no-continuation",
+          discharged_operations = [
+            "op.read-config",
+          ],
+          observed_operations = [
+            "op.read-config",
+          ],
+          residual_operations = [],
+        },
+        replay = {
+          effect_log_identity = {
+            algorithm = "blake3",
+            domain = "effect-log",
+            hex = "c5f566889bc03678adeb0bf686685fd3f2472aa106bdeca86ecab3b454ba8f28",
+          },
+          effect_log_path = "fixtures/core/algebraic-effects/recorded-log.preserves",
+          replay_class = "recorded-replay",
+        },
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "ReadConfig",
+            operation_id = "op.read-config",
+            parameter_schema = "unit",
+            result_schema = "string",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.fixture_corpus.positive_discharge]",
+        "r[kamacite.algebraic_effects.replay_profile.recorded_log]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "single-use-continuation-evidence",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/algebraic.positive.single-use-continuation-evidence.receipt.json",
+      id = "algebraic.positive.single-use-continuation-evidence",
+      non_claims = [
+        "single-use evidence is bounded receipt data",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+        },
+        handler = {
+          claims_discharge = true,
+          continuation_policy = "single-use-continuation",
+          handled_operations = [
+            "op.resume-once",
+          ],
+          host_capability_requirements = [],
+          name = "single-use-handler",
+          residual_operations = [],
+        },
+        input_row = [
+          "op.resume-once",
+        ],
+        kind = "algebraic-effect",
+        receipt = {
+          checked_laws = [
+            "single-use-continuation-evidence",
+          ],
+          continuation_evidence = "used-once",
+          continuation_policy = "single-use-continuation",
+          discharged_operations = [
+            "op.resume-once",
+          ],
+          observed_operations = [
+            "op.resume-once",
+          ],
+          residual_operations = [],
+        },
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "ResumeOnce",
+            operation_id = "op.resume-once",
+            parameter_schema = "unit",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.continuation_policy.single_use_evidence]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "fail-closed-effect-version",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.unsupported-version.receipt.json",
+      id = "algebraic.negative.unsupported-version",
+      non_claims = [
+        "not compatibility defaulting",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+        },
+        handler = null,
+        input_row = [
+          "op.read-config",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = false,
+        schema_version = 2,
+        signatures = [
+          {
+            display_name = "ReadConfig",
+            operation_id = "op.read-config",
+            parameter_schema = "unit",
+            result_schema = "string",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.ir_boundary.unsupported_version]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "operation-schema-required",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.missing-operation-schema.receipt.json",
+      id = "algebraic.negative.missing-operation-schema",
+      non_claims = [
+        "incomplete effect signature denied",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/missing-schema.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "6564e0b1bcb778d7a2c654afaf1bcf11b402fe43df7c573e40fb829e5748848c",
+        },
+        handler = null,
+        input_row = [
+          "op.broken",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Broken",
+            operation_id = "op.broken",
+            parameter_schema = null,
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.signature_vocabulary.missing_schema]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "declared-operation-required",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.undeclared-operation.receipt.json",
+      id = "algebraic.negative.undeclared-operation",
+      non_claims = [
+        "undeclared operations fail closed",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/unknown-effect.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60",
+        },
+        handler = null,
+        input_row = [
+          "op.unknown",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Known",
+            operation_id = "op.known",
+            parameter_schema = "unit",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.row_summary_vocabulary.undeclared_operation]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "open-row-preserved",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.open-row-not-pure.receipt.json",
+      id = "algebraic.negative.open-row-not-pure",
+      non_claims = [
+        "open rows are not inferred pure",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/open-row.preserves",
+        claimed_host_authority = [],
+        claimed_pure = true,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e",
+        },
+        handler = null,
+        input_row = [
+          "op.trace",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = true,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Trace",
+            operation_id = "op.trace",
+            parameter_schema = "string",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "operation-ids-required-for-discharge",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.handler-name-not-discharge.receipt.json",
+      id = "algebraic.negative.handler-name-not-discharge",
+      non_claims = [
+        "handler names are metadata",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+        },
+        handler = {
+          claims_discharge = true,
+          continuation_policy = "no-continuation",
+          handled_operations = [],
+          host_capability_requirements = [],
+          name = "trusted-looking-handler",
+          residual_operations = [],
+        },
+        input_row = [
+          "op.read-config",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "ReadConfig",
+            operation_id = "op.read-config",
+            parameter_schema = "unit",
+            result_schema = "string",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.handler_descriptor.name_not_discharge]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "receipt-effects-declared",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.unknown-effect-in-receipt.receipt.json",
+      id = "algebraic.negative.unknown-effect-in-receipt",
+      non_claims = [
+        "unknown effects denied",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/unknown-effect.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60",
+        },
+        handler = {
+          claims_discharge = true,
+          continuation_policy = "no-continuation",
+          handled_operations = [
+            "op.known",
+          ],
+          host_capability_requirements = [],
+          name = "known-handler",
+          residual_operations = [],
+        },
+        input_row = [
+          "op.known",
+        ],
+        kind = "algebraic-effect",
+        receipt = {
+          checked_laws = [
+            "receipt-effects-declared",
+          ],
+          continuation_evidence = null,
+          continuation_policy = "no-continuation",
+          discharged_operations = [
+            "op.known",
+          ],
+          observed_operations = [
+            "op.unknown",
+          ],
+          residual_operations = [],
+        },
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Known",
+            operation_id = "op.known",
+            parameter_schema = "unit",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.handler_receipts.unknown_effect_denied]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "continuation-policy-fail-closed",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.continuation-policy-mismatch.receipt.json",
+      id = "algebraic.negative.continuation-policy-mismatch",
+      non_claims = [
+        "continuation use must match descriptor",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/continuation-mismatch.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "292370f394d446681a738d228e31432c67f9d4aa71107889a58384d76c1b14a2",
+        },
+        handler = {
+          claims_discharge = true,
+          continuation_policy = "no-continuation",
+          handled_operations = [
+            "op.resume",
+          ],
+          host_capability_requirements = [],
+          name = "no-cont-handler",
+          residual_operations = [],
+        },
+        input_row = [
+          "op.resume",
+        ],
+        kind = "algebraic-effect",
+        receipt = {
+          checked_laws = [
+            "continuation-policy-fail-closed",
+          ],
+          continuation_evidence = "used-once",
+          continuation_policy = "single-use-continuation",
+          discharged_operations = [
+            "op.resume",
+          ],
+          observed_operations = [
+            "op.resume",
+          ],
+          residual_operations = [],
+        },
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Resume",
+            operation_id = "op.resume",
+            parameter_schema = "unit",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.continuation_policy.mismatch]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "operation-not-authority",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.host-capability-confusion.receipt.json",
+      id = "algebraic.negative.host-capability-confusion",
+      non_claims = [
+        "operation declarations do not grant host authority",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/non-replayable.preserves",
+        claimed_host_authority = [
+          "random",
+        ],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f",
+        },
+        handler = null,
+        input_row = [
+          "op.random",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Random",
+            operation_id = "op.random",
+            parameter_schema = "unit",
+            result_schema = "bytes",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.fixture_corpus.negative_host_confusion]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "algebraic-hash-match",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.stale-canonical-identity.receipt.json",
+      id = "algebraic.negative.stale-canonical-identity",
+      non_claims = [
+        "stale algebraic-effect identity rejected",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e",
+        },
+        handler = null,
+        input_row = [
+          "op.read-config",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "ReadConfig",
+            operation_id = "op.read-config",
+            parameter_schema = "unit",
+            result_schema = "string",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.fixture_corpus.negative_stale_identity]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "non-replayable-not-replay",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/algebraic.negative.non-replayable-evidence-misuse.receipt.json",
+      id = "algebraic.negative.non-replayable-evidence-misuse",
+      non_claims = [
+        "non-replayable effects are not replay evidence",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/non-replayable.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f",
+        },
+        handler = null,
+        input_row = [
+          "op.random",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = {
+          effect_log_identity = {
+            algorithm = "blake3",
+            domain = "effect-log",
+            hex = "c5f566889bc03678adeb0bf686685fd3f2472aa106bdeca86ecab3b454ba8f28",
+          },
+          effect_log_path = "fixtures/core/algebraic-effects/recorded-log.preserves",
+          replay_class = "non-replayable",
+        },
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Random",
+            operation_id = "op.random",
+            parameter_schema = "unit",
+            result_schema = "bytes",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.replay_profile.non_replayable]",
+      ],
+    },
+{
+      artifact_class = "source-envelope",
+      checked_laws = [
+        "generated-contract-fixture-only",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/source-envelope.positive.schema-generated-nickel-contract.receipt.json",
+      id = "source-envelope.positive.schema-generated-nickel-contract",
+      non_claims = [
+        "generated contract corpus is fixture input, not Kamacite schema authority",
+      ],
+      payload = {
+        aliases = [
+          "generated-contract-stress",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "d1d342f960ad13bea41c89601322ae633aa819d6a4f7ab9d815731cb61abb791",
+        },
+        kind = "source-envelope",
+        language = "nickel",
+        media_type = "text/x-nickel",
+        parser_identity = "generated-contract-corpus-fixture",
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/generated-contract.ncl",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.nickel_reference_boundary.generated_contracts]",
+      ],
+    },
+{
+      artifact_class = "adapter-receipt",
+      checked_laws = [
+        "parser-spans-not-evaluation",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/adapter.positive.tree-sitter-nickel-spans.receipt.json",
+      id = "adapter.positive.tree-sitter-nickel-spans",
+      non_claims = [
+        "parser spans are syntax evidence only",
+      ],
+      payload = {
+        adapter_kind = "tree-sitter-nickel-span-index",
+        checked_laws = [
+          "parser-spans-not-evaluation",
+        ],
+        claims_canonical_ir = false,
+        declared_capabilities = [],
+        has_conformance_entry = true,
+        kind = "adapter-receipt",
+        observed_effects = [],
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.nickel_reference_boundary.parser_spans]",
+      ],
+    },
+{
+      artifact_class = "source-envelope",
+      checked_laws = [
+        "haskell-source-envelope-only",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/source-envelope.positive.haskell-source-only.receipt.json",
+      id = "source-envelope.positive.haskell-source-only",
+      non_claims = [
+        "Haskell source is preserved source only, not Kamacite IR",
+      ],
+      payload = {
+        aliases = [
+          "haskell-source-only",
+        ],
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "source",
+          hex = "9401c4c4268b8632f3d4ab463dca3a330797b3181ba34d8fd2c0b65ec372f0e7",
+        },
+        kind = "source-envelope",
+        language = "haskell",
+        media_type = "text/x-haskell",
+        parser_identity = "haskell-parser-deferred",
+        schema_version = 1,
+        source_path = "fixtures/core/source-envelopes/example.hs",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.haskell_boundary.source_envelope]",
+      ],
+    },
+{
+      artifact_class = "target-artifact",
+      checked_laws = [
+        "rust-mir-provenance-only",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/target.positive.rust-mir-provenance-bounded.receipt.json",
+      id = "target.positive.rust-mir-provenance-bounded",
+      non_claims = [
+        "Rust MIR is target provenance evidence only",
+      ],
+      payload = {
+        claims_canonical_ir = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "target-artifact",
+          hex = "be4fb8bd87ea3ba775e1ecc56c91beda334167f2833e4b70f4fbd8a554ad3a30",
+        },
+        kind = "target-artifact",
+        metadata = {
+          "artifact-role" = "mir-provenance",
+          compiler = "rustc-deferred",
+          "target-triple" = "x86_64-unknown-linux-gnu",
+        },
+        output_path = "fixtures/core/targets/rust-mir.txt",
+        target_kind = "rust-mir",
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.compiler_target_conformance.ghc_mir_provenance]",
+      ],
+    },
+{
+      artifact_class = "unsupported-claim",
+      checked_laws = [
+        "ghc-ir-overclaim-rejected",
+      ],
+      expected_verdict = "rejected",
+      fixture_class = "negative",
+      golden_receipt = "fixtures/golden/claim.negative.ghc-core-as-canonical-ir.receipt.json",
+      id = "claim.negative.ghc-core-as-canonical-ir",
+      non_claims = [
+        "GHC Core/STG/bytecode/interface files are not canonical Kamacite IR",
+      ],
+      payload = {
+        claim_class = "semantic-equivalence",
+        claim_text = "GHC Core is canonical lossless Kamacite IR",
+        kind = "unsupported-claim",
+        preserve_source_only = false,
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.haskell_boundary.ghc_ir_not_kamacite_ir]",
+      ],
+    },
+{
+      artifact_class = "canonical-value",
+      checked_laws = [
+        "names-as-metadata",
+        "dependency-closure-bound",
+        "durable-storage-validates-before-decode",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "property",
+      golden_receipt = "fixtures/golden/canonical-value.property.names-dependencies-durable-storage.receipt.json",
+      id = "canonical-value.property.names-dependencies-durable-storage",
+      non_claims = [
+        "property fixture is enumerated deterministic evidence, not generated randomness",
+      ],
+      payload = {
+        aliases = [
+          "alias-a",
+          "alias-b",
+        ],
+        canonical_path = "fixtures/core/canonical-values/minimal.preserves",
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "canonical-value",
+          hex = "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31",
+        },
+        kind = "canonical-value",
+        projection_claims_authority = false,
+        projection_identity = {
+          algorithm = "blake3",
+          domain = "projection",
+          hex = "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87",
+        },
+        schema_version = 1,
+      },
+      requirement_ids = [
+        "r[kamacite.lossless_ir.property_fixtures.replayable]",
+        "r[kamacite.lossless_ir.content_addressed_identity.names_metadata]",
+        "r[kamacite.lossless_ir.content_addressed_identity.dependency_closure]",
+        "r[kamacite.lossless_ir.content_addressed_identity.durable_storage]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "open-row-status-preserved",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/algebraic.positive.open-row-preserved-not-pure.receipt.json",
+      id = "algebraic.positive.open-row-preserved-not-pure",
+      non_claims = [
+        "open row is preserved and not classified pure",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/open-row.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e",
+        },
+        handler = null,
+        input_row = [
+          "op.trace",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = null,
+        row_open = true,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Trace",
+            operation_id = "op.trace",
+            parameter_schema = "string",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]",
+      ],
+    },
+{
+      artifact_class = "algebraic-effect",
+      checked_laws = [
+        "deterministic-effect-classified",
+      ],
+      expected_verdict = "accepted",
+      fixture_class = "positive",
+      golden_receipt = "fixtures/golden/algebraic.positive.deterministic-effect-summary.receipt.json",
+      id = "algebraic.positive.deterministic-effect-summary",
+      non_claims = [
+        "deterministic replay class is receipt data only",
+      ],
+      payload = {
+        admitted_host_capabilities = [],
+        canonical_path = "fixtures/core/algebraic-effects/deterministic.preserves",
+        claimed_host_authority = [],
+        claimed_pure = false,
+        declared_identity = {
+          algorithm = "blake3",
+          domain = "algebraic-effect",
+          hex = "fccf2894cfcd54dd75833c1b32bb6a8423d58f057476e1ef048c6f4f5f2efef0",
+        },
+        handler = null,
+        input_row = [
+          "op.trace",
+        ],
+        kind = "algebraic-effect",
+        receipt = null,
+        replay = {
+          effect_log_identity = null,
+          effect_log_path = null,
+          replay_class = "deterministic",
+        },
+        row_open = false,
+        schema_version = 1,
+        signatures = [
+          {
+            display_name = "Trace",
+            operation_id = "op.trace",
+            parameter_schema = "string",
+            result_schema = "unit",
+          },
+        ],
+      },
+      requirement_ids = [
+        "r[kamacite.algebraic_effects.replay_profile]",
+      ],
     },
   ],
-}
+} | Manifest
