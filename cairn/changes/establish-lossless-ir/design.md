@@ -46,6 +46,14 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
 
+### 7. Integrate with Valence and Octet through receipts first
+
+**Choice:** Braid uses Valence closely as the evidence/linkage integration target and Octet closely as the checked Rust/provenance rail, but neither repo owns Braid's canonical IR. Initial integration is by exported Braid receipts, source spans, stable IDs, and fixtures rather than direct crate dependencies.
+
+**Rationale:** Valence already owns Evidence IR identity, roles, typed linkage, spans, and non-claim enforcement across the stack. Braid should make its receipts Valence-friendly so downstream repos can reason about Braid evidence without importing Braid semantics into Valence. Octet already owns Rust source checking and provenance for systems code; Braid should be an Octet consumer when Rust validators/adapters exist. Keeping the coupling receipt-first prevents circular ownership and avoids implying that Octet or Valence proves language semantic equivalence.
+
+**Rejected alternative:** Make Braid a Valence module or an Octet rail from the start. That would blur Braid's source/value interchange ownership and make early format decisions harder to validate independently.
+
 ## Risks / Trade-offs
 
 - **Preserves dependency uncertainty:** Mitigate by keeping the first change at the format-contract level and adding fixtures before relying on a concrete library.
