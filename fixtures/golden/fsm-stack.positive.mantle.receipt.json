@@ -1,0 +1,32 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-stack.positive.mantle",
+    "artifact_class": "stack-evidence",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.fsms.stack_roles.mantle]"
+    ],
+    "input_identities": {
+      "mantle-release-evidence:fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "stack-role-boundary"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Mantle release evidence does not imply source losslessness or evaluator soundness"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "0a1ac2d7b3ae5559c50f9b0c2a7eb113be973ce31cc931b9d2281edc1f00c217"
+  }
+}

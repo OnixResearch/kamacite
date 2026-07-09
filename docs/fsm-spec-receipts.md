@@ -7,9 +7,11 @@ The slice is data-only. `kamacite-core` validates parsed in-memory DTOs and cano
 Validated fixture coverage includes:
 
 - a positive complete deterministic state/event table with explicit denial coverage;
+- validation-command and adapter-execution-mode FSM fixtures that make command states, events, denials, and capability gates explicit without claiming CLI branch coverage or host authority;
 - negative missing coverage, duplicate/conflicting transition, wildcard row, undeclared guard, unknown endpoint, stale identity, wrong domain, missing non-claim, host-authority confusion, terminal outgoing transition, and unreachable-unmarked state cases;
 - an exhaustiveness receipt that links Octet source-shape evidence and a Valence-friendly projection without broadening claims;
-- positive and negative trace receipts for path consistency.
+- positive and negative trace receipts for path consistency;
+- stack-role fixtures for Trellis, Valence, Aspen/Molten, Octet, Cairn, and Mantle evidence consumers.
 
 Run the slice through the normal harness:
 

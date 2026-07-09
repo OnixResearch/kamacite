@@ -1,0 +1,32 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-stack.positive.aspen-molten",
+    "artifact_class": "stack-evidence",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.fsms.stack_roles.aspen_molten]"
+    ],
+    "input_identities": {
+      "aspen-molten-runtime-trace:fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "stack-role-boundary"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "runtime traces do not own the FSM schema"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "5cc4fdcfa70918511278e5f4b3ee1479dbdaeccd6f12b561f930ffe127c97111"
+  }
+}

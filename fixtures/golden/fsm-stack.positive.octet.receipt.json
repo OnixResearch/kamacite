@@ -1,0 +1,32 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-stack.positive.octet",
+    "artifact_class": "stack-evidence",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.fsms.stack_roles.octet]"
+    ],
+    "input_identities": {
+      "octet-source-shape:fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "stack-role-boundary"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Octet checks remain source-shape evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "a8e60ddcfe3c76bca457dc3029bcc8ea6961a54bb9087d0cb0fec6b412bf24eb"
+  }
+}

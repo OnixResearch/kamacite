@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.positive.validation-workflow",
+    "artifact_class": "fsm-spec",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.fsms.command_adapter_usage.validation_workflow]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "83bd2ee93af8cb966956fb4387282e7843b6d62c1bdc9bf3c2431c87c26a86b3"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "83bd2ee93af8cb966956fb4387282e7843b6d62c1bdc9bf3c2431c87c26a86b3"
+      }
+    },
+    "checked_laws": [
+      "validation-workflow-states-explicit"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "validation workflow fixture is not CLI branch coverage proof"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "50011e20fca255b69fa51947d8491ea0eaedbe5b005828282f384dccc09e7fa1"
+  }
+}

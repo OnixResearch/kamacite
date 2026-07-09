@@ -1,0 +1,1 @@
+<fsm-spec-v1 { id: "fixture.validation-workflow" states: [discover validate reported] events: [manifest-ok fixture-pass] transitions: [(discover manifest-ok validate) (validate fixture-pass reported)] denials: [(discover fixture-pass) (validate manifest-ok) (reported manifest-ok) (reported fixture-pass)] }>

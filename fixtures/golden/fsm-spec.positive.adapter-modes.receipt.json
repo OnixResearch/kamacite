@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.positive.adapter-modes",
+    "artifact_class": "fsm-spec",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.fsms.command_adapter_usage.adapter_modes]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "7d05548c393acd3334249d8d3ea03964cae83c7063445ace78fcfa20ffe1d92a"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "7d05548c393acd3334249d8d3ea03964cae83c7063445ace78fcfa20ffe1d92a"
+      }
+    },
+    "checked_laws": [
+      "adapter-mode-gates-explicit"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "adapter-mode fixture does not grant evaluator or host authority"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "61b02234e4399aec841cc5619108e96ce0bbbcd9dfb1e8d6c3b26ff4fdaa6346"
+  }
+}
