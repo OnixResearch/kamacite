@@ -58,6 +58,19 @@ Do not adopt these by default:
 - Typeclass-style implicit resolution across adapter boundaries.
 - Monad terminology in receipts unless it maps to explicit effect/capability claims.
 
+## Algebraic effect boundary
+
+Braid should own algebraic effects as canonical data and receipts, not as a runtime.
+
+Owned surfaces:
+
+- effect signatures with operation identities, parameter/result schemas, and replay class;
+- effect rows and summaries with discharged and residual operations;
+- handler descriptors with continuation policy, checked laws, replay profile, and non-claims;
+- handler-application receipts and effect-log projections with BLAKE3 identity.
+
+Declaring an algebraic operation does not grant host authority. Filesystem, process, network, clock, random, device, credential, compiler, evaluator, and mutation access still require separate adapter/capability admission and fail closed when undeclared. Runtime systems such as the Aspen/Molten sibling may consume Braid effect descriptors and logs, but they do not own Braid's canonical effect model.
+
 ## WASM boundary
 
 Braid should not use WebAssembly as its canonical IR. Preserves remains the authority for canonical values, source envelopes, and receipt identity.
@@ -155,6 +168,7 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 
 - [`../valence/`](../valence/) — sibling evidence identity layer that should consume or wrap Braid receipts without owning Braid's source/value interchange semantics.
 - [`../octet/`](../octet/) — sibling Rust checked path and provenance rail for future Braid Rust validators and adapters.
+- [`../aspen/`](../aspen/) — sibling Molten runtime that may consume Braid algebraic-effect descriptors, handler profiles, and effect logs without owning Braid's canonical effect schema.
 - [nickel-lang/nickel](https://github.com/nickel-lang/nickel) — reference implementation and CLI for Nickel evaluation/export, formatting, contracts, and source-language semantics.
 - [nickel-lang/json-schema-to-nickel](https://github.com/nickel-lang/json-schema-to-nickel) — reference for converting schema predicates into Nickel contracts and distinguishing lazy/inspectable contracts from strict predicate fallbacks.
 - [nickel-lang/tree-sitter-nickel](https://github.com/nickel-lang/tree-sitter-nickel) — reference parser for Nickel syntax, spans, and source-envelope indexing without claiming evaluation semantics.

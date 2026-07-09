@@ -29,6 +29,7 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 - Rust owns pure validation cores, canonicalization, hashing, adapter DTOs, and receipts.
 - Steel Scheme is bounded adapter/probe logic only; do not grant ambient filesystem, process, network, credential, clock, random, dylib, package-manager, or mutation authority by default.
 - Steel integration should use explicit Engine/evaluator identity, typed host-function registration, declared built-in modules, module contracts, and deterministic receipts. Do not treat Steel bytecode, opaque closures, or JSON strings as Braid canonical IR.
+- Braid owns algebraic-effect descriptors and receipts as canonical data: effect signatures, rows, summaries, handler descriptors, replay profiles, and effect-log projections. Do not treat this as a Braid evaluator, runtime, or host-authority grant; undeclared effects and capabilities fail closed.
 - WebAssembly is an optional adapter/validator target, not Braid's IR. WASM inputs and outputs must remain Braid IR/source-envelope bytes plus deterministic receipts.
 - LLVM is an optional compiled-target/provenance artifact, not Braid's IR. LLVM receipts must bind compiler version, target triple, optimization level, pass pipeline, debug-info availability, and BLAKE3 artifact hashes without claiming source losslessness or semantic equivalence.
 - Rust MIR, rustc reports, GHC Core, STG, bytecode, interface files, object files, and compiler reports are target/provenance evidence only unless a later Cairn narrows their role.
