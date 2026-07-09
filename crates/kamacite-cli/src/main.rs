@@ -2,15 +2,16 @@
 
 use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
-    CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload, FixtureSuite,
-    FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput, FsmSideEffectInput,
-    FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput, HandlerDescriptorInput,
-    HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput,
-    ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
-    SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
-    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValidationVerdict, compute_identity, export_valence_receipt,
-    receipt_json, validate_fixture_suite,
+    CapabilityShellInput, DocumentationCellInput, DocumentationIrInput, DocumentationOutputInput,
+    DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
+    FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
+    FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
+    HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
+    NickelAdapterReceiptInput, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
+    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
+    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
+    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict, compute_identity,
+    export_valence_receipt, receipt_json, validate_fixture_suite,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -280,6 +281,64 @@ enum PayloadProjection {
         trace_events: Vec<String>,
         trace_steps: Vec<FsmTraceStepInput>,
         trace_final_state: Box<Option<String>>,
+    },
+    DocumentationIr {
+        schema_version: u32,
+        canonical_path: String,
+        declared_identity: Identity,
+        collector_identity: Identity,
+        pages: Vec<DocumentationPageInput>,
+        target_formats: Vec<String>,
+        dependency_identities: Vec<Identity>,
+        checked_laws: Vec<String>,
+        non_claims: Vec<String>,
+    },
+    DocumentationOutput {
+        schema_version: u32,
+        documentation_ir_identity: Identity,
+        renderer_identity: Identity,
+        target_format: String,
+        output_path: String,
+        declared_output_identity: Identity,
+        claims_canonical_ir: bool,
+        checked_laws: Vec<String>,
+        non_claims: Vec<String>,
+    },
+    DocumentationCell {
+        schema_version: u32,
+        cell_id: String,
+        language: String,
+        source_path: String,
+        source_identity: Box<Option<Identity>>,
+        run_profile: String,
+        execution_mode: String,
+        evaluator_identity: Box<Option<Identity>>,
+        declared_capabilities: Vec<String>,
+        observed_effects: Vec<String>,
+        expected_result: String,
+        expected_output_identity: Box<Option<Identity>>,
+        observed_output_path: Option<String>,
+        observed_output_identity: Box<Option<Identity>>,
+        expected_diagnostic: Box<Option<String>>,
+        observed_diagnostic: Box<Option<String>>,
+        claims_semantic_equivalence: bool,
+        checked_laws: Vec<String>,
+        non_claims: Vec<String>,
+    },
+    DocumentationReceipt {
+        schema_version: u32,
+        receipt_kind: String,
+        canonical_path: String,
+        documentation_ir_identity: Identity,
+        renderer_identity: Box<Option<Identity>>,
+        output_identities: Vec<Identity>,
+        cell_receipt_identities: Vec<Identity>,
+        valence_export_identity: Box<Option<Identity>>,
+        declared_receipt_identity: Box<Option<Identity>>,
+        diagnostics: Vec<String>,
+        semantic_claims: Vec<String>,
+        checked_laws: Vec<String>,
+        non_claims: Vec<String>,
     },
     ValenceReceiptExport {
         source_receipt_path: String,
@@ -1049,15 +1108,26 @@ fn extract_string_assignment(source: &str, field_name: &str) -> Option<String> {
 fn extract_source_fixture_ids(source: &str) -> Vec<&str> {
     let mut fixture_ids = Vec::new();
     for line in source.lines() {
-        let trimmed = line.trim_start();
-        if !trimmed.starts_with(FIXTURE_ID_FIELD_PREFIX) {
-            continue;
-        }
-        if let Some(id) = extract_quoted_string(trimmed) {
-            fixture_ids.push(id);
+        for (prefix_start, _) in line.match_indices(FIXTURE_ID_FIELD_PREFIX) {
+            if !is_fixture_id_field_boundary(line, prefix_start) {
+                continue;
+            }
+            if let Some(id) = extract_quoted_string(&line[prefix_start..]) {
+                fixture_ids.push(id);
+            }
         }
     }
     fixture_ids
+}
+
+fn is_fixture_id_field_boundary(line: &str, prefix_start: usize) -> bool {
+    prefix_start == 0
+        || line[..prefix_start]
+            .chars()
+            .next_back()
+            .is_some_and(|character| {
+                !(character.is_ascii_alphanumeric() || character == '_' || character == '-')
+            })
 }
 
 fn extract_quoted_string(text: &str) -> Option<&str> {
@@ -1319,6 +1389,118 @@ fn materialize_fixture(
             trace_events: trace_events.clone(),
             trace_steps: trace_steps.clone(),
             trace_final_state: trace_final_state.as_ref().clone(),
+        })),
+        PayloadProjection::DocumentationIr {
+            schema_version,
+            canonical_path,
+            declared_identity,
+            collector_identity,
+            pages,
+            target_formats,
+            dependency_identities,
+            checked_laws,
+            non_claims,
+        } => FixturePayload::DocumentationIr(Box::new(DocumentationIrInput {
+            schema_version: *schema_version,
+            canonical_bytes: read_manifest_bytes(root, canonical_path)?,
+            declared_identity: declared_identity.clone(),
+            collector_identity: collector_identity.clone(),
+            pages: pages.clone(),
+            target_formats: target_formats.clone(),
+            dependency_identities: dependency_identities.clone(),
+            checked_laws: checked_laws.clone(),
+            non_claims: non_claims.clone(),
+        })),
+        PayloadProjection::DocumentationOutput {
+            schema_version,
+            documentation_ir_identity,
+            renderer_identity,
+            target_format,
+            output_path,
+            declared_output_identity,
+            claims_canonical_ir,
+            checked_laws,
+            non_claims,
+        } => FixturePayload::DocumentationOutput(Box::new(DocumentationOutputInput {
+            schema_version: *schema_version,
+            documentation_ir_identity: documentation_ir_identity.clone(),
+            renderer_identity: renderer_identity.clone(),
+            target_format: target_format.clone(),
+            output_bytes: read_manifest_bytes(root, output_path)?,
+            declared_output_identity: declared_output_identity.clone(),
+            claims_canonical_ir: *claims_canonical_ir,
+            checked_laws: checked_laws.clone(),
+            non_claims: non_claims.clone(),
+        })),
+        PayloadProjection::DocumentationCell {
+            schema_version,
+            cell_id,
+            language,
+            source_path,
+            source_identity,
+            run_profile,
+            execution_mode,
+            evaluator_identity,
+            declared_capabilities,
+            observed_effects,
+            expected_result,
+            expected_output_identity,
+            observed_output_path,
+            observed_output_identity,
+            expected_diagnostic,
+            observed_diagnostic,
+            claims_semantic_equivalence,
+            checked_laws,
+            non_claims,
+        } => FixturePayload::DocumentationCell(Box::new(DocumentationCellInput {
+            schema_version: *schema_version,
+            cell_id: cell_id.clone(),
+            language: language.clone(),
+            source_bytes: read_manifest_bytes(root, source_path)?,
+            source_identity: source_identity.as_ref().clone(),
+            run_profile: run_profile.clone(),
+            execution_mode: execution_mode.clone(),
+            evaluator_identity: evaluator_identity.as_ref().clone(),
+            declared_capabilities: declared_capabilities.clone(),
+            observed_effects: observed_effects.clone(),
+            expected_result: expected_result.clone(),
+            expected_output_identity: expected_output_identity.as_ref().clone(),
+            observed_output_bytes: read_optional_manifest_bytes(root, observed_output_path)?,
+            observed_output_identity: observed_output_identity.as_ref().clone(),
+            expected_diagnostic: expected_diagnostic.as_ref().clone(),
+            observed_diagnostic: observed_diagnostic.as_ref().clone(),
+            claims_semantic_equivalence: *claims_semantic_equivalence,
+            checked_laws: checked_laws.clone(),
+            non_claims: non_claims.clone(),
+        })),
+        PayloadProjection::DocumentationReceipt {
+            schema_version,
+            receipt_kind,
+            canonical_path,
+            documentation_ir_identity,
+            renderer_identity,
+            output_identities,
+            cell_receipt_identities,
+            valence_export_identity,
+            declared_receipt_identity,
+            diagnostics,
+            semantic_claims,
+            checked_laws,
+            non_claims,
+        } => FixturePayload::DocumentationReceipt(Box::new(DocumentationReceiptInput {
+            schema_version: *schema_version,
+            receipt_kind: receipt_kind.clone(),
+            canonical_bytes: read_manifest_bytes(root, canonical_path)?,
+            documentation_ir_identity: documentation_ir_identity.clone(),
+            renderer_identity: renderer_identity.as_ref().clone(),
+            output_identities: output_identities.clone(),
+            cell_receipt_identities: cell_receipt_identities.clone(),
+            valence_export_identity: valence_export_identity.as_ref().clone(),
+            declared_receipt_identity: declared_receipt_identity.as_ref().clone(),
+            diagnostics: diagnostics.clone(),
+            semantic_claims: semantic_claims.clone(),
+            checked_laws: checked_laws.clone(),
+            non_claims: non_claims.clone(),
         })),
         PayloadProjection::ValenceReceiptExport {
             source_receipt_path,
@@ -1675,6 +1857,13 @@ fn check_golden_receipts(
 fn read_manifest_bytes(root: &Path, path: &str) -> CliResult<Vec<u8>> {
     let resolved = resolve_under_root(root, Path::new(path))?;
     read_path(&resolved)
+}
+
+fn read_optional_manifest_bytes(root: &Path, path: &Option<String>) -> CliResult<Vec<u8>> {
+    match path {
+        Some(path) => read_manifest_bytes(root, path),
+        None => Ok(Vec::new()),
+    }
 }
 
 fn read_manifest_json<T: for<'de> Deserialize<'de>>(

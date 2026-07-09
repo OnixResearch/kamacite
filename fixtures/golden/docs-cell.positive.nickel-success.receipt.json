@@ -1,0 +1,27 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.positive.nickel-success",
+    "artifact_class": "documentation-cell",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.docs.runnable_cells.expected_success]",
+      "r[kamacite.docs.runnable_cells.nickel]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "expected-output-bound"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "not Nickel semantic equivalence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "2aa5e5c7854b598be20036db8655b3e96c848eb56882c985067843ff611e6f68"
+  }
+}

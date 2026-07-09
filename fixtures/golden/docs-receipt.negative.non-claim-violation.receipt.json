@@ -1,0 +1,48 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-receipt.negative.non-claim-violation",
+    "artifact_class": "documentation-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.receipts.non_claim_violation]"
+    ],
+    "input_identities": {
+      "declared-documentation-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "9bc92f71ece8543631e927dc3785916545cd76ccbb4bc079d81eafad6bcc613e"
+      }
+    },
+    "output_identities": {
+      "computed-documentation-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "9bc92f71ece8543631e927dc3785916545cd76ccbb4bc079d81eafad6bcc613e"
+      }
+    },
+    "checked_laws": [
+      "overclaim-fails"
+    ],
+    "diagnostics": [
+      {
+        "code": "semantic-overclaim",
+        "requirement_id": "r[kamacite.docs.receipts.non_claims]",
+        "field": "documentation_receipt.semantic_claims",
+        "message": "documentation receipt semantic claim is outside the bounded docs contract",
+        "details": {
+          "claim": "semantic equivalence for all examples"
+        }
+      }
+    ],
+    "non_claims": [
+      "semantic equivalence not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "041672fa876cd074fb3fa2f67c9d1cad893f74e1b46f72252cabea00a9829cba"
+  }
+}

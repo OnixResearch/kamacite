@@ -121,6 +121,32 @@ const REQUIREMENT_FSM_STACK_VALENCE: &str =
     "r[kamacite.stack_integration.fsm_valence_export.non_claims]";
 const REQUIREMENT_FSM_STACK_OCTET: &str =
     "r[kamacite.stack_integration.fsm_octet_interop.source_shape]";
+const REQUIREMENT_DOCS_VERSION: &str = "r[kamacite.docs.ir_projection.unsupported_version]";
+const REQUIREMENT_DOCS_IR: &str = "r[kamacite.docs.ir_projection]";
+const REQUIREMENT_DOCS_SOURCE: &str = "r[kamacite.docs.ir_projection.missing_source]";
+const REQUIREMENT_DOCS_STALE_SOURCE: &str = "r[kamacite.docs.ir_projection.stale_source_hash]";
+const REQUIREMENT_DOCS_DUPLICATE_ID: &str = "r[kamacite.docs.ir_projection.duplicate_id]";
+const REQUIREMENT_DOCS_RENDERERS: &str = "r[kamacite.docs.renderers]";
+const REQUIREMENT_DOCS_RENDERER_FORMAT: &str = "r[kamacite.docs.renderers.unsupported_format]";
+const REQUIREMENT_DOCS_RENDERER_DRIFT: &str = "r[kamacite.docs.renderers.drift]";
+const REQUIREMENT_DOCS_UNKNOWN_LINK: &str = "r[kamacite.docs.renderers.unknown_link]";
+const REQUIREMENT_DOCS_OUTPUT_BOUNDARY: &str =
+    "r[kamacite.docs.renderers.projection_not_canonical]";
+const REQUIREMENT_DOCS_RUNNABLE: &str = "r[kamacite.docs.runnable_cells]";
+const REQUIREMENT_DOCS_DEFAULT_DENY: &str = "r[kamacite.docs.runnable_cells.denied_by_default]";
+const REQUIREMENT_DOCS_UNSUPPORTED_LANGUAGE: &str =
+    "r[kamacite.docs.runnable_cells.unsupported_language]";
+const REQUIREMENT_DOCS_UNDECLARED_CAPABILITY: &str =
+    "r[kamacite.docs.runnable_cells.undeclared_capability]";
+const REQUIREMENT_DOCS_MISSING_EVALUATOR: &str =
+    "r[kamacite.docs.runnable_cells.missing_evaluator]";
+const REQUIREMENT_DOCS_OUTPUT_MISMATCH: &str = "r[kamacite.docs.runnable_cells.mismatched_output]";
+const REQUIREMENT_DOCS_UNEXPECTED_SUCCESS: &str =
+    "r[kamacite.docs.runnable_cells.unexpected_success]";
+const REQUIREMENT_DOCS_AMBIENT_AUTHORITY: &str =
+    "r[kamacite.docs.runnable_cells.ambient_authority]";
+const REQUIREMENT_DOCS_RECEIPT: &str = "r[kamacite.docs.receipts]";
+const REQUIREMENT_DOCS_NON_CLAIMS: &str = "r[kamacite.docs.receipts.non_claims]";
 const NICKEL_ADAPTER_KIND: &str = "nickel-export";
 const NICKEL_REFERENCE_EVALUATOR_PROFILE: &str = "nickel-reference-cli";
 const STEEL_ADAPTER_KIND: &str = "steel-dto-probe";
@@ -155,6 +181,24 @@ const FSM_FORBIDDEN_CLAIMS: &[&str] = &[
     "liveness",
     "verifier soundness",
     "release eligibility",
+];
+const DOC_RENDER_HTML: &str = "html";
+const DOC_RENDER_MARKDOWN: &str = "markdown";
+const DOC_RENDER_ASCIIDOC: &str = "asciidoc";
+const DOC_SUPPORTED_RENDER_FORMATS: &[&str] =
+    &[DOC_RENDER_HTML, DOC_RENDER_MARKDOWN, DOC_RENDER_ASCIIDOC];
+const DOC_CELL_LANGUAGES: &[&str] = &["nickel", "steel", "rust-validator", "preserves"];
+const DOC_STORED_EVIDENCE_MODE: &str = "stored-evidence";
+const DOC_EXPLICIT_RUN_MODE: &str = "explicit-run";
+const DOC_EXPECTED_SUCCESS: &str = "success";
+const DOC_EXPECTED_FAILURE: &str = "failure";
+const DOC_FORBIDDEN_CLAIMS: &[&str] = &[
+    "canonical authority",
+    "canonical ir",
+    "semantic correctness",
+    "semantic equivalence",
+    "runtime correctness",
+    "source losslessness",
 ];
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -198,6 +242,10 @@ pub enum ArtifactClass {
     ValenceReceiptExport,
     FsmSpec,
     FsmReceipt,
+    DocumentationIr,
+    DocumentationOutput,
+    DocumentationCell,
+    DocumentationReceipt,
 }
 
 impl ArtifactClass {
@@ -216,6 +264,10 @@ impl ArtifactClass {
             Self::ValenceReceiptExport => "valence-receipt-export",
             Self::FsmSpec => "fsm-spec",
             Self::FsmReceipt => "fsm-receipt",
+            Self::DocumentationIr => "documentation-ir",
+            Self::DocumentationOutput => "documentation-output",
+            Self::DocumentationCell => "documentation-cell",
+            Self::DocumentationReceipt => "documentation-receipt",
         }
     }
 }
@@ -249,6 +301,10 @@ pub enum FixturePayload {
     ValenceReceiptExport(Box<ValenceReceiptExportInput>),
     FsmSpec(Box<FsmSpecInput>),
     FsmReceipt(Box<FsmReceiptInput>),
+    DocumentationIr(Box<DocumentationIrInput>),
+    DocumentationOutput(Box<DocumentationOutputInput>),
+    DocumentationCell(Box<DocumentationCellInput>),
+    DocumentationReceipt(Box<DocumentationReceiptInput>),
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -547,6 +603,103 @@ pub struct FsmReceiptInput {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationSectionInput {
+    pub section_id: String,
+    pub anchor: String,
+    pub title: String,
+    pub prose_blocks: Vec<String>,
+    pub code_blocks: Vec<String>,
+    pub runnable_cell_ids: Vec<String>,
+    pub links: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationCellDescriptor {
+    pub cell_id: String,
+    pub language: String,
+    pub source_identity: Option<Identity>,
+    pub required_capabilities: Vec<String>,
+    pub expected_result: String,
+    pub evaluator_identity: Option<Identity>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationPageInput {
+    pub page_id: String,
+    pub title: String,
+    pub source_envelope_identity: Option<Identity>,
+    pub sections: Vec<DocumentationSectionInput>,
+    pub cells: Vec<DocumentationCellDescriptor>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationIrInput {
+    pub schema_version: u32,
+    pub canonical_bytes: Vec<u8>,
+    pub declared_identity: Identity,
+    pub collector_identity: Identity,
+    pub pages: Vec<DocumentationPageInput>,
+    pub target_formats: Vec<String>,
+    pub dependency_identities: Vec<Identity>,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationOutputInput {
+    pub schema_version: u32,
+    pub documentation_ir_identity: Identity,
+    pub renderer_identity: Identity,
+    pub target_format: String,
+    pub output_bytes: Vec<u8>,
+    pub declared_output_identity: Identity,
+    pub claims_canonical_ir: bool,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationCellInput {
+    pub schema_version: u32,
+    pub cell_id: String,
+    pub language: String,
+    pub source_bytes: Vec<u8>,
+    pub source_identity: Option<Identity>,
+    pub run_profile: String,
+    pub execution_mode: String,
+    pub evaluator_identity: Option<Identity>,
+    pub declared_capabilities: Vec<String>,
+    pub observed_effects: Vec<String>,
+    pub expected_result: String,
+    pub expected_output_identity: Option<Identity>,
+    pub observed_output_bytes: Vec<u8>,
+    pub observed_output_identity: Option<Identity>,
+    pub expected_diagnostic: Option<String>,
+    pub observed_diagnostic: Option<String>,
+    pub claims_semantic_equivalence: bool,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocumentationReceiptInput {
+    pub schema_version: u32,
+    pub receipt_kind: String,
+    pub canonical_bytes: Vec<u8>,
+    pub documentation_ir_identity: Identity,
+    pub renderer_identity: Option<Identity>,
+    pub output_identities: Vec<Identity>,
+    pub cell_receipt_identities: Vec<Identity>,
+    pub valence_export_identity: Option<Identity>,
+    pub declared_receipt_identity: Option<Identity>,
+    pub diagnostics: Vec<String>,
+    pub semantic_claims: Vec<String>,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FixtureSuite {
     pub fixtures: Vec<FixtureCase>,
 }
@@ -638,6 +791,18 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         }
         FixturePayload::FsmSpec(input) => validate_fsm_spec(input, &mut accumulator),
         FixturePayload::FsmReceipt(input) => validate_fsm_receipt(input, &mut accumulator),
+        FixturePayload::DocumentationIr(input) => {
+            validate_documentation_ir(input, &mut accumulator)
+        }
+        FixturePayload::DocumentationOutput(input) => {
+            validate_documentation_output(input, &mut accumulator)
+        }
+        FixturePayload::DocumentationCell(input) => {
+            validate_documentation_cell(input, &mut accumulator)
+        }
+        FixturePayload::DocumentationReceipt(input) => {
+            validate_documentation_receipt(input, &mut accumulator)
+        }
     }
 
     accumulator
@@ -2957,6 +3122,824 @@ fn sorted_strings(mut values: Vec<String>) -> Vec<String> {
     values.sort();
     values.dedup();
     values
+}
+
+pub fn render_documentation_projection(
+    input: &DocumentationIrInput,
+    target_format: &str,
+) -> Result<Vec<u8>, Diagnostic> {
+    if !DOC_SUPPORTED_RENDER_FORMATS.contains(&target_format) {
+        return Err(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_RENDERER_FORMAT,
+            "documentation.target_format",
+            "documentation renderer target format is unsupported",
+        ));
+    }
+
+    let mut rendered = String::new();
+    rendered.push_str("kamacite-doc-projection-v1\n");
+    rendered.push_str("format:");
+    rendered.push_str(target_format);
+    rendered.push('\n');
+    rendered.push_str("ir:");
+    rendered.push_str(input.declared_identity.hex.as_str());
+    rendered.push('\n');
+    for page in &input.pages {
+        rendered.push_str("page:");
+        rendered.push_str(&page.page_id);
+        rendered.push(':');
+        rendered.push_str(&page.title);
+        rendered.push('\n');
+        for section in &page.sections {
+            rendered.push_str("section:");
+            rendered.push_str(&section.section_id);
+            rendered.push(':');
+            rendered.push_str(&section.anchor);
+            rendered.push(':');
+            rendered.push_str(&section.title);
+            rendered.push('\n');
+            for block in &section.prose_blocks {
+                rendered.push_str("prose:");
+                rendered.push_str(block);
+                rendered.push('\n');
+            }
+            for cell in &section.runnable_cell_ids {
+                rendered.push_str("cell:");
+                rendered.push_str(cell);
+                rendered.push('\n');
+            }
+        }
+    }
+    Ok(rendered.into_bytes())
+}
+
+fn validate_documentation_ir(
+    input: &DocumentationIrInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_documentation_schema(input.schema_version, accumulator);
+    validate_identity_domain(
+        &input.declared_identity,
+        IdentityDomain::DocumentationIr,
+        "documentation_ir.declared_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.collector_identity,
+        IdentityDomain::Adapter,
+        "documentation_ir.collector_identity",
+        accumulator,
+    );
+    validate_documentation_ir_identity(input, accumulator);
+    validate_documentation_ir_pages(input, accumulator);
+    validate_documentation_target_formats(&input.target_formats, accumulator);
+    for identity in &input.dependency_identities {
+        if identity.algorithm != "blake3" {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IdentityDomainMismatch,
+                REQUIREMENT_DOCS_IR,
+                "documentation_ir.dependency_identities",
+                "documentation dependencies must use BLAKE3 identities",
+            ));
+        }
+    }
+    if input.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_DOCS_NON_CLAIMS,
+            "documentation_ir.non_claims",
+            "documentation IR must preserve non-claims",
+        ));
+    }
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_documentation_ir_identity(
+    input: &DocumentationIrInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.canonical_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_IR,
+            "documentation_ir.canonical_bytes",
+            "documentation IR canonical bytes are required",
+        ));
+        return;
+    }
+    let computed = compute_identity(IdentityDomain::DocumentationIr, &input.canonical_bytes);
+    accumulator.input_identities.insert(
+        "declared-documentation-ir".to_string(),
+        input.declared_identity.clone(),
+    );
+    accumulator
+        .output_identities
+        .insert("computed-documentation-ir".to_string(), computed.clone());
+    if input.declared_identity.domain == IdentityDomain::DocumentationIr
+        && input.declared_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_DOCS_RENDERER_DRIFT,
+            "documentation_ir.declared_identity.hex",
+            "declared documentation IR identity does not match canonical bytes",
+        ));
+    }
+}
+
+fn validate_documentation_ir_pages(
+    input: &DocumentationIrInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.pages.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_IR,
+            "documentation_ir.pages",
+            "documentation IR must contain at least one page",
+        ));
+        return;
+    }
+
+    let mut declared_targets = BTreeSet::new();
+    let mut declared_cells = BTreeSet::new();
+    let mut duplicate_ids = BTreeSet::new();
+
+    for page in &input.pages {
+        record_documentation_id(&page.page_id, &mut declared_targets, &mut duplicate_ids);
+        if page.source_envelope_identity.is_none() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_DOCS_SOURCE,
+                "documentation_ir.pages.source_envelope_identity",
+                "documentation page source envelope identity is required",
+            ));
+        }
+        if let Some(identity) = &page.source_envelope_identity {
+            validate_identity_domain(
+                identity,
+                IdentityDomain::Source,
+                "documentation_ir.pages.source_envelope_identity",
+                accumulator,
+            );
+        }
+        for section in &page.sections {
+            record_documentation_id(
+                &section.section_id,
+                &mut declared_targets,
+                &mut duplicate_ids,
+            );
+            record_documentation_id(&section.anchor, &mut declared_targets, &mut duplicate_ids);
+            if section.anchor.is_empty() {
+                accumulator.diagnostics.push(Diagnostic::new(
+                    DiagnosticCode::IncompleteMetadata,
+                    REQUIREMENT_DOCS_RENDERERS,
+                    "documentation_ir.sections.anchor",
+                    "documentation section anchors must be explicit",
+                ));
+            }
+            for cell_id in &section.runnable_cell_ids {
+                if cell_id.is_empty() {
+                    accumulator.diagnostics.push(Diagnostic::new(
+                        DiagnosticCode::IncompleteMetadata,
+                        REQUIREMENT_DOCS_RUNNABLE,
+                        "documentation_ir.sections.runnable_cell_ids",
+                        "runnable cell references must be explicit",
+                    ));
+                }
+            }
+        }
+        for cell in &page.cells {
+            record_documentation_id(&cell.cell_id, &mut declared_cells, &mut duplicate_ids);
+            validate_documentation_cell_descriptor(cell, accumulator);
+        }
+    }
+
+    if !duplicate_ids.is_empty() {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::DuplicateArtifactIdentity,
+                REQUIREMENT_DOCS_DUPLICATE_ID,
+                "documentation_ir.ids",
+                "documentation page, section, anchor, or cell identity is duplicated",
+            )
+            .with_detail(
+                "ids",
+                sorted_strings(duplicate_ids.into_iter().collect()).join(","),
+            ),
+        );
+    }
+
+    for page in &input.pages {
+        for section in &page.sections {
+            for link in &section.links {
+                if !declared_targets.contains(link) {
+                    accumulator.diagnostics.push(
+                        Diagnostic::new(
+                            DiagnosticCode::MissingInput,
+                            REQUIREMENT_DOCS_UNKNOWN_LINK,
+                            "documentation_ir.sections.links",
+                            "documentation link target is unknown",
+                        )
+                        .with_detail("target", link.clone()),
+                    );
+                }
+            }
+            for cell_id in &section.runnable_cell_ids {
+                if !declared_cells.contains(cell_id) {
+                    accumulator.diagnostics.push(
+                        Diagnostic::new(
+                            DiagnosticCode::MissingInput,
+                            REQUIREMENT_DOCS_RUNNABLE,
+                            "documentation_ir.sections.runnable_cell_ids",
+                            "documentation runnable cell target is unknown",
+                        )
+                        .with_detail("cell", cell_id.clone()),
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn record_documentation_id(
+    value: &str,
+    seen: &mut BTreeSet<String>,
+    duplicates: &mut BTreeSet<String>,
+) {
+    if value.is_empty() {
+        return;
+    }
+    if !seen.insert(value.to_string()) {
+        duplicates.insert(value.to_string());
+    }
+}
+
+fn validate_documentation_cell_descriptor(
+    cell: &DocumentationCellDescriptor,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if !DOC_CELL_LANGUAGES.contains(&cell.language.as_str()) {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_UNSUPPORTED_LANGUAGE,
+            "documentation_ir.cells.language",
+            "documentation runnable cell language is unsupported",
+        ));
+    }
+    let Some(source_identity) = &cell.source_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_SOURCE,
+            "documentation_ir.cells.source_identity",
+            "documentation runnable cell source identity is required",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        source_identity,
+        IdentityDomain::Source,
+        "documentation_ir.cells.source_identity",
+        accumulator,
+    );
+    validate_documentation_expected_result(&cell.expected_result, accumulator);
+    if !cell.required_capabilities.is_empty() && cell.evaluator_identity.is_none() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedEvaluatorIdentity,
+            REQUIREMENT_DOCS_MISSING_EVALUATOR,
+            "documentation_ir.cells.evaluator_identity",
+            "capability-backed runnable cells require evaluator identity",
+        ));
+    }
+    if cell.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_DOCS_NON_CLAIMS,
+            "documentation_ir.cells.non_claims",
+            "runnable cell descriptors must preserve non-claims",
+        ));
+    }
+}
+
+fn validate_documentation_target_formats(
+    formats: &[String],
+    accumulator: &mut ValidationAccumulator,
+) {
+    if formats.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_RENDERERS,
+            "documentation_ir.target_formats",
+            "documentation IR must declare at least one renderer target",
+        ));
+    }
+    for format in formats {
+        if !DOC_SUPPORTED_RENDER_FORMATS.contains(&format.as_str()) {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::UnsupportedArtifactClass,
+                REQUIREMENT_DOCS_RENDERER_FORMAT,
+                "documentation_ir.target_formats",
+                "documentation renderer target format is unsupported",
+            ));
+        }
+    }
+}
+
+fn validate_documentation_output(
+    input: &DocumentationOutputInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_documentation_schema(input.schema_version, accumulator);
+    validate_identity_domain(
+        &input.documentation_ir_identity,
+        IdentityDomain::DocumentationIr,
+        "documentation_output.documentation_ir_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.renderer_identity,
+        IdentityDomain::Adapter,
+        "documentation_output.renderer_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.declared_output_identity,
+        IdentityDomain::DocumentationOutput,
+        "documentation_output.declared_output_identity",
+        accumulator,
+    );
+    if !DOC_SUPPORTED_RENDER_FORMATS.contains(&input.target_format.as_str()) {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_RENDERER_FORMAT,
+            "documentation_output.target_format",
+            "documentation output target format is unsupported",
+        ));
+    }
+    if input.output_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_RENDERERS,
+            "documentation_output.output_bytes",
+            "documentation output bytes are required",
+        ));
+    }
+    let computed = compute_identity(IdentityDomain::DocumentationOutput, &input.output_bytes);
+    accumulator.input_identities.insert(
+        "declared-documentation-output".to_string(),
+        input.declared_output_identity.clone(),
+    );
+    accumulator.output_identities.insert(
+        "computed-documentation-output".to_string(),
+        computed.clone(),
+    );
+    if input.declared_output_identity.domain == IdentityDomain::DocumentationOutput
+        && input.declared_output_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::GoldenReceiptMismatch,
+            REQUIREMENT_DOCS_RENDERER_DRIFT,
+            "documentation_output.declared_output_identity.hex",
+            "declared documentation output identity does not match output bytes",
+        ));
+    }
+    if input.claims_canonical_ir {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::CanonicalIrOverclaim,
+            REQUIREMENT_DOCS_OUTPUT_BOUNDARY,
+            "documentation_output.claims_canonical_ir",
+            "rendered documentation output must not claim canonical IR authority",
+        ));
+    }
+    if input.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_DOCS_NON_CLAIMS,
+            "documentation_output.non_claims",
+            "documentation output must preserve non-claims",
+        ));
+    }
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_documentation_cell(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_documentation_schema(input.schema_version, accumulator);
+    if input.cell_id.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_DOCS_RUNNABLE,
+            "documentation_cell.cell_id",
+            "documentation cell identity is required",
+        ));
+    }
+    if !DOC_CELL_LANGUAGES.contains(&input.language.as_str()) {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_UNSUPPORTED_LANGUAGE,
+            "documentation_cell.language",
+            "documentation runnable cell language is unsupported",
+        ));
+    }
+    validate_documentation_cell_source(input, accumulator);
+    validate_documentation_execution_mode(input, accumulator);
+    validate_documentation_observed_effects(input, accumulator);
+    validate_documentation_expected_result(&input.expected_result, accumulator);
+    validate_documentation_observed_result(input, accumulator);
+    if input.claims_semantic_equivalence {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::SemanticOverclaim,
+            REQUIREMENT_DOCS_NON_CLAIMS,
+            "documentation_cell.claims_semantic_equivalence",
+            "documentation cells must not claim arbitrary semantic equivalence",
+        ));
+    }
+    if input.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_DOCS_NON_CLAIMS,
+            "documentation_cell.non_claims",
+            "documentation cell receipts must preserve non-claims",
+        ));
+    }
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_documentation_cell_source(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.source_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingSourceBytes,
+            REQUIREMENT_DOCS_SOURCE,
+            "documentation_cell.source_bytes",
+            "runnable documentation cell source bytes are required",
+        ));
+        return;
+    }
+    let Some(source_identity) = &input.source_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_SOURCE,
+            "documentation_cell.source_identity",
+            "runnable documentation cell source identity is required",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        source_identity,
+        IdentityDomain::Source,
+        "documentation_cell.source_identity",
+        accumulator,
+    );
+    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
+    if source_identity.domain == IdentityDomain::Source && source_identity.hex != computed.hex {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_DOCS_STALE_SOURCE,
+            "documentation_cell.source_identity.hex",
+            "runnable documentation cell source identity does not match source bytes",
+        ));
+    }
+}
+
+fn validate_documentation_execution_mode(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    match input.execution_mode.as_str() {
+        DOC_STORED_EVIDENCE_MODE => {
+            if !input.observed_effects.is_empty() {
+                accumulator.diagnostics.push(Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_DOCS_DEFAULT_DENY,
+                    "documentation_cell.observed_effects",
+                    "stored-evidence documentation mode must not execute cells",
+                ));
+            }
+        }
+        DOC_EXPLICIT_RUN_MODE => {
+            if input.evaluator_identity.is_none() {
+                accumulator.diagnostics.push(Diagnostic::new(
+                    DiagnosticCode::UnsupportedEvaluatorIdentity,
+                    REQUIREMENT_DOCS_MISSING_EVALUATOR,
+                    "documentation_cell.evaluator_identity",
+                    "explicit runnable documentation execution requires evaluator identity",
+                ));
+            }
+        }
+        _ => accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_DEFAULT_DENY,
+            "documentation_cell.execution_mode",
+            "documentation cell execution mode is unsupported",
+        )),
+    }
+    if let Some(identity) = &input.evaluator_identity {
+        validate_identity_domain(
+            identity,
+            IdentityDomain::Evaluator,
+            "documentation_cell.evaluator_identity",
+            accumulator,
+        );
+    }
+}
+
+fn validate_documentation_observed_effects(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let declared: BTreeSet<_> = input.declared_capabilities.iter().cloned().collect();
+    for effect in &input.observed_effects {
+        if !declared.contains(effect) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredCapability,
+                    REQUIREMENT_DOCS_UNDECLARED_CAPABILITY,
+                    "documentation_cell.observed_effects",
+                    "runnable documentation cell observed an undeclared capability",
+                )
+                .with_detail("effect", effect.clone()),
+            );
+        }
+        if AMBIENT_STEEL_AUTHORITIES.contains(&effect.as_str()) && !declared.contains(effect) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_DOCS_AMBIENT_AUTHORITY,
+                    "documentation_cell.observed_effects",
+                    "runnable documentation cell requested ambient authority",
+                )
+                .with_detail("effect", effect.clone()),
+            );
+        }
+    }
+}
+
+fn validate_documentation_expected_result(
+    expected_result: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if expected_result != DOC_EXPECTED_SUCCESS && expected_result != DOC_EXPECTED_FAILURE {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_DOCS_RUNNABLE,
+            "documentation_cell.expected_result",
+            "documentation cell expected result must be success or failure",
+        ));
+    }
+}
+
+fn validate_documentation_observed_result(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if let Some(observed_identity) = &input.observed_output_identity {
+        validate_identity_domain(
+            observed_identity,
+            IdentityDomain::DocumentationOutput,
+            "documentation_cell.observed_output_identity",
+            accumulator,
+        );
+        let computed = compute_identity(
+            IdentityDomain::DocumentationOutput,
+            &input.observed_output_bytes,
+        );
+        if observed_identity.domain == IdentityDomain::DocumentationOutput
+            && observed_identity.hex != computed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::GoldenReceiptMismatch,
+                REQUIREMENT_DOCS_OUTPUT_MISMATCH,
+                "documentation_cell.observed_output_identity.hex",
+                "runnable documentation observed output identity does not match bytes",
+            ));
+        }
+    }
+    match input.expected_result.as_str() {
+        DOC_EXPECTED_SUCCESS => validate_documentation_success_result(input, accumulator),
+        DOC_EXPECTED_FAILURE => validate_documentation_failure_result(input, accumulator),
+        _ => {}
+    }
+}
+
+fn validate_documentation_success_result(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.observed_output_identity.is_none() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_OUTPUT_MISMATCH,
+            "documentation_cell.observed_output_identity",
+            "expected-success documentation cell requires observed output identity",
+        ));
+    }
+    if let (Some(expected), Some(observed)) = (
+        &input.expected_output_identity,
+        &input.observed_output_identity,
+    ) {
+        validate_identity_domain(
+            expected,
+            IdentityDomain::DocumentationOutput,
+            "documentation_cell.expected_output_identity",
+            accumulator,
+        );
+        if expected.domain == IdentityDomain::DocumentationOutput
+            && observed.domain == IdentityDomain::DocumentationOutput
+            && expected.hex != observed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::GoldenReceiptMismatch,
+                REQUIREMENT_DOCS_OUTPUT_MISMATCH,
+                "documentation_cell.expected_output_identity",
+                "runnable documentation expected output did not match observed output",
+            ));
+        }
+    }
+}
+
+fn validate_documentation_failure_result(
+    input: &DocumentationCellInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.observed_output_identity.is_some() && input.observed_diagnostic.is_none() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::WrongExpectedVerdict,
+            REQUIREMENT_DOCS_UNEXPECTED_SUCCESS,
+            "documentation_cell.expected_result",
+            "expected-failure documentation cell unexpectedly produced output",
+        ));
+    }
+    if input.expected_diagnostic.is_none() || input.observed_diagnostic.is_none() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_RUNNABLE,
+            "documentation_cell.observed_diagnostic",
+            "expected-failure documentation cell requires expected and observed diagnostics",
+        ));
+        return;
+    }
+    if input.expected_diagnostic != input.observed_diagnostic {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::GoldenReceiptMismatch,
+            REQUIREMENT_DOCS_OUTPUT_MISMATCH,
+            "documentation_cell.observed_diagnostic",
+            "runnable documentation observed diagnostic did not match expected diagnostic",
+        ));
+    }
+}
+
+fn validate_documentation_receipt(
+    input: &DocumentationReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_documentation_schema(input.schema_version, accumulator);
+    if input.receipt_kind.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_DOCS_RECEIPT,
+            "documentation_receipt.receipt_kind",
+            "documentation receipt kind is required",
+        ));
+    }
+    validate_identity_domain(
+        &input.documentation_ir_identity,
+        IdentityDomain::DocumentationIr,
+        "documentation_receipt.documentation_ir_identity",
+        accumulator,
+    );
+    if let Some(renderer_identity) = &input.renderer_identity {
+        validate_identity_domain(
+            renderer_identity,
+            IdentityDomain::Adapter,
+            "documentation_receipt.renderer_identity",
+            accumulator,
+        );
+    }
+    for output_identity in &input.output_identities {
+        validate_identity_domain(
+            output_identity,
+            IdentityDomain::DocumentationOutput,
+            "documentation_receipt.output_identities",
+            accumulator,
+        );
+    }
+    for cell_receipt_identity in &input.cell_receipt_identities {
+        validate_identity_domain(
+            cell_receipt_identity,
+            IdentityDomain::Receipt,
+            "documentation_receipt.cell_receipt_identities",
+            accumulator,
+        );
+    }
+    if let Some(valence_export_identity) = &input.valence_export_identity {
+        validate_identity_domain(
+            valence_export_identity,
+            IdentityDomain::Projection,
+            "documentation_receipt.valence_export_identity",
+            accumulator,
+        );
+    }
+    validate_documentation_receipt_identity(input, accumulator);
+    validate_documentation_receipt_claims(input, accumulator);
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_documentation_receipt_identity(
+    input: &DocumentationReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.canonical_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_RECEIPT,
+            "documentation_receipt.canonical_bytes",
+            "documentation receipt canonical bytes are required",
+        ));
+        return;
+    }
+    let computed = compute_identity(IdentityDomain::Receipt, &input.canonical_bytes);
+    accumulator.output_identities.insert(
+        "computed-documentation-receipt".to_string(),
+        computed.clone(),
+    );
+    let Some(declared) = &input.declared_receipt_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_RECEIPT,
+            "documentation_receipt.declared_receipt_identity",
+            "documentation receipt identity is required",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        declared,
+        IdentityDomain::Receipt,
+        "documentation_receipt.declared_receipt_identity",
+        accumulator,
+    );
+    accumulator.input_identities.insert(
+        "declared-documentation-receipt".to_string(),
+        declared.clone(),
+    );
+    if declared.domain == IdentityDomain::Receipt && declared.hex != computed.hex {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_DOCS_RECEIPT,
+            "documentation_receipt.declared_receipt_identity.hex",
+            "declared documentation receipt identity does not match canonical bytes",
+        ));
+    }
+}
+
+fn validate_documentation_receipt_claims(
+    input: &DocumentationReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_DOCS_NON_CLAIMS,
+            "documentation_receipt.non_claims",
+            "documentation receipts must preserve non-claims",
+        ));
+    }
+    for claim in &input.semantic_claims {
+        if contains_forbidden_doc_claim(claim) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::SemanticOverclaim,
+                    REQUIREMENT_DOCS_NON_CLAIMS,
+                    "documentation_receipt.semantic_claims",
+                    "documentation receipt semantic claim is outside the bounded docs contract",
+                )
+                .with_detail("claim", claim.clone()),
+            );
+        }
+    }
+}
+
+fn contains_forbidden_doc_claim(claim: &str) -> bool {
+    let normalized = claim.to_ascii_lowercase();
+    DOC_FORBIDDEN_CLAIMS
+        .iter()
+        .any(|forbidden| normalized.contains(forbidden))
+}
+
+fn validate_documentation_schema(schema_version: u32, accumulator: &mut ValidationAccumulator) {
+    if schema_version != SUPPORTED_SCHEMA_VERSION {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedSchemaVersion,
+            REQUIREMENT_DOCS_VERSION,
+            "documentation.schema_version",
+            "documentation artifact schema version is unsupported",
+        ));
+    }
 }
 
 #[cfg(test)]

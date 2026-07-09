@@ -1,0 +1,1 @@
+<documentation-renderer-v1 { name: kamacite-doc-fixture-renderer formats: [html markdown asciidoc] deterministic: true executes-cells: false }>

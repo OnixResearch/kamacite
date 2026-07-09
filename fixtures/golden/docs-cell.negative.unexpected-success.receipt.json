@@ -1,0 +1,41 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.negative.unexpected-success",
+    "artifact_class": "documentation-cell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.runnable_cells.unexpected_success]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "expected-failure-bound"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.docs.runnable_cells]",
+        "field": "documentation_cell.observed_diagnostic",
+        "message": "expected-failure documentation cell requires expected and observed diagnostics",
+        "details": {}
+      },
+      {
+        "code": "wrong-expected-verdict",
+        "requirement_id": "r[kamacite.docs.runnable_cells.unexpected_success]",
+        "field": "documentation_cell.expected_result",
+        "message": "expected-failure documentation cell unexpectedly produced output",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "unexpected success not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "e50bf199cf2d227823bd548106fd242fcba539603087c1fb8523fc3389264217"
+  }
+}

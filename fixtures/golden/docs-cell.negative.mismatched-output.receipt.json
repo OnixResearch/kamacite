@@ -1,0 +1,34 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.negative.mismatched-output",
+    "artifact_class": "documentation-cell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.runnable_cells.mismatched_output]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "expected-output-bound"
+    ],
+    "diagnostics": [
+      {
+        "code": "golden-receipt-mismatch",
+        "requirement_id": "r[kamacite.docs.runnable_cells.mismatched_output]",
+        "field": "documentation_cell.expected_output_identity",
+        "message": "runnable documentation expected output did not match observed output",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "mismatched output not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "0dab0d5cc0a9554853dfc6a108f6aaf2a9ae30667da05ae6ee71d6c0c2904bbd"
+  }
+}

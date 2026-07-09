@@ -1,0 +1,26 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.positive.preserves",
+    "artifact_class": "documentation-cell",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.docs.runnable_cells.preserves]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "canonical-bytes-bound"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "not source-language semantics"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "c3f6ca95b43f7655a61aca79923cc140f7732ab36dcd0ee65717a8a194a593fe"
+  }
+}

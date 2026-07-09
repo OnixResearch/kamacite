@@ -1,0 +1,33 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-stack.positive.valence",
+    "artifact_class": "stack-evidence",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.docs.receipts.non_claims]",
+      "r[kamacite.docs.stack_roles.valence]"
+    ],
+    "input_identities": {
+      "valence-documentation-export:receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "9bc92f71ece8543631e927dc3785916545cd76ccbb4bc079d81eafad6bcc613e"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "stack-role-boundary"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Valence evidence does not broaden documentation claims"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "fe3fe38e7d628772d5c7898bdfde845d547c2d3b542b5b53968e31dc71b7e49b"
+  }
+}

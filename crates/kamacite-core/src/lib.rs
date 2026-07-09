@@ -15,14 +15,16 @@ mod valence_export;
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use fixture::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, CanonicalValueInput,
-    CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload,
-    FixtureResult, FixtureSuite, FixtureSuiteReport, FsmDenialRowInput, FsmEventInput,
-    FsmGuardInput, FsmReceiptInput, FsmSideEffectInput, FsmSpecInput, FsmStateInput,
-    FsmTraceStepInput, FsmTransitionRowInput, HandlerDescriptorInput, HandlerReceiptInput,
-    IdentityUseInput, NickelAdapterReceiptInput, ReplayProfileInput, SourceEnvelopeInput,
-    StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass,
-    TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict, validate_fixture,
-    validate_fixture_suite,
+    CapabilityShellInput, DocumentationCellDescriptor, DocumentationCellInput,
+    DocumentationIrInput, DocumentationOutputInput, DocumentationPageInput,
+    DocumentationReceiptInput, DocumentationSectionInput, EffectOperation, FixtureCase,
+    FixtureClass, FixturePayload, FixtureResult, FixtureSuite, FixtureSuiteReport,
+    FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput, FsmSideEffectInput,
+    FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput, HandlerDescriptorInput,
+    HandlerReceiptInput, IdentityUseInput, NickelAdapterReceiptInput, ReplayProfileInput,
+    SourceEnvelopeInput, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
+    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict,
+    render_documentation_projection, validate_fixture, validate_fixture_suite,
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,

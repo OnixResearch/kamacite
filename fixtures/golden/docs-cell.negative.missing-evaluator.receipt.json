@@ -1,0 +1,41 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.negative.missing-evaluator",
+    "artifact_class": "documentation-cell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.runnable_cells.missing_evaluator]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "evaluator-required"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.docs.runnable_cells.mismatched_output]",
+        "field": "documentation_cell.observed_output_identity",
+        "message": "expected-success documentation cell requires observed output identity",
+        "details": {}
+      },
+      {
+        "code": "unsupported-evaluator-identity",
+        "requirement_id": "r[kamacite.docs.runnable_cells.missing_evaluator]",
+        "field": "documentation_cell.evaluator_identity",
+        "message": "explicit runnable documentation execution requires evaluator identity",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "missing evaluator not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "74e3638867450b848770a5c77ecb3fd44b9498d6b811c1fc667f811bf231cf4c"
+  }
+}

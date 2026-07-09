@@ -1,0 +1,46 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-ir.negative.missing-source",
+    "artifact_class": "documentation-ir",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.ir_projection.missing_source]"
+    ],
+    "input_identities": {
+      "declared-documentation-ir": {
+        "domain": "documentation-ir",
+        "algorithm": "blake3",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      }
+    },
+    "output_identities": {
+      "computed-documentation-ir": {
+        "domain": "documentation-ir",
+        "algorithm": "blake3",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      }
+    },
+    "checked_laws": [
+      "missing-source-fails"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.docs.ir_projection.missing_source]",
+        "field": "documentation_ir.pages.source_envelope_identity",
+        "message": "documentation page source envelope identity is required",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "not source preservation"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "233ceb2bc6056c605fb4cab1d07d892a8a2c459a26afa24116cdc89b06bd8820"
+  }
+}

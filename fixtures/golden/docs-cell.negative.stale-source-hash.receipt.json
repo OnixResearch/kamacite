@@ -1,0 +1,41 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.negative.stale-source-hash",
+    "artifact_class": "documentation-cell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.ir_projection.stale_source_hash]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "stale-source-fails"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.docs.runnable_cells.mismatched_output]",
+        "field": "documentation_cell.observed_output_identity",
+        "message": "expected-success documentation cell requires observed output identity",
+        "details": {}
+      },
+      {
+        "code": "stale-identity",
+        "requirement_id": "r[kamacite.docs.ir_projection.stale_source_hash]",
+        "field": "documentation_cell.source_identity.hex",
+        "message": "runnable documentation cell source identity does not match source bytes",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "stale source not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "9e88d971a828a765abb5e8378d1ee9f0261841dee2f85bc6b67755a076b94114"
+  }
+}

@@ -1,0 +1,1 @@
+<documentation-ir-v1 { page: getting-started sections: [getting-started-intro getting-started-links] anchors: [getting-started-intro getting-started-links] links: [(getting-started-intro getting-started-links)] cells: [cell.nickel.success cell.nickel.failure] formats: [html markdown asciidoc] non-claims: [not-canonical-rendered-output not-cell-execution] }>

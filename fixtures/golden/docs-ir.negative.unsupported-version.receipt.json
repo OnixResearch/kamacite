@@ -1,0 +1,53 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-ir.negative.unsupported-version",
+    "artifact_class": "documentation-ir",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.ir_projection.unsupported_version]"
+    ],
+    "input_identities": {
+      "declared-documentation-ir": {
+        "domain": "documentation-ir",
+        "algorithm": "blake3",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      }
+    },
+    "output_identities": {
+      "computed-documentation-ir": {
+        "domain": "documentation-ir",
+        "algorithm": "blake3",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      }
+    },
+    "checked_laws": [
+      "fail-closed-version"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.docs.ir_projection]",
+        "field": "documentation_ir.pages",
+        "message": "documentation IR must contain at least one page",
+        "details": {}
+      },
+      {
+        "code": "unsupported-schema-version",
+        "requirement_id": "r[kamacite.docs.ir_projection.unsupported_version]",
+        "field": "documentation.schema_version",
+        "message": "documentation artifact schema version is unsupported",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "not compatibility defaulting"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "78f019c022ba303bae570cd7741d013cedd2d8d094c3a87492e271c207f1d216"
+  }
+}

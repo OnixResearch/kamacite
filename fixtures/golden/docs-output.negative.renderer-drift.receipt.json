@@ -1,0 +1,46 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-output.negative.renderer-drift",
+    "artifact_class": "documentation-output",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.renderers.drift]"
+    ],
+    "input_identities": {
+      "declared-documentation-output": {
+        "domain": "documentation-output",
+        "algorithm": "blake3",
+        "hex": "a5a8439e49ee4a0d07ae4ccfcfb1158554b8a0f0e4c5f329765b1c73b8477996"
+      }
+    },
+    "output_identities": {
+      "computed-documentation-output": {
+        "domain": "documentation-output",
+        "algorithm": "blake3",
+        "hex": "58bc5932298da9ad06e7d169d9e81415d6c70aa56d6103d9cbfc162a179f61b7"
+      }
+    },
+    "checked_laws": [
+      "drift-fails"
+    ],
+    "diagnostics": [
+      {
+        "code": "golden-receipt-mismatch",
+        "requirement_id": "r[kamacite.docs.renderers.drift]",
+        "field": "documentation_output.declared_output_identity.hex",
+        "message": "declared documentation output identity does not match output bytes",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "stale output not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "b0bbfec089781d023082f30fe94007ac0103e39f887987aff9017a456c24efa9"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "docs-cell.negative.unsupported-language",
+    "artifact_class": "documentation-cell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.docs.runnable_cells.unsupported_language]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "fail-closed-language"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.docs.runnable_cells.mismatched_output]",
+        "field": "documentation_cell.observed_output_identity",
+        "message": "expected-success documentation cell requires observed output identity",
+        "details": {}
+      },
+      {
+        "code": "unsupported-artifact-class",
+        "requirement_id": "r[kamacite.docs.runnable_cells.unsupported_language]",
+        "field": "documentation_cell.language",
+        "message": "documentation runnable cell language is unsupported",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "unsupported language not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "c1c2c058be84a73f7c1f0a7680336ab3de60a973908617e9b092278e963abaac"
+  }
+}

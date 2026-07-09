@@ -1,0 +1,1 @@
+<documentation-receipt-v1 { receipt-kind: render documentation-ir: valid-doc outputs: [html markdown asciidoc] cells: [cell.nickel.success cell.nickel.failure] non-claims: [not-canonical-rendered-output not-semantic-equivalence] }>
