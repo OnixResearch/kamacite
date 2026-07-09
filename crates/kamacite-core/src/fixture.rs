@@ -62,8 +62,46 @@ const REQUIREMENT_NICKEL_SOURCE_EXPORT: &str =
     "r[kamacite.nickel_adapter_suite.source_export_separation]";
 const REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY: &str =
     "r[kamacite.nickel_adapter_suite.capability_boundary]";
+const REQUIREMENT_STEEL_RECEIPT_PROFILE: &str = "r[kamacite.steel_adapter_suite.receipt_profile]";
+const REQUIREMENT_STEEL_EVALUATOR_IDENTITY: &str =
+    "r[kamacite.steel_adapter_suite.receipt_profile.evaluator_identity]";
+const REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY: &str =
+    "r[kamacite.steel_adapter_suite.receipt_profile.source_module_identity]";
+const REQUIREMENT_STEEL_OUTPUT_PROJECTION: &str =
+    "r[kamacite.steel_adapter_suite.receipt_profile.output_projection]";
+const REQUIREMENT_STEEL_DECLARED_HOST_FUNCTIONS: &str =
+    "r[kamacite.steel_adapter_suite.host_function_boundary.declared_host_functions]";
+const REQUIREMENT_STEEL_UNDECLARED_HOST_FUNCTION: &str =
+    "r[kamacite.steel_adapter_suite.host_function_boundary.undeclared_host_function]";
+const REQUIREMENT_STEEL_AMBIENT_IMPORT: &str =
+    "r[kamacite.steel_adapter_suite.host_function_boundary.ambient_import]";
+const REQUIREMENT_STEEL_DTO_OUTPUT: &str =
+    "r[kamacite.steel_adapter_suite.output_boundary.dto_only]";
+const REQUIREMENT_STEEL_OPAQUE_CLOSURE: &str =
+    "r[kamacite.steel_adapter_suite.output_boundary.opaque_closure]";
+const REQUIREMENT_STEEL_BYTECODE_NOT_IR: &str =
+    "r[kamacite.steel_adapter_suite.output_boundary.bytecode_not_ir]";
+const REQUIREMENT_STEEL_CAPABILITY_BOUNDARY: &str =
+    "r[kamacite.steel_adapter_suite.capability_boundary]";
 const NICKEL_ADAPTER_KIND: &str = "nickel-export";
 const NICKEL_REFERENCE_EVALUATOR_PROFILE: &str = "nickel-reference-cli";
+const STEEL_ADAPTER_KIND: &str = "steel-dto-probe";
+const STEEL_DTO_PROBE_EVALUATOR_PROFILE: &str = "steel-dto-probe-shell";
+const AMBIENT_STEEL_AUTHORITIES: &[&str] = &[
+    "ambient-filesystem",
+    "clock",
+    "credential",
+    "dylib",
+    "filesystem",
+    "mutation",
+    "network",
+    "package",
+    "package-manager",
+    "process",
+    "random",
+    "tcp",
+    "time",
+];
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -143,6 +181,7 @@ pub enum FixturePayload {
     CanonicalValue(CanonicalValueInput),
     AdapterReceipt(AdapterReceiptInput),
     NickelAdapterReceipt(NickelAdapterReceiptInput),
+    SteelAdapterReceipt(Box<SteelAdapterReceiptInput>),
     TargetArtifact(TargetArtifactInput),
     UnsupportedClaim(UnsupportedClaimInput),
     IdentityUse(IdentityUseInput),
@@ -196,6 +235,57 @@ pub struct NickelAdapterReceiptInput {
     pub projection_identity: Option<Identity>,
     pub declared_capabilities: Vec<String>,
     pub observed_effects: Vec<String>,
+    pub claims_canonical_ir: bool,
+    pub checked_laws: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SteelHostFunctionInput {
+    pub function_id: String,
+    pub input_schema: String,
+    pub output_schema: String,
+    pub effect_class: String,
+    pub required_capabilities: Vec<String>,
+    pub checked_laws: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum SteelOutputClass {
+    Dto,
+    Projection,
+    Descriptor,
+    Diagnostic,
+    Receipt,
+    OpaqueClosure,
+    Bytecode,
+    JsonString,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SteelAdapterReceiptInput {
+    pub schema_version: u32,
+    pub adapter_kind: String,
+    pub source_bytes: Vec<u8>,
+    pub source_identity: Option<Identity>,
+    pub evaluator_profile: String,
+    pub evaluator_descriptor: String,
+    pub evaluator_identity: Option<Identity>,
+    pub module_descriptor_bytes: Vec<u8>,
+    pub module_identity: Option<Identity>,
+    pub input_schema: String,
+    pub output_schema: String,
+    pub host_functions: Vec<SteelHostFunctionInput>,
+    pub observed_host_functions: Vec<String>,
+    pub declared_builtin_modules: Vec<String>,
+    pub declared_imports: Vec<String>,
+    pub requested_imports: Vec<String>,
+    pub declared_capabilities: Vec<String>,
+    pub observed_effects: Vec<String>,
+    pub effect_class: String,
+    pub output_bytes: Vec<u8>,
+    pub output_projection_identity: Option<Identity>,
+    pub output_class: SteelOutputClass,
     pub claims_canonical_ir: bool,
     pub checked_laws: Vec<String>,
 }
@@ -369,6 +459,9 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         FixturePayload::AdapterReceipt(input) => validate_adapter_receipt(input, &mut accumulator),
         FixturePayload::NickelAdapterReceipt(input) => {
             validate_nickel_adapter_receipt(input, &mut accumulator)
+        }
+        FixturePayload::SteelAdapterReceipt(input) => {
+            validate_steel_adapter_receipt(input, &mut accumulator)
         }
         FixturePayload::TargetArtifact(input) => validate_target_artifact(input, &mut accumulator),
         FixturePayload::UnsupportedClaim(input) => {
@@ -764,6 +857,450 @@ fn validate_nickel_capabilities(
                 .with_detail("effect", observed.clone()),
             );
         }
+    }
+}
+
+fn validate_steel_adapter_receipt(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_supported_schema(input.schema_version, accumulator);
+    validate_steel_adapter_kind(input, accumulator);
+    validate_steel_source(input, accumulator);
+    validate_steel_evaluator(input, accumulator);
+    validate_steel_module_identity(input, accumulator);
+    validate_steel_dto_schemas(input, accumulator);
+    let declared_host_functions = validate_steel_host_functions(input, accumulator);
+    validate_steel_host_function_usage(input, &declared_host_functions, accumulator);
+    validate_steel_imports(input, accumulator);
+    validate_steel_capabilities(input, accumulator);
+    validate_steel_output(input, accumulator);
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_steel_adapter_kind(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.adapter_kind != STEEL_ADAPTER_KIND {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedArtifactClass,
+                REQUIREMENT_STEEL_RECEIPT_PROFILE,
+                "steel.adapter_kind",
+                "Steel adapter receipt must name the DTO-only probe adapter kind",
+            )
+            .with_detail("adapter_kind", input.adapter_kind.clone()),
+        );
+    }
+}
+
+fn validate_steel_source(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.source_bytes.is_empty() {
+        if input.source_identity.is_some() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::MissingSourceBytes,
+                REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
+                "steel.source_bytes",
+                "Steel source identity cannot be trusted without source bytes",
+            ));
+        }
+        return;
+    }
+    let Some(source_identity) = &input.source_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
+            "steel.source_identity",
+            "Steel source bytes must bind a source-envelope identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        source_identity,
+        IdentityDomain::Source,
+        "steel.source_identity",
+        accumulator,
+    );
+    accumulator
+        .input_identities
+        .insert("steel-source".to_string(), source_identity.clone());
+    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
+    accumulator
+        .output_identities
+        .insert("computed-steel-source".to_string(), computed.clone());
+    if source_identity.domain == IdentityDomain::Source && source_identity.hex != computed.hex {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
+            "steel.source_identity.hex",
+            "declared Steel source identity does not match source bytes",
+        ));
+    }
+}
+
+fn validate_steel_evaluator(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.evaluator_profile != STEEL_DTO_PROBE_EVALUATOR_PROFILE {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedEvaluatorIdentity,
+                REQUIREMENT_STEEL_EVALUATOR_IDENTITY,
+                "steel.evaluator_profile",
+                "Steel adapter evidence must use the accepted DTO-probe evaluator profile",
+            )
+            .with_detail("profile", input.evaluator_profile.clone()),
+        );
+    }
+    if input.evaluator_descriptor.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_EVALUATOR_IDENTITY,
+            "steel.evaluator_descriptor",
+            "Steel evaluator identity must include deterministic profile data",
+        ));
+    }
+    let Some(evaluator_identity) = &input.evaluator_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_EVALUATOR_IDENTITY,
+            "steel.evaluator_identity",
+            "trusted Steel adapter evidence must bind evaluator identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        evaluator_identity,
+        IdentityDomain::Evaluator,
+        "steel.evaluator_identity",
+        accumulator,
+    );
+    accumulator
+        .input_identities
+        .insert("steel-evaluator".to_string(), evaluator_identity.clone());
+    let computed = compute_identity(
+        IdentityDomain::Evaluator,
+        input.evaluator_descriptor.as_bytes(),
+    );
+    accumulator
+        .output_identities
+        .insert("computed-steel-evaluator".to_string(), computed.clone());
+    if evaluator_identity.domain == IdentityDomain::Evaluator
+        && evaluator_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_STEEL_EVALUATOR_IDENTITY,
+            "steel.evaluator_identity.hex",
+            "declared Steel evaluator identity does not match descriptor bytes",
+        ));
+    }
+}
+
+fn validate_steel_module_identity(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.module_descriptor_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
+            "steel.module_descriptor_bytes",
+            "Steel adapter receipts must bind module or descriptor bytes separately",
+        ));
+        return;
+    }
+    let Some(module_identity) = &input.module_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
+            "steel.module_identity",
+            "Steel module or descriptor bytes must bind an adapter-domain identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        module_identity,
+        IdentityDomain::Adapter,
+        "steel.module_identity",
+        accumulator,
+    );
+    accumulator.input_identities.insert(
+        "steel-module-descriptor".to_string(),
+        module_identity.clone(),
+    );
+    let computed = compute_identity(IdentityDomain::Adapter, &input.module_descriptor_bytes);
+    accumulator.output_identities.insert(
+        "computed-steel-module-descriptor".to_string(),
+        computed.clone(),
+    );
+    if module_identity.domain == IdentityDomain::Adapter && module_identity.hex != computed.hex {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
+            "steel.module_identity.hex",
+            "declared Steel module identity does not match descriptor bytes",
+        ));
+    }
+}
+
+fn validate_steel_dto_schemas(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.input_schema.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_STEEL_RECEIPT_PROFILE,
+            "steel.input_schema",
+            "Steel adapter receipts must declare an input DTO schema",
+        ));
+    }
+    if input.output_schema.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_STEEL_RECEIPT_PROFILE,
+            "steel.output_schema",
+            "Steel adapter receipts must declare an output DTO schema",
+        ));
+    }
+    if input.effect_class.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_STEEL_RECEIPT_PROFILE,
+            "steel.effect_class",
+            "Steel adapter receipts must declare an effect class",
+        ));
+    }
+}
+
+fn validate_steel_host_functions(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeSet<String> {
+    let declared_capabilities: BTreeSet<&String> = input.declared_capabilities.iter().collect();
+    let mut declared_host_functions = BTreeSet::new();
+    if input.host_functions.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_STEEL_DECLARED_HOST_FUNCTIONS,
+            "steel.host_functions",
+            "Steel adapter receipts must declare trusted host functions before use",
+        ));
+    }
+    for function in &input.host_functions {
+        declared_host_functions.insert(function.function_id.clone());
+        if function.function_id.is_empty()
+            || function.input_schema.is_empty()
+            || function.output_schema.is_empty()
+            || function.effect_class.is_empty()
+            || function.checked_laws.is_empty()
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_STEEL_DECLARED_HOST_FUNCTIONS,
+                "steel.host_functions",
+                "host-function declarations require id, DTO schemas, effect class, and laws",
+            ));
+        }
+        for capability in &function.required_capabilities {
+            if !declared_capabilities.contains(capability) {
+                accumulator.diagnostics.push(
+                    Diagnostic::new(
+                        DiagnosticCode::UndeclaredCapability,
+                        REQUIREMENT_STEEL_DECLARED_HOST_FUNCTIONS,
+                        "steel.host_functions.required_capabilities",
+                        "host-function required capability was not declared by adapter",
+                    )
+                    .with_detail("capability", capability.clone())
+                    .with_detail("function", function.function_id.clone()),
+                );
+            }
+        }
+        accumulator
+            .checked_laws
+            .extend(function.checked_laws.clone());
+    }
+    declared_host_functions
+}
+
+fn validate_steel_host_function_usage(
+    input: &SteelAdapterReceiptInput,
+    declared_host_functions: &BTreeSet<String>,
+    accumulator: &mut ValidationAccumulator,
+) {
+    for observed in &input.observed_host_functions {
+        if !declared_host_functions.contains(observed) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_STEEL_UNDECLARED_HOST_FUNCTION,
+                    "steel.observed_host_functions",
+                    "observed Steel host function was not declared by adapter descriptor",
+                )
+                .with_detail("function", observed.clone()),
+            );
+        }
+    }
+}
+
+fn validate_steel_imports(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let declared_imports: BTreeSet<&String> = input
+        .declared_imports
+        .iter()
+        .chain(input.declared_builtin_modules.iter())
+        .collect();
+    let declared_capabilities: BTreeSet<&String> = input.declared_capabilities.iter().collect();
+    for requested in &input.requested_imports {
+        let ambient = is_ambient_steel_authority(requested);
+        if ambient && !declared_capabilities.contains(requested) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_STEEL_AMBIENT_IMPORT,
+                    "steel.requested_imports",
+                    "Steel requested ambient authority outside the declared adapter contract",
+                )
+                .with_detail("import", requested.clone()),
+            );
+            continue;
+        }
+        if !declared_imports.contains(requested) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_STEEL_AMBIENT_IMPORT,
+                    "steel.requested_imports",
+                    "Steel requested an import or built-in module not declared by descriptor",
+                )
+                .with_detail("import", requested.clone()),
+            );
+        }
+    }
+}
+
+fn is_ambient_steel_authority(authority: &str) -> bool {
+    AMBIENT_STEEL_AUTHORITIES.contains(&authority)
+}
+
+fn validate_steel_capabilities(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.declared_capabilities.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_STEEL_CAPABILITY_BOUNDARY,
+            "steel.declared_capabilities",
+            "Steel adapter receipts must declare shell capabilities before evidence is trusted",
+        ));
+    }
+    let declared: BTreeSet<&String> = input.declared_capabilities.iter().collect();
+    for observed in &input.observed_effects {
+        if !declared.contains(observed) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredCapability,
+                    REQUIREMENT_STEEL_CAPABILITY_BOUNDARY,
+                    "steel.observed_effects",
+                    "observed Steel adapter effect exceeded declared capabilities",
+                )
+                .with_detail("effect", observed.clone()),
+            );
+        }
+    }
+}
+
+fn validate_steel_output(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let Some(projection_identity) = &input.output_projection_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_OUTPUT_PROJECTION,
+            "steel.output_projection_identity",
+            "Steel adapter receipts must bind output projection identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        projection_identity,
+        IdentityDomain::Projection,
+        "steel.output_projection_identity",
+        accumulator,
+    );
+    accumulator.input_identities.insert(
+        "steel-output-projection".to_string(),
+        projection_identity.clone(),
+    );
+    let computed = compute_identity(IdentityDomain::Projection, &input.output_bytes);
+    accumulator.output_identities.insert(
+        "computed-steel-output-projection".to_string(),
+        computed.clone(),
+    );
+    if projection_identity.domain == IdentityDomain::Projection
+        && projection_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_STEEL_OUTPUT_PROJECTION,
+            "steel.output_projection_identity.hex",
+            "declared Steel output projection identity does not match output bytes",
+        ));
+    }
+    validate_steel_output_class(input, accumulator);
+}
+
+fn validate_steel_output_class(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    match input.output_class {
+        SteelOutputClass::Dto | SteelOutputClass::Projection => {
+            if input.output_bytes.is_empty()
+                || serde_json::from_slice::<serde_json::Value>(&input.output_bytes).is_err()
+            {
+                accumulator.diagnostics.push(Diagnostic::new(
+                    DiagnosticCode::MalformedProjectionOutput,
+                    REQUIREMENT_STEEL_DTO_OUTPUT,
+                    "steel.output_bytes",
+                    "Steel DTO or projection output must decode under the declared schema",
+                ));
+            }
+        }
+        SteelOutputClass::Descriptor | SteelOutputClass::Diagnostic | SteelOutputClass::Receipt => {
+        }
+        SteelOutputClass::OpaqueClosure => accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_STEEL_OPAQUE_CLOSURE,
+            "steel.output_class",
+            "opaque Steel closures must not be exported as portable Kamacite values",
+        )),
+        SteelOutputClass::Bytecode | SteelOutputClass::JsonString => {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::CanonicalIrOverclaim,
+                REQUIREMENT_STEEL_BYTECODE_NOT_IR,
+                "steel.output_class",
+                "Steel bytecode, JSON strings, or evaluator-internal values are not canonical IR",
+            ));
+        }
+    }
+    if input.claims_canonical_ir {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::CanonicalIrOverclaim,
+            REQUIREMENT_STEEL_BYTECODE_NOT_IR,
+            "steel.claims_canonical_ir",
+            "Steel adapter output cannot replace canonical Kamacite Preserves IR",
+        ));
     }
 }
 
@@ -1358,6 +1895,23 @@ mod tests {
     const NETWORK_CAPABILITY: &str = "network";
     const VALID_EXPORT: &[u8] = b"1\n";
     const STALE_EXPORT: &[u8] = b"0\n";
+    const STEEL_FIXTURE_ID: &str = "unit.steel.adapter.valid";
+    const STEEL_REQUIREMENT_ID: &str = "r[kamacite.steel_adapter_suite.positive_fixtures.dto_only]";
+    const STEEL_NON_CLAIM: &str = "Steel output is bounded DTO evidence only";
+    const STEEL_ADAPTER_LAW: &str = "dto-only-output-boundary";
+    const STEEL_HOST_FUNCTION_ID: &str = "kamacite.add-one";
+    const STEEL_UNDECLARED_HOST_FUNCTION_ID: &str = "kamacite.read-file";
+    const STEEL_EVALUATOR_DESCRIPTOR: &str = "steel-dto-probe-shell:kamacite-cli-dto-profile-v1";
+    const STEEL_SOURCE: &[u8] = b"(define (probe input) (kamacite.add-one input))\n";
+    const STEEL_MODULE_DESCRIPTOR: &[u8] =
+        b"{\"module\":\"kamacite.dto.probe\",\"imports\":[\"steel/base\"]}\n";
+    const STEEL_OUTPUT: &[u8] = b"{\"value\":2}\n";
+    const MALFORMED_STEEL_OUTPUT: &[u8] = b"not-json\n";
+    const STALE_STEEL_OUTPUT: &[u8] = b"{\"value\":1}\n";
+    const DTO_EVALUATION_CAPABILITY: &str = "dto-evaluation";
+    const CAPTURE_OUTPUT_CAPABILITY: &str = "capture-stdout";
+    const STEEL_BASE_MODULE: &str = "steel/base";
+    const FILESYSTEM_IMPORT: &str = "filesystem";
 
     fn valid_source_fixture() -> FixtureCase {
         let declared_identity = compute_identity(IdentityDomain::Source, VALID_SOURCE);
@@ -1572,6 +2126,231 @@ mod tests {
                 .diagnostics
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::UndeclaredCapability)
+        );
+    }
+
+    fn valid_steel_adapter_fixture() -> FixtureCase {
+        FixtureCase {
+            id: STEEL_FIXTURE_ID.to_string(),
+            fixture_class: FixtureClass::Positive,
+            artifact_class: ArtifactClass::AdapterReceipt,
+            requirement_ids: vec![STEEL_REQUIREMENT_ID.to_string()],
+            non_claims: vec![STEEL_NON_CLAIM.to_string()],
+            expected_verdict: ValidationVerdict::Accepted,
+            checked_laws: vec![STEEL_ADAPTER_LAW.to_string()],
+            payload: FixturePayload::SteelAdapterReceipt(Box::new(SteelAdapterReceiptInput {
+                schema_version: SUPPORTED_SCHEMA_VERSION,
+                adapter_kind: STEEL_ADAPTER_KIND.to_string(),
+                source_bytes: STEEL_SOURCE.to_vec(),
+                source_identity: Some(compute_identity(IdentityDomain::Source, STEEL_SOURCE)),
+                evaluator_profile: STEEL_DTO_PROBE_EVALUATOR_PROFILE.to_string(),
+                evaluator_descriptor: STEEL_EVALUATOR_DESCRIPTOR.to_string(),
+                evaluator_identity: Some(compute_identity(
+                    IdentityDomain::Evaluator,
+                    STEEL_EVALUATOR_DESCRIPTOR.as_bytes(),
+                )),
+                module_descriptor_bytes: STEEL_MODULE_DESCRIPTOR.to_vec(),
+                module_identity: Some(compute_identity(
+                    IdentityDomain::Adapter,
+                    STEEL_MODULE_DESCRIPTOR,
+                )),
+                input_schema: "kamacite.dto.input.integer-v1".to_string(),
+                output_schema: "kamacite.dto.output.integer-v1".to_string(),
+                host_functions: vec![SteelHostFunctionInput {
+                    function_id: STEEL_HOST_FUNCTION_ID.to_string(),
+                    input_schema: "kamacite.dto.input.integer-v1".to_string(),
+                    output_schema: "kamacite.dto.output.integer-v1".to_string(),
+                    effect_class: "pure-dto".to_string(),
+                    required_capabilities: vec![DTO_EVALUATION_CAPABILITY.to_string()],
+                    checked_laws: vec!["host-function-dto-contract".to_string()],
+                }],
+                observed_host_functions: vec![STEEL_HOST_FUNCTION_ID.to_string()],
+                declared_builtin_modules: vec![STEEL_BASE_MODULE.to_string()],
+                declared_imports: Vec::new(),
+                requested_imports: vec![STEEL_BASE_MODULE.to_string()],
+                declared_capabilities: vec![
+                    DTO_EVALUATION_CAPABILITY.to_string(),
+                    CAPTURE_OUTPUT_CAPABILITY.to_string(),
+                ],
+                observed_effects: vec![
+                    DTO_EVALUATION_CAPABILITY.to_string(),
+                    CAPTURE_OUTPUT_CAPABILITY.to_string(),
+                ],
+                effect_class: "pure-dto".to_string(),
+                output_bytes: STEEL_OUTPUT.to_vec(),
+                output_projection_identity: Some(compute_identity(
+                    IdentityDomain::Projection,
+                    STEEL_OUTPUT,
+                )),
+                output_class: SteelOutputClass::Dto,
+                claims_canonical_ir: false,
+                checked_laws: vec![STEEL_ADAPTER_LAW.to_string()],
+            })),
+        }
+    }
+
+    #[test]
+    fn accepts_steel_adapter_dto_evidence() {
+        let result = validate_fixture(&valid_steel_adapter_fixture());
+        assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.is_empty());
+    }
+
+    #[test]
+    fn rejects_steel_adapter_missing_evaluator_identity() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.missing-evaluator".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.evaluator_identity = None;
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::MissingInput)
+        );
+    }
+
+    #[test]
+    fn rejects_steel_adapter_undeclared_host_function() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.undeclared-host-function".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input
+                .observed_host_functions
+                .push(STEEL_UNDECLARED_HOST_FUNCTION_ID.to_string());
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::UndeclaredAuthority)
+        );
+    }
+
+    #[test]
+    fn rejects_steel_adapter_ambient_import() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.ambient-import".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.requested_imports.push(FILESYSTEM_IMPORT.to_string());
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::UndeclaredAuthority)
+        );
+    }
+
+    #[test]
+    fn rejects_steel_adapter_stale_output_identity() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.stale-output".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.output_projection_identity = Some(compute_identity(
+                IdentityDomain::Projection,
+                STALE_STEEL_OUTPUT,
+            ));
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::StaleIdentity)
+        );
+    }
+
+    #[test]
+    fn rejects_steel_adapter_malformed_output() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.malformed-output".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.output_bytes = MALFORMED_STEEL_OUTPUT.to_vec();
+            input.output_projection_identity = Some(compute_identity(
+                IdentityDomain::Projection,
+                MALFORMED_STEEL_OUTPUT,
+            ));
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.code == DiagnosticCode::MalformedProjectionOutput })
+        );
+    }
+
+    #[test]
+    fn rejects_steel_adapter_opaque_closure_output() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.opaque-closure".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.output_class = SteelOutputClass::OpaqueClosure;
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.code == DiagnosticCode::UnsupportedArtifactClass })
+        );
+    }
+
+    #[test]
+    fn rejects_steel_adapter_bytecode_as_canonical_ir() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.bytecode-canonical-ir".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.output_class = SteelOutputClass::Bytecode;
+            input.claims_canonical_ir = true;
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::CanonicalIrOverclaim)
         );
     }
 

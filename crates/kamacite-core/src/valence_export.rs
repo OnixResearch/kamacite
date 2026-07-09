@@ -638,7 +638,7 @@ mod tests {
     const SPAN_START_BYTE: u64 = 0;
     const SPAN_END_BYTE: u64 = 3;
 
-    fn valid_source_receipt() -> ReceiptEnvelope {
+    fn valid_source_receipt() -> Result<ReceiptEnvelope, crate::receipt::ReceiptError> {
         let mut body = ReceiptBody::new(
             FIXTURE_ID,
             ARTIFACT_CLASS,
@@ -651,10 +651,7 @@ mod tests {
             compute_identity(IdentityDomain::Source, SOURCE_BYTES),
         );
         body.checked_laws.push(SOURCE_LAW.to_string());
-        match ReceiptEnvelope::finalize(body) {
-            Ok(receipt) => receipt,
-            Err(error) => panic!("test receipt must finalize: {error}"),
-        }
+        ReceiptEnvelope::finalize(body)
     }
 
     fn valid_conformance() -> ValenceExportConformance {
@@ -676,47 +673,49 @@ mod tests {
         }
     }
 
-    fn valid_input() -> ValenceReceiptExportInput {
-        ValenceReceiptExportInput {
-            source_receipt: valid_source_receipt(),
+    fn valid_input() -> Result<ValenceReceiptExportInput, crate::receipt::ReceiptError> {
+        Ok(ValenceReceiptExportInput {
+            source_receipt: valid_source_receipt()?,
             conformance: valid_conformance(),
             source_spans: SourceSpanSet::Absent {
                 reason: SOURCE_SPANS_ABSENT_REASON.to_string(),
             },
             semantic_claims: Vec::new(),
             declared_export_identity: None,
-        }
+        })
     }
 
     #[test]
-    fn exports_bounded_receipt_projection() {
-        let input = valid_input();
+    fn exports_bounded_receipt_projection() -> Result<(), crate::receipt::ReceiptError> {
+        let input = valid_input()?;
 
         let result = export_valence_receipt(&input);
 
         assert!(result.passed);
         assert!(result.diagnostics.is_empty());
-        let Some(export) = result.export else {
-            panic!("accepted export must return projection");
-        };
-        assert_eq!(export.export_identity.domain, IdentityDomain::Projection);
-        assert_eq!(
-            export.body.source_receipt_identity,
-            input.source_receipt.receipt_identity
-        );
-        assert!(
-            export
-                .body
-                .non_claims
-                .iter()
-                .any(|non_claim| non_claim == SOURCE_NON_CLAIM)
-        );
-        assert!(export.body.checked_laws.iter().any(|law| law == SOURCE_LAW));
+        assert!(result.export.is_some());
+        if let Some(export) = result.export {
+            assert_eq!(export.export_identity.domain, IdentityDomain::Projection);
+            assert_eq!(
+                export.body.source_receipt_identity,
+                input.source_receipt.receipt_identity
+            );
+            assert!(
+                export
+                    .body
+                    .non_claims
+                    .iter()
+                    .any(|non_claim| non_claim == SOURCE_NON_CLAIM)
+            );
+            assert!(export.body.checked_laws.iter().any(|law| law == SOURCE_LAW));
+        }
+        Ok(())
     }
 
     #[test]
-    fn preserves_present_source_spans_without_fabrication() {
-        let mut input = valid_input();
+    fn preserves_present_source_spans_without_fabrication()
+    -> Result<(), crate::receipt::ReceiptError> {
+        let mut input = valid_input()?;
         input.source_spans = SourceSpanSet::Present {
             spans: vec![SourceSpan {
                 artifact_key: "declared-source".to_string(),
@@ -728,20 +727,18 @@ mod tests {
         let result = export_valence_receipt(&input);
 
         assert!(result.passed);
-        let Some(export) = result.export else {
-            panic!("accepted export must preserve spans");
-        };
-        assert_eq!(export.body.source_spans, input.source_spans);
+        assert!(result.export.is_some());
+        if let Some(export) = result.export {
+            assert_eq!(export.body.source_spans, input.source_spans);
+        }
+        Ok(())
     }
 
     #[test]
-    fn rejects_missing_source_non_claims() {
-        let mut input = valid_input();
+    fn rejects_missing_source_non_claims() -> Result<(), crate::receipt::ReceiptError> {
+        let mut input = valid_input()?;
         input.source_receipt.body.non_claims = Vec::new();
-        input.source_receipt = match ReceiptEnvelope::finalize(input.source_receipt.body) {
-            Ok(receipt) => receipt,
-            Err(error) => panic!("test receipt must finalize: {error}"),
-        };
+        input.source_receipt = ReceiptEnvelope::finalize(input.source_receipt.body)?;
 
         let result = export_valence_receipt(&input);
 
@@ -753,11 +750,12 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::MissingNonClaim)
         );
+        Ok(())
     }
 
     #[test]
-    fn rejects_identity_domain_substitution() {
-        let mut input = valid_input();
+    fn rejects_identity_domain_substitution() -> Result<(), crate::receipt::ReceiptError> {
+        let mut input = valid_input()?;
         let substituted = compute_identity(IdentityDomain::Source, SOURCE_BYTES);
         input.source_receipt.receipt_identity = substituted;
 
@@ -770,11 +768,12 @@ mod tests {
                 .iter()
                 .any(|diagnostic| { diagnostic.code == DiagnosticCode::IdentityDomainMismatch })
         );
+        Ok(())
     }
 
     #[test]
-    fn rejects_semantic_equivalence_overclaim() {
-        let mut input = valid_input();
+    fn rejects_semantic_equivalence_overclaim() -> Result<(), crate::receipt::ReceiptError> {
+        let mut input = valid_input()?;
         input
             .semantic_claims
             .push("Valence proves semantic equivalence".to_string());
@@ -788,11 +787,12 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::SemanticOverclaim)
         );
+        Ok(())
     }
 
     #[test]
-    fn rejects_stale_declared_export_identity() {
-        let mut input = valid_input();
+    fn rejects_stale_declared_export_identity() -> Result<(), crate::receipt::ReceiptError> {
+        let mut input = valid_input()?;
         input.declared_export_identity =
             Some(compute_identity(IdentityDomain::Projection, SOURCE_BYTES));
 
@@ -805,21 +805,19 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::StaleIdentity)
         );
+        Ok(())
     }
 
     #[test]
-    fn rejects_duplicate_artifact_identity_key() {
-        let mut input = valid_input();
+    fn rejects_duplicate_artifact_identity_key() -> Result<(), crate::receipt::ReceiptError> {
+        let mut input = valid_input()?;
         let mut body = input.source_receipt.body;
         body.output_identities = BTreeMap::new();
         body.output_identities.insert(
             "declared-source".to_string(),
             compute_identity(IdentityDomain::Source, SOURCE_BYTES),
         );
-        input.source_receipt = match ReceiptEnvelope::finalize(body) {
-            Ok(receipt) => receipt,
-            Err(error) => panic!("test receipt must finalize: {error}"),
-        };
+        input.source_receipt = ReceiptEnvelope::finalize(body)?;
 
         let result = export_valence_receipt(&input);
 
@@ -830,5 +828,6 @@ mod tests {
                 .iter()
                 .any(|diagnostic| { diagnostic.code == DiagnosticCode::DuplicateArtifactIdentity })
         );
+        Ok(())
     }
 }

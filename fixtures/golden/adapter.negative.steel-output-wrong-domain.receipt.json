@@ -1,0 +1,80 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.steel-output-wrong-domain",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.steel_adapter_suite.negative_fixtures.stale_output]"
+    ],
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "checked_laws": [
+      "host-function-dto-contract",
+      "typed-output-identity-domain"
+    ],
+    "diagnostics": [
+      {
+        "code": "identity-domain-mismatch",
+        "requirement_id": "r[kamacite.lossless_ir.typed_identity_domains.projection_not_canonical]",
+        "field": "steel.output_projection_identity",
+        "message": "identity domain did not match required typed domain",
+        "details": {
+          "actual": "source",
+          "expected": "projection"
+        }
+      }
+    ],
+    "non_claims": [
+      "output identity domains are not interchangeable"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "8494cb4c13422849defc89eb34ce0fb7e16f34634f2d10d5e4ab28d63671d9c5"
+  }
+}

@@ -5,10 +5,10 @@ use kamacite_core::{
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload, FixtureSuite,
     HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
     NickelAdapterReceiptInput, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
-    SourceSpanSet, StackEvidenceInput, TargetArtifactInput, UnsupportedClaimInput,
-    ValenceExportConformance, ValenceReceiptExportEnvelope, ValenceReceiptExportInput,
-    ValidationVerdict, compute_identity, export_valence_receipt, receipt_json,
-    validate_fixture_suite,
+    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
+    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
+    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict, compute_identity,
+    export_valence_receipt, receipt_json, validate_fixture_suite,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -48,6 +48,10 @@ const NICKEL_COMMAND_VERSION: &str = "--version";
 const NICKEL_EVALUATOR_DESCRIPTOR_PREFIX: &str = "nickel-reference-cli:";
 const NICKEL_EXECUTION_MODE_REFERENCE_EXPORT: &str = "reference-export";
 const NICKEL_EXECUTION_MODE_STORED_EVIDENCE: &str = "stored-evidence";
+const DEFAULT_STEEL_EVALUATOR_DESCRIPTOR: &str =
+    "steel-dto-probe-shell:kamacite-cli-dto-profile-v1";
+const STEEL_EXECUTION_MODE_DTO_PROBE: &str = "dto-probe";
+const STEEL_EXECUTION_MODE_STORED_EVIDENCE: &str = "stored-evidence";
 const GOLDEN_STATUS_MATCHED: &str = "matched";
 const GOLDEN_STATUS_UPDATED: &str = "updated";
 const GOLDEN_STATUS_NOT_DECLARED: &str = "not-declared";
@@ -73,6 +77,7 @@ type CliResult<T> = Result<T, CliError>;
 enum Command {
     Validate(ValidateArgs),
     ValidateNickelAdapter(NickelAdapterArgs),
+    ValidateSteelAdapter(SteelAdapterArgs),
     HashFile(HashArgs),
     CheckManifestProjection(ManifestProjectionArgs),
     ExportValenceReceipt(ValenceExportArgs),
@@ -95,8 +100,19 @@ struct NickelAdapterArgs {
 }
 
 #[derive(Clone, Debug)]
+struct SteelAdapterArgs {
+    validate: ValidateArgs,
+    evaluator_descriptor: String,
+}
+
+#[derive(Clone, Debug)]
 struct NickelExecutionShell {
     evaluator_command: PathBuf,
+}
+
+#[derive(Clone, Debug)]
+struct SteelExecutionShell {
+    evaluator_descriptor: String,
 }
 
 #[derive(Clone, Debug)]
@@ -177,6 +193,33 @@ enum PayloadProjection {
         checked_laws: Vec<String>,
         execution_mode: String,
     },
+    SteelAdapterReceipt {
+        schema_version: u32,
+        adapter_kind: String,
+        source_path: Option<String>,
+        declared_source_identity: Option<Identity>,
+        evaluator_profile: String,
+        evaluator_descriptor: String,
+        evaluator_identity: Option<Identity>,
+        module_descriptor_path: String,
+        module_identity: Box<Option<Identity>>,
+        input_schema: String,
+        output_schema: String,
+        host_functions: Vec<SteelHostFunctionInput>,
+        observed_host_functions: Vec<String>,
+        declared_builtin_modules: Vec<String>,
+        declared_imports: Vec<String>,
+        requested_imports: Vec<String>,
+        declared_capabilities: Vec<String>,
+        observed_effects: Vec<String>,
+        effect_class: String,
+        output_path: Option<String>,
+        output_projection_identity: Box<Option<Identity>>,
+        output_class: SteelOutputClass,
+        claims_canonical_ir: bool,
+        checked_laws: Vec<String>,
+        execution_mode: String,
+    },
     TargetArtifact {
         target_kind: String,
         output_path: String,
@@ -230,6 +273,34 @@ struct NickelAdapterProjectionParts<'a> {
     projection_identity: &'a Option<Identity>,
     declared_capabilities: &'a [String],
     observed_effects: &'a [String],
+    claims_canonical_ir: bool,
+    checked_laws: &'a [String],
+    execution_mode: &'a str,
+}
+
+struct SteelAdapterProjectionParts<'a> {
+    schema_version: u32,
+    adapter_kind: &'a str,
+    source_path: &'a Option<String>,
+    declared_source_identity: &'a Option<Identity>,
+    evaluator_profile: &'a str,
+    evaluator_descriptor: &'a str,
+    evaluator_identity: &'a Option<Identity>,
+    module_descriptor_path: &'a str,
+    module_identity: &'a Option<Identity>,
+    input_schema: &'a str,
+    output_schema: &'a str,
+    host_functions: &'a [SteelHostFunctionInput],
+    observed_host_functions: &'a [String],
+    declared_builtin_modules: &'a [String],
+    declared_imports: &'a [String],
+    requested_imports: &'a [String],
+    declared_capabilities: &'a [String],
+    observed_effects: &'a [String],
+    effect_class: &'a str,
+    output_path: &'a Option<String>,
+    output_projection_identity: &'a Option<Identity>,
+    output_class: &'a SteelOutputClass,
     claims_canonical_ir: bool,
     checked_laws: &'a [String],
     execution_mode: &'a str,
@@ -325,6 +396,7 @@ fn run() -> CliResult<i32> {
     match command {
         Command::Validate(args) => run_validate(args),
         Command::ValidateNickelAdapter(args) => run_validate_nickel_adapter(args),
+        Command::ValidateSteelAdapter(args) => run_validate_steel_adapter(args),
         Command::HashFile(args) => run_hash_file(args),
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::ExportValenceReceipt(args) => run_export_valence_receipt(args),
@@ -343,6 +415,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
     match command.as_str() {
         "validate" => parse_validate_args(args_iter.collect()),
         "validate-nickel-adapter" => parse_nickel_adapter_args(args_iter.collect()),
+        "validate-steel-adapter" => parse_steel_adapter_args(args_iter.collect()),
         "hash-file" => parse_hash_args(args_iter.collect()),
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "export-valence-receipt" => parse_valence_export_args(args_iter.collect()),
@@ -396,6 +469,39 @@ fn parse_nickel_adapter_args(args: Vec<String>) -> CliResult<Command> {
     Ok(Command::ValidateNickelAdapter(NickelAdapterArgs {
         validate,
         evaluator_command,
+    }))
+}
+
+fn parse_steel_adapter_args(args: Vec<String>) -> CliResult<Command> {
+    let mut validate_args = Vec::new();
+    let mut evaluator_descriptor = DEFAULT_STEEL_EVALUATOR_DESCRIPTOR.to_string();
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--evaluator-descriptor" => {
+                evaluator_descriptor = next_value(&mut index, "--evaluator-descriptor")?
+            }
+            _ => {
+                validate_args.push(flag);
+                if validate_args
+                    .last()
+                    .is_some_and(|value| value == "--update-golden")
+                    || validate_args
+                        .last()
+                        .is_some_and(|value| value == "--skip-manifest-source-check")
+                {
+                    continue;
+                }
+                if let Some(value) = index.next() {
+                    validate_args.push(value);
+                }
+            }
+        }
+    }
+    let validate = parse_common_validate_args(validate_args)?;
+    Ok(Command::ValidateSteelAdapter(SteelAdapterArgs {
+        validate,
+        evaluator_descriptor,
     }))
 }
 
@@ -737,19 +843,27 @@ fn read_json<T: for<'de> Deserialize<'de>>(path: &Path, label: &str) -> CliResul
 }
 
 fn run_validate(args: ValidateArgs) -> CliResult<i32> {
-    run_validate_with_nickel_shell(args, None)
+    run_validate_with_shells(args, None, None)
 }
 
 fn run_validate_nickel_adapter(args: NickelAdapterArgs) -> CliResult<i32> {
     let shell = NickelExecutionShell {
         evaluator_command: args.evaluator_command,
     };
-    run_validate_with_nickel_shell(args.validate, Some(&shell))
+    run_validate_with_shells(args.validate, Some(&shell), None)
 }
 
-fn run_validate_with_nickel_shell(
+fn run_validate_steel_adapter(args: SteelAdapterArgs) -> CliResult<i32> {
+    let shell = SteelExecutionShell {
+        evaluator_descriptor: args.evaluator_descriptor,
+    };
+    run_validate_with_shells(args.validate, None, Some(&shell))
+}
+
+fn run_validate_with_shells(
     args: ValidateArgs,
     nickel_shell: Option<&NickelExecutionShell>,
+    steel_shell: Option<&SteelExecutionShell>,
 ) -> CliResult<i32> {
     let root = args.root.clone();
     let manifest_path = resolve_under_root(&root, &args.manifest)?;
@@ -758,7 +872,7 @@ fn run_validate_with_nickel_shell(
         .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
     let manifest_projection =
         check_manifest_projection_if_configured(&root, &args, &manifest, &manifest_bytes)?;
-    let suite = materialize_suite(&root, &manifest, nickel_shell)?;
+    let suite = materialize_suite(&root, &manifest, nickel_shell, steel_shell)?;
     let fixture_report = validate_fixture_suite(&suite);
     let golden_report =
         check_golden_receipts(&root, &manifest.fixtures, &fixture_report.results, &args)?;
@@ -902,10 +1016,16 @@ fn materialize_suite(
     root: &Path,
     manifest: &ManifestProjection,
     nickel_shell: Option<&NickelExecutionShell>,
+    steel_shell: Option<&SteelExecutionShell>,
 ) -> CliResult<FixtureSuite> {
     let mut fixtures = Vec::new();
     for projection in &manifest.fixtures {
-        fixtures.push(materialize_fixture(root, projection, nickel_shell)?);
+        fixtures.push(materialize_fixture(
+            root,
+            projection,
+            nickel_shell,
+            steel_shell,
+        )?);
     }
     Ok(FixtureSuite { fixtures })
 }
@@ -914,6 +1034,7 @@ fn materialize_fixture(
     root: &Path,
     projection: &FixtureProjection,
     nickel_shell: Option<&NickelExecutionShell>,
+    steel_shell: Option<&SteelExecutionShell>,
 ) -> CliResult<FixtureCase> {
     let payload = match &projection.payload {
         PayloadProjection::SourceEnvelope {
@@ -984,6 +1105,63 @@ fn materialize_fixture(
                 execution_mode,
             },
         )?),
+        PayloadProjection::SteelAdapterReceipt {
+            schema_version,
+            adapter_kind,
+            source_path,
+            declared_source_identity,
+            evaluator_profile,
+            evaluator_descriptor,
+            evaluator_identity,
+            module_descriptor_path,
+            module_identity,
+            input_schema,
+            output_schema,
+            host_functions,
+            observed_host_functions,
+            declared_builtin_modules,
+            declared_imports,
+            requested_imports,
+            declared_capabilities,
+            observed_effects,
+            effect_class,
+            output_path,
+            output_projection_identity,
+            output_class,
+            claims_canonical_ir,
+            checked_laws,
+            execution_mode,
+        } => FixturePayload::SteelAdapterReceipt(Box::new(materialize_steel_adapter_receipt(
+            root,
+            steel_shell,
+            SteelAdapterProjectionParts {
+                schema_version: *schema_version,
+                adapter_kind,
+                source_path,
+                declared_source_identity,
+                evaluator_profile,
+                evaluator_descriptor,
+                evaluator_identity,
+                module_descriptor_path,
+                module_identity: module_identity.as_ref(),
+                input_schema,
+                output_schema,
+                host_functions,
+                observed_host_functions,
+                declared_builtin_modules,
+                declared_imports,
+                requested_imports,
+                declared_capabilities,
+                observed_effects,
+                effect_class,
+                output_path,
+                output_projection_identity: output_projection_identity.as_ref(),
+                output_class,
+                claims_canonical_ir: *claims_canonical_ir,
+                checked_laws,
+                execution_mode,
+            },
+        )?)),
         PayloadProjection::TargetArtifact {
             target_kind,
             output_path,
@@ -1119,6 +1297,64 @@ fn materialize_nickel_adapter_receipt(
         projection_identity: parts.projection_identity.clone(),
         declared_capabilities: parts.declared_capabilities.to_vec(),
         observed_effects: parts.observed_effects.to_vec(),
+        claims_canonical_ir: parts.claims_canonical_ir,
+        checked_laws: parts.checked_laws.to_vec(),
+    })
+}
+
+fn materialize_steel_adapter_receipt(
+    root: &Path,
+    steel_shell: Option<&SteelExecutionShell>,
+    parts: SteelAdapterProjectionParts<'_>,
+) -> CliResult<SteelAdapterReceiptInput> {
+    let source_bytes = match parts.source_path {
+        Some(path) => read_manifest_bytes(root, path)?,
+        None => Vec::new(),
+    };
+    let output_bytes = match parts.output_path {
+        Some(path) => read_manifest_bytes(root, path)?,
+        None => Vec::new(),
+    };
+    let module_descriptor_bytes = read_manifest_bytes(root, parts.module_descriptor_path)?;
+    let mut evaluator_descriptor = parts.evaluator_descriptor.to_string();
+    let mut evaluator_identity = parts.evaluator_identity.clone();
+    if parts.execution_mode == STEEL_EXECUTION_MODE_DTO_PROBE {
+        if let Some(shell) = steel_shell {
+            evaluator_descriptor = shell.evaluator_descriptor.clone();
+            evaluator_identity = Some(compute_identity(
+                IdentityDomain::Evaluator,
+                evaluator_descriptor.as_bytes(),
+            ));
+        }
+    } else if parts.execution_mode != STEEL_EXECUTION_MODE_STORED_EVIDENCE {
+        return Err(CliError(format!(
+            "unknown Steel execution mode: {}",
+            parts.execution_mode
+        )));
+    }
+    Ok(SteelAdapterReceiptInput {
+        schema_version: parts.schema_version,
+        adapter_kind: parts.adapter_kind.to_string(),
+        source_bytes,
+        source_identity: parts.declared_source_identity.clone(),
+        evaluator_profile: parts.evaluator_profile.to_string(),
+        evaluator_descriptor,
+        evaluator_identity,
+        module_descriptor_bytes,
+        module_identity: parts.module_identity.clone(),
+        input_schema: parts.input_schema.to_string(),
+        output_schema: parts.output_schema.to_string(),
+        host_functions: parts.host_functions.to_vec(),
+        observed_host_functions: parts.observed_host_functions.to_vec(),
+        declared_builtin_modules: parts.declared_builtin_modules.to_vec(),
+        declared_imports: parts.declared_imports.to_vec(),
+        requested_imports: parts.requested_imports.to_vec(),
+        declared_capabilities: parts.declared_capabilities.to_vec(),
+        observed_effects: parts.observed_effects.to_vec(),
+        effect_class: parts.effect_class.to_string(),
+        output_bytes,
+        output_projection_identity: parts.output_projection_identity.clone(),
+        output_class: parts.output_class.clone(),
         claims_canonical_ir: parts.claims_canonical_ir,
         checked_laws: parts.checked_laws.to_vec(),
     })
@@ -1352,6 +1588,7 @@ fn print_help() {
     println!(
         "kamacite-validate validate [--root PATH] [--manifest PATH] [--manifest-source PATH] [--skip-manifest-source-check] [--update-golden] [--update-report PATH]\n\
          kamacite-validate validate-nickel-adapter [--root PATH] [--manifest PATH] [--manifest-source PATH] [--evaluator-command PATH] [--update-golden] [--update-report PATH]\n\
+         kamacite-validate validate-steel-adapter [--root PATH] [--manifest PATH] [--manifest-source PATH] [--evaluator-descriptor TEXT] [--update-golden] [--update-report PATH]\n\
          kamacite-validate hash-file --domain DOMAIN --path PATH\n\
          kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]\n\
          kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]"

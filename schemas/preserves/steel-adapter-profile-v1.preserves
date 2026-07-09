@@ -1,0 +1,10 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "steel-adapter-profile"
+  version: "v1"
+  schema-id: "kamacite.steel-adapter-profile.v1"
+  record-label: "kamacite-steel-adapter-profile-v1"
+  fields: ["schema-version" "adapter-kind" "source-identity" "evaluator-profile" "evaluator-identity" "module-identity" "input-schema" "output-schema" "host-functions" "declared-builtins" "declared-imports" "declared-capabilities" "observed-effects" "effect-class" "output-projection-identity" "output-class" "checked-laws" "non-claims"]
+  identity: "blake3(canonical steel adapter descriptor bytes) in adapter domain"
+  output-identity: "blake3(output projection bytes) in projection domain"
+  non-claims: ["Steel bytecode is not canonical Kamacite IR" "opaque Steel closures are not portable values" "evaluator identity is not evaluator soundness" "declared capabilities are receipt facts, not ambient host authority"]
+}>

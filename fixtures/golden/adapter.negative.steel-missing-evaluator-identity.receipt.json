@@ -1,0 +1,67 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.steel-missing-evaluator-identity",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.steel_adapter_suite.negative_fixtures.missing_evaluator]"
+    ],
+    "input_identities": {
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "checked_laws": [
+      "evaluator-identity-required",
+      "host-function-dto-contract"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.steel_adapter_suite.receipt_profile.evaluator_identity]",
+        "field": "steel.evaluator_identity",
+        "message": "trusted Steel adapter evidence must bind evaluator identity",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "Steel output evidence is untrusted without evaluator identity"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "203c63daf6afeb3a26832f42d8297d6356f6b1f280965549ea8aebb8701130c8"
+  }
+}

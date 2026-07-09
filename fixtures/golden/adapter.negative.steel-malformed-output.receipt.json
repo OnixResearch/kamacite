@@ -1,0 +1,77 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.steel-malformed-output",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.steel_adapter_suite.negative_fixtures.malformed_output]"
+    ],
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "1b177a67c3e7bb8eea9d46dd2591fed49356206d8a37a3637acac1b00f0278b9"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "1b177a67c3e7bb8eea9d46dd2591fed49356206d8a37a3637acac1b00f0278b9"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "checked_laws": [
+      "dto-output-decodes",
+      "host-function-dto-contract"
+    ],
+    "diagnostics": [
+      {
+        "code": "malformed-projection-output",
+        "requirement_id": "r[kamacite.steel_adapter_suite.output_boundary.dto_only]",
+        "field": "steel.output_bytes",
+        "message": "Steel DTO or projection output must decode under the declared schema",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "malformed Steel output is not trusted DTO evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "666f9a93693001a4480b0bd97795f7f12b6f44e15881525167b11d6bc5146686"
+  }
+}

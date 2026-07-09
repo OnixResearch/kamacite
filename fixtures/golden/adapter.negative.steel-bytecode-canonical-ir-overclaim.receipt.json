@@ -1,0 +1,84 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.steel-bytecode-canonical-ir-overclaim",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.steel_adapter_suite.output_boundary.bytecode_not_ir]"
+    ],
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "5a3b0254cc893f929f3c0bd865521e662a4304b57475cbe587c3b0c7db4c2fb8"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "5a3b0254cc893f929f3c0bd865521e662a4304b57475cbe587c3b0c7db4c2fb8"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "checked_laws": [
+      "bytecode-not-canonical-ir",
+      "host-function-dto-contract"
+    ],
+    "diagnostics": [
+      {
+        "code": "canonical-ir-overclaim",
+        "requirement_id": "r[kamacite.steel_adapter_suite.output_boundary.bytecode_not_ir]",
+        "field": "steel.claims_canonical_ir",
+        "message": "Steel adapter output cannot replace canonical Kamacite Preserves IR",
+        "details": {}
+      },
+      {
+        "code": "canonical-ir-overclaim",
+        "requirement_id": "r[kamacite.steel_adapter_suite.output_boundary.bytecode_not_ir]",
+        "field": "steel.output_class",
+        "message": "Steel bytecode, JSON strings, or evaluator-internal values are not canonical IR",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "Steel bytecode and JSON strings are not canonical Kamacite IR"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "298c6466a39fe62d03db010dc828d8486a2a023199d159a446601bb013b7a1b2"
+  }
+}

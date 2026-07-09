@@ -1,0 +1,1 @@
+{"module":"kamacite.dto.probe","imports":["steel/base"],"exports":["probe"],"host_functions":["kamacite.add-one"],"non_claims":["descriptor is not portable closure identity"]}

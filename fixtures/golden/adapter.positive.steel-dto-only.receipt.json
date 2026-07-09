@@ -6,23 +6,71 @@
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[kamacite.lossless_ir.steel_adapter_boundary.host_functions]",
-      "r[kamacite.lossless_ir.steel_adapter_conformance.dto_only]"
+      "r[kamacite.steel_adapter_suite.host_function_boundary.declared_host_functions]",
+      "r[kamacite.steel_adapter_suite.output_boundary.dto_only]",
+      "r[kamacite.steel_adapter_suite.positive_fixtures.dto_only]",
+      "r[kamacite.steel_adapter_suite.receipt_profile.evaluator_identity]"
     ],
-    "input_identities": {},
-    "output_identities": {},
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
     "checked_laws": [
       "declared-host-functions",
-      "dto-only-evaluation"
+      "dto-only-evaluation",
+      "host-function-dto-contract",
+      "output-projection-bound"
     ],
     "diagnostics": [],
     "non_claims": [
-      "not ambient Steel scripting authority"
+      "not Steel evaluator soundness",
+      "not ambient Steel scripting authority",
+      "not canonical Kamacite IR"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "ad6c03c55bf24cc98260b361ead45e4747f28c88a2ef9529a47c55d1c7f127dc"
+    "hex": "bf3a530ef5eaba8a0b86d9630b90e7be434ec69d5e79c1fbc62e7efb43c4a6ab"
   }
 }

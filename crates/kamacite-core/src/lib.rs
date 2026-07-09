@@ -18,8 +18,9 @@ pub use fixture::{
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload,
     FixtureResult, FixtureSuite, FixtureSuiteReport, HandlerDescriptorInput, HandlerReceiptInput,
     IdentityUseInput, NickelAdapterReceiptInput, ReplayProfileInput, SourceEnvelopeInput,
-    StackEvidenceInput, TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict,
-    validate_fixture, validate_fixture_suite,
+    StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass,
+    TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict, validate_fixture,
+    validate_fixture_suite,
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,

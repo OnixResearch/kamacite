@@ -6,32 +6,86 @@
     "artifact_class": "adapter-receipt",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[kamacite.lossless_ir.steel_adapter_boundary.ambient_libraries]",
-      "r[kamacite.lossless_ir.steel_adapter_conformance.ambient_authority]"
+      "r[kamacite.steel_adapter_suite.capability_boundary.mismatch]",
+      "r[kamacite.steel_adapter_suite.host_function_boundary.ambient_import]",
+      "r[kamacite.steel_adapter_suite.negative_fixtures.ambient_authority]"
     ],
-    "input_identities": {},
-    "output_identities": {},
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "8945ab91591ef0cd6b3caa2843789aecc808a039bf202c888fb39108c41fe61e"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
     "checked_laws": [
-      "deny-undeclared-authority"
+      "deny-undeclared-authority",
+      "host-function-dto-contract"
     ],
     "diagnostics": [
       {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.steel_adapter_suite.host_function_boundary.ambient_import]",
+        "field": "steel.requested_imports",
+        "message": "Steel requested ambient authority outside the declared adapter contract",
+        "details": {
+          "import": "filesystem"
+        }
+      },
+      {
         "code": "undeclared-capability",
-        "requirement_id": "r[kamacite.rust_determinism.explicit_capabilities.filesystem]",
-        "field": "adapter.observed_effects",
-        "message": "observed host effect was not declared by adapter descriptor",
+        "requirement_id": "r[kamacite.steel_adapter_suite.capability_boundary]",
+        "field": "steel.observed_effects",
+        "message": "observed Steel adapter effect exceeded declared capabilities",
         "details": {
           "effect": "filesystem"
         }
       }
     ],
     "non_claims": [
-      "ambient filesystem denied"
+      "ambient filesystem denied",
+      "declaring Steel evaluation does not grant host authority"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "8d442ba1eb39d491abff2a7a5c4986e61a4e56c0c14fe7c8cf6bbea175e60ad7"
+    "hex": "92901d785aa8c4675975f6828791f8f248fd6e4bc9eae8907467fff5a41bbb48"
   }
 }

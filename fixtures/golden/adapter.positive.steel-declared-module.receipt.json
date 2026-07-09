@@ -1,0 +1,73 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.positive.steel-declared-module",
+    "artifact_class": "adapter-receipt",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.steel_adapter_suite.capability_boundary.root_relative]",
+      "r[kamacite.steel_adapter_suite.positive_fixtures.declared_module]",
+      "r[kamacite.steel_adapter_suite.receipt_profile.source_module_identity]"
+    ],
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "16a4492b01b703597130f18c2dd17bdbd9f700043820eff791900f02c5d04a25"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "16a4492b01b703597130f18c2dd17bdbd9f700043820eff791900f02c5d04a25"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "checked_laws": [
+      "declared-module-imports",
+      "host-function-dto-contract",
+      "root-relative-fixture-read"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "declared module descriptor is not portable closure identity",
+      "not ambient module loading"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "17f4dfd2037056b93bdbd59bffd84e6a1f7eca27e87260276098ab48abe9d206"
+  }
+}
