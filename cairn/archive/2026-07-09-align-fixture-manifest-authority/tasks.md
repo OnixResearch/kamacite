@@ -12,4 +12,4 @@
 ## Phase 3: Verification and archive
 
 - [x] [serial] Run Rust tests, harness validation, Cairn validation, and change gates. r[kamacite.validation_harness.fixture_manifest.projection_freshness]
-- [ ] [serial] Sync accepted specs and archive the completed change. r[kamacite.validation_harness.fixture_manifest.full_corpus_authority]
+- [x] [serial] Sync accepted specs and archive the completed change. r[kamacite.validation_harness.fixture_manifest.full_corpus_authority]
