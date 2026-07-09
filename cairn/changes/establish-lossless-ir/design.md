@@ -54,7 +54,15 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rationale:** This preserves functional-core / imperative-shell boundaries and gives tests a pure unit under test. Nickel remains the reviewable authoring language for configs/contracts. Steel remains bounded dynamic predicate/probe logic without ambient host authority.
 
-### 8. Use WebAssembly only as a target or sandbox boundary
+### 8. Integrate Steel as a bounded adapter/probe evaluator
+
+**Choice:** Braid uses Steel as a bounded adapter/probe language through explicit engine identity, typed Rust host-function registration, declared built-in modules, module contracts, and deterministic receipts. Braid denies ambient filesystem, process, TCP, random, time, package, dylib, credential, and mutation authority by default. Steel bytecode, opaque closures, and JSON strings are not Braid canonical IR.
+
+**Rationale:** Steel is designed as an embeddable Scheme implemented in Rust, with a bytecode VM, modules, Rust function registration, value conversions, and higher-order contracts. Those features fit Braid's adapter/probe layer, especially for dynamic predicates over declared DTO inputs. They do not replace Braid's Preserves-backed value/source identity or source-envelope non-claims.
+
+**Rejected alternative:** Treat Steel as an unrestricted scripting host or as the canonical representation for Braid values. This would reintroduce ambient authority and confuse evaluation behavior with artifact identity.
+
+### 9. Use WebAssembly only as a target or sandbox boundary
 
 **Choice:** Braid does not use WebAssembly as the canonical IR. WASM may be used later as a portable target for validators, conformance probes, or untrusted adapters whose inputs and outputs are Braid IR/source-envelope bytes plus deterministic receipts.
 
@@ -62,7 +70,7 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
 
-### 9. Integrate with Valence and Octet through receipts first
+### 10. Integrate with Valence and Octet through receipts first
 
 **Choice:** Braid uses Valence closely as the evidence/linkage integration target and Octet closely as the checked Rust/provenance rail, but neither repo owns Braid's canonical IR. Initial integration is by exported Braid receipts, source spans, stable IDs, and fixtures rather than direct crate dependencies.
 

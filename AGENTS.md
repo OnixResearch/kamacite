@@ -25,7 +25,8 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 - Nickel remains the preferred human-authored contract/config language.
 - Nickel integration must preserve source envelopes separately from `nickel export` projections; use Nickel's reference CLI/crates for evaluation semantics instead of reimplementing them.
 - Rust owns pure validation cores, canonicalization, hashing, adapter DTOs, and receipts.
-- Steel Scheme is bounded adapter/probe logic only; do not grant ambient filesystem, process, network, credential, or mutation authority.
+- Steel Scheme is bounded adapter/probe logic only; do not grant ambient filesystem, process, network, credential, clock, random, dylib, package-manager, or mutation authority by default.
+- Steel integration should use explicit Engine/evaluator identity, typed host-function registration, declared built-in modules, module contracts, and deterministic receipts. Do not treat Steel bytecode, opaque closures, or JSON strings as Braid canonical IR.
 - WebAssembly is an optional adapter/validator target, not Braid's IR. WASM inputs and outputs must remain Braid IR/source-envelope bytes plus deterministic receipts.
 - Valence is the evidence/linkage integration target for Braid receipts; Braid still owns source preservation, value interchange, adapter classes, and round-trip claims.
 - Octet is the checked Rust/provenance rail for future Braid Rust code; do not treat Octet findings as proof of Nickel/Rust/Steel semantic equivalence.

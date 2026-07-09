@@ -40,6 +40,27 @@ Braid should integrate Nickel as a source language and adapter, not fork or reim
 - Use tree-sitter Nickel for syntax/spans and editor-grade source indexing; do not treat syntax parsing as evaluation.
 - Use generated contract corpora, such as SchemaStore-derived contracts, as stress fixtures rather than as Braid-owned schema authority.
 
+## Steel integration boundary
+
+Braid should integrate Steel as a bounded adapter/probe language, not as the canonical IR and not as an ambient scripting environment.
+
+Adopt or adapt these Steel patterns:
+
+- `Engine` embedding for controlled evaluation fixtures, with evaluator/version identity recorded in receipts.
+- Rust `register_fn` / `IntoSteelVal` / `FromSteelVal` style typed host-function boundaries for Braid adapter ABIs.
+- Built-in module registration for explicitly declared Braid host functions.
+- Steel `provide`/`require` and contract exports as the model for module-boundary claims.
+- Higher-order contracts only when callables are descriptor-bound, hash-bound, and receipt-bound.
+
+Do not adopt these by default:
+
+- Ambient filesystem, process, TCP, random, time, package, or dylib loading authority.
+- Steel bytecode as Braid IR.
+- Opaque Steel closures as portable values across Braid boundaries.
+- JSON serialization as anything more than a compatibility projection.
+
+A Steel adapter should consume Braid IR/source-envelope bytes or declared DTO values and emit a deterministic Braid receipt. Any host capability must be declared before evaluation and denied by default.
+
 ## Current status
 
 This repo is bootstrapped with native Cairn lifecycle artifacts. The first active change is:
@@ -70,6 +91,7 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 - [nickel-lang/tree-sitter-nickel](https://github.com/nickel-lang/tree-sitter-nickel) — reference parser for Nickel syntax, spans, and source-envelope indexing without claiming evaluation semantics.
 - [nickel-lang/json-scanner](https://github.com/nickel-lang/json-scanner) — reference for JSON projection parsing with byte positions and number lexeme preservation.
 - [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated Nickel contract corpus suitable for stress fixtures and schema-conversion regression cases.
+- [mattwparas/steel](https://github.com/mattwparas/steel) — reference implementation for embedded Steel evaluation, typed Rust host-function registration, module boundaries, and higher-order contract patterns used only as bounded adapter/probe surfaces.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
 - [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.

@@ -106,6 +106,34 @@ r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
 - WHEN Braid validates the evaluation request or receipt
 - THEN validation MUST deny the request or receipt deterministically without evaluating the undeclared host action.
 
+### Requirement: Steel adapter integration boundary
+
+r[braid.lossless_ir.steel_adapter_boundary] Braid MUST treat Steel as a bounded adapter/probe evaluator rather than canonical IR. Steel adapters MUST declare evaluator identity, source identity, input DTO schema, host functions, module imports, required capabilities, effect class, and receipt schema before their results are trusted.
+
+#### Scenario: Steel host functions are declared
+
+r[braid.lossless_ir.steel_adapter_boundary.host_functions]
+
+- GIVEN a Steel adapter calls a Rust host function registered through the evaluator
+- WHEN Braid validates the adapter descriptor or receipt
+- THEN the host function MUST be declared with its input/output DTO contract, effect class, and required capabilities before evaluation is trusted.
+
+#### Scenario: Steel contracts stay boundary-local
+
+r[braid.lossless_ir.steel_adapter_boundary.contract_exports]
+
+- GIVEN a Steel module exports functions with contracts or higher-order callables
+- WHEN Braid records the adapter output
+- THEN the receipt MUST bind exported callable descriptors by stable id, arity, source hash, input/output contracts, and non-claims instead of exporting opaque closures as canonical Braid values.
+
+#### Scenario: Ambient Steel libraries fail closed
+
+r[braid.lossless_ir.steel_adapter_boundary.ambient_libraries]
+
+- GIVEN Steel code imports or requests filesystem, process, TCP, random, time, package, dylib, credential, or mutation authority not declared in the adapter contract
+- WHEN Braid validates the adapter request or receipt
+- THEN validation MUST fail closed with a deterministic undeclared-authority diagnostic.
+
 ### Requirement: Nickel reference integration boundary
 
 r[braid.lossless_ir.nickel_reference_boundary] Braid MUST treat upstream Nickel tooling as the authority for Nickel evaluation/export semantics while Braid owns source-envelope preservation, projection classification, and receipt identity. Nickel syntax parsers, schema-to-contract generators, and generated contract corpora MAY be used as adapters or fixtures, but they MUST NOT replace Braid's Preserves-backed canonical identity.

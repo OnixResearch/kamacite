@@ -13,6 +13,8 @@
 - [ ] [parallel] Add tree-sitter Nickel span fixtures that support source indexing without claiming evaluation semantics. r[braid.lossless_ir.nickel_reference_boundary.parser_spans]
 - [ ] [parallel] Add schema-generated Nickel contract fixtures, including generated-corpus stress cases, that remain fixture inputs rather than Braid schema authority. r[braid.lossless_ir.nickel_reference_boundary.generated_contracts]
 - [ ] [parallel] Add Steel positive and negative fixtures that prove DTO-only evaluation and fail closed for undeclared host authority. r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
+- [ ] [parallel] Add Steel host-function and module-contract fixtures that bind evaluator identity, registered functions, callable descriptors, effect classes, and non-claims. r[braid.lossless_ir.steel_adapter_boundary.host_functions] r[braid.lossless_ir.steel_adapter_boundary.contract_exports]
+- [ ] [parallel] Add Steel ambient-library negative fixtures for filesystem, process, TCP, random, time, package, dylib, credential, and mutation requests. r[braid.lossless_ir.steel_adapter_boundary.ambient_libraries]
 - [ ] [parallel] Add canonical value fixtures that round-trip through Preserves and reject stale hashes or lossy JSON projections. r[braid.lossless_ir.round_trip_evidence]
 - [ ] [parallel] Add WASM target fixtures that prove adapter receipts stay Preserves-backed and reject compiled WASM as canonical IR. r[braid.lossless_ir.wasm_target_boundary]
 - [ ] [parallel] Add Valence export fixtures for Braid receipts with stable IDs, spans, roles, hashes, and non-claims. r[braid.lossless_ir.stack_evidence_boundary.valence_receipts]
