@@ -1642,6 +1642,220 @@
         "semantic_claims": [],
         "declared_export_identity": null
       }
+    },
+    {
+      "id": "fsm-spec.positive.complete-denial-coverage",
+      "fixture_class": "positive",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]",
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.complete]",
+        "r[kamacite.fsms.completeness_matrix.complete_table]",
+        "r[kamacite.fsms.completeness_matrix.explicit_denial]"
+      ],
+      "non_claims": ["not runtime correctness", "not protocol completeness", "not liveness proof"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["total-pair-coverage", "declared-guard-use", "denial-preserves-state"],
+      "golden_receipt": "fixtures/golden/fsm-spec.positive.complete-denial-coverage.receipt.json",
+      "payload": {
+        "kind": "fsm-spec",
+        "schema_version": 1,
+        "fsm_id": "fixture.lifecycle",
+        "canonical_path": "fixtures/core/fsm/complete-spec.preserves",
+        "source_envelope_identity": null,
+        "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"},
+        "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}],
+        "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}],
+        "initial_state": "idle",
+        "terminal_states": [],
+        "intentionally_unreachable_states": [],
+        "determinism_policy": "deterministic",
+        "totality_policy": "all-state-event-pairs-explicit",
+        "guards": [{"guard_id": "has-authority", "required_evidence_refs": ["authority-ref"], "non_claims": ["guard evidence is not host authority"]}],
+        "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}],
+        "transitions": [
+          {"from_state": "idle", "event": "start", "to_state": "active", "guards": ["has-authority"], "side_effect": "admit"},
+          {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}
+        ],
+        "denials": [
+          {"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true},
+          {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}
+        ],
+        "checked_laws": ["total-pair-coverage", "declared-guard-use", "denial-preserves-state"],
+        "non_claims": ["not runtime correctness", "not protocol completeness", "not liveness proof"]
+      }
+    },
+    {
+      "id": "fsm-spec.negative.missing-denial-coverage",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.missing_denial]", "r[kamacite.fsms.fixture_corpus.negative_missing_cell]"],
+      "non_claims": ["missing FSM cells are not trusted"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["missing-pair-coverage-fails-closed"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.missing-denial-coverage.receipt.json",
+      "payload": {
+        "kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.missing", "canonical_path": "fixtures/core/fsm/missing-coverage.preserves", "source_envelope_identity": null,
+        "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "f14a6b4b684b70e6b7b59f9b73e2cc1914e429f63c30bc2c06b31725f386a03e"},
+        "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [{"guard_id": "has-authority", "required_evidence_refs": ["authority-ref"], "non_claims": ["guard evidence is not host authority"]}], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}],
+        "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": ["has-authority"], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}],
+        "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}],
+        "checked_laws": ["missing-pair-coverage-fails-closed"], "non_claims": ["missing FSM cells are not trusted"]
+      }
+    },
+    {
+      "id": "fsm-spec.negative.duplicate-transition",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.duplicate]", "r[kamacite.fsms.fixture_corpus.negative_conflict]"],
+      "non_claims": ["duplicate transition rows are not deterministic evidence"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["duplicate-transition-fails-closed"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.duplicate-transition.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.duplicate", "canonical_path": "fixtures/core/fsm/duplicate-transition.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "28a40ffe2060fbc8c01371d9b64f96093dc0ac66e6e1c3a87772a3a8326f3f01"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": [], "side_effect": "admit"}, {"from_state": "idle", "event": "start", "to_state": "idle", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["duplicate-transition-fails-closed"], "non_claims": ["duplicate transition rows are not deterministic evidence"]}
+    },
+    {
+      "id": "fsm-spec.negative.wildcard-row",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_spec_vocabulary.no_wildcards.reject]"],
+      "non_claims": ["wildcard FSM rows are not complete coverage"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["wildcards-rejected"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.wildcard-row.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.wildcard", "canonical_path": "fixtures/core/fsm/wildcard-row.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "a806d0a6dc2d2e2ecc93fcf90a158c02a50c33a999d7ba008f15cf1864d128e7"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "*", "to_state": "active", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["wildcards-rejected"], "non_claims": ["wildcard FSM rows are not complete coverage"]}
+    },
+    {
+      "id": "fsm-spec.negative.undeclared-guard",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects.undeclared_guard]"],
+      "non_claims": ["undeclared guards cannot partition coverage"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["declared-guard-use"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.undeclared-guard.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.undeclared-guard", "canonical_path": "fixtures/core/fsm/undeclared-guard.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "80a68c3368cfe18bb123df9b40d2996293e72bb370ded49ff5578f0105f194a6"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [{"guard_id": "has-authority", "required_evidence_refs": ["authority-ref"], "non_claims": ["guard evidence is not host authority"]}], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": ["missing-guard"], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["declared-guard-use"], "non_claims": ["undeclared guards cannot partition coverage"]}
+    },
+    {
+      "id": "fsm-spec.negative.unknown-endpoint",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes.references]"],
+      "non_claims": ["unknown state or event references are not trusted"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["closed-universe-references"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.unknown-endpoint.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.unknown-endpoint", "canonical_path": "fixtures/core/fsm/unknown-endpoint.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "a3d95f3392af9a81455aa4ea9d1a9e4df7b19d786bd75a44c5ae28d7ab863e28"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "missing", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["closed-universe-references"], "non_claims": ["unknown state or event references are not trusted"]}
+    },
+    {
+      "id": "fsm-spec.negative.stale-identity",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.fsms.fixture_corpus.negative_stale_identity]"],
+      "non_claims": ["stale FSM identities are not trusted"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["fsm-identity-matches-canonical-bytes"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.stale-identity.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.stale", "canonical_path": "fixtures/core/fsm/stale-identity.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "0000000000000000000000000000000000000000000000000000000000000000"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["fsm-identity-matches-canonical-bytes"], "non_claims": ["stale FSM identities are not trusted"]}
+    },
+    {
+      "id": "fsm-spec.negative.wrong-identity-domain",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_receipt_vocabulary.identity_domain]"],
+      "non_claims": ["FSM identity domains are not interchangeable"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["typed-fsm-identity-domain"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.wrong-identity-domain.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.wrong-domain", "canonical_path": "fixtures/core/fsm/wrong-domain.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "canonical-value", "algorithm": "blake3", "hex": "feb392a76af0b611b84bfe572ebd9fe66d90523723e1cb3d0a71cd8522a282b7"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["typed-fsm-identity-domain"], "non_claims": ["FSM identity domains are not interchangeable"]}
+    },
+    {
+      "id": "fsm-spec.negative.missing-non-claims",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]"],
+      "non_claims": ["payload-level non-claims are required"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["fsm-non-claims-required"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.missing-non-claims.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.missing-non-claims", "canonical_path": "fixtures/core/fsm/missing-non-claims.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "686fc68583ede916b4262ee0cecb749811e7e24fa4e6aa9beef0350a1916597e"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["fsm-non-claims-required"], "non_claims": []}
+    },
+    {
+      "id": "fsm-spec.negative.host-authority-confusion",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.fsms.fixture_corpus.negative_host_confusion]"],
+      "non_claims": ["transition effects are symbolic data only"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["actions-do-not-grant-authority"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.host-authority-confusion.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.host-confusion", "canonical_path": "fixtures/core/fsm/host-confusion.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "f04f42082b66b582574abf0e560497d492bc9589668338bbbd59b059f8dded4c"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "filesystem-effect", "class": "filesystem"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": [], "side_effect": "filesystem-effect"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "filesystem-effect"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["actions-do-not-grant-authority"], "non_claims": ["transition effects are symbolic data only"]}
+    },
+    {
+      "id": "fsm-spec.negative.terminal-outgoing",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.fsms.reachability_terminal_policy.terminal_outgoing]"],
+      "non_claims": ["terminal transitions need explicit accepted restart policy"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["terminal-outgoing-fails-closed"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.terminal-outgoing.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.terminal-outgoing", "canonical_path": "fixtures/core/fsm/terminal-outgoing.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "8e0093d68ab4a894a9f0b4f0afbed31c1c98e2142b276c0971d80bbd7e482411"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "done", "label": "Done"}], "events": [{"event_id": "finish", "label": "Finish"}, {"event_id": "reset", "label": "Reset"}], "initial_state": "idle", "terminal_states": ["done"], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "finish", "to_state": "done", "guards": [], "side_effect": "admit"}, {"from_state": "done", "event": "reset", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "reset", "reason": "not-done", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "done", "event": "finish", "reason": "already-done", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["terminal-outgoing-fails-closed"], "non_claims": ["terminal transitions need explicit accepted restart policy"]}
+    },
+    {
+      "id": "fsm-spec.negative.unreachable-unmarked",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-spec",
+      "requirement_ids": ["r[kamacite.fsms.reachability_terminal_policy.unreachable_unmarked]"],
+      "non_claims": ["unreachable states require reviewed metadata"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["unreachable-state-fails-closed"],
+      "golden_receipt": "fixtures/golden/fsm-spec.negative.unreachable-unmarked.receipt.json",
+      "payload": {"kind": "fsm-spec", "schema_version": 1, "fsm_id": "fixture.lifecycle.unreachable", "canonical_path": "fixtures/core/fsm/unreachable-unmarked.preserves", "source_envelope_identity": null, "declared_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "d96de5fef1cc205a32381e0446f5fadcdc45d6eef8720893854cb74d5585e349"}, "states": [{"state_id": "idle", "label": "Idle"}, {"state_id": "active", "label": "Active"}, {"state_id": "orphan", "label": "Orphan"}], "events": [{"event_id": "start", "label": "Start"}, {"event_id": "stop", "label": "Stop"}], "initial_state": "idle", "terminal_states": [], "intentionally_unreachable_states": [], "determinism_policy": "deterministic", "totality_policy": "all-state-event-pairs-explicit", "guards": [], "side_effects": [{"effect_id": "none", "class": "no-side-effect"}, {"effect_id": "admit", "class": "symbolic"}], "transitions": [{"from_state": "idle", "event": "start", "to_state": "active", "guards": [], "side_effect": "admit"}, {"from_state": "active", "event": "stop", "to_state": "idle", "guards": [], "side_effect": "admit"}], "denials": [{"from_state": "idle", "event": "stop", "reason": "already-idle", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "active", "event": "start", "reason": "already-active", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "orphan", "event": "start", "reason": "unreachable", "guards": [], "side_effect": "none", "preserves_state": true}, {"from_state": "orphan", "event": "stop", "reason": "unreachable", "guards": [], "side_effect": "none", "preserves_state": true}], "checked_laws": ["unreachable-state-fails-closed"], "non_claims": ["unreachable states require reviewed metadata"]}
+    },
+    {
+      "id": "fsm-receipt.positive.exhaustiveness-octet-valence",
+      "fixture_class": "positive",
+      "artifact_class": "fsm-receipt",
+      "requirement_ids": ["r[kamacite.lossless_ir.fsm_receipt_vocabulary.checked_claim]", "r[kamacite.stack_integration.fsm_valence_export.projection]", "r[kamacite.stack_integration.fsm_octet_interop.source_shape]"],
+      "non_claims": ["Octet evidence is source-shape only", "Valence export is derived evidence", "not runtime correctness"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["total-pair-coverage", "non-claim-preservation"],
+      "golden_receipt": "fixtures/golden/fsm-receipt.positive.exhaustiveness-octet-valence.receipt.json",
+      "payload": {"kind": "fsm-receipt", "schema_version": 1, "receipt_kind": "exhaustiveness", "canonical_path": "fixtures/core/fsm/receipt-exhaustiveness.preserves", "spec_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"}, "state_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"}, "event_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"}, "transition_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"}, "denial_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"}, "adapter_identity": {"domain": "adapter", "algorithm": "blake3", "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"}, "dependency_identities": [], "octet_receipt_identities": [{"domain": "receipt", "algorithm": "blake3", "hex": "c07707d770698c323a37eb79283fbb9ca2033aee7b0ada926cb368a0f34edba3"}], "valence_export_identity": {"domain": "projection", "algorithm": "blake3", "hex": "cd7e6ade061bf11ba4fb7be2dbce5a7106e5f9f5318a82b9198b93c8672af8a7"}, "checked_laws": ["total-pair-coverage", "non-claim-preservation"], "diagnostics": [], "non_claims": ["Octet evidence is source-shape only", "Valence export is derived evidence", "not runtime correctness"], "semantic_claims": [], "declared_receipt_identity": {"domain": "receipt", "algorithm": "blake3", "hex": "4c74f74e7580c6ad40e0ddd45dfb0454797b70c889ebf47d0f020a74bad924a6"}, "trace_start_state": null, "trace_events": [], "trace_steps": [], "trace_final_state": null}
+    },
+    {
+      "id": "fsm-receipt.negative.semantic-overclaim",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-receipt",
+      "requirement_ids": ["r[kamacite.stack_integration.fsm_valence_export.non_claims]", "r[kamacite.stack_integration.fsm_octet_interop.overclaim]"],
+      "non_claims": ["FSM receipts do not prove protocol completeness or liveness"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["semantic-overclaim-rejected"],
+      "golden_receipt": "fixtures/golden/fsm-receipt.negative.semantic-overclaim.receipt.json",
+      "payload": {"kind": "fsm-receipt", "schema_version": 1, "receipt_kind": "exhaustiveness", "canonical_path": "fixtures/core/fsm/receipt-overclaim.preserves", "spec_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"}, "state_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"}, "event_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"}, "transition_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"}, "denial_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"}, "adapter_identity": {"domain": "adapter", "algorithm": "blake3", "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"}, "dependency_identities": [], "octet_receipt_identities": [{"domain": "receipt", "algorithm": "blake3", "hex": "c07707d770698c323a37eb79283fbb9ca2033aee7b0ada926cb368a0f34edba3"}], "valence_export_identity": {"domain": "projection", "algorithm": "blake3", "hex": "cd7e6ade061bf11ba4fb7be2dbce5a7106e5f9f5318a82b9198b93c8672af8a7"}, "checked_laws": ["semantic-overclaim-rejected"], "diagnostics": [], "non_claims": ["FSM receipts do not prove protocol completeness or liveness"], "semantic_claims": ["proves protocol completeness and liveness"], "declared_receipt_identity": {"domain": "receipt", "algorithm": "blake3", "hex": "006992127873a0c5af5d0d440cc7e1e15d3955348c3226a040a31fe2e449a4ea"}, "trace_start_state": null, "trace_events": [], "trace_steps": [], "trace_final_state": null}
+    },
+    {
+      "id": "fsm-receipt.positive.trace-path",
+      "fixture_class": "positive",
+      "artifact_class": "fsm-receipt",
+      "requirement_ids": ["r[kamacite.fsms.trace_receipts.valid_path]"],
+      "non_claims": ["trace consistency is not runtime correctness"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["trace-path-consistency"],
+      "golden_receipt": "fixtures/golden/fsm-receipt.positive.trace-path.receipt.json",
+      "payload": {"kind": "fsm-receipt", "schema_version": 1, "receipt_kind": "trace", "canonical_path": "fixtures/core/fsm/trace-valid.preserves", "spec_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"}, "state_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"}, "event_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"}, "transition_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"}, "denial_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"}, "adapter_identity": {"domain": "adapter", "algorithm": "blake3", "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"}, "dependency_identities": [], "octet_receipt_identities": [], "valence_export_identity": null, "checked_laws": ["trace-path-consistency"], "diagnostics": [], "non_claims": ["trace consistency is not runtime correctness"], "semantic_claims": [], "declared_receipt_identity": {"domain": "receipt", "algorithm": "blake3", "hex": "d1e2cdce1eb175680915d7a5b9cab1a0995d29345df7ee0c335912a69adc05a3"}, "trace_start_state": "idle", "trace_events": ["start", "stop"], "trace_steps": [{"from_state": "idle", "event": "start", "to_state": "active"}, {"from_state": "active", "event": "stop", "to_state": "idle"}], "trace_final_state": "idle"}
+    },
+    {
+      "id": "fsm-receipt.negative.impossible-trace",
+      "fixture_class": "negative",
+      "artifact_class": "fsm-receipt",
+      "requirement_ids": ["r[kamacite.fsms.trace_receipts.impossible_transition]"],
+      "non_claims": ["impossible trace paths are not trusted evidence"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["impossible-trace-rejected"],
+      "golden_receipt": "fixtures/golden/fsm-receipt.negative.impossible-trace.receipt.json",
+      "payload": {"kind": "fsm-receipt", "schema_version": 1, "receipt_kind": "trace", "canonical_path": "fixtures/core/fsm/trace-impossible.preserves", "spec_identity": {"domain": "fsm-spec", "algorithm": "blake3", "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"}, "state_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"}, "event_universe_identity": {"domain": "fsm-universe", "algorithm": "blake3", "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"}, "transition_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"}, "denial_coverage_identity": {"domain": "fsm-coverage", "algorithm": "blake3", "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"}, "adapter_identity": {"domain": "adapter", "algorithm": "blake3", "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"}, "dependency_identities": [], "octet_receipt_identities": [], "valence_export_identity": null, "checked_laws": ["impossible-trace-rejected"], "diagnostics": [], "non_claims": ["impossible trace paths are not trusted evidence"], "semantic_claims": [], "declared_receipt_identity": {"domain": "receipt", "algorithm": "blake3", "hex": "ea50a9680a2b6d02481c52bc55ddcd46be4f85fa1c4c8b9c69d098e64b88eea4"}, "trace_start_state": "idle", "trace_events": ["stop"], "trace_steps": [{"from_state": "active", "event": "stop", "to_state": "idle"}], "trace_final_state": "idle"}
     }
   ]
 }

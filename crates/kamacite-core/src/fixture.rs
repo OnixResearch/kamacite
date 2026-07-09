@@ -83,6 +83,44 @@ const REQUIREMENT_STEEL_BYTECODE_NOT_IR: &str =
     "r[kamacite.steel_adapter_suite.output_boundary.bytecode_not_ir]";
 const REQUIREMENT_STEEL_CAPABILITY_BOUNDARY: &str =
     "r[kamacite.steel_adapter_suite.capability_boundary]";
+const REQUIREMENT_FSM_SPEC_VERSION: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.unsupported_version]";
+const REQUIREMENT_FSM_SPEC_IDENTITY: &str = "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]";
+const REQUIREMENT_FSM_CLOSED_UNIVERSES: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes]";
+const REQUIREMENT_FSM_DUPLICATE_UNIVERSE: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes.duplicates]";
+const REQUIREMENT_FSM_UNKNOWN_ENDPOINT: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes.references]";
+const REQUIREMENT_FSM_COVERAGE: &str = "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage]";
+const REQUIREMENT_FSM_MISSING_DENIAL: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.missing_denial]";
+const REQUIREMENT_FSM_DUPLICATE_COVERAGE: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.duplicate]";
+const REQUIREMENT_FSM_NO_WILDCARDS: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.no_wildcards.reject]";
+const REQUIREMENT_FSM_GUARDS_EFFECTS: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects]";
+const REQUIREMENT_FSM_UNDECLARED_GUARD: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects.undeclared_guard]";
+const REQUIREMENT_FSM_DENIAL_BOUNDARY: &str =
+    "r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects.denial]";
+const REQUIREMENT_FSM_RECEIPT: &str =
+    "r[kamacite.lossless_ir.fsm_receipt_vocabulary.checked_claim]";
+const REQUIREMENT_FSM_RECEIPT_IDENTITY: &str =
+    "r[kamacite.lossless_ir.fsm_receipt_vocabulary.identity_domain]";
+const REQUIREMENT_FSM_VALIDATION: &str = "r[kamacite.lossless_ir.fsm_validation.pure]";
+const REQUIREMENT_FSM_REACHABILITY: &str =
+    "r[kamacite.fsms.reachability_terminal_policy.unreachable_unmarked]";
+const REQUIREMENT_FSM_TERMINAL: &str =
+    "r[kamacite.fsms.reachability_terminal_policy.terminal_outgoing]";
+const REQUIREMENT_FSM_TRACE: &str = "r[kamacite.fsms.trace_receipts.valid_path]";
+const REQUIREMENT_FSM_TRACE_IMPOSSIBLE: &str =
+    "r[kamacite.fsms.trace_receipts.impossible_transition]";
+const REQUIREMENT_FSM_STACK_VALENCE: &str =
+    "r[kamacite.stack_integration.fsm_valence_export.non_claims]";
+const REQUIREMENT_FSM_STACK_OCTET: &str =
+    "r[kamacite.stack_integration.fsm_octet_interop.source_shape]";
 const NICKEL_ADAPTER_KIND: &str = "nickel-export";
 const NICKEL_REFERENCE_EVALUATOR_PROFILE: &str = "nickel-reference-cli";
 const STEEL_ADAPTER_KIND: &str = "steel-dto-probe";
@@ -101,6 +139,22 @@ const AMBIENT_STEEL_AUTHORITIES: &[&str] = &[
     "random",
     "tcp",
     "time",
+];
+const FSM_DETERMINISTIC_POLICY: &str = "deterministic";
+const FSM_EXHAUSTIVENESS_RECEIPT_KIND: &str = "exhaustiveness";
+const FSM_TRACE_RECEIPT_KIND: &str = "trace";
+const FSM_NO_SIDE_EFFECT_CLASS: &str = "no-side-effect";
+const FSM_DENIAL_SIDE_EFFECT_CLASS: &str = "denial";
+const FSM_WILDCARD_MARKERS: &[&str] = &["*", "default", "otherwise", "catch-all"];
+const FSM_FORBIDDEN_CLAIMS: &[&str] = &[
+    "semantic correctness",
+    "semantic equivalence",
+    "semantic-equivalence",
+    "runtime correctness",
+    "protocol completeness",
+    "liveness",
+    "verifier soundness",
+    "release eligibility",
 ];
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -142,6 +196,8 @@ pub enum ArtifactClass {
     AlgebraicEffect,
     StackEvidence,
     ValenceReceiptExport,
+    FsmSpec,
+    FsmReceipt,
 }
 
 impl ArtifactClass {
@@ -158,6 +214,8 @@ impl ArtifactClass {
             Self::AlgebraicEffect => "algebraic-effect",
             Self::StackEvidence => "stack-evidence",
             Self::ValenceReceiptExport => "valence-receipt-export",
+            Self::FsmSpec => "fsm-spec",
+            Self::FsmReceipt => "fsm-receipt",
         }
     }
 }
@@ -189,6 +247,8 @@ pub enum FixturePayload {
     StackEvidence(StackEvidenceInput),
     AlgebraicEffect(Box<AlgebraicEffectInput>),
     ValenceReceiptExport(Box<ValenceReceiptExportInput>),
+    FsmSpec(Box<FsmSpecInput>),
+    FsmReceipt(Box<FsmReceiptInput>),
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -389,6 +449,104 @@ pub struct AlgebraicEffectInput {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmStateInput {
+    pub state_id: String,
+    pub label: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmEventInput {
+    pub event_id: String,
+    pub label: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmGuardInput {
+    pub guard_id: String,
+    pub required_evidence_refs: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmSideEffectInput {
+    pub effect_id: String,
+    pub class: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmTransitionRowInput {
+    pub from_state: String,
+    pub event: String,
+    pub to_state: String,
+    pub guards: Vec<String>,
+    pub side_effect: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmDenialRowInput {
+    pub from_state: String,
+    pub event: String,
+    pub reason: String,
+    pub guards: Vec<String>,
+    pub side_effect: String,
+    pub preserves_state: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmSpecInput {
+    pub schema_version: u32,
+    pub fsm_id: String,
+    pub canonical_bytes: Vec<u8>,
+    pub source_envelope_identity: Option<Identity>,
+    pub declared_identity: Identity,
+    pub states: Vec<FsmStateInput>,
+    pub events: Vec<FsmEventInput>,
+    pub initial_state: String,
+    pub terminal_states: Vec<String>,
+    pub intentionally_unreachable_states: Vec<String>,
+    pub determinism_policy: String,
+    pub totality_policy: String,
+    pub guards: Vec<FsmGuardInput>,
+    pub side_effects: Vec<FsmSideEffectInput>,
+    pub transitions: Vec<FsmTransitionRowInput>,
+    pub denials: Vec<FsmDenialRowInput>,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmTraceStepInput {
+    pub from_state: String,
+    pub event: String,
+    pub to_state: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmReceiptInput {
+    pub schema_version: u32,
+    pub receipt_kind: String,
+    pub canonical_bytes: Vec<u8>,
+    pub spec_identity: Identity,
+    pub state_universe_identity: Identity,
+    pub event_universe_identity: Identity,
+    pub transition_coverage_identity: Identity,
+    pub denial_coverage_identity: Identity,
+    pub adapter_identity: Identity,
+    pub dependency_identities: Vec<Identity>,
+    pub octet_receipt_identities: Vec<Identity>,
+    pub valence_export_identity: Option<Identity>,
+    pub checked_laws: Vec<String>,
+    pub diagnostics: Vec<String>,
+    pub non_claims: Vec<String>,
+    pub semantic_claims: Vec<String>,
+    pub declared_receipt_identity: Option<Identity>,
+    pub trace_start_state: Option<String>,
+    pub trace_events: Vec<String>,
+    pub trace_steps: Vec<FsmTraceStepInput>,
+    pub trace_final_state: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FixtureSuite {
     pub fixtures: Vec<FixtureCase>,
 }
@@ -478,6 +636,8 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         FixturePayload::ValenceReceiptExport(input) => {
             validate_valence_receipt_export(input, &mut accumulator)
         }
+        FixturePayload::FsmSpec(input) => validate_fsm_spec(input, &mut accumulator),
+        FixturePayload::FsmReceipt(input) => validate_fsm_receipt(input, &mut accumulator),
     }
 
     accumulator
@@ -1466,6 +1626,937 @@ fn validate_valence_receipt_export(
     }
 }
 
+fn validate_fsm_spec(input: &FsmSpecInput, accumulator: &mut ValidationAccumulator) {
+    if input.schema_version != SUPPORTED_SCHEMA_VERSION {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedSchemaVersion,
+            REQUIREMENT_FSM_SPEC_VERSION,
+            "fsm.schema_version",
+            "unsupported FSM spec schema version rejected",
+        ));
+    }
+    validate_identity_domain(
+        &input.declared_identity,
+        IdentityDomain::FsmSpec,
+        "fsm.declared_identity",
+        accumulator,
+    );
+    validate_optional_source_identity(
+        &input.source_envelope_identity,
+        "fsm.source_envelope_identity",
+        accumulator,
+    );
+    let computed = compute_identity(IdentityDomain::FsmSpec, &input.canonical_bytes);
+    accumulator.input_identities.insert(
+        "declared-fsm-spec".to_string(),
+        input.declared_identity.clone(),
+    );
+    accumulator
+        .output_identities
+        .insert("computed-fsm-spec".to_string(), computed.clone());
+    if input.declared_identity.domain == IdentityDomain::FsmSpec
+        && input.declared_identity.hex != computed.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_FSM_SPEC_IDENTITY,
+            "fsm.declared_identity.hex",
+            "declared FSM spec identity does not match canonical bytes",
+        ));
+    }
+    validate_fsm_metadata(input, accumulator);
+    let states = collect_fsm_states(&input.states, accumulator);
+    let events = collect_fsm_events(&input.events, accumulator);
+    let guards = collect_fsm_guards(&input.guards, accumulator);
+    let side_effects = collect_fsm_side_effects(&input.side_effects, accumulator);
+    validate_fsm_state_policy(input, &states, accumulator);
+    let transition_pairs =
+        validate_fsm_transitions(input, &states, &events, &guards, &side_effects, accumulator);
+    let denial_pairs =
+        validate_fsm_denials(input, &states, &events, &guards, &side_effects, accumulator);
+    validate_fsm_pair_coverage(
+        input,
+        &states,
+        &events,
+        &transition_pairs,
+        &denial_pairs,
+        accumulator,
+    );
+    validate_fsm_reachability(input, &states, accumulator);
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_optional_source_identity(
+    identity: &Option<Identity>,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if let Some(identity) = identity {
+        validate_identity_domain(identity, IdentityDomain::Source, field, accumulator);
+        accumulator
+            .input_identities
+            .insert(field.to_string(), identity.clone());
+    }
+}
+
+fn validate_fsm_metadata(input: &FsmSpecInput, accumulator: &mut ValidationAccumulator) {
+    if input.fsm_id.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_FSM_SPEC_IDENTITY,
+            "fsm.fsm_id",
+            "FSM spec requires a stable machine identity label",
+        ));
+    }
+    if input.canonical_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_SPEC_IDENTITY,
+            "fsm.canonical_bytes",
+            "FSM spec identity requires canonical Preserves bytes or supported canonical content",
+        ));
+    }
+    if input.checked_laws.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingCheckedLaw,
+            REQUIREMENT_FSM_VALIDATION,
+            "fsm.checked_laws",
+            "FSM validation evidence must name checked laws",
+        ));
+    }
+    if input.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_FSM_SPEC_IDENTITY,
+            "fsm.non_claims",
+            "FSM artifacts require explicit non-claims before trust",
+        ));
+    }
+    if input.determinism_policy != FSM_DETERMINISTIC_POLICY {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedArtifactClass,
+                "r[kamacite.fsms.determinism_policy.nondeterminism_explicit]",
+                "fsm.determinism_policy",
+                "only the deterministic FSM profile is trusted in this slice",
+            )
+            .with_detail("policy", input.determinism_policy.clone()),
+        );
+    }
+    if input.totality_policy.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_FSM_COVERAGE,
+            "fsm.totality_policy",
+            "FSM specs must name the totality policy used for pair coverage",
+        ));
+    }
+}
+
+fn collect_fsm_states(
+    states: &[FsmStateInput],
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeSet<String> {
+    let mut declared = BTreeSet::new();
+    for state in states {
+        if state.state_id.is_empty() || state.label.is_empty() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_FSM_CLOSED_UNIVERSES,
+                "fsm.states",
+                "FSM state entries require identity and metadata label",
+            ));
+        }
+        if !declared.insert(state.state_id.clone()) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::DuplicateArtifactIdentity,
+                    REQUIREMENT_FSM_DUPLICATE_UNIVERSE,
+                    "fsm.states",
+                    "duplicate FSM state identity rejected before trust",
+                )
+                .with_detail("state", state.state_id.clone()),
+            );
+        }
+    }
+    if declared.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_CLOSED_UNIVERSES,
+            "fsm.states",
+            "FSM state universe must be closed and non-empty",
+        ));
+    }
+    declared
+}
+
+fn collect_fsm_events(
+    events: &[FsmEventInput],
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeSet<String> {
+    let mut declared = BTreeSet::new();
+    for event in events {
+        if event.event_id.is_empty() || event.label.is_empty() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_FSM_CLOSED_UNIVERSES,
+                "fsm.events",
+                "FSM event entries require identity and metadata label",
+            ));
+        }
+        if !declared.insert(event.event_id.clone()) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::DuplicateArtifactIdentity,
+                    REQUIREMENT_FSM_DUPLICATE_UNIVERSE,
+                    "fsm.events",
+                    "duplicate FSM event identity rejected before trust",
+                )
+                .with_detail("event", event.event_id.clone()),
+            );
+        }
+    }
+    if declared.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_CLOSED_UNIVERSES,
+            "fsm.events",
+            "FSM event universe must be closed and non-empty",
+        ));
+    }
+    declared
+}
+
+fn collect_fsm_guards(
+    guards: &[FsmGuardInput],
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeSet<String> {
+    let mut declared = BTreeSet::new();
+    for guard in guards {
+        if guard.guard_id.is_empty() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_FSM_GUARDS_EFFECTS,
+                "fsm.guards",
+                "guard vocabulary entries require stable identities",
+            ));
+        }
+        if guard.non_claims.is_empty() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::MissingNonClaim,
+                REQUIREMENT_FSM_GUARDS_EFFECTS,
+                "fsm.guards.non_claims",
+                "guard descriptors require non-claims before they can partition coverage",
+            ));
+        }
+        if !declared.insert(guard.guard_id.clone()) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::DuplicateArtifactIdentity,
+                    REQUIREMENT_FSM_DUPLICATE_UNIVERSE,
+                    "fsm.guards",
+                    "duplicate FSM guard identity rejected before trust",
+                )
+                .with_detail("guard", guard.guard_id.clone()),
+            );
+        }
+    }
+    declared
+}
+
+fn collect_fsm_side_effects(
+    effects: &[FsmSideEffectInput],
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeMap<String, String> {
+    let mut declared = BTreeMap::new();
+    for effect in effects {
+        if effect.effect_id.is_empty() || effect.class.is_empty() {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_FSM_GUARDS_EFFECTS,
+                "fsm.side_effects",
+                "side-effect entries require identity and class",
+            ));
+        }
+        if declared
+            .insert(effect.effect_id.clone(), effect.class.clone())
+            .is_some()
+        {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::DuplicateArtifactIdentity,
+                    REQUIREMENT_FSM_DUPLICATE_UNIVERSE,
+                    "fsm.side_effects",
+                    "duplicate FSM side-effect identity rejected before trust",
+                )
+                .with_detail("effect", effect.effect_id.clone()),
+            );
+        }
+        if is_ambient_steel_authority(&effect.class) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::HostCapabilityConfusion,
+                    "r[kamacite.fsms.fixture_corpus.negative_host_confusion]",
+                    "fsm.side_effects.class",
+                    "FSM side-effect class is symbolic data and does not grant host authority",
+                )
+                .with_detail("effect", effect.effect_id.clone())
+                .with_detail("class", effect.class.clone()),
+            );
+        }
+    }
+    if declared.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_GUARDS_EFFECTS,
+            "fsm.side_effects",
+            "FSM specs must declare side-effect classes before rows reference them",
+        ));
+    }
+    declared
+}
+
+fn validate_fsm_state_policy(
+    input: &FsmSpecInput,
+    states: &BTreeSet<String>,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.initial_state.is_empty() || !states.contains(&input.initial_state) {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            "r[kamacite.fsms.descriptor_vocabulary.initial_state_required]",
+            "fsm.initial_state",
+            "FSM descriptor initial state must be present in the closed state set",
+        ));
+    }
+    for state in input
+        .terminal_states
+        .iter()
+        .chain(input.intentionally_unreachable_states.iter())
+    {
+        if !states.contains(state) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_FSM_UNKNOWN_ENDPOINT,
+                    "fsm.state_policy",
+                    "FSM state policy references a state outside the closed universe",
+                )
+                .with_detail("state", state.clone()),
+            );
+        }
+    }
+}
+
+fn validate_fsm_transitions(
+    input: &FsmSpecInput,
+    states: &BTreeSet<String>,
+    events: &BTreeSet<String>,
+    guards: &BTreeSet<String>,
+    side_effects: &BTreeMap<String, String>,
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeSet<(String, String)> {
+    let terminals: BTreeSet<&String> = input.terminal_states.iter().collect();
+    let mut seen_keys = BTreeSet::new();
+    let mut covered_pairs = BTreeSet::new();
+    for transition in &input.transitions {
+        validate_fsm_row_symbols(
+            &transition.from_state,
+            &transition.event,
+            states,
+            events,
+            "fsm.transitions",
+            accumulator,
+        );
+        if is_fsm_wildcard(&transition.to_state) {
+            push_fsm_wildcard_diagnostic(
+                "fsm.transitions.to_state",
+                &transition.to_state,
+                accumulator,
+            );
+        } else if !states.contains(&transition.to_state) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_FSM_UNKNOWN_ENDPOINT,
+                    "fsm.transitions.to_state",
+                    "FSM transition target state must be declared",
+                )
+                .with_detail("state", transition.to_state.clone()),
+            );
+        }
+        validate_fsm_row_guards(
+            &transition.guards,
+            guards,
+            "fsm.transitions.guards",
+            accumulator,
+        );
+        validate_fsm_row_side_effect(
+            &transition.side_effect,
+            side_effects,
+            "fsm.transitions.side_effect",
+            accumulator,
+        );
+        if terminals.contains(&transition.from_state) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UnsupportedArtifactClass,
+                    REQUIREMENT_FSM_TERMINAL,
+                    "fsm.transitions.from_state",
+                    "terminal FSM states cannot have outgoing transitions without a separate accepted restart policy",
+                )
+                .with_detail("state", transition.from_state.clone()),
+            );
+        }
+        let mut guard_partition = transition.guards.clone();
+        guard_partition.sort();
+        guard_partition.dedup();
+        let key = (
+            transition.from_state.clone(),
+            transition.event.clone(),
+            guard_partition.join("+"),
+        );
+        if !seen_keys.insert(key) {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::DuplicateArtifactIdentity,
+                "r[kamacite.fsms.determinism_policy.conflict]",
+                "fsm.transitions",
+                "deterministic FSM profile rejects duplicate or conflicting transition rows",
+            ));
+        }
+        covered_pairs.insert((transition.from_state.clone(), transition.event.clone()));
+    }
+    covered_pairs
+}
+
+fn validate_fsm_denials(
+    input: &FsmSpecInput,
+    states: &BTreeSet<String>,
+    events: &BTreeSet<String>,
+    guards: &BTreeSet<String>,
+    side_effects: &BTreeMap<String, String>,
+    accumulator: &mut ValidationAccumulator,
+) -> BTreeSet<(String, String)> {
+    let mut covered_pairs = BTreeSet::new();
+    let mut seen_pairs = BTreeSet::new();
+    for denial in &input.denials {
+        validate_fsm_row_symbols(
+            &denial.from_state,
+            &denial.event,
+            states,
+            events,
+            "fsm.denials",
+            accumulator,
+        );
+        validate_fsm_row_guards(&denial.guards, guards, "fsm.denials.guards", accumulator);
+        validate_fsm_denial_side_effect(denial, side_effects, accumulator);
+        if denial.reason.is_empty() || !denial.preserves_state {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_FSM_DENIAL_BOUNDARY,
+                "fsm.denials",
+                "denial rows must name a reason and preserve prior state",
+            ));
+        }
+        let pair = (denial.from_state.clone(), denial.event.clone());
+        if !seen_pairs.insert(pair.clone()) {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::DuplicateArtifactIdentity,
+                REQUIREMENT_FSM_DUPLICATE_COVERAGE,
+                "fsm.denials",
+                "duplicate denial coverage for the same state/event pair rejected",
+            ));
+        }
+        covered_pairs.insert(pair);
+    }
+    covered_pairs
+}
+
+fn validate_fsm_row_symbols(
+    state: &str,
+    event: &str,
+    states: &BTreeSet<String>,
+    events: &BTreeSet<String>,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if is_fsm_wildcard(state) {
+        push_fsm_wildcard_diagnostic(field, state, accumulator);
+    } else if !states.contains(state) {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_UNKNOWN_ENDPOINT,
+                field,
+                "FSM row source state must be declared",
+            )
+            .with_detail("state", state.to_string()),
+        );
+    }
+    if is_fsm_wildcard(event) {
+        push_fsm_wildcard_diagnostic(field, event, accumulator);
+    } else if !events.contains(event) {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_UNKNOWN_ENDPOINT,
+                field,
+                "FSM row event must be declared",
+            )
+            .with_detail("event", event.to_string()),
+        );
+    }
+}
+
+fn validate_fsm_row_guards(
+    row_guards: &[String],
+    guards: &BTreeSet<String>,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    for guard in row_guards {
+        if !guards.contains(guard) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_FSM_UNDECLARED_GUARD,
+                    field,
+                    "FSM row references an undeclared guard descriptor",
+                )
+                .with_detail("guard", guard.clone()),
+            );
+        }
+    }
+}
+
+fn validate_fsm_row_side_effect(
+    effect: &str,
+    side_effects: &BTreeMap<String, String>,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if !side_effects.contains_key(effect) {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UndeclaredCapability,
+                REQUIREMENT_FSM_GUARDS_EFFECTS,
+                field,
+                "FSM row references an undeclared side-effect class",
+            )
+            .with_detail("effect", effect.to_string()),
+        );
+    }
+}
+
+fn validate_fsm_denial_side_effect(
+    denial: &FsmDenialRowInput,
+    side_effects: &BTreeMap<String, String>,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_fsm_row_side_effect(
+        &denial.side_effect,
+        side_effects,
+        "fsm.denials.side_effect",
+        accumulator,
+    );
+    let Some(effect_class) = side_effects.get(&denial.side_effect) else {
+        return;
+    };
+    if effect_class != FSM_NO_SIDE_EFFECT_CLASS && effect_class != FSM_DENIAL_SIDE_EFFECT_CLASS {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::HostCapabilityConfusion,
+                REQUIREMENT_FSM_DENIAL_BOUNDARY,
+                "fsm.denials.side_effect",
+                "denial rows must use a declared no-side-effect or denial side-effect class",
+            )
+            .with_detail("effect", denial.side_effect.clone())
+            .with_detail("class", effect_class.clone()),
+        );
+    }
+}
+
+fn is_fsm_wildcard(value: &str) -> bool {
+    FSM_WILDCARD_MARKERS.contains(&value)
+}
+
+fn push_fsm_wildcard_diagnostic(field: &str, value: &str, accumulator: &mut ValidationAccumulator) {
+    accumulator.diagnostics.push(
+        Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_FSM_NO_WILDCARDS,
+            field,
+            "FSM specs reject wildcard, default, otherwise, or catch-all rows",
+        )
+        .with_detail("value", value.to_string()),
+    );
+}
+
+fn validate_fsm_pair_coverage(
+    input: &FsmSpecInput,
+    states: &BTreeSet<String>,
+    events: &BTreeSet<String>,
+    transition_pairs: &BTreeSet<(String, String)>,
+    denial_pairs: &BTreeSet<(String, String)>,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let intentionally_unreachable: BTreeSet<&String> =
+        input.intentionally_unreachable_states.iter().collect();
+    for state in states {
+        if intentionally_unreachable.contains(state) {
+            continue;
+        }
+        for event in events {
+            let pair = (state.clone(), event.clone());
+            let transitioned = transition_pairs.contains(&pair);
+            let denied = denial_pairs.contains(&pair);
+            match (transitioned, denied) {
+                (false, false) => accumulator.diagnostics.push(
+                    Diagnostic::new(
+                        DiagnosticCode::MissingInput,
+                        REQUIREMENT_FSM_MISSING_DENIAL,
+                        "fsm.coverage",
+                        "every reachable state/event pair must be covered by transition or explicit denial",
+                    )
+                    .with_detail("state", state.clone())
+                    .with_detail("event", event.clone()),
+                ),
+                (true, true) => accumulator.diagnostics.push(
+                    Diagnostic::new(
+                        DiagnosticCode::DuplicateArtifactIdentity,
+                        REQUIREMENT_FSM_DUPLICATE_COVERAGE,
+                        "fsm.coverage",
+                        "state/event pair cannot be both admitted transition and explicit denial",
+                    )
+                    .with_detail("state", state.clone())
+                    .with_detail("event", event.clone()),
+                ),
+                (true, false) | (false, true) => {}
+            }
+        }
+    }
+}
+
+fn validate_fsm_reachability(
+    input: &FsmSpecInput,
+    states: &BTreeSet<String>,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if input.initial_state.is_empty() || !states.contains(&input.initial_state) {
+        return;
+    }
+    let mut reachable = BTreeSet::new();
+    let mut frontier = vec![input.initial_state.clone()];
+    while let Some(state) = frontier.pop() {
+        if !reachable.insert(state.clone()) {
+            continue;
+        }
+        for transition in &input.transitions {
+            if transition.from_state == state
+                && states.contains(&transition.to_state)
+                && !reachable.contains(&transition.to_state)
+            {
+                frontier.push(transition.to_state.clone());
+            }
+        }
+    }
+    let intentionally_unreachable: BTreeSet<&String> =
+        input.intentionally_unreachable_states.iter().collect();
+    for state in states {
+        if !reachable.contains(state) && !intentionally_unreachable.contains(state) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_FSM_REACHABILITY,
+                    "fsm.states",
+                    "FSM state is unreachable from the initial state and lacks reviewed unreachable metadata",
+                )
+                .with_detail("state", state.clone()),
+            );
+        }
+    }
+}
+
+fn validate_fsm_receipt(input: &FsmReceiptInput, accumulator: &mut ValidationAccumulator) {
+    if input.schema_version != SUPPORTED_SCHEMA_VERSION {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedSchemaVersion,
+            REQUIREMENT_FSM_SPEC_VERSION,
+            "fsm_receipt.schema_version",
+            "unsupported FSM receipt schema version rejected",
+        ));
+    }
+    validate_fsm_receipt_identities(input, accumulator);
+    validate_fsm_receipt_claims(input, accumulator);
+    match input.receipt_kind.as_str() {
+        FSM_EXHAUSTIVENESS_RECEIPT_KIND => {}
+        FSM_TRACE_RECEIPT_KIND => validate_fsm_trace_receipt(input, accumulator),
+        _ => accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedArtifactClass,
+                REQUIREMENT_FSM_RECEIPT,
+                "fsm_receipt.receipt_kind",
+                "FSM receipt kind must be exhaustiveness or trace",
+            )
+            .with_detail("kind", input.receipt_kind.clone()),
+        ),
+    }
+    accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_fsm_receipt_identities(
+    input: &FsmReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    validate_identity_domain(
+        &input.spec_identity,
+        IdentityDomain::FsmSpec,
+        "fsm_receipt.spec_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.state_universe_identity,
+        IdentityDomain::FsmUniverse,
+        "fsm_receipt.state_universe_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.event_universe_identity,
+        IdentityDomain::FsmUniverse,
+        "fsm_receipt.event_universe_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.transition_coverage_identity,
+        IdentityDomain::FsmCoverage,
+        "fsm_receipt.transition_coverage_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.denial_coverage_identity,
+        IdentityDomain::FsmCoverage,
+        "fsm_receipt.denial_coverage_identity",
+        accumulator,
+    );
+    validate_identity_domain(
+        &input.adapter_identity,
+        IdentityDomain::Adapter,
+        "fsm_receipt.adapter_identity",
+        accumulator,
+    );
+    accumulator
+        .input_identities
+        .insert("fsm-spec".to_string(), input.spec_identity.clone());
+    accumulator.input_identities.insert(
+        "fsm-state-universe".to_string(),
+        input.state_universe_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "fsm-event-universe".to_string(),
+        input.event_universe_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "fsm-transition-coverage".to_string(),
+        input.transition_coverage_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "fsm-denial-coverage".to_string(),
+        input.denial_coverage_identity.clone(),
+    );
+    accumulator
+        .input_identities
+        .insert("fsm-adapter".to_string(), input.adapter_identity.clone());
+    for dependency in &input.dependency_identities {
+        accumulator.input_identities.insert(
+            format!("fsm-dependency:{}", dependency.domain.to_string()),
+            dependency.clone(),
+        );
+    }
+    for octet_receipt in &input.octet_receipt_identities {
+        validate_identity_domain(
+            octet_receipt,
+            IdentityDomain::Receipt,
+            "fsm_receipt.octet_receipt_identities",
+            accumulator,
+        );
+        accumulator.input_identities.insert(
+            "octet-source-shape-receipt".to_string(),
+            octet_receipt.clone(),
+        );
+    }
+    if let Some(valence_export_identity) = &input.valence_export_identity {
+        validate_identity_domain(
+            valence_export_identity,
+            IdentityDomain::Projection,
+            "fsm_receipt.valence_export_identity",
+            accumulator,
+        );
+        accumulator.input_identities.insert(
+            "valence-fsm-export-projection".to_string(),
+            valence_export_identity.clone(),
+        );
+    }
+    let Some(receipt_identity) = &input.declared_receipt_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_RECEIPT_IDENTITY,
+            "fsm_receipt.declared_receipt_identity",
+            "FSM receipt must bind a separate receipt-domain identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        receipt_identity,
+        IdentityDomain::Receipt,
+        "fsm_receipt.declared_receipt_identity",
+        accumulator,
+    );
+    accumulator
+        .input_identities
+        .insert("declared-fsm-receipt".to_string(), receipt_identity.clone());
+    let computed = compute_identity(IdentityDomain::Receipt, &input.canonical_bytes);
+    accumulator
+        .output_identities
+        .insert("computed-fsm-receipt".to_string(), computed.clone());
+    if receipt_identity.domain == IdentityDomain::Receipt && receipt_identity.hex != computed.hex {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_FSM_RECEIPT_IDENTITY,
+            "fsm_receipt.declared_receipt_identity.hex",
+            "declared FSM receipt identity does not match canonical receipt bytes",
+        ));
+    }
+    if receipt_identity.hex == input.spec_identity.hex
+        || receipt_identity.hex == input.adapter_identity.hex
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::ReceiptIdentityReuse,
+            REQUIREMENT_FSM_RECEIPT_IDENTITY,
+            "fsm_receipt.declared_receipt_identity",
+            "FSM receipt identity must not reuse spec or adapter identity bytes",
+        ));
+    }
+}
+
+fn validate_fsm_receipt_claims(input: &FsmReceiptInput, accumulator: &mut ValidationAccumulator) {
+    if input.canonical_bytes.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_RECEIPT,
+            "fsm_receipt.canonical_bytes",
+            "FSM receipts require canonical receipt bytes before identity can be checked",
+        ));
+    }
+    if input.checked_laws.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingCheckedLaw,
+            REQUIREMENT_FSM_RECEIPT,
+            "fsm_receipt.checked_laws",
+            "FSM receipts must bind checked laws",
+        ));
+    }
+    if input.non_claims.is_empty() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingNonClaim,
+            REQUIREMENT_FSM_RECEIPT,
+            "fsm_receipt.non_claims",
+            "FSM receipts require explicit non-claims",
+        ));
+    }
+    for claim in &input.semantic_claims {
+        if fsm_claim_is_forbidden(claim) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::SemanticOverclaim,
+                    REQUIREMENT_FSM_STACK_VALENCE,
+                    "fsm_receipt.semantic_claims",
+                    "FSM receipt rejected runtime, liveness, release, or semantic-correctness overclaim",
+                )
+                .with_detail("claim", claim.clone()),
+            );
+        }
+    }
+    if !input.octet_receipt_identities.is_empty()
+        && input
+            .semantic_claims
+            .iter()
+            .any(|claim| claim.to_ascii_lowercase().contains("octet proves"))
+    {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::SemanticOverclaim,
+            REQUIREMENT_FSM_STACK_OCTET,
+            "fsm_receipt.semantic_claims",
+            "Octet-linked FSM receipts remain source-shape/provenance evidence only",
+        ));
+    }
+}
+
+fn fsm_claim_is_forbidden(claim: &str) -> bool {
+    let normalized = claim.to_ascii_lowercase();
+    FSM_FORBIDDEN_CLAIMS
+        .iter()
+        .any(|forbidden| normalized.contains(forbidden))
+}
+
+fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut ValidationAccumulator) {
+    let Some(start_state) = &input.trace_start_state else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_TRACE,
+            "fsm_receipt.trace_start_state",
+            "FSM trace receipts must bind a start state",
+        ));
+        return;
+    };
+    let Some(final_state) = &input.trace_final_state else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_TRACE,
+            "fsm_receipt.trace_final_state",
+            "FSM trace receipts must bind a final state",
+        ));
+        return;
+    };
+    if input.trace_events.len() != input.trace_steps.len() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_FSM_TRACE_IMPOSSIBLE,
+            "fsm_receipt.trace_steps",
+            "FSM trace event sequence and observed transition sequence must align",
+        ));
+        return;
+    }
+    let mut current_state = start_state.clone();
+    for (event, step) in input.trace_events.iter().zip(input.trace_steps.iter()) {
+        if &step.from_state != &current_state || &step.event != event {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_FSM_TRACE_IMPOSSIBLE,
+                    "fsm_receipt.trace_steps",
+                    "FSM trace transition is impossible from the current state and event",
+                )
+                .with_detail("current_state", current_state.clone())
+                .with_detail("event", event.clone()),
+            );
+            return;
+        }
+        current_state = step.to_state.clone();
+    }
+    if &current_state != final_state {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_TRACE_IMPOSSIBLE,
+                "fsm_receipt.trace_final_state",
+                "FSM trace final state does not match observed transition path",
+            )
+            .with_detail("observed", current_state)
+            .with_detail("declared", final_state.clone()),
+        );
+    }
+}
+
 fn validate_algebraic_effect(
     input: &AlgebraicEffectInput,
     accumulator: &mut ValidationAccumulator,
@@ -2448,6 +3539,285 @@ mod tests {
                 .diagnostics
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::HostCapabilityConfusion)
+        );
+    }
+
+    const FSM_SPEC_BYTES: &[u8] = b"(fsm-spec unit.lifecycle v1 complete)\n";
+    const FSM_RECEIPT_BYTES: &[u8] = b"(fsm-receipt unit.lifecycle exhaustiveness v1)\n";
+    const FSM_TRACE_BYTES: &[u8] = b"(fsm-trace unit.lifecycle start-stop v1)\n";
+
+    fn valid_fsm_spec_input() -> FsmSpecInput {
+        FsmSpecInput {
+            schema_version: SUPPORTED_SCHEMA_VERSION,
+            fsm_id: "unit.lifecycle".to_string(),
+            canonical_bytes: FSM_SPEC_BYTES.to_vec(),
+            source_envelope_identity: Some(compute_identity(IdentityDomain::Source, b"fsm-source")),
+            declared_identity: compute_identity(IdentityDomain::FsmSpec, FSM_SPEC_BYTES),
+            states: vec![
+                FsmStateInput {
+                    state_id: "idle".to_string(),
+                    label: "Idle".to_string(),
+                },
+                FsmStateInput {
+                    state_id: "active".to_string(),
+                    label: "Active".to_string(),
+                },
+            ],
+            events: vec![
+                FsmEventInput {
+                    event_id: "start".to_string(),
+                    label: "Start".to_string(),
+                },
+                FsmEventInput {
+                    event_id: "stop".to_string(),
+                    label: "Stop".to_string(),
+                },
+            ],
+            initial_state: "idle".to_string(),
+            terminal_states: Vec::new(),
+            intentionally_unreachable_states: Vec::new(),
+            determinism_policy: FSM_DETERMINISTIC_POLICY.to_string(),
+            totality_policy: "all-state-event-pairs-explicit".to_string(),
+            guards: vec![FsmGuardInput {
+                guard_id: "has-authority".to_string(),
+                required_evidence_refs: vec!["authority-ref".to_string()],
+                non_claims: vec!["guard evidence is not host authority".to_string()],
+            }],
+            side_effects: vec![
+                FsmSideEffectInput {
+                    effect_id: "none".to_string(),
+                    class: FSM_NO_SIDE_EFFECT_CLASS.to_string(),
+                },
+                FsmSideEffectInput {
+                    effect_id: "admit".to_string(),
+                    class: "symbolic".to_string(),
+                },
+            ],
+            transitions: vec![
+                FsmTransitionRowInput {
+                    from_state: "idle".to_string(),
+                    event: "start".to_string(),
+                    to_state: "active".to_string(),
+                    guards: vec!["has-authority".to_string()],
+                    side_effect: "admit".to_string(),
+                },
+                FsmTransitionRowInput {
+                    from_state: "active".to_string(),
+                    event: "stop".to_string(),
+                    to_state: "idle".to_string(),
+                    guards: Vec::new(),
+                    side_effect: "admit".to_string(),
+                },
+            ],
+            denials: vec![
+                FsmDenialRowInput {
+                    from_state: "idle".to_string(),
+                    event: "stop".to_string(),
+                    reason: "already-idle".to_string(),
+                    guards: Vec::new(),
+                    side_effect: "none".to_string(),
+                    preserves_state: true,
+                },
+                FsmDenialRowInput {
+                    from_state: "active".to_string(),
+                    event: "start".to_string(),
+                    reason: "already-active".to_string(),
+                    guards: Vec::new(),
+                    side_effect: "none".to_string(),
+                    preserves_state: true,
+                },
+            ],
+            checked_laws: vec!["total-pair-coverage".to_string()],
+            non_claims: vec!["not runtime correctness".to_string()],
+        }
+    }
+
+    fn fsm_fixture(input: FsmSpecInput, expected_verdict: ValidationVerdict) -> FixtureCase {
+        FixtureCase {
+            id: "unit.fsm.spec".to_string(),
+            fixture_class: FixtureClass::Positive,
+            artifact_class: ArtifactClass::FsmSpec,
+            requirement_ids: vec![REQUIREMENT_FSM_SPEC_IDENTITY.to_string()],
+            non_claims: vec!["not runtime correctness".to_string()],
+            expected_verdict,
+            checked_laws: vec!["total-pair-coverage".to_string()],
+            payload: FixturePayload::FsmSpec(Box::new(input)),
+        }
+    }
+
+    #[test]
+    fn accepts_complete_fsm_spec() {
+        let result = validate_fixture(&fsm_fixture(
+            valid_fsm_spec_input(),
+            ValidationVerdict::Accepted,
+        ));
+        assert!(result.expectation_met);
+        assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
+    }
+
+    #[test]
+    fn rejects_missing_denial_coverage_and_wildcards() {
+        let mut input = valid_fsm_spec_input();
+        input.denials.pop();
+        input.transitions.push(FsmTransitionRowInput {
+            from_state: "idle".to_string(),
+            event: "*".to_string(),
+            to_state: "active".to_string(),
+            guards: Vec::new(),
+            side_effect: "admit".to_string(),
+        });
+        let mut fixture = fsm_fixture(input, ValidationVerdict::Rejected);
+        fixture.fixture_class = FixtureClass::Negative;
+        let result = validate_fixture(&fixture);
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.requirement_id == REQUIREMENT_FSM_MISSING_DENIAL)
+        );
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.requirement_id == REQUIREMENT_FSM_NO_WILDCARDS)
+        );
+    }
+
+    fn valid_fsm_receipt_input() -> FsmReceiptInput {
+        let spec = valid_fsm_spec_input();
+        FsmReceiptInput {
+            schema_version: SUPPORTED_SCHEMA_VERSION,
+            receipt_kind: FSM_EXHAUSTIVENESS_RECEIPT_KIND.to_string(),
+            canonical_bytes: FSM_RECEIPT_BYTES.to_vec(),
+            spec_identity: spec.declared_identity.clone(),
+            state_universe_identity: compute_identity(IdentityDomain::FsmUniverse, b"idle,active"),
+            event_universe_identity: compute_identity(IdentityDomain::FsmUniverse, b"start,stop"),
+            transition_coverage_identity: compute_identity(
+                IdentityDomain::FsmCoverage,
+                b"idle/start,active/stop",
+            ),
+            denial_coverage_identity: compute_identity(
+                IdentityDomain::FsmCoverage,
+                b"idle/stop,active/start",
+            ),
+            adapter_identity: compute_identity(IdentityDomain::Adapter, b"fsm-adapter"),
+            dependency_identities: Vec::new(),
+            octet_receipt_identities: vec![compute_identity(IdentityDomain::Receipt, b"octet-fsm")],
+            valence_export_identity: Some(compute_identity(
+                IdentityDomain::Projection,
+                b"valence-fsm",
+            )),
+            checked_laws: vec!["total-pair-coverage".to_string()],
+            diagnostics: Vec::new(),
+            non_claims: vec!["not runtime correctness".to_string()],
+            semantic_claims: Vec::new(),
+            declared_receipt_identity: Some(compute_identity(
+                IdentityDomain::Receipt,
+                FSM_RECEIPT_BYTES,
+            )),
+            trace_start_state: None,
+            trace_events: Vec::new(),
+            trace_steps: Vec::new(),
+            trace_final_state: None,
+        }
+    }
+
+    fn fsm_receipt_fixture(
+        input: FsmReceiptInput,
+        expected_verdict: ValidationVerdict,
+    ) -> FixtureCase {
+        FixtureCase {
+            id: "unit.fsm.receipt".to_string(),
+            fixture_class: FixtureClass::Positive,
+            artifact_class: ArtifactClass::FsmReceipt,
+            requirement_ids: vec![REQUIREMENT_FSM_RECEIPT.to_string()],
+            non_claims: vec!["not runtime correctness".to_string()],
+            expected_verdict,
+            checked_laws: vec!["total-pair-coverage".to_string()],
+            payload: FixturePayload::FsmReceipt(Box::new(input)),
+        }
+    }
+
+    #[test]
+    fn accepts_fsm_receipt_with_octet_and_valence_links() {
+        let result = validate_fixture(&fsm_receipt_fixture(
+            valid_fsm_receipt_input(),
+            ValidationVerdict::Accepted,
+        ));
+        assert!(result.expectation_met);
+        assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
+    }
+
+    #[test]
+    fn rejects_fsm_receipt_overclaim() {
+        let mut input = valid_fsm_receipt_input();
+        input
+            .semantic_claims
+            .push("proves protocol completeness and liveness".to_string());
+        let mut fixture = fsm_receipt_fixture(input, ValidationVerdict::Rejected);
+        fixture.fixture_class = FixtureClass::Negative;
+        let result = validate_fixture(&fixture);
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::SemanticOverclaim)
+        );
+    }
+
+    #[test]
+    fn accepts_fsm_trace_receipt_path() {
+        let mut input = valid_fsm_receipt_input();
+        input.receipt_kind = FSM_TRACE_RECEIPT_KIND.to_string();
+        input.canonical_bytes = FSM_TRACE_BYTES.to_vec();
+        input.declared_receipt_identity =
+            Some(compute_identity(IdentityDomain::Receipt, FSM_TRACE_BYTES));
+        input.trace_start_state = Some("idle".to_string());
+        input.trace_events = vec!["start".to_string(), "stop".to_string()];
+        input.trace_steps = vec![
+            FsmTraceStepInput {
+                from_state: "idle".to_string(),
+                event: "start".to_string(),
+                to_state: "active".to_string(),
+            },
+            FsmTraceStepInput {
+                from_state: "active".to_string(),
+                event: "stop".to_string(),
+                to_state: "idle".to_string(),
+            },
+        ];
+        input.trace_final_state = Some("idle".to_string());
+        let result = validate_fixture(&fsm_receipt_fixture(input, ValidationVerdict::Accepted));
+        assert!(result.expectation_met);
+        assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
+    }
+
+    #[test]
+    fn rejects_impossible_fsm_trace_transition() {
+        let mut input = valid_fsm_receipt_input();
+        input.receipt_kind = FSM_TRACE_RECEIPT_KIND.to_string();
+        input.canonical_bytes = FSM_TRACE_BYTES.to_vec();
+        input.declared_receipt_identity =
+            Some(compute_identity(IdentityDomain::Receipt, FSM_TRACE_BYTES));
+        input.trace_start_state = Some("idle".to_string());
+        input.trace_events = vec!["stop".to_string()];
+        input.trace_steps = vec![FsmTraceStepInput {
+            from_state: "active".to_string(),
+            event: "stop".to_string(),
+            to_state: "idle".to_string(),
+        }];
+        input.trace_final_state = Some("idle".to_string());
+        let mut fixture = fsm_receipt_fixture(input, ValidationVerdict::Rejected);
+        fixture.fixture_class = FixtureClass::Negative;
+        let result = validate_fixture(&fixture);
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.requirement_id == REQUIREMENT_FSM_TRACE_IMPOSSIBLE)
         );
     }
 }

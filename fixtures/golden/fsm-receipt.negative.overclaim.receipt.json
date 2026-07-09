@@ -1,0 +1,96 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-receipt.negative.overclaim",
+    "artifact_class": "fsm-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.stack_integration.fsm_octet_interop.overclaim]",
+      "r[kamacite.stack_integration.fsm_valence_export.non_claims]"
+    ],
+    "input_identities": {
+      "declared-fsm-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "006992127873a0c5af5d0d440cc7e1e15d3955348c3226a040a31fe2e449a4ea"
+      },
+      "fsm-adapter": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"
+      },
+      "fsm-denial-coverage": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+      },
+      "fsm-event-universe": {
+        "domain": "fsm-universe",
+        "algorithm": "blake3",
+        "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+      },
+      "fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      },
+      "fsm-state-universe": {
+        "domain": "fsm-universe",
+        "algorithm": "blake3",
+        "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+      },
+      "fsm-transition-coverage": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+      },
+      "octet-source-shape-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "aa9a69c47a0e7dc843189ae99f3ba073f64ee39955eef371749351d7bd95e7b5"
+      },
+      "valence-fsm-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "d87ce19bd13f19cfd22cfc49d0748f803d274226685905a66b467bab3eac3274"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "006992127873a0c5af5d0d440cc7e1e15d3955348c3226a040a31fe2e449a4ea"
+      }
+    },
+    "checked_laws": [
+      "non-claim-boundary"
+    ],
+    "diagnostics": [
+      {
+        "code": "semantic-overclaim",
+        "requirement_id": "r[kamacite.stack_integration.fsm_octet_interop.source_shape]",
+        "field": "fsm_receipt.semantic_claims",
+        "message": "Octet-linked FSM receipts remain source-shape/provenance evidence only",
+        "details": {}
+      },
+      {
+        "code": "semantic-overclaim",
+        "requirement_id": "r[kamacite.stack_integration.fsm_valence_export.non_claims]",
+        "field": "fsm_receipt.semantic_claims",
+        "message": "FSM receipt rejected runtime, liveness, release, or semantic-correctness overclaim",
+        "details": {
+          "claim": "Octet proves protocol completeness and liveness"
+        }
+      }
+    ],
+    "non_claims": [
+      "semantic overclaims fail closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "a10a58760b5dc276b0ce5628cb134258a27095a971fac4b57afe69e54290a346"
+  }
+}

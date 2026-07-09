@@ -1,0 +1,48 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.undeclared-guard",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects.undeclared_guard]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "80a68c3368cfe18bb123df9b40d2996293e72bb370ded49ff5578f0105f194a6"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "80a68c3368cfe18bb123df9b40d2996293e72bb370ded49ff5578f0105f194a6"
+      }
+    },
+    "checked_laws": [
+      "declared-guard-use"
+    ],
+    "diagnostics": [
+      {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects.undeclared_guard]",
+        "field": "fsm.transitions.guards",
+        "message": "FSM row references an undeclared guard descriptor",
+        "details": {
+          "guard": "missing-guard"
+        }
+      }
+    ],
+    "non_claims": [
+      "undeclared guards cannot partition coverage"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "a9b898a57292d7857d9523fbd195e93e026e16684aabee3c0147e05e815e1226"
+  }
+}

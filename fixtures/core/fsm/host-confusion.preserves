@@ -1,0 +1,1 @@
+<fsm-spec-v1 { id: "fixture.lifecycle.host-confusion" states: [idle active] events: [start stop] side-effects: [filesystem] transitions: [(idle start active filesystem) (active stop idle filesystem)] denials: [(idle stop) (active start)] }>

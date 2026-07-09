@@ -1,0 +1,48 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.unreachable-unmarked",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.fsms.reachability_terminal_policy.unreachable_unmarked]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "d96de5fef1cc205a32381e0446f5fadcdc45d6eef8720893854cb74d5585e349"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "d96de5fef1cc205a32381e0446f5fadcdc45d6eef8720893854cb74d5585e349"
+      }
+    },
+    "checked_laws": [
+      "unreachable-state-fails-closed"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.fsms.reachability_terminal_policy.unreachable_unmarked]",
+        "field": "fsm.states",
+        "message": "FSM state is unreachable from the initial state and lacks reviewed unreachable metadata",
+        "details": {
+          "state": "orphan"
+        }
+      }
+    ],
+    "non_claims": [
+      "unreachable states require reviewed metadata"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "d0d6bf884b8cb31e8aa392556ca603d4694b88f146e9d1250d4b1c9e8389dd65"
+  }
+}

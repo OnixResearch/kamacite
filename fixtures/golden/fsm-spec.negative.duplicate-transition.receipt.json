@@ -1,0 +1,47 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.duplicate-transition",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.fsms.fixture_corpus.negative_conflict]",
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.duplicate]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "28a40ffe2060fbc8c01371d9b64f96093dc0ac66e6e1c3a87772a3a8326f3f01"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "28a40ffe2060fbc8c01371d9b64f96093dc0ac66e6e1c3a87772a3a8326f3f01"
+      }
+    },
+    "checked_laws": [
+      "duplicate-transition-fails-closed"
+    ],
+    "diagnostics": [
+      {
+        "code": "duplicate-artifact-identity",
+        "requirement_id": "r[kamacite.fsms.determinism_policy.conflict]",
+        "field": "fsm.transitions",
+        "message": "deterministic FSM profile rejects duplicate or conflicting transition rows",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "duplicate transition rows are not deterministic evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "d025b044125ab9d25467bd6232361ade1c3f9a1a0867abdf560e6797b09b9350"
+  }
+}

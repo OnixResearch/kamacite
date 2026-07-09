@@ -1,0 +1,49 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.host-confusion",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.fsms.fixture_corpus.negative_host_confusion]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "f04f42082b66b582574abf0e560497d492bc9589668338bbbd59b059f8dded4c"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "f04f42082b66b582574abf0e560497d492bc9589668338bbbd59b059f8dded4c"
+      }
+    },
+    "checked_laws": [
+      "side-effect-class-boundary"
+    ],
+    "diagnostics": [
+      {
+        "code": "host-capability-confusion",
+        "requirement_id": "r[kamacite.fsms.fixture_corpus.negative_host_confusion]",
+        "field": "fsm.side_effects.class",
+        "message": "FSM side-effect class is symbolic data and does not grant host authority",
+        "details": {
+          "class": "filesystem",
+          "effect": "filesystem"
+        }
+      }
+    ],
+    "non_claims": [
+      "symbolic side-effect classes do not grant host authority"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "863ebd295dcced6235bd3ac31165d788dfdf1e705132bef40d32ebfbf4e2c44f"
+  }
+}

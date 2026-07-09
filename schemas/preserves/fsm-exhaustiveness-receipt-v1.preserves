@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "fsm-exhaustiveness-receipt"
+  version: "v1"
+  schema-id: "kamacite.fsm_exhaustiveness_receipt.v1"
+  record-label: "kamacite-fsm-exhaustiveness-receipt-v1"
+  fields: ["schema-version" "receipt-kind" "spec-identity" "state-universe-identity" "event-universe-identity" "transition-coverage-identity" "denial-coverage-identity" "adapter-identity" "dependency-identities" "octet-receipt-identities" "valence-export-identity" "checked-laws" "diagnostics" "non-claims" "semantic-claims" "receipt-identity"]
+  source-schema: "kamacite.fsm_spec.v1"
+  identity: "blake3(canonical FSM receipt bytes) in receipt domain"
+  dependency-profile: "artifacts-first-valence-compatible"
+  non-claims: ["not runtime correctness" "not protocol completeness" "not liveness" "not verifier soundness" "not release eligibility" "not arbitrary source equivalence"]
+}>

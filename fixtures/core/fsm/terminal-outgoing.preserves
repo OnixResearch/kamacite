@@ -1,0 +1,1 @@
+<fsm-spec-v1 { id: "fixture.lifecycle.terminal-outgoing" states: [idle done] events: [finish reset] terminals: [done] transitions: [(idle finish done) (done reset idle)] denials: [(idle reset) (done finish)] }>

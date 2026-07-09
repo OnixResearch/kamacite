@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "fsm-trace-receipt"
+  version: "v1"
+  schema-id: "kamacite.fsm_trace_receipt.v1"
+  record-label: "kamacite-fsm-trace-receipt-v1"
+  fields: ["schema-version" "receipt-kind" "spec-identity" "trace-start-state" "trace-events" "trace-steps" "trace-final-state" "checked-laws" "diagnostics" "non-claims" "semantic-claims" "receipt-identity"]
+  source-schema: "kamacite.fsm_spec.v1"
+  identity: "blake3(canonical FSM trace receipt bytes) in receipt domain"
+  trace-law: "each observed step must start at the current state and consume the next declared event"
+  non-claims: ["not runtime correctness" "not authorization proof" "not timing proof" "not fairness proof" "not liveness proof" "not arbitrary source equivalence"]
+}>

@@ -1,0 +1,49 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.missing-coverage",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.missing_denial]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "f14a6b4b684b70e6b7b59f9b73e2cc1914e429f63c30bc2c06b31725f386a03e"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "f14a6b4b684b70e6b7b59f9b73e2cc1914e429f63c30bc2c06b31725f386a03e"
+      }
+    },
+    "checked_laws": [
+      "total-pair-coverage"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.missing_denial]",
+        "field": "fsm.coverage",
+        "message": "every reachable state/event pair must be covered by transition or explicit denial",
+        "details": {
+          "event": "start",
+          "state": "active"
+        }
+      }
+    ],
+    "non_claims": [
+      "missing state/event coverage fails closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "4743c7584f37c21b8421f986e7b1b3ee1ddd1a07e116aec41c085917b3675480"
+  }
+}

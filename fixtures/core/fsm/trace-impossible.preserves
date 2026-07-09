@@ -1,0 +1,1 @@
+<fsm-trace-receipt-v1 { spec: fixture.lifecycle start: idle events: [stop] states: [idle idle] impossible: true }>

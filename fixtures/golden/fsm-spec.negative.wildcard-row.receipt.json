@@ -1,0 +1,58 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.wildcard-row",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.no_wildcards.reject]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "a806d0a6dc2d2e2ecc93fcf90a158c02a50c33a999d7ba008f15cf1864d128e7"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "a806d0a6dc2d2e2ecc93fcf90a158c02a50c33a999d7ba008f15cf1864d128e7"
+      }
+    },
+    "checked_laws": [
+      "wildcards-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.missing_denial]",
+        "field": "fsm.coverage",
+        "message": "every reachable state/event pair must be covered by transition or explicit denial",
+        "details": {
+          "event": "start",
+          "state": "idle"
+        }
+      },
+      {
+        "code": "unsupported-artifact-class",
+        "requirement_id": "r[kamacite.lossless_ir.fsm_spec_vocabulary.no_wildcards.reject]",
+        "field": "fsm.transitions",
+        "message": "FSM specs reject wildcard, default, otherwise, or catch-all rows",
+        "details": {
+          "value": "*"
+        }
+      }
+    ],
+    "non_claims": [
+      "wildcard FSM rows are not complete coverage"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "7637db254f9d34058ef1c38849474553d30e2133a0d066507575bb60123a268c"
+  }
+}

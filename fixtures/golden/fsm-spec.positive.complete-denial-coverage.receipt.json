@@ -1,0 +1,45 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.positive.complete-denial-coverage",
+    "artifact_class": "fsm-spec",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.fsms.completeness_matrix.complete_table]",
+      "r[kamacite.fsms.completeness_matrix.explicit_denial]",
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]",
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.complete]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      }
+    },
+    "checked_laws": [
+      "declared-guard-use",
+      "denial-preserves-state",
+      "total-pair-coverage"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "not liveness proof",
+      "not protocol completeness",
+      "not runtime correctness"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "22128d5f15a37742ec67c98d4d091b943cdbbf6839435b2806341909dbdaee1a"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.unknown-endpoint",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes.references]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "a3d95f3392af9a81455aa4ea9d1a9e4df7b19d786bd75a44c5ae28d7ab863e28"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "a3d95f3392af9a81455aa4ea9d1a9e4df7b19d786bd75a44c5ae28d7ab863e28"
+      }
+    },
+    "checked_laws": [
+      "closed-universe-references"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.fsms.reachability_terminal_policy.unreachable_unmarked]",
+        "field": "fsm.states",
+        "message": "FSM state is unreachable from the initial state and lacks reviewed unreachable metadata",
+        "details": {
+          "state": "active"
+        }
+      },
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes.references]",
+        "field": "fsm.transitions.to_state",
+        "message": "FSM transition target state must be declared",
+        "details": {
+          "state": "missing"
+        }
+      }
+    ],
+    "non_claims": [
+      "unknown state or event references are not trusted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "ec1944a67c6c9af6085bbe607ddd9769fb2b92e437a535b522274edb201b93c4"
+  }
+}

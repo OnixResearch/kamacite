@@ -1,0 +1,1 @@
+<fsm-spec-v1 { id: "fixture.lifecycle.duplicate" states: [idle active] events: [start stop] transitions: [(idle start active) (idle start idle) (active stop idle)] denials: [(idle stop) (active start)] }>

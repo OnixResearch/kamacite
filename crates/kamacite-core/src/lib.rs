@@ -16,7 +16,9 @@ pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use fixture::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, CanonicalValueInput,
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload,
-    FixtureResult, FixtureSuite, FixtureSuiteReport, HandlerDescriptorInput, HandlerReceiptInput,
+    FixtureResult, FixtureSuite, FixtureSuiteReport, FsmDenialRowInput, FsmEventInput,
+    FsmGuardInput, FsmReceiptInput, FsmSideEffectInput, FsmSpecInput, FsmStateInput,
+    FsmTraceStepInput, FsmTransitionRowInput, HandlerDescriptorInput, HandlerReceiptInput,
     IdentityUseInput, NickelAdapterReceiptInput, ReplayProfileInput, SourceEnvelopeInput,
     StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass,
     TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict, validate_fixture,

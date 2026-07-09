@@ -56,6 +56,11 @@ pub enum IdentityDomain {
     AlgebraicEffect,
     EffectOperation,
     EffectLog,
+    FsmSpec,
+    FsmUniverse,
+    FsmCoverage,
+    DocumentationIr,
+    DocumentationOutput,
 }
 
 impl Display for IdentityDomain {
@@ -72,6 +77,11 @@ impl Display for IdentityDomain {
             Self::AlgebraicEffect => "algebraic-effect",
             Self::EffectOperation => "effect-operation",
             Self::EffectLog => "effect-log",
+            Self::FsmSpec => "fsm-spec",
+            Self::FsmUniverse => "fsm-universe",
+            Self::FsmCoverage => "fsm-coverage",
+            Self::DocumentationIr => "documentation-ir",
+            Self::DocumentationOutput => "documentation-output",
         };
         formatter.write_str(label)
     }

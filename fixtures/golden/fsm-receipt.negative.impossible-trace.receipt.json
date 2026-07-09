@@ -1,0 +1,79 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-receipt.negative.impossible-trace",
+    "artifact_class": "fsm-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.fsms.trace_receipts.impossible_transition]"
+    ],
+    "input_identities": {
+      "declared-fsm-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "ea50a9680a2b6d02481c52bc55ddcd46be4f85fa1c4c8b9c69d098e64b88eea4"
+      },
+      "fsm-adapter": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"
+      },
+      "fsm-denial-coverage": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+      },
+      "fsm-event-universe": {
+        "domain": "fsm-universe",
+        "algorithm": "blake3",
+        "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+      },
+      "fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      },
+      "fsm-state-universe": {
+        "domain": "fsm-universe",
+        "algorithm": "blake3",
+        "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+      },
+      "fsm-transition-coverage": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "ea50a9680a2b6d02481c52bc55ddcd46be4f85fa1c4c8b9c69d098e64b88eea4"
+      }
+    },
+    "checked_laws": [
+      "impossible-trace-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.fsms.trace_receipts.impossible_transition]",
+        "field": "fsm_receipt.trace_steps",
+        "message": "FSM trace transition is impossible from the current state and event",
+        "details": {
+          "current_state": "idle",
+          "event": "stop"
+        }
+      }
+    ],
+    "non_claims": [
+      "impossible trace paths are not trusted evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "e10f7e7a6f8b8d820ac512c0d4187dffe860bf7ce6bc3910fdeab9478db8fe01"
+  }
+}

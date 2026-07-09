@@ -1,0 +1,1 @@
+<fsm-spec-v1 { id: "fixture.lifecycle.wrong-domain" states: [idle active] events: [start stop] transitions: [(idle start active) (active stop idle)] denials: [(idle stop) (active start)] }>

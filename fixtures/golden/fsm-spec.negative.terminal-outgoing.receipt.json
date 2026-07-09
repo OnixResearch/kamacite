@@ -1,0 +1,48 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "fsm-spec.negative.terminal-outgoing",
+    "artifact_class": "fsm-spec",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.fsms.reachability_terminal_policy.terminal_outgoing]"
+    ],
+    "input_identities": {
+      "declared-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "8e0093d68ab4a894a9f0b4f0afbed31c1c98e2142b276c0971d80bbd7e482411"
+      }
+    },
+    "output_identities": {
+      "computed-fsm-spec": {
+        "domain": "fsm-spec",
+        "algorithm": "blake3",
+        "hex": "8e0093d68ab4a894a9f0b4f0afbed31c1c98e2142b276c0971d80bbd7e482411"
+      }
+    },
+    "checked_laws": [
+      "terminal-outgoing-fails-closed"
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported-artifact-class",
+        "requirement_id": "r[kamacite.fsms.reachability_terminal_policy.terminal_outgoing]",
+        "field": "fsm.transitions.from_state",
+        "message": "terminal FSM states cannot have outgoing transitions without a separate accepted restart policy",
+        "details": {
+          "state": "done"
+        }
+      }
+    ],
+    "non_claims": [
+      "terminal transitions need explicit accepted restart policy"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "530f540c690de5ca12a98672fb46733e0b88bb638ead9e1c52450c28bb5c1957"
+  }
+}

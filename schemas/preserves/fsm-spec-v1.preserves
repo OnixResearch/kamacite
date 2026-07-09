@@ -1,0 +1,10 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "fsm-spec"
+  version: "v1"
+  schema-id: "kamacite.fsm_spec.v1"
+  record-label: "kamacite-fsm-spec-v1"
+  fields: ["schema-version" "fsm-id" "source-envelope-identity" "declared-identity" "states" "events" "initial-state" "terminal-states" "intentionally-unreachable-states" "determinism-policy" "totality-policy" "guards" "side-effects" "transitions" "denials" "checked-laws" "non-claims"]
+  identity: "blake3(canonical FSM spec bytes) in fsm-spec domain"
+  coverage-law: "every reachable declared state/event pair is either an admitted transition row or an explicit denial row; intentionally-unreachable states need reviewed metadata"
+  non-claims: ["not a runtime" "not protocol-completeness proof" "not liveness proof" "not verifier soundness" "not release eligibility" "not arbitrary source equivalence"]
+}>

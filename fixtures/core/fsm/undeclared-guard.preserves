@@ -1,0 +1,1 @@
+<fsm-spec-v1 { id: "fixture.lifecycle.undeclared-guard" states: [idle active] events: [start stop] guards: [has-authority] transitions: [(idle start active missing-guard) (active stop idle)] denials: [(idle stop) (active start)] }>
