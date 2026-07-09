@@ -1,25 +1,25 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "algebraic.negative.host-capability-confusion",
     "artifact_class": "algebraic-effect",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.fixture_corpus.negative_host_confusion]"
+      "r[kamacite.algebraic_effects.fixture_corpus.negative_host_confusion]"
     ],
     "input_identities": {
       "declared-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"
+        "hex": "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f"
       }
     },
     "output_identities": {
       "computed-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"
+        "hex": "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f"
       }
     },
     "checked_laws": [
@@ -28,7 +28,7 @@
     "diagnostics": [
       {
         "code": "host-capability-confusion",
-        "requirement_id": "r[taenite.algebraic_effects.host_boundary.operation_not_authority]",
+        "requirement_id": "r[kamacite.algebraic_effects.host_boundary.operation_not_authority]",
         "field": "algebraic.claimed_host_authority",
         "message": "algebraic operation declaration does not grant host authority",
         "details": {
@@ -43,6 +43,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "f1b62484c101fbf8e9b4d6a85919d00c014a79c90db29d95eeecd252d3b0ccb5"
+    "hex": "b9f1acdfe12f001b55f4d001373e4fe46ceaa8129fe0d4100e35b4681f5a96e6"
   }
 }

@@ -1,14 +1,14 @@
 [workspace]
 members = [
-  "crates/taenite-core",
-  "crates/taenite-cli",
+  "crates/kamacite-core",
+  "crates/kamacite-cli",
 ]
 resolver = "3"
 
 [workspace.package]
 edition = "2024"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/OnixResearch/taenite"
+repository = "https://github.com/OnixResearch/kamacite"
 rust-version = "1.88"
 
 [workspace.dependencies]

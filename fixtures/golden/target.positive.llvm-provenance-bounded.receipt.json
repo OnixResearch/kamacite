@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "target.positive.llvm-provenance-bounded",
     "artifact_class": "target-artifact",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.compiler_target_conformance.llvm_metadata]"
+      "r[kamacite.lossless_ir.compiler_target_conformance.llvm_metadata]"
     ],
     "input_identities": {
       "declared-target": {
@@ -33,6 +33,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "83b7c6ce5df61a8f49287df929efac8cca6dd9961271705eb42af68930318317"
+    "hex": "10a988e4994eba0ef9cafd594d04159a9441bd2058832692fd8541112df178d2"
   }
 }

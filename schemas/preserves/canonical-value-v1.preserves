@@ -1,8 +1,8 @@
-<taenite-preserves-schema-artifact-v1 {
+<kamacite-preserves-schema-artifact-v1 {
   family: "canonical-value"
   version: "v1"
-  schema-id: "taenite.canonical-value.v1"
-  record-label: "taenite-canonical-value-v1"
+  schema-id: "kamacite.canonical-value.v1"
+  record-label: "kamacite-canonical-value-v1"
   fields: ["schema-version" "preserves-codec" "canonical-bytes" "canonical-identity" "projection-identities" "projection-non-claims"]
   identity: "blake3(canonical-bytes) in canonical-value domain"
   non-claims: ["json projection is not authority"]

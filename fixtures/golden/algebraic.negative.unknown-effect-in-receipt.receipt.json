@@ -1,25 +1,25 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "algebraic.negative.unknown-effect-in-receipt",
     "artifact_class": "algebraic-effect",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.handler_receipts.unknown_effect_denied]"
+      "r[kamacite.algebraic_effects.handler_receipts.unknown_effect_denied]"
     ],
     "input_identities": {
       "declared-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "778bda49e67beaf447354fc72138076bcaee9d59c805ff121350f3baed4cc4c3"
+        "hex": "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60"
       }
     },
     "output_identities": {
       "computed-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "778bda49e67beaf447354fc72138076bcaee9d59c805ff121350f3baed4cc4c3"
+        "hex": "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60"
       }
     },
     "checked_laws": [
@@ -28,7 +28,7 @@
     "diagnostics": [
       {
         "code": "unknown-effect-operation",
-        "requirement_id": "r[taenite.algebraic_effects.handler_receipts.unknown_effect_denied]",
+        "requirement_id": "r[kamacite.algebraic_effects.handler_receipts.unknown_effect_denied]",
         "field": "algebraic.receipt.observed_operations",
         "message": "handler receipt observed an unknown effect operation",
         "details": {
@@ -43,6 +43,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "a4bcbc40cca372033f1239d9568e67c633a67f9046b3bf7fc8007340e489d9e2"
+    "hex": "3e3fa5b385d07e4fc35cc30482b9dfd43ef750e0783fe9b23ab31aaf716a2eff"
   }
 }

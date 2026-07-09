@@ -1,16 +1,16 @@
 ## Why
 
-Taenite is about to grow Rust validators, adapter DTOs, canonicalization helpers, and receipt code. If the first Rust surface is too permissive, later adapters can accidentally inherit nondeterministic behavior, ambient host authority, interchangeable hash strings, lossy projection shortcuts, or diagnostics that depend on runtime context.
+Kamacite is about to grow Rust validators, adapter DTOs, canonicalization helpers, and receipt code. If the first Rust surface is too permissive, later adapters can accidentally inherit nondeterministic behavior, ambient host authority, interchangeable hash strings, lossy projection shortcuts, or diagnostics that depend on runtime context.
 
-The existing lossless-IR Cairn says Rust should own pure validation cores and typed identities. This change ratchets that guidance into implementation admission rules for Taenite Rust code before the first crate lands: Rust is a deterministic admission controller over explicit bytes, schemas, identities, and receipts, not an interpreter, evaluator, or ambient automation host.
+The existing lossless-IR Cairn says Rust should own pure validation cores and typed identities. This change ratchets that guidance into implementation admission rules for Kamacite Rust code before the first crate lands: Rust is a deterministic admission controller over explicit bytes, schemas, identities, and receipts, not an interpreter, evaluator, or ambient automation host.
 
 ## What Changes
 
-- Define the Taenite Rust Core Profile as a reviewed implementation profile, inspired by Ferrocene/Sealed Rust, Verus, HIF, capability-oriented Rust, Wasmtime determinism, and Oxide schema/identity projects, without claiming a new Rust dialect, compiler qualification, or semantic proof of arbitrary programs.
-- Define a Rust role boundary: `taenite-core` owns pure deterministic validation, canonicalization, hash-material construction, artifact classification, adapter DTO checks, and receipt construction; effectful IO belongs in a thin shell such as `taenite-cli`.
+- Define the Kamacite Rust Core Profile as a reviewed implementation profile, inspired by Ferrocene/Sealed Rust, Verus, HIF, capability-oriented Rust, Wasmtime determinism, and Oxide schema/identity projects, without claiming a new Rust dialect, compiler qualification, or semantic proof of arbitrary programs.
+- Define a Rust role boundary: `kamacite-core` owns pure deterministic validation, canonicalization, hash-material construction, artifact classification, adapter DTO checks, and receipt construction; effectful IO belongs in a thin shell such as `kamacite-cli`.
 - Require typed identity domains instead of raw string hashes for source, canonical value, projection, target artifact, adapter, evaluator, compiler, and receipt identities.
 - Require closed artifact alternatives and fail-closed handling for unknown schema versions, codecs, artifact classes, target kinds, adapter capabilities, and unsupported claims.
-- Require Preserves canonical bytes and BLAKE3 hashes to be authoritative where Taenite controls identity; JSON remains a compatibility projection with its own identity domain.
+- Require Preserves canonical bytes and BLAKE3 hashes to be authoritative where Kamacite controls identity; JSON remains a compatibility projection with its own identity domain.
 - Require deterministic diagnostics as data, deterministic ordering for canonical output, and no panics, silent defaults, truncation, or cross-domain coercions in validation paths.
 - Require explicit effect/capability declarations for any adapter-facing Rust surface, with denied-by-default behavior for filesystem, process, network, clock, randomness, credentials, mutation, compiler, or evaluator authority.
 - Treat `cap-std` or equivalent capability-root APIs as the preferred pattern for shell-only filesystem/network authority, while preserving the rule that the core receives normalized DTOs and never receives capability handles.

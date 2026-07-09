@@ -12,9 +12,9 @@ A future adapter suite must add all of the following before its behavior is trus
 
 Reference role boundaries remain unchanged:
 
-- Nickel reference tools own Nickel evaluation/export semantics; Taenite owns source-envelope preservation and projection receipts.
+- Nickel reference tools own Nickel evaluation/export semantics; Kamacite owns source-envelope preservation and projection receipts.
 - Steel is a bounded adapter/probe surface with declared host functions and no ambient authority.
 - WASM is an optional sandboxed adapter or target artifact, not canonical IR.
 - LLVM, GHC Core/STG, bytecode, Rust MIR, object files, and compiler reports are target/provenance evidence only.
-- Valence wraps evidence identities and non-claims without broadening Taenite claims.
+- Valence wraps evidence identities and non-claims without broadening Kamacite claims.
 - Octet checks Rust source shape and provenance only.

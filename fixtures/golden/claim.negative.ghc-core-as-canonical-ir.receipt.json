@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "claim.negative.ghc-core-as-canonical-ir",
     "artifact_class": "unsupported-claim",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.lossless_ir.haskell_boundary.ghc_ir_not_braid_ir]"
+      "r[kamacite.lossless_ir.haskell_boundary.ghc_ir_not_kamacite_ir]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -16,26 +16,26 @@
     "diagnostics": [
       {
         "code": "ambiguous-claim",
-        "requirement_id": "r[taenite.lossless_ir.total_diagnostics.malformed]",
+        "requirement_id": "r[kamacite.lossless_ir.total_diagnostics.malformed]",
         "field": "claim.preserve_source_only",
         "message": "unsupported source translation must remain source-envelope-only evidence",
         "details": {}
       },
       {
         "code": "unsupported-claim",
-        "requirement_id": "r[taenite.lossless_ir.losslessness_classes.arbitrary_source_denied]",
+        "requirement_id": "r[kamacite.lossless_ir.losslessness_classes.arbitrary_source_denied]",
         "field": "claim.claim_class",
         "message": "unsupported lossless translation or semantic-equivalence claim rejected",
         "details": {}
       }
     ],
     "non_claims": [
-      "GHC Core/STG/bytecode/interface files are not canonical Taenite IR"
+      "GHC Core/STG/bytecode/interface files are not canonical Kamacite IR"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "c73c6a08acbf28a14b22e3e6d285341eb9d424c6cfacb206fa449f4d171552d7"
+    "hex": "90bc9497682e24b866ae9a42e6a2c058cdb4e06f80d4b7ee25a6edf2f3a346fb"
   }
 }

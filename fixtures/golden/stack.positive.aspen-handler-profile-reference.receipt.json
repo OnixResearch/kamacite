@@ -1,32 +1,32 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "stack.positive.aspen-handler-profile-reference",
     "artifact_class": "stack-evidence",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.stack_roles.aspen.handler_profile]"
+      "r[kamacite.algebraic_effects.stack_roles.aspen.handler_profile]"
     ],
     "input_identities": {
       "aspen-runtime-consumption:algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
       }
     },
     "output_identities": {},
     "checked_laws": [
-      "runtime-consumes-taenite-identity"
+      "runtime-consumes-kamacite-identity"
     ],
     "diagnostics": [],
     "non_claims": [
-      "Aspen runtime evidence does not redefine Taenite effect schema"
+      "Aspen runtime evidence does not redefine Kamacite effect schema"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "3e6930f486efe9a9607f671b94782379211430f1da7ed85f34cf81793696f140"
+    "hex": "e024d592dd16065bb8f80c3409c6dc3ad6b50a09d31043a8abcabca91a799d7b"
   }
 }

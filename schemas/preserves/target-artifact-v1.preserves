@@ -1,9 +1,9 @@
-<taenite-preserves-schema-artifact-v1 {
+<kamacite-preserves-schema-artifact-v1 {
   family: "target-artifact"
   version: "v1"
-  schema-id: "taenite.target-artifact.v1"
-  record-label: "taenite-target-artifact-v1"
+  schema-id: "kamacite.target-artifact.v1"
+  record-label: "kamacite-target-artifact-v1"
   fields: ["schema-version" "target-kind" "producer-identity" "input-identities" "output-artifact-identity" "target-metadata" "reproducibility-limits" "non-claims"]
   identity: "blake3(target artifact bytes) in target-artifact domain"
-  non-claims: ["target artifact is not canonical Taenite IR"]
+  non-claims: ["target artifact is not canonical Kamacite IR"]
 }>

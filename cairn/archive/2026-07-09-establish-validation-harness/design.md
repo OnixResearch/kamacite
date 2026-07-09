@@ -1,6 +1,6 @@
 ## Context
 
-Taenite currently has decision Cairns for the lossless IR boundary, algebraic-effect artifact model, and Rust deterministic-admission profile. Those Cairns require fixture coverage and deterministic receipts, but the repo still has no concrete harness, no Rust workspace, no fixture manifest, and no seed corpus. If implementation starts before the harness exists, the first validators may accidentally define test shape, receipt ordering, manifest fields, or fixture update behavior through convenience rather than reviewed lifecycle decisions.
+Kamacite currently has decision Cairns for the lossless IR boundary, algebraic-effect artifact model, and Rust deterministic-admission profile. Those Cairns require fixture coverage and deterministic receipts, but the repo still has no concrete harness, no Rust workspace, no fixture manifest, and no seed corpus. If implementation starts before the harness exists, the first validators may accidentally define test shape, receipt ordering, manifest fields, or fixture update behavior through convenience rather than reviewed lifecycle decisions.
 
 The harness should be intentionally small. It should not try to implement every adapter, target, or export path up front. Instead it should make the evidence contract executable with a few source-envelope and identity-domain cases, then let later implementation slices add fixtures under the same contract.
 
@@ -8,9 +8,9 @@ The harness should be intentionally small. It should not try to implement every 
 
 ### 1. Build a walking skeleton before trusting implementation behavior
 
-**Choice:** Taenite introduces the validation harness before the first trusted Rust core behavior is accepted. The initial harness must run at least one positive source-envelope case, one stale-hash negative case, one wrong-identity-domain negative case, and one deterministic golden receipt check.
+**Choice:** Kamacite introduces the validation harness before the first trusted Rust core behavior is accepted. The initial harness must run at least one positive source-envelope case, one stale-hash negative case, one wrong-identity-domain negative case, and one deterministic golden receipt check.
 
-**Rationale:** A small executable contract is better than a large speculative harness. These cases exercise Taenite's core risks: source identity, fail-closed hashing, typed identity separation, and deterministic evidence.
+**Rationale:** A small executable contract is better than a large speculative harness. These cases exercise Kamacite's core risks: source identity, fail-closed hashing, typed identity separation, and deterministic evidence.
 
 **Rejected alternative:** Implement validators first and backfill tests later. That would let implementation convenience shape the evidence boundary.
 
@@ -26,7 +26,7 @@ The harness should be intentionally small. It should not try to implement every 
 
 **Choice:** The fixture manifest is human-authored in Nickel with a typed contract. Runtime test code may consume a deterministic exported projection, but the reviewed manifest source remains the Nickel file.
 
-**Rationale:** Taenite already prefers Nickel for human-authored contracts/config. The manifest is policy-like metadata: fixture IDs, artifact classes, expected verdicts, expected diagnostics, non-claims, dependencies, requirement coverage, and update behavior.
+**Rationale:** Kamacite already prefers Nickel for human-authored contracts/config. The manifest is policy-like metadata: fixture IDs, artifact classes, expected verdicts, expected diagnostics, non-claims, dependencies, requirement coverage, and update behavior.
 
 **Rejected alternative:** Start with untyped JSON or ad hoc file discovery as the manifest authority. That would weaken review and make duplicate or incomplete metadata easier to miss.
 

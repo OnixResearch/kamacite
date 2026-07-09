@@ -1,21 +1,21 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "canonical-value.property.names-dependencies-durable-storage",
     "artifact_class": "canonical-value",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.content_addressed_identity.dependency_closure]",
-      "r[taenite.lossless_ir.content_addressed_identity.durable_storage]",
-      "r[taenite.lossless_ir.content_addressed_identity.names_metadata]",
-      "r[taenite.lossless_ir.property_fixtures.replayable]"
+      "r[kamacite.lossless_ir.content_addressed_identity.dependency_closure]",
+      "r[kamacite.lossless_ir.content_addressed_identity.durable_storage]",
+      "r[kamacite.lossless_ir.content_addressed_identity.names_metadata]",
+      "r[kamacite.lossless_ir.property_fixtures.replayable]"
     ],
     "input_identities": {
       "declared-canonical": {
         "domain": "canonical-value",
         "algorithm": "blake3",
-        "hex": "b5a13f476a82437544848a283e7c0777e34615a3f1b0bb7e9b2ee4d5e40f94f0"
+        "hex": "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31"
       },
       "projection": {
         "domain": "projection",
@@ -27,7 +27,7 @@
       "computed-canonical": {
         "domain": "canonical-value",
         "algorithm": "blake3",
-        "hex": "b5a13f476a82437544848a283e7c0777e34615a3f1b0bb7e9b2ee4d5e40f94f0"
+        "hex": "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31"
       }
     },
     "checked_laws": [
@@ -43,6 +43,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "ba13eba40f8eefccdc78e408014e7fde2a5fb15851e82230004246f8419930aa"
+    "hex": "1ba3b294d7a4cc012dd9b24083603132fc65b12e4453015a5207af64eca98bbe"
   }
 }

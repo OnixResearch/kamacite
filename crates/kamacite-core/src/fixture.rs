@@ -6,41 +6,41 @@ use std::collections::{BTreeMap, BTreeSet};
 
 pub const SUPPORTED_SCHEMA_VERSION: u32 = 1;
 const REQUIREMENT_SCHEMA_VERSION: &str =
-    "r[taenite.lossless_ir.schema_vocabulary.unsupported_version]";
-const REQUIREMENT_SOURCE_HASH: &str = "r[taenite.lossless_ir.source_preservation.hash_mismatch]";
+    "r[kamacite.lossless_ir.schema_vocabulary.unsupported_version]";
+const REQUIREMENT_SOURCE_HASH: &str = "r[kamacite.lossless_ir.source_preservation.hash_mismatch]";
 const REQUIREMENT_SOURCE_BYTES: &str =
-    "r[taenite.lossless_ir.source_envelope_vocabulary.missing_bytes]";
-const REQUIREMENT_NON_CLAIMS: &str = "r[taenite.lossless_ir.non_claims.receipt]";
+    "r[kamacite.lossless_ir.source_envelope_vocabulary.missing_bytes]";
+const REQUIREMENT_NON_CLAIMS: &str = "r[kamacite.lossless_ir.non_claims.receipt]";
 const REQUIREMENT_TYPED_DOMAIN: &str =
-    "r[taenite.lossless_ir.typed_identity_domains.projection_not_canonical]";
+    "r[kamacite.lossless_ir.typed_identity_domains.projection_not_canonical]";
 const REQUIREMENT_CAPABILITIES: &str =
-    "r[taenite.rust_determinism.explicit_capabilities.filesystem]";
-const REQUIREMENT_TARGET_OVERCLAIM: &str = "r[taenite.lossless_ir.wasm_target_boundary.not_ir]";
+    "r[kamacite.rust_determinism.explicit_capabilities.filesystem]";
+const REQUIREMENT_TARGET_OVERCLAIM: &str = "r[kamacite.lossless_ir.wasm_target_boundary.not_ir]";
 const REQUIREMENT_UNSUPPORTED_CLAIM: &str =
-    "r[taenite.lossless_ir.losslessness_classes.arbitrary_source_denied]";
+    "r[kamacite.lossless_ir.losslessness_classes.arbitrary_source_denied]";
 const REQUIREMENT_FIXTURE_METADATA: &str =
-    "r[taenite.lossless_ir.fixture_corpus.requirement_coverage]";
-const REQUIREMENT_EXPECTED_VERDICT: &str = "r[taenite.lossless_ir.negative_fixtures]";
+    "r[kamacite.lossless_ir.fixture_corpus.requirement_coverage]";
+const REQUIREMENT_EXPECTED_VERDICT: &str = "r[kamacite.lossless_ir.negative_fixtures]";
 const REQUIREMENT_PATH_ESCAPE: &str =
-    "r[taenite.rust_determinism.capability_shells.escape_fixtures]";
+    "r[kamacite.rust_determinism.capability_shells.escape_fixtures]";
 const REQUIREMENT_ALGEBRAIC_VERSION: &str =
-    "r[taenite.algebraic_effects.ir_boundary.unsupported_version]";
+    "r[kamacite.algebraic_effects.ir_boundary.unsupported_version]";
 const REQUIREMENT_EFFECT_SCHEMA: &str =
-    "r[taenite.algebraic_effects.signature_vocabulary.missing_schema]";
+    "r[kamacite.algebraic_effects.signature_vocabulary.missing_schema]";
 const REQUIREMENT_UNDECLARED_EFFECT: &str =
-    "r[taenite.algebraic_effects.row_summary_vocabulary.undeclared_operation]";
+    "r[kamacite.algebraic_effects.row_summary_vocabulary.undeclared_operation]";
 const REQUIREMENT_OPEN_ROW: &str =
-    "r[taenite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]";
+    "r[kamacite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]";
 const REQUIREMENT_HANDLER_NAME: &str =
-    "r[taenite.algebraic_effects.handler_descriptor.name_not_discharge]";
+    "r[kamacite.algebraic_effects.handler_descriptor.name_not_discharge]";
 const REQUIREMENT_UNKNOWN_EFFECT: &str =
-    "r[taenite.algebraic_effects.handler_receipts.unknown_effect_denied]";
-const REQUIREMENT_CONTINUATION: &str = "r[taenite.algebraic_effects.continuation_policy.mismatch]";
+    "r[kamacite.algebraic_effects.handler_receipts.unknown_effect_denied]";
+const REQUIREMENT_CONTINUATION: &str = "r[kamacite.algebraic_effects.continuation_policy.mismatch]";
 const REQUIREMENT_HOST_CONFUSION: &str =
-    "r[taenite.algebraic_effects.host_boundary.operation_not_authority]";
-const REQUIREMENT_REPLAY: &str = "r[taenite.algebraic_effects.replay_profile.recorded_log]";
+    "r[kamacite.algebraic_effects.host_boundary.operation_not_authority]";
+const REQUIREMENT_REPLAY: &str = "r[kamacite.algebraic_effects.replay_profile.recorded_log]";
 const REQUIREMENT_STACK_BOUNDARY: &str =
-    "r[taenite.lossless_ir.stack_evidence_boundary.octet_checks]";
+    "r[kamacite.lossless_ir.stack_evidence_boundary.octet_checks]";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -430,7 +430,7 @@ fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut Valid
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
-            "r[taenite.lossless_ir.canonical_value_vocabulary.stale_hash]",
+            "r[kamacite.lossless_ir.canonical_value_vocabulary.stale_hash]",
             "canonical.declared_identity.hex",
             "declared canonical identity does not match canonical bytes",
         ));
@@ -449,7 +449,7 @@ fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut Valid
     if input.projection_claims_authority {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::LossyProjectionOverclaim,
-            "r[taenite.lossless_ir.format_strategy.json_projection]",
+            "r[kamacite.lossless_ir.format_strategy.json_projection]",
             "canonical.projection_claims_authority",
             "compatibility projection cannot replace canonical Preserves bytes",
         ));
@@ -460,7 +460,7 @@ fn validate_adapter_receipt(input: &AdapterReceiptInput, accumulator: &mut Valid
     if !input.has_conformance_entry {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::IncompleteMetadata,
-            "r[taenite.lossless_ir.adapter_conformance.untrusted_without_entry]",
+            "r[kamacite.lossless_ir.adapter_conformance.untrusted_without_entry]",
             "adapter.has_conformance_entry",
             "adapter-specific claims require a conformance entry",
         ));
@@ -510,7 +510,7 @@ fn validate_target_artifact(input: &TargetArtifactInput, accumulator: &mut Valid
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
-            "r[taenite.lossless_ir.target_artifact_vocabulary.toolchain_provenance]",
+            "r[kamacite.lossless_ir.target_artifact_vocabulary.toolchain_provenance]",
             "target.declared_identity.hex",
             "declared target identity does not match target artifact bytes",
         ));
@@ -518,7 +518,7 @@ fn validate_target_artifact(input: &TargetArtifactInput, accumulator: &mut Valid
     if input.metadata.is_empty() {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::IncompleteMetadata,
-            "r[taenite.lossless_ir.llvm_target_boundary.artifact_receipt]",
+            "r[kamacite.lossless_ir.llvm_target_boundary.artifact_receipt]",
             "target.metadata",
             "target artifact metadata is required for bounded provenance",
         ));
@@ -528,7 +528,7 @@ fn validate_target_artifact(input: &TargetArtifactInput, accumulator: &mut Valid
             DiagnosticCode::CanonicalIrOverclaim,
             REQUIREMENT_TARGET_OVERCLAIM,
             "target.claims_canonical_ir",
-            "compiled target artifact cannot be Taenite canonical IR",
+            "compiled target artifact cannot be Kamacite canonical IR",
         ));
     }
 }
@@ -551,7 +551,7 @@ fn validate_unsupported_claim(
     if !input.preserve_source_only && unsupported {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::AmbiguousClaim,
-            "r[taenite.lossless_ir.total_diagnostics.malformed]",
+            "r[kamacite.lossless_ir.total_diagnostics.malformed]",
             "claim.preserve_source_only",
             "unsupported source translation must remain source-envelope-only evidence",
         ));
@@ -611,7 +611,7 @@ fn validate_stack_evidence(input: &StackEvidenceInput, accumulator: &mut Validat
             DiagnosticCode::AmbiguousClaim,
             REQUIREMENT_STACK_BOUNDARY,
             "stack.broadens_claim",
-            "stack evidence export broadened Taenite bounded claim",
+            "stack evidence export broadened Kamacite bounded claim",
         ));
     }
     if input.role.is_empty() || input.bounded_claim.is_empty() {
@@ -655,7 +655,7 @@ fn validate_algebraic_effect(
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::AlgebraicEffectHashMismatch,
-            "r[taenite.algebraic_effects.fixture_corpus.negative_stale_identity]",
+            "r[kamacite.algebraic_effects.fixture_corpus.negative_stale_identity]",
             "algebraic.declared_identity.hex",
             "declared algebraic-effect identity does not match canonical bytes",
         ));
@@ -772,7 +772,7 @@ fn validate_handler(
             accumulator.diagnostics.push(
                 Diagnostic::new(
                     DiagnosticCode::UnknownEffectOperation,
-                    "r[taenite.algebraic_effects.handler_descriptor.residual_row]",
+                    "r[kamacite.algebraic_effects.handler_descriptor.residual_row]",
                     "algebraic.handler.residual_operations",
                     "unhandled input operation is missing from residual row",
                 )
@@ -842,7 +842,7 @@ fn validate_handler_receipt(
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::ContinuationPolicyMismatch,
-                "r[taenite.algebraic_effects.continuation_policy.single_use_evidence]",
+                "r[kamacite.algebraic_effects.continuation_policy.single_use_evidence]",
                 "algebraic.receipt.continuation_evidence",
                 "single-use continuation claim requires matching evidence",
             ));
@@ -894,7 +894,7 @@ fn validate_replay(input: &AlgebraicEffectInput, accumulator: &mut ValidationAcc
             if replay.effect_log_identity.is_some() {
                 accumulator.diagnostics.push(Diagnostic::new(
                     DiagnosticCode::NonReplayableEvidenceMisuse,
-                    "r[taenite.algebraic_effects.replay_profile.non_replayable]",
+                    "r[kamacite.algebraic_effects.replay_profile.non_replayable]",
                     "algebraic.replay.effect_log_identity",
                     "non-replayable effects cannot be accepted as replay evidence",
                 ));
@@ -1035,7 +1035,7 @@ mod tests {
     const STALE_HASH: &str = "0000000000000000000000000000000000000000000000000000000000000000";
     const FIXTURE_ID: &str = "unit.source.valid";
     const REQUIREMENT_ID: &str =
-        "r[taenite.validation_harness.seed_fixtures.valid_source_envelope]";
+        "r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]";
     const NON_CLAIM: &str = "not Nickel evaluation semantics";
     const LAW: &str = "source-envelope-preservation";
 
@@ -1100,7 +1100,8 @@ mod tests {
             fixture_class: FixtureClass::Negative,
             artifact_class: ArtifactClass::Receipt,
             requirement_ids: vec![
-                "r[taenite.rust_determinism.typed_identity_domains.source_not_receipt]".to_string(),
+                "r[kamacite.rust_determinism.typed_identity_domains.source_not_receipt]"
+                    .to_string(),
             ],
             non_claims: vec!["not cross-domain coercion".to_string()],
             expected_verdict: ValidationVerdict::Rejected,
@@ -1129,7 +1130,7 @@ mod tests {
             fixture_class: FixtureClass::Positive,
             artifact_class: ArtifactClass::AlgebraicEffect,
             requirement_ids: vec![
-                "r[taenite.algebraic_effects.fixture_corpus.positive_discharge]".to_string(),
+                "r[kamacite.algebraic_effects.fixture_corpus.positive_discharge]".to_string(),
             ],
             non_claims: vec!["not runtime authorization".to_string()],
             expected_verdict: ValidationVerdict::Accepted,
@@ -1182,7 +1183,7 @@ mod tests {
             fixture_class: FixtureClass::Negative,
             artifact_class: ArtifactClass::AlgebraicEffect,
             requirement_ids: vec![
-                "r[taenite.algebraic_effects.fixture_corpus.negative_host_confusion]".to_string(),
+                "r[kamacite.algebraic_effects.fixture_corpus.negative_host_confusion]".to_string(),
             ],
             non_claims: vec!["operation identity is not authority".to_string()],
             expected_verdict: ValidationVerdict::Rejected,

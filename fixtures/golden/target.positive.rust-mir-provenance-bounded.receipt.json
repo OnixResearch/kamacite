@@ -1,25 +1,25 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "target.positive.rust-mir-provenance-bounded",
     "artifact_class": "target-artifact",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.compiler_target_conformance.ghc_mir_provenance]"
+      "r[kamacite.lossless_ir.compiler_target_conformance.ghc_mir_provenance]"
     ],
     "input_identities": {
       "declared-target": {
         "domain": "target-artifact",
         "algorithm": "blake3",
-        "hex": "df9f3ebc300fbe54feacf11de8aa4c65ea603bf198e2b2bd807b0ff62edac7c1"
+        "hex": "be4fb8bd87ea3ba775e1ecc56c91beda334167f2833e4b70f4fbd8a554ad3a30"
       }
     },
     "output_identities": {
       "computed-target": {
         "domain": "target-artifact",
         "algorithm": "blake3",
-        "hex": "df9f3ebc300fbe54feacf11de8aa4c65ea603bf198e2b2bd807b0ff62edac7c1"
+        "hex": "be4fb8bd87ea3ba775e1ecc56c91beda334167f2833e4b70f4fbd8a554ad3a30"
       }
     },
     "checked_laws": [
@@ -33,6 +33,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "9984d560ee66c419ec507bd8a7ed3bd51beaa574e9c1e5f76d907728e7f31136"
+    "hex": "7aba548556121be4820e7af3d24b0c43af205382603849891f01fd1f8e623e4a"
   }
 }

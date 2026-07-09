@@ -1,13 +1,13 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "source-envelope.negative.stale-source-hash",
     "artifact_class": "source-envelope",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.rust_determinism.total_diagnostics.stale_hash]",
-      "r[taenite.validation_harness.seed_fixtures.stale_source_hash]"
+      "r[kamacite.rust_determinism.total_diagnostics.stale_hash]",
+      "r[kamacite.validation_harness.seed_fixtures.stale_source_hash]"
     ],
     "input_identities": {
       "declared-source": {
@@ -29,7 +29,7 @@
     "diagnostics": [
       {
         "code": "stale-identity",
-        "requirement_id": "r[taenite.lossless_ir.source_preservation.hash_mismatch]",
+        "requirement_id": "r[kamacite.lossless_ir.source_preservation.hash_mismatch]",
         "field": "source.declared_identity.hex",
         "message": "declared source identity does not match source bytes",
         "details": {}
@@ -42,6 +42,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "63e9fafb98954956fe2243233fc5946457c27621a68cb9ce5a5a2fd6afadc3ff"
+    "hex": "f5ff9ca465c43c89cfd0210fa41e0e8015ee55488596a3e92118d38f58189e3c"
   }
 }

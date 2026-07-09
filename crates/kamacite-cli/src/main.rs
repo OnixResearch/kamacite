@@ -1,10 +1,6 @@
 #![forbid(unsafe_code)]
 
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
-use std::fmt::{Display, Formatter};
-use std::path::{Component, Path, PathBuf};
-use taenite_core::{
+use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, CanonicalValueInput,
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload, FixtureSuite,
     HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
@@ -12,10 +8,14 @@ use taenite_core::{
     UnsupportedClaimInput, ValidationVerdict, compute_identity, receipt_json,
     validate_fixture_suite,
 };
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
+use std::fmt::{Display, Formatter};
+use std::path::{Component, Path, PathBuf};
 
 const DEFAULT_ROOT: &str = ".";
 const DEFAULT_MANIFEST: &str = "fixtures/manifest.json";
-const DEFAULT_UPDATE_REPORT: &str = "target/taenite-golden-update-receipt.json";
+const DEFAULT_UPDATE_REPORT: &str = "target/kamacite-golden-update-receipt.json";
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_FAILURE: i32 = 1;
 const DOMAIN_SOURCE: &str = "source";
@@ -140,7 +140,7 @@ struct ReplayProjection {
 #[derive(Debug, Serialize)]
 struct CliReport {
     passed: bool,
-    fixture_report: taenite_core::FixtureSuiteReport,
+    fixture_report: kamacite_core::FixtureSuiteReport,
     golden_results: Vec<GoldenResult>,
 }
 
@@ -436,10 +436,10 @@ fn materialize_replay(
 fn check_golden_receipts(
     root: &Path,
     projections: &[FixtureProjection],
-    results: &[taenite_core::FixtureResult],
+    results: &[kamacite_core::FixtureResult],
     args: &ValidateArgs,
 ) -> CliResult<Vec<GoldenResult>> {
-    let result_by_id: BTreeMap<&str, &taenite_core::FixtureResult> = results
+    let result_by_id: BTreeMap<&str, &kamacite_core::FixtureResult> = results
         .iter()
         .map(|result| (result.id.as_str(), result))
         .collect();
@@ -582,7 +582,7 @@ fn write_path(path: &Path, bytes: &[u8]) -> CliResult<()> {
 
 fn print_help() {
     println!(
-        "taenite-validate validate [--root PATH] [--manifest PATH] [--update-golden] [--update-report PATH]\n\
-         taenite-validate hash-file --domain DOMAIN --path PATH"
+        "kamacite-validate validate [--root PATH] [--manifest PATH] [--update-golden] [--update-report PATH]\n\
+         kamacite-validate hash-file --domain DOMAIN --path PATH"
     );
 }

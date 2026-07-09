@@ -1,13 +1,13 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "adapter.positive.nickel-source-export-separated",
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.adapter_boundaries.nickel_projection]",
-      "r[taenite.lossless_ir.nickel_adapter_conformance.source_export_separation]"
+      "r[kamacite.lossless_ir.adapter_boundaries.nickel_projection]",
+      "r[kamacite.lossless_ir.nickel_adapter_conformance.source_export_separation]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -23,6 +23,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "4cd00b8188810264f9bb40a517b6acd4810d628f58e4be0034b66b57f2008b1c"
+    "hex": "be7fccd01fe7fedac7a6a39f823687def41bd394f95fa5ee2b4f4318e2a67b5f"
   }
 }

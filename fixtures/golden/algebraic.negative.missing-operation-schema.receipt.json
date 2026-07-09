@@ -1,25 +1,25 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "algebraic.negative.missing-operation-schema",
     "artifact_class": "algebraic-effect",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.signature_vocabulary.missing_schema]"
+      "r[kamacite.algebraic_effects.signature_vocabulary.missing_schema]"
     ],
     "input_identities": {
       "declared-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "ac5aadeaa5f2b0caf715468850c620b728f746216919d8e529ae0244d462938a"
+        "hex": "6564e0b1bcb778d7a2c654afaf1bcf11b402fe43df7c573e40fb829e5748848c"
       }
     },
     "output_identities": {
       "computed-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "ac5aadeaa5f2b0caf715468850c620b728f746216919d8e529ae0244d462938a"
+        "hex": "6564e0b1bcb778d7a2c654afaf1bcf11b402fe43df7c573e40fb829e5748848c"
       }
     },
     "checked_laws": [
@@ -28,7 +28,7 @@
     "diagnostics": [
       {
         "code": "incomplete-effect-signature",
-        "requirement_id": "r[taenite.algebraic_effects.signature_vocabulary.missing_schema]",
+        "requirement_id": "r[kamacite.algebraic_effects.signature_vocabulary.missing_schema]",
         "field": "algebraic.signatures",
         "message": "effect operation requires parameter and result schemas",
         "details": {
@@ -43,6 +43,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "5a0cd9f4b78a51a06d36b7585b50c494809fe264c91c88d99da81267b11528a5"
+    "hex": "fe63798ae93e58e80cac76090f0fc7aff223a136dc68555ac2f5f25c54bc827f"
   }
 }

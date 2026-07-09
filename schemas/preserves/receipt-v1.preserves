@@ -1,8 +1,8 @@
-<taenite-preserves-schema-artifact-v1 {
+<kamacite-preserves-schema-artifact-v1 {
   family: "receipt"
   version: "v1"
-  schema-id: "taenite.receipt.v1"
-  record-label: "taenite-receipt-v1"
+  schema-id: "kamacite.receipt.v1"
+  record-label: "kamacite-receipt-v1"
   fields: ["schema-version" "receipt-kind" "artifact-class" "input-identities" "output-identities" "adapter-descriptors" "checked-laws" "diagnostics" "dependency-closure" "effect-capability-summary" "non-claims" "receipt-identity"]
   identity: "blake3(canonical receipt bytes without receipt-identity) in receipt domain"
   non-claims: ["receipt validation is bounded claim evidence only"]

@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "source-envelope.negative.unsupported-version",
     "artifact_class": "source-envelope",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.lossless_ir.schema_vocabulary.unsupported_version]"
+      "r[kamacite.lossless_ir.schema_vocabulary.unsupported_version]"
     ],
     "input_identities": {
       "declared-source": {
@@ -28,7 +28,7 @@
     "diagnostics": [
       {
         "code": "unsupported-schema-version",
-        "requirement_id": "r[taenite.lossless_ir.schema_vocabulary.unsupported_version]",
+        "requirement_id": "r[kamacite.lossless_ir.schema_vocabulary.unsupported_version]",
         "field": "schema_version",
         "message": "unsupported schema version rejected",
         "details": {}
@@ -41,6 +41,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "b78c3ce9da59caaa98ab9dedec1447ab5cc6370f1630598e02cce461bf60fb6d"
+    "hex": "005dcbd7f6fb2712c7e21fd7890ecf13f93e3e3754699f3fe855e4a8303d9362"
   }
 }

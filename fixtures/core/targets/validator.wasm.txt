@@ -1,1 +1,1 @@
-wasm-target-placeholder: validates Taenite bytes and returns receipts only
+wasm-target-placeholder: validates Kamacite bytes and returns receipts only

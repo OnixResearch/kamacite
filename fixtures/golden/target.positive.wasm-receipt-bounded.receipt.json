@@ -1,25 +1,25 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "target.positive.wasm-receipt-bounded",
     "artifact_class": "target-artifact",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.wasm_adapter_conformance.receipt]"
+      "r[kamacite.lossless_ir.wasm_adapter_conformance.receipt]"
     ],
     "input_identities": {
       "declared-target": {
         "domain": "target-artifact",
         "algorithm": "blake3",
-        "hex": "9ef8ccae140c9160f1e67f9fac066d5aecddbccf3693f6c30b9a0ab3a74a74db"
+        "hex": "073709f60d49930fa5e855ecaad567aed0d3c8aa91885934c2f566067ad0601b"
       }
     },
     "output_identities": {
       "computed-target": {
         "domain": "target-artifact",
         "algorithm": "blake3",
-        "hex": "9ef8ccae140c9160f1e67f9fac066d5aecddbccf3693f6c30b9a0ab3a74a74db"
+        "hex": "073709f60d49930fa5e855ecaad567aed0d3c8aa91885934c2f566067ad0601b"
       }
     },
     "checked_laws": [
@@ -27,12 +27,12 @@
     ],
     "diagnostics": [],
     "non_claims": [
-      "WASM artifact is not canonical Taenite IR"
+      "WASM artifact is not canonical Kamacite IR"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "ace624fe687dbd5e3e212034901946f685b36e6b11f2b1b7bf3ccc8a55e03c6e"
+    "hex": "fde765dcf71f8e7239589c4116f625ed72cde82e8d0fa59c4a6fcaa822164349"
   }
 }

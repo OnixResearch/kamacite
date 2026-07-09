@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "source-envelope.positive.haskell-source-only",
     "artifact_class": "source-envelope",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.haskell_boundary.source_envelope]"
+      "r[kamacite.lossless_ir.haskell_boundary.source_envelope]"
     ],
     "input_identities": {
       "declared-source": {
@@ -27,12 +27,12 @@
     ],
     "diagnostics": [],
     "non_claims": [
-      "Haskell source is preserved source only, not Taenite IR"
+      "Haskell source is preserved source only, not Kamacite IR"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "558a8d249b9b3fa892fb40b59c17b2d24a699d3accf3a89dac0918bce5e87be0"
+    "hex": "09c8dc64d00b18038fab4137f02a002483add6a8c0d49e35667ccdb152a9dfda"
   }
 }

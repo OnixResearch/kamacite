@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "capability.positive.normal-root-relative",
     "artifact_class": "capability-shell",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.rust_determinism.capability_shells.filesystem_root]"
+      "r[kamacite.rust_determinism.capability_shells.filesystem_root]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -21,6 +21,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "19bf7fb0150ce1687e4818ae27fb34ed249a1d67f5651a0ca7ed184372ea9322"
+    "hex": "ad0ef5cfc52379d5dc14844d6e7e95f4d899c1c64fcf12e4812e6e599862723b"
   }
 }

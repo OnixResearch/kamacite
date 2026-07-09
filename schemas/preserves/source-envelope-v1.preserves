@@ -1,8 +1,8 @@
-<taenite-preserves-schema-artifact-v1 {
+<kamacite-preserves-schema-artifact-v1 {
   family: "source-envelope"
   version: "v1"
-  schema-id: "taenite.source-envelope.v1"
-  record-label: "taenite-source-envelope-v1"
+  schema-id: "kamacite.source-envelope.v1"
+  record-label: "kamacite-source-envelope-v1"
   fields: ["schema-version" "language" "media-type" "parser-identity" "source-bytes" "source-identity" "aliases" "span-index" "non-claims"]
   identity: "blake3(source-bytes) in source domain"
   non-claims: ["not evaluation semantics" "not arbitrary source translation"]

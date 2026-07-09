@@ -1,8 +1,8 @@
-<taenite-preserves-schema-artifact-v1 {
+<kamacite-preserves-schema-artifact-v1 {
   family: "handler-application-receipt"
   version: "v1"
-  schema-id: "taenite.algebraic-effect.handler-application-receipt.v1"
-  record-label: "taenite-handler-application-receipt-v1"
+  schema-id: "kamacite.algebraic-effect.handler-application-receipt.v1"
+  record-label: "kamacite-handler-application-receipt-v1"
   fields: ["schema-version" "input-artifact-identities" "input-effect-summary" "handler-descriptor-identity" "discharged-operations" "residual-effect-summary" "checked-laws" "continuation-use-evidence" "replay-references" "diagnostics" "output-identities" "non-claims"]
   identity: "blake3(canonical handler receipt bytes) in receipt domain"
   non-claims: ["passing receipt does not grant host authority" "not runtime correctness"]

@@ -1,25 +1,25 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "algebraic.positive.single-use-continuation-evidence",
     "artifact_class": "algebraic-effect",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.continuation_policy.single_use_evidence]"
+      "r[kamacite.algebraic_effects.continuation_policy.single_use_evidence]"
     ],
     "input_identities": {
       "declared-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
       }
     },
     "output_identities": {
       "computed-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
       }
     },
     "checked_laws": [
@@ -33,6 +33,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "8a8677c5cc96806fcc6646b13666f1755e02d0614fcc83c69a801529b2e74369"
+    "hex": "faf350a52dc281845c029fced2c2ca508da8d4638f9569252eefbe87c70294be"
   }
 }

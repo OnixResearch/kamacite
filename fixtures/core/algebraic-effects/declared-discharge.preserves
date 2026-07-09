@@ -1,1 +1,1 @@
-<taenite-effect-bundle-v1 {signature: "ReadConfig", row: ["op.read-config"], handler: "memory", residual: []}>
+<kamacite-effect-bundle-v1 {signature: "ReadConfig", row: ["op.read-config"], handler: "memory", residual: []}>

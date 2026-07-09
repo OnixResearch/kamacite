@@ -2,25 +2,25 @@
 
 ## Purpose
 
-Defines the deterministic validation command that will check Taenite schemas, fixtures, adapters, target evidence, and receipts.
+Defines the deterministic validation command that will check Kamacite schemas, fixtures, adapters, target evidence, and receipts.
 
 ## Requirements
 
 ### Requirement: Deterministic validation command
 
-r[taenite.lossless_ir.validation_command] Taenite MUST provide a deterministic validation command before implementation claims are accepted. The command MUST validate schema vocabulary, source envelopes, canonical values, adapter descriptors, target artifacts, fixtures, adapter laws, diagnostics, and receipts using explicit inputs and MUST emit a deterministic validation receipt.
+r[kamacite.lossless_ir.validation_command] Kamacite MUST provide a deterministic validation command before implementation claims are accepted. The command MUST validate schema vocabulary, source envelopes, canonical values, adapter descriptors, target artifacts, fixtures, adapter laws, diagnostics, and receipts using explicit inputs and MUST emit a deterministic validation receipt.
 
 #### Scenario: Validation command emits receipt
 
-r[taenite.lossless_ir.validation_command.receipt]
+r[kamacite.lossless_ir.validation_command.receipt]
 
-- GIVEN a repository or fixture root contains Taenite schema and fixture inputs
+- GIVEN a repository or fixture root contains Kamacite schema and fixture inputs
 - WHEN the validation command runs successfully
 - THEN it MUST emit a deterministic receipt that binds input identities, validated requirement coverage, checked laws, diagnostics summary, non-claims, and receipt identity.
 
 #### Scenario: Validation command is deterministic
 
-r[taenite.lossless_ir.validation_command.deterministic]
+r[kamacite.lossless_ir.validation_command.deterministic]
 
 - GIVEN the same explicit inputs and tool versions are provided to the validation command
 - WHEN the command runs more than once
@@ -28,11 +28,11 @@ r[taenite.lossless_ir.validation_command.deterministic]
 
 ### Requirement: Validation command input discovery
 
-r[taenite.lossless_ir.validation_input_discovery] The validation command MUST discover inputs deterministically from explicit roots, manifests, or arguments. It MUST ignore unsupported files unless the manifest requires them, and it MUST fail closed for duplicate fixture IDs, duplicate artifact IDs, ambiguous manifests, unsupported schema versions, or missing required inputs.
+r[kamacite.lossless_ir.validation_input_discovery] The validation command MUST discover inputs deterministically from explicit roots, manifests, or arguments. It MUST ignore unsupported files unless the manifest requires them, and it MUST fail closed for duplicate fixture IDs, duplicate artifact IDs, ambiguous manifests, unsupported schema versions, or missing required inputs.
 
 #### Scenario: Duplicate fixture ID fails closed
 
-r[taenite.lossless_ir.validation_input_discovery.duplicate_fixture]
+r[kamacite.lossless_ir.validation_input_discovery.duplicate_fixture]
 
 - GIVEN two fixtures declare the same fixture identity in a validation root
 - WHEN the validation command discovers inputs
@@ -40,7 +40,7 @@ r[taenite.lossless_ir.validation_input_discovery.duplicate_fixture]
 
 #### Scenario: Missing required input fails closed
 
-r[taenite.lossless_ir.validation_input_discovery.missing_input]
+r[kamacite.lossless_ir.validation_input_discovery.missing_input]
 
 - GIVEN a manifest declares a source envelope, canonical value, adapter descriptor, target artifact, or golden receipt that is absent
 - WHEN the validation command discovers inputs
@@ -48,11 +48,11 @@ r[taenite.lossless_ir.validation_input_discovery.missing_input]
 
 ### Requirement: Validation command execution boundary
 
-r[taenite.lossless_ir.validation_execution_boundary] The validation command MUST separate pure validation from effectful fixture execution. Pure checks MUST run over in-memory artifacts. Effectful adapters, evaluators, compilers, or target runners MAY run only when their descriptors declare the required capabilities and the command mode permits those effects.
+r[kamacite.lossless_ir.validation_execution_boundary] The validation command MUST separate pure validation from effectful fixture execution. Pure checks MUST run over in-memory artifacts. Effectful adapters, evaluators, compilers, or target runners MAY run only when their descriptors declare the required capabilities and the command mode permits those effects.
 
 #### Scenario: Pure validation does not execute adapters
 
-r[taenite.lossless_ir.validation_execution_boundary.pure_mode]
+r[kamacite.lossless_ir.validation_execution_boundary.pure_mode]
 
 - GIVEN validation is run in pure or receipt-only mode
 - WHEN fixtures reference Nickel, Steel, WebAssembly, LLVM, GHC, Rust MIR, or other external tools
@@ -60,7 +60,7 @@ r[taenite.lossless_ir.validation_execution_boundary.pure_mode]
 
 #### Scenario: Effectful validation requires declared capabilities
 
-r[taenite.lossless_ir.validation_execution_boundary.effectful_mode]
+r[kamacite.lossless_ir.validation_execution_boundary.effectful_mode]
 
 - GIVEN validation is run in a mode that permits adapter, evaluator, compiler, or target execution
 - WHEN a fixture requests an effect
@@ -68,11 +68,11 @@ r[taenite.lossless_ir.validation_execution_boundary.effectful_mode]
 
 ### Requirement: Validation command diagnostics
 
-r[taenite.lossless_ir.validation_diagnostics] The validation command MUST report deterministic diagnostics for schema errors, identity-domain substitutions, hash mismatches, lossy projections, undeclared effects, unsupported variants, duplicate IDs, stale golden receipts, target-artifact overclaims, and non-claim violations.
+r[kamacite.lossless_ir.validation_diagnostics] The validation command MUST report deterministic diagnostics for schema errors, identity-domain substitutions, hash mismatches, lossy projections, undeclared effects, unsupported variants, duplicate IDs, stale golden receipts, target-artifact overclaims, and non-claim violations.
 
 #### Scenario: Diagnostics name rejected claim
 
-r[taenite.lossless_ir.validation_diagnostics.rejected_claim]
+r[kamacite.lossless_ir.validation_diagnostics.rejected_claim]
 
 - GIVEN validation rejects an artifact, fixture, adapter receipt, target artifact, or projection
 - WHEN the diagnostic is emitted
@@ -80,7 +80,7 @@ r[taenite.lossless_ir.validation_diagnostics.rejected_claim]
 
 #### Scenario: Diagnostics are stable
 
-r[taenite.lossless_ir.validation_diagnostics.stable]
+r[kamacite.lossless_ir.validation_diagnostics.stable]
 
 - GIVEN the same invalid inputs are validated repeatedly
 - WHEN diagnostics are emitted
@@ -88,11 +88,11 @@ r[taenite.lossless_ir.validation_diagnostics.stable]
 
 ### Requirement: Validation command mutation boundary
 
-r[taenite.lossless_ir.validation_mutation_boundary] The validation command MUST be non-mutating by default. Any workflow that updates generated fixtures, schemas, projections, or golden receipts MUST require an explicit update mode and MUST emit a receipt describing every changed identity.
+r[kamacite.lossless_ir.validation_mutation_boundary] The validation command MUST be non-mutating by default. Any workflow that updates generated fixtures, schemas, projections, or golden receipts MUST require an explicit update mode and MUST emit a receipt describing every changed identity.
 
 #### Scenario: Default validation does not rewrite golden receipts
 
-r[taenite.lossless_ir.validation_mutation_boundary.default_no_rewrite]
+r[kamacite.lossless_ir.validation_mutation_boundary.default_no_rewrite]
 
 - GIVEN a golden receipt differs from validation output
 - WHEN the validation command runs in default mode
@@ -100,7 +100,7 @@ r[taenite.lossless_ir.validation_mutation_boundary.default_no_rewrite]
 
 #### Scenario: Explicit update records changed identities
 
-r[taenite.lossless_ir.validation_mutation_boundary.explicit_update]
+r[kamacite.lossless_ir.validation_mutation_boundary.explicit_update]
 
 - GIVEN an operator runs an accepted update workflow for generated artifacts or golden receipts
 - WHEN the workflow writes changes

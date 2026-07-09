@@ -1,8 +1,8 @@
-<taenite-preserves-schema-artifact-v1 {
+<kamacite-preserves-schema-artifact-v1 {
   family: "effect-summary"
   version: "v1"
-  schema-id: "taenite.algebraic-effect.summary.v1"
-  record-label: "taenite-effect-summary-v1"
+  schema-id: "kamacite.algebraic-effect.summary.v1"
+  record-label: "kamacite-effect-summary-v1"
   fields: ["schema-version" "required-operations" "discharged-operations" "residual-operations" "replay-class" "dependency-identities" "non-claims"]
   identity: "blake3(canonical summary bytes) in algebraic-effect domain"
   non-claims: ["summary is not runtime authorization"]

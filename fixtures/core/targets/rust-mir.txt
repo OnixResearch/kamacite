@@ -1,2 +1,2 @@
-// rust MIR provenance placeholder for taenite validator
+// rust MIR provenance placeholder for kamacite validator
 fn source_envelope_slice() -> ValidationReport

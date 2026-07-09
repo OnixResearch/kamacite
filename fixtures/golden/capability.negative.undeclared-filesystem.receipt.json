@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "capability.negative.undeclared-filesystem",
     "artifact_class": "capability-shell",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.rust_determinism.explicit_capabilities.filesystem]"
+      "r[kamacite.rust_determinism.explicit_capabilities.filesystem]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -16,7 +16,7 @@
     "diagnostics": [
       {
         "code": "path-escape",
-        "requirement_id": "r[taenite.rust_determinism.capability_shells.escape_fixtures]",
+        "requirement_id": "r[kamacite.rust_determinism.capability_shells.escape_fixtures]",
         "field": "capability.path",
         "message": "shell path admission rejected deterministic escape or undeclared authority case",
         "details": {
@@ -25,7 +25,7 @@
       },
       {
         "code": "undeclared-capability",
-        "requirement_id": "r[taenite.rust_determinism.explicit_capabilities.filesystem]",
+        "requirement_id": "r[kamacite.rust_determinism.explicit_capabilities.filesystem]",
         "field": "capability.declared_filesystem",
         "message": "filesystem-backed shell fixture lacks declared filesystem authority",
         "details": {}
@@ -38,6 +38,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "f82fa58324965fd40e3f8a569c1259534275e6a54769aa3b0279d62793bb90c3"
+    "hex": "069141e8a901c73d0b8536917cca631d00f57a4fb15255a6ae2a5ed2f10a4eb6"
   }
 }

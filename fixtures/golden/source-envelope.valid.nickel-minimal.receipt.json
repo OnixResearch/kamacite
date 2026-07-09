@@ -1,14 +1,14 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "source-envelope.valid.nickel-minimal",
     "artifact_class": "source-envelope",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.positive_fixtures.source_bytes]",
-      "r[taenite.rust_determinism.first_slice.source_envelope]",
-      "r[taenite.validation_harness.seed_fixtures.valid_source_envelope]"
+      "r[kamacite.lossless_ir.positive_fixtures.source_bytes]",
+      "r[kamacite.rust_determinism.first_slice.source_envelope]",
+      "r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]"
     ],
     "input_identities": {
       "declared-source": {
@@ -37,6 +37,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "5e06a30eac16889b395460eedf0fe5f615a63a3a01f2d921bb4b0eefb2921b56"
+    "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
   }
 }

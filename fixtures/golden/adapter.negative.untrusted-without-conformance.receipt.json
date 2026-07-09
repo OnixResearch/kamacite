@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "adapter.negative.untrusted-without-conformance",
     "artifact_class": "adapter-receipt",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.lossless_ir.adapter_conformance.untrusted_without_entry]"
+      "r[kamacite.lossless_ir.adapter_conformance.untrusted_without_entry]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -16,7 +16,7 @@
     "diagnostics": [
       {
         "code": "incomplete-metadata",
-        "requirement_id": "r[taenite.lossless_ir.adapter_conformance.untrusted_without_entry]",
+        "requirement_id": "r[kamacite.lossless_ir.adapter_conformance.untrusted_without_entry]",
         "field": "adapter.has_conformance_entry",
         "message": "adapter-specific claims require a conformance entry",
         "details": {}
@@ -29,6 +29,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "45e2e26368e483135f744b8bf4416b0394d435a27ae690a3fe6c96e83e5d44de"
+    "hex": "f67d992049e6ec96244789e8e4b2d57ce2b44ae78822227e0062fb06031ffca8"
   }
 }

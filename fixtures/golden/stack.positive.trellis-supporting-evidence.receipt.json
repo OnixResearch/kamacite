@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "stack.positive.trellis-supporting-evidence",
     "artifact_class": "stack-evidence",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.stack_roles.trellis.supporting_evidence]"
+      "r[kamacite.algebraic_effects.stack_roles.trellis.supporting_evidence]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -15,12 +15,12 @@
     ],
     "diagnostics": [],
     "non_claims": [
-      "Trellis proof reference does not replace Taenite receipt"
+      "Trellis proof reference does not replace Kamacite receipt"
     ]
   },
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "2b755b3f2328bcb0786a96ea59c40068e1b90a9aa9cc5908607cfaa78d7275fe"
+    "hex": "b1b8f0717be62f0688fb6c212cbfa87722db1271d41595a3c4ec5cb5023d1361"
   }
 }

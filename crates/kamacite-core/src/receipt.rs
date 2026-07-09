@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
 
-pub const RECEIPT_SCHEMA_VERSION: &str = "taenite.receipt.v1";
-const RECEIPT_CANONICAL_CODEC: &str = "taenite-deterministic-json-receipt-projection-v1";
+pub const RECEIPT_SCHEMA_VERSION: &str = "kamacite.receipt.v1";
+const RECEIPT_CANONICAL_CODEC: &str = "kamacite-deterministic-json-receipt-projection-v1";
 const PRETTY_JSON_INDENT_SPACES: usize = 2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -103,7 +103,7 @@ mod tests {
     const FIXTURE_ID: &str = "receipt.identity.separate";
     const ARTIFACT_CLASS: &str = "source-envelope";
     const VERDICT: &str = "accepted";
-    const REQUIREMENT_ID: &str = "r[taenite.lossless_ir.receipt_vocabulary.identity_domain]";
+    const REQUIREMENT_ID: &str = "r[kamacite.lossless_ir.receipt_vocabulary.identity_domain]";
     const NON_CLAIM: &str = "not runtime authorization";
 
     #[test]

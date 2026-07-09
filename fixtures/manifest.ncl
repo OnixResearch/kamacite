@@ -41,8 +41,8 @@ let Fixture = {
         { domain = "source", algorithm = "blake3", hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93" },
       ],
       requirement_ids = [
-        "r[taenite.validation_harness.seed_fixtures.valid_source_envelope]",
-        "r[taenite.lossless_ir.positive_fixtures.source_bytes]",
+        "r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]",
+        "r[kamacite.lossless_ir.positive_fixtures.source_bytes]",
       ],
       golden_receipt = "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
     },
@@ -58,8 +58,8 @@ let Fixture = {
         { domain = "source", algorithm = "blake3", hex = "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93" },
       ],
       requirement_ids = [
-        "r[taenite.validation_harness.seed_fixtures.stale_source_hash]",
-        "r[taenite.rust_determinism.total_diagnostics.stale_hash]",
+        "r[kamacite.validation_harness.seed_fixtures.stale_source_hash]",
+        "r[kamacite.rust_determinism.total_diagnostics.stale_hash]",
       ],
       golden_receipt = "fixtures/golden/source-envelope.negative.stale-source-hash.receipt.json",
     },
@@ -75,8 +75,8 @@ let Fixture = {
         { domain = "projection", algorithm = "blake3", hex = "afe694dfcd747b297c6638d11318a9a5063015cb50123a9bae763d160e2ad2b5" },
       ],
       requirement_ids = [
-        "r[taenite.validation_harness.seed_fixtures.wrong_identity_domain]",
-        "r[taenite.rust_determinism.typed_identity_domains.constructor_validation]",
+        "r[kamacite.validation_harness.seed_fixtures.wrong_identity_domain]",
+        "r[kamacite.rust_determinism.typed_identity_domains.constructor_validation]",
       ],
       golden_receipt = "fixtures/golden/source-envelope.negative.wrong-identity-domain.receipt.json",
     },

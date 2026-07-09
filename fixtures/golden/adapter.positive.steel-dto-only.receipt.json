@@ -1,13 +1,13 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "adapter.positive.steel-dto-only",
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
-      "r[taenite.lossless_ir.steel_adapter_boundary.host_functions]",
-      "r[taenite.lossless_ir.steel_adapter_conformance.dto_only]"
+      "r[kamacite.lossless_ir.steel_adapter_boundary.host_functions]",
+      "r[kamacite.lossless_ir.steel_adapter_conformance.dto_only]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -23,6 +23,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "a16c2e25c14be142df17bb6fd20a7fc5032315c95ec90c744116e659d1ec7d11"
+    "hex": "ad6c03c55bf24cc98260b361ead45e4747f28c88a2ef9529a47c55d1c7f127dc"
   }
 }

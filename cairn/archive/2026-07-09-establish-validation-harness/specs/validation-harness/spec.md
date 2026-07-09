@@ -2,37 +2,37 @@
 
 ## Purpose
 
-Defines the first executable Taenite validation harness: a walking-skeleton fixture and receipt runner that must exist before trusted implementation behavior is admitted.
+Defines the first executable Kamacite validation harness: a walking-skeleton fixture and receipt runner that must exist before trusted implementation behavior is admitted.
 
 ## Requirements
 
 ### Requirement: Walking-skeleton validation harness
 
-r[taenite.validation_harness.walking_skeleton] Taenite MUST establish a walking-skeleton validation harness before the first trusted implementation behavior is accepted. The harness MUST exercise at least one valid source-envelope fixture, one stale-hash rejection fixture, one wrong-identity-domain rejection fixture, and one deterministic golden receipt comparison.
+r[kamacite.validation_harness.walking_skeleton] Kamacite MUST establish a walking-skeleton validation harness before the first trusted implementation behavior is accepted. The harness MUST exercise at least one valid source-envelope fixture, one stale-hash rejection fixture, one wrong-identity-domain rejection fixture, and one deterministic golden receipt comparison.
 
 #### Scenario: Harness exists before implementation admission
 
-r[taenite.validation_harness.walking_skeleton.precedes_admission]
+r[kamacite.validation_harness.walking_skeleton.precedes_admission]
 
-- GIVEN a new Taenite validator or receipt constructor is proposed for trusted claim admission
+- GIVEN a new Kamacite validator or receipt constructor is proposed for trusted claim admission
 - WHEN the walking-skeleton harness has not passed for source identity, stale hash rejection, wrong identity-domain rejection, and golden receipt comparison
-- THEN the behavior MUST remain untrusted for Taenite claim admission.
+- THEN the behavior MUST remain untrusted for Kamacite claim admission.
 
 #### Scenario: Walking skeleton remains minimal
 
-r[taenite.validation_harness.walking_skeleton.minimal_scope]
+r[kamacite.validation_harness.walking_skeleton.minimal_scope]
 
 - GIVEN the walking-skeleton harness is implemented
-- WHEN Taenite evaluates its initial scope
+- WHEN Kamacite evaluates its initial scope
 - THEN it SHOULD include only the minimal source-envelope, identity-domain, hash, diagnostic, and receipt cases needed to prove the harness contract before broader adapter suites are added.
 
 ### Requirement: Fixture layout boundary
 
-r[taenite.validation_harness.fixture_layout] Taenite MUST use a deterministic fixture layout that separates pure core validation fixtures from adapter, evaluator, compiler, target, export, or probe fixtures. Fixture classes MUST include positive, negative, property-style, and golden-receipt evidence where those classes apply.
+r[kamacite.validation_harness.fixture_layout] Kamacite MUST use a deterministic fixture layout that separates pure core validation fixtures from adapter, evaluator, compiler, target, export, or probe fixtures. Fixture classes MUST include positive, negative, property-style, and golden-receipt evidence where those classes apply.
 
 #### Scenario: Pure fixtures do not require host authority
 
-r[taenite.validation_harness.fixture_layout.pure_without_host_authority]
+r[kamacite.validation_harness.fixture_layout.pure_without_host_authority]
 
 - GIVEN a fixture is classified as a pure core validation fixture
 - WHEN the harness runs the fixture
@@ -40,7 +40,7 @@ r[taenite.validation_harness.fixture_layout.pure_without_host_authority]
 
 #### Scenario: Adapter fixtures are isolated
 
-r[taenite.validation_harness.fixture_layout.adapter_isolation]
+r[kamacite.validation_harness.fixture_layout.adapter_isolation]
 
 - GIVEN a future fixture requires Nickel, Steel, WASM, compiler, Valence, Octet, algebraic-effect runtime, or other adapter/probe behavior
 - WHEN the fixture is added to the corpus
@@ -48,11 +48,11 @@ r[taenite.validation_harness.fixture_layout.adapter_isolation]
 
 ### Requirement: Nickel fixture manifest
 
-r[taenite.validation_harness.fixture_manifest] Taenite MUST keep the human-authored fixture manifest in Nickel with a typed contract. The manifest MUST declare fixture IDs, artifact classes, fixture classes, input artifacts, expected verdicts, expected diagnostics, expected receipt identities or golden receipt paths, non-claims, dependency identities, and covered requirement IDs.
+r[kamacite.validation_harness.fixture_manifest] Kamacite MUST keep the human-authored fixture manifest in Nickel with a typed contract. The manifest MUST declare fixture IDs, artifact classes, fixture classes, input artifacts, expected verdicts, expected diagnostics, expected receipt identities or golden receipt paths, non-claims, dependency identities, and covered requirement IDs.
 
 #### Scenario: Manifest rejects incomplete fixture metadata
 
-r[taenite.validation_harness.fixture_manifest.incomplete_metadata]
+r[kamacite.validation_harness.fixture_manifest.incomplete_metadata]
 
 - GIVEN a fixture manifest entry omits a required fixture ID, artifact class, expected verdict, covered requirement ID, or non-claim field
 - WHEN the manifest is checked or exported for harness use
@@ -60,7 +60,7 @@ r[taenite.validation_harness.fixture_manifest.incomplete_metadata]
 
 #### Scenario: Duplicate fixture identity fails closed
 
-r[taenite.validation_harness.fixture_manifest.duplicate_identity]
+r[kamacite.validation_harness.fixture_manifest.duplicate_identity]
 
 - GIVEN two manifest entries declare the same fixture identity
 - WHEN the harness loads the manifest projection
@@ -68,19 +68,19 @@ r[taenite.validation_harness.fixture_manifest.duplicate_identity]
 
 #### Scenario: Manifest source remains reviewed authority
 
-r[taenite.validation_harness.fixture_manifest.nickel_authority]
+r[kamacite.validation_harness.fixture_manifest.nickel_authority]
 
 - GIVEN runtime tests consume a generated manifest projection
-- WHEN Taenite records harness evidence
+- WHEN Kamacite records harness evidence
 - THEN the evidence MUST bind the Nickel manifest source identity or a freshness-checked projection identity and MUST NOT treat an unchecked JSON projection as the human-authored authority.
 
 ### Requirement: Harness core and runner boundary
 
-r[taenite.validation_harness.core_runner_boundary] Taenite MUST separate the pure validation core from the effectful harness runner. The runner MAY discover fixture files, read bytes, load exported manifest projections, compare golden receipts, and render test output. The core MUST receive normalized in-memory DTOs and bytes and return deterministic validation results, diagnostics, and receipt data.
+r[kamacite.validation_harness.core_runner_boundary] Kamacite MUST separate the pure validation core from the effectful harness runner. The runner MAY discover fixture files, read bytes, load exported manifest projections, compare golden receipts, and render test output. The core MUST receive normalized in-memory DTOs and bytes and return deterministic validation results, diagnostics, and receipt data.
 
 #### Scenario: Runner normalizes fixture inputs
 
-r[taenite.validation_harness.core_runner_boundary.normalized_inputs]
+r[kamacite.validation_harness.core_runner_boundary.normalized_inputs]
 
 - GIVEN the harness runner discovers fixture files and manifest entries
 - WHEN it invokes the validation core
@@ -88,7 +88,7 @@ r[taenite.validation_harness.core_runner_boundary.normalized_inputs]
 
 #### Scenario: Core can be unit tested without the runner
 
-r[taenite.validation_harness.core_runner_boundary.unit_testable_core]
+r[kamacite.validation_harness.core_runner_boundary.unit_testable_core]
 
 - GIVEN the same normalized fixture DTOs and bytes are provided directly to the core and through the harness runner
 - WHEN validation completes
@@ -96,11 +96,11 @@ r[taenite.validation_harness.core_runner_boundary.unit_testable_core]
 
 ### Requirement: Seed fixture set
 
-r[taenite.validation_harness.seed_fixtures] The first harness implementation MUST seed positive, negative, and golden receipt coverage for the source-envelope slice. The seed set MUST include a valid source-envelope fixture, a stale-source-hash fixture, a wrong-identity-domain fixture, and a golden validation receipt fixture.
+r[kamacite.validation_harness.seed_fixtures] The first harness implementation MUST seed positive, negative, and golden receipt coverage for the source-envelope slice. The seed set MUST include a valid source-envelope fixture, a stale-source-hash fixture, a wrong-identity-domain fixture, and a golden validation receipt fixture.
 
 #### Scenario: Valid source envelope is accepted
 
-r[taenite.validation_harness.seed_fixtures.valid_source_envelope]
+r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]
 
 - GIVEN a seed fixture declares source bytes, language label, parser identity, schema version, non-claims, and a matching BLAKE3 source identity
 - WHEN the harness validates the fixture
@@ -108,7 +108,7 @@ r[taenite.validation_harness.seed_fixtures.valid_source_envelope]
 
 #### Scenario: Stale source hash is rejected
 
-r[taenite.validation_harness.seed_fixtures.stale_source_hash]
+r[kamacite.validation_harness.seed_fixtures.stale_source_hash]
 
 - GIVEN a seed fixture declares source bytes and a mismatched source identity
 - WHEN the harness validates the fixture
@@ -116,7 +116,7 @@ r[taenite.validation_harness.seed_fixtures.stale_source_hash]
 
 #### Scenario: Wrong identity domain is rejected
 
-r[taenite.validation_harness.seed_fixtures.wrong_identity_domain]
+r[kamacite.validation_harness.seed_fixtures.wrong_identity_domain]
 
 - GIVEN a seed fixture supplies a projection, canonical value, target artifact, adapter, evaluator, compiler, or receipt identity where a source identity is required
 - WHEN the harness validates the fixture
@@ -124,7 +124,7 @@ r[taenite.validation_harness.seed_fixtures.wrong_identity_domain]
 
 #### Scenario: Golden receipt comparison is deterministic
 
-r[taenite.validation_harness.seed_fixtures.golden_receipt]
+r[kamacite.validation_harness.seed_fixtures.golden_receipt]
 
 - GIVEN a seed fixture has a checked-in golden receipt
 - WHEN the harness validates the same explicit inputs repeatedly
@@ -132,11 +132,11 @@ r[taenite.validation_harness.seed_fixtures.golden_receipt]
 
 ### Requirement: Default non-mutating receipt updates
 
-r[taenite.validation_harness.receipt_update_boundary] The harness MUST be non-mutating by default. Golden receipt updates, generated manifest projections, generated schemas, or other evidence artifacts MUST require an explicit update workflow and MUST record old and new identities for changed artifacts.
+r[kamacite.validation_harness.receipt_update_boundary] The harness MUST be non-mutating by default. Golden receipt updates, generated manifest projections, generated schemas, or other evidence artifacts MUST require an explicit update workflow and MUST record old and new identities for changed artifacts.
 
 #### Scenario: Default run does not rewrite evidence
 
-r[taenite.validation_harness.receipt_update_boundary.default_no_rewrite]
+r[kamacite.validation_harness.receipt_update_boundary.default_no_rewrite]
 
 - GIVEN a golden receipt, manifest projection, or generated evidence artifact is stale
 - WHEN the harness runs in default validation mode
@@ -144,7 +144,7 @@ r[taenite.validation_harness.receipt_update_boundary.default_no_rewrite]
 
 #### Scenario: Explicit update records changed identities
 
-r[taenite.validation_harness.receipt_update_boundary.explicit_update]
+r[kamacite.validation_harness.receipt_update_boundary.explicit_update]
 
 - GIVEN a future explicit update workflow changes a golden receipt, manifest projection, generated schema, or evidence artifact
 - WHEN the workflow completes
@@ -152,11 +152,11 @@ r[taenite.validation_harness.receipt_update_boundary.explicit_update]
 
 ### Requirement: Adapter suite deferral
 
-r[taenite.validation_harness.adapter_suite_deferral] The walking-skeleton harness MUST NOT require complete Nickel, Steel, WASM, LLVM, Valence, Octet, or algebraic-effect execution suites before the first core source-envelope slice lands. Adapter-specific execution suites SHOULD be added with their own positive, negative, and golden fixtures after the pure core fixture gate passes.
+r[kamacite.validation_harness.adapter_suite_deferral] The walking-skeleton harness MUST NOT require complete Nickel, Steel, WASM, LLVM, Valence, Octet, or algebraic-effect execution suites before the first core source-envelope slice lands. Adapter-specific execution suites SHOULD be added with their own positive, negative, and golden fixtures after the pure core fixture gate passes.
 
 #### Scenario: External adapters are not required for skeleton pass
 
-r[taenite.validation_harness.adapter_suite_deferral.no_external_adapter_requirement]
+r[kamacite.validation_harness.adapter_suite_deferral.no_external_adapter_requirement]
 
 - GIVEN the walking-skeleton harness is validating the first pure source-envelope slice
 - WHEN Nickel, Steel, WASM, compiler, Valence, Octet, or algebraic-effect runtime tools are absent or intentionally disabled
@@ -164,7 +164,7 @@ r[taenite.validation_harness.adapter_suite_deferral.no_external_adapter_requirem
 
 #### Scenario: Adapter behavior requires later fixture expansion
 
-r[taenite.validation_harness.adapter_suite_deferral.later_expansion]
+r[kamacite.validation_harness.adapter_suite_deferral.later_expansion]
 
 - GIVEN a later implementation claims Nickel, Steel, WASM, LLVM, Valence, Octet, algebraic-effect, or other adapter behavior
 - WHEN that behavior is proposed for trusted claim admission

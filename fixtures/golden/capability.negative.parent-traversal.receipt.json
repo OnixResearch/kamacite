@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "capability.negative.parent-traversal",
     "artifact_class": "capability-shell",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.rust_determinism.capability_shells.escape_fixtures]"
+      "r[kamacite.rust_determinism.capability_shells.escape_fixtures]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -16,7 +16,7 @@
     "diagnostics": [
       {
         "code": "path-escape",
-        "requirement_id": "r[taenite.rust_determinism.capability_shells.escape_fixtures]",
+        "requirement_id": "r[kamacite.rust_determinism.capability_shells.escape_fixtures]",
         "field": "capability.path",
         "message": "shell path admission rejected deterministic escape or undeclared authority case",
         "details": {
@@ -31,6 +31,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "c640883f922ed0414d3b2d32180d044ccd44a144edc12ce90e530928c47d88d8"
+    "hex": "4d7234a1338efc218510692246000f02305ed8295e6b2807d4308bb3644fa6bd"
   }
 }

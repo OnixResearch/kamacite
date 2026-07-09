@@ -1,1 +1,1 @@
-<taenite-effect-bundle-v1 {signature: "PureTrace", row: ["op.trace"], replay: "deterministic"}>
+<kamacite-effect-bundle-v1 {signature: "PureTrace", row: ["op.trace"], replay: "deterministic"}>

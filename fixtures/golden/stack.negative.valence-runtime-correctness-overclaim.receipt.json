@@ -1,12 +1,12 @@
 {
   "body": {
-    "schema_version": "taenite.receipt.v1",
-    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
     "fixture_id": "stack.negative.valence-runtime-correctness-overclaim",
     "artifact_class": "stack-evidence",
     "verdict": "rejected",
     "requirement_ids": [
-      "r[taenite.algebraic_effects.stack_roles.valence.wrap_receipt]"
+      "r[kamacite.algebraic_effects.stack_roles.valence.wrap_receipt]"
     ],
     "input_identities": {},
     "output_identities": {},
@@ -16,9 +16,9 @@
     "diagnostics": [
       {
         "code": "ambiguous-claim",
-        "requirement_id": "r[taenite.lossless_ir.stack_evidence_boundary.octet_checks]",
+        "requirement_id": "r[kamacite.lossless_ir.stack_evidence_boundary.octet_checks]",
         "field": "stack.broadens_claim",
-        "message": "stack evidence export broadened Taenite bounded claim",
+        "message": "stack evidence export broadened Kamacite bounded claim",
         "details": {}
       }
     ],
@@ -29,6 +29,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "406526b1aa4191dc9890224364baa672f2d98a6567a6f13aca1c5903347364c0"
+    "hex": "cdccf791c4c1db4d5b8ee204204f9673edc3f56d9ffaa29f6df93044c293ecf4"
   }
 }
