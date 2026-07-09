@@ -4,6 +4,14 @@ The stack already uses a practical split: Nickel owns human-authored contract/co
 
 Braid starts by documenting the invariant rather than pretending arbitrary source-to-source translation is available. The canonical path is source-preserving envelopes plus a constrained value/policy IR with deterministic receipts.
 
+The Cairn delta is split into focused specs:
+
+- `lossless-ir`: top-level format strategy, naming, losslessness classes, evidence, and non-claims.
+- `source-envelopes`: source byte preservation and Nickel reference-tool boundaries.
+- `adapter-boundaries`: Nickel/Rust/Steel/WASM adapter trust boundaries.
+- `identity-model`: content-addressed identity, metadata aliases, dependency closure, effects, and durable storage.
+- `stack-integration`: Valence and Octet receipt/provenance integration boundaries.
+
 ## Decisions
 
 ### 1. Name the repo Braid

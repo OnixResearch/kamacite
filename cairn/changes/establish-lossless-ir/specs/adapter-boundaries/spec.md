@@ -1,0 +1,75 @@
+# Adapter Boundaries Specification
+
+## Purpose
+
+Defines Braid adapter trust boundaries for Nickel, Rust, Steel, and WebAssembly targets.
+
+## Requirements
+
+### Requirement: Nickel, Rust, and Steel adapter boundaries
+
+r[braid.lossless_ir.adapter_boundaries] Braid adapters for Nickel, Rust, and Steel MUST cross the trust boundary through Braid IR values, source envelopes, and deterministic receipts rather than ambient host-language state.
+
+#### Scenario: Nickel export is a derived projection
+
+r[braid.lossless_ir.adapter_boundaries.nickel_projection]
+
+- GIVEN a Nickel-authored contract exports a runtime value
+- WHEN Braid ingests the export
+- THEN the receipt MUST distinguish the Nickel source envelope from the exported Braid IR or compatibility JSON projection.
+
+#### Scenario: Steel adapter has no ambient authority
+
+r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
+
+- GIVEN a Steel adapter requests filesystem, process, network, credential, clock, or mutation authority not declared in the adapter contract
+- WHEN Braid validates the evaluation request or receipt
+- THEN validation MUST deny the request or receipt deterministically without evaluating the undeclared host action.
+
+### Requirement: Steel adapter integration boundary
+
+r[braid.lossless_ir.steel_adapter_boundary] Braid MUST treat Steel as a bounded adapter/probe evaluator rather than canonical IR. Steel adapters MUST declare evaluator identity, source identity, input DTO schema, host functions, module imports, required capabilities, effect class, and receipt schema before their results are trusted.
+
+#### Scenario: Steel host functions are declared
+
+r[braid.lossless_ir.steel_adapter_boundary.host_functions]
+
+- GIVEN a Steel adapter calls a Rust host function registered through the evaluator
+- WHEN Braid validates the adapter descriptor or receipt
+- THEN the host function MUST be declared with its input/output DTO contract, effect class, and required capabilities before evaluation is trusted.
+
+#### Scenario: Steel contracts stay boundary-local
+
+r[braid.lossless_ir.steel_adapter_boundary.contract_exports]
+
+- GIVEN a Steel module exports functions with contracts or higher-order callables
+- WHEN Braid records the adapter output
+- THEN the receipt MUST bind exported callable descriptors by stable id, arity, source hash, input/output contracts, and non-claims instead of exporting opaque closures as canonical Braid values.
+
+#### Scenario: Ambient Steel libraries fail closed
+
+r[braid.lossless_ir.steel_adapter_boundary.ambient_libraries]
+
+- GIVEN Steel code imports or requests filesystem, process, TCP, random, time, package, dylib, credential, or mutation authority not declared in the adapter contract
+- WHEN Braid validates the adapter request or receipt
+- THEN validation MUST fail closed with a deterministic undeclared-authority diagnostic.
+
+### Requirement: WASM target boundary
+
+r[braid.lossless_ir.wasm_target_boundary] Braid MUST treat WebAssembly as an optional adapter, validator, or conformance target rather than the canonical IR. WASM components or modules MAY consume Braid IR/source-envelope bytes and emit deterministic receipts, but they MUST NOT replace Preserves as the authoritative value or source-envelope identity.
+
+#### Scenario: WASM adapter stays receipt-bounded
+
+r[braid.lossless_ir.wasm_target_boundary.adapter_receipt]
+
+- GIVEN a Braid adapter is packaged as a WebAssembly module or component
+- WHEN Braid invokes or validates the adapter
+- THEN the adapter MUST receive only declared inputs and capabilities and MUST return a deterministic Braid receipt over Preserves-backed identity.
+
+#### Scenario: WASM is rejected as canonical IR
+
+r[braid.lossless_ir.wasm_target_boundary.not_ir]
+
+- GIVEN a tool claims that compiled WebAssembly is the lossless representation of arbitrary Nickel, Rust, or Steel source
+- WHEN Braid classifies the claim
+- THEN validation MUST reject the canonical-IR claim and MAY accept the WebAssembly artifact only as a target artifact or source envelope with explicit non-claims.
