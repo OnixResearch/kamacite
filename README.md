@@ -15,6 +15,26 @@ Yes: Braid should use Preserves too. Preserves is the canonical encoded IR candi
 | Constrained policy DSL | A policy authored in the Braid schema can render to Nickel/Rust/Steel adapters and round-trip back to the same IR. | Only for the constrained schema, not arbitrary host-language code. |
 | Unsupported source translation | Arbitrary Nickel, Rust, or Steel source is translated into another language. | Out of scope unless represented as preserved source plus explicit non-claims. |
 
+## Haskell-inspired discipline
+
+Braid should adapt Haskell's design discipline, not Haskell as a runtime or IR.
+
+Adopt or adapt these principles:
+
+- Pure functional cores with thin effectful shells for IO, evaluators, compilers, clocks, randomness, credentials, and presentation.
+- Algebraic artifact modeling: source envelopes, canonical values, constrained policies, target artifacts, and unsupported claims are explicit alternatives.
+- Explicit effect/capability data instead of ambient authority.
+- Lawful adapter interfaces with positive, negative, and property-style fixtures.
+- Newtype-style identity separation for source, canonical value, projection, target artifact, adapter, evaluator, compiler, and receipt identities.
+- Total diagnostics instead of panics, silent defaults, truncation, or cross-domain coercions.
+
+Do not adopt these by default:
+
+- Haskell source, GHC Core, STG, bytecode, interface files, or generated Haskell artifacts as Braid canonical IR.
+- Lazy evaluation as a Braid semantic promise.
+- Typeclass-style implicit resolution across adapter boundaries.
+- Monad terminology in receipts unless it maps to explicit effect/capability claims.
+
 ## WASM boundary
 
 Braid should not use WebAssembly as its canonical IR. Preserves remains the authority for canonical values, source envelopes, and receipt identity.
@@ -119,6 +139,7 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 - [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated Nickel contract corpus suitable for stress fixtures and schema-conversion regression cases.
 - [mattwparas/steel](https://github.com/mattwparas/steel) — reference implementation for embedded Steel evaluation, typed Rust host-function registration, module boundaries, and higher-order contract patterns used only as bounded adapter/probe surfaces.
 - [unisonweb/unison](https://github.com/unisonweb/unison) — reference for content-addressed definitions, names-as-metadata, dependency-closure identity, abilities/effect labels, structured refactoring, and typed durable storage boundaries.
+- [ghc/ghc](https://gitlab.haskell.org/ghc/ghc) — reference for Haskell/GHC concepts used only to bound what Braid does not adopt as IR: Core, STG, bytecode, interface files, laziness, and typeclass resolution.
 - [llvm/llvm-project](https://github.com/llvm/llvm-project) — reference for compiled target artifacts and toolchain/provenance receipts only; LLVM IR is not Braid's canonical IR.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.

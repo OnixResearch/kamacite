@@ -10,7 +10,8 @@ Braid is needed to make the losslessness boundary explicit before implementation
 - Adopt Preserves as the canonical encoded IR candidate for value-level interchange and source envelopes.
 - Define losslessness classes so arbitrary source translation is not confused with source preservation or constrained-DSL round trips.
 - Specify adapter boundaries for Nickel, Rust, bounded Steel Scheme evaluation, future WASM targets, and LLVM compiled-target provenance artifacts.
-- Split the Cairn delta into focused specs for core IR, source envelopes, adapters, identity, and stack integration.
+- Split the Cairn delta into focused specs for core IR, source envelopes, adapters, identity, typed-core discipline, and stack integration.
+- Adapt Haskell-inspired purity, algebraic modeling, explicit effects, lawful interfaces, property-test discipline, and newtype-style identity separation without adopting Haskell/GHC artifacts as Braid IR.
 - Require positive and negative round-trip fixtures before any conversion claim is accepted.
 
 ## Impact

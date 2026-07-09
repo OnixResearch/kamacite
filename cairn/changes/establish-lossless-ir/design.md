@@ -10,6 +10,7 @@ The Cairn delta is split into focused specs:
 - `source-envelopes`: source byte preservation and Nickel reference-tool boundaries.
 - `adapter-boundaries`: Nickel/Rust/Steel/WASM/LLVM adapter and target-artifact trust boundaries.
 - `identity-model`: content-addressed identity, metadata aliases, dependency closure, effects, and durable storage.
+- `typed-core-discipline`: Haskell-inspired pure-core, typed-identity, lawful-adapter, total-diagnostic, and GHC non-claim boundaries.
 - `stack-integration`: Valence and Octet receipt/provenance integration boundaries.
 
 ## Decisions
@@ -62,7 +63,15 @@ The Cairn delta is split into focused specs:
 
 **Rationale:** This preserves functional-core / imperative-shell boundaries and gives tests a pure unit under test. Nickel remains the reviewable authoring language for configs/contracts. Steel remains bounded dynamic predicate/probe logic without ambient host authority.
 
-### 8. Integrate Steel as a bounded adapter/probe evaluator
+### 8. Adapt Haskell's type, law, and effect discipline without adopting Haskell as IR
+
+**Choice:** Braid adapts Haskell-inspired principles as implementation discipline: pure functional cores with effectful shells, algebraic artifact alternatives, distinct identity domains, explicit effect/capability data, law-based adapter interfaces, property-style fixture thinking, total diagnostics, and newtype-style separation for source, canonical, projection, target, adapter, evaluator, compiler, and receipt identities.
+
+**Rationale:** These principles match Braid's bounded-claim model. They make unsupported states harder to represent, keep validation deterministic, and let adapters state laws that can be checked by positive, negative, and property-style fixtures. They also fit Rust implementation well without making Braid depend on Haskell runtime semantics.
+
+**Rejected alternative:** Treat Haskell source, GHC Core, STG, laziness, typeclass resolution, monad terminology, or GHC artifacts as Braid's canonical IR or proof authority. That would confuse a useful design discipline with a new interchange format and would overclaim semantic equivalence.
+
+### 9. Integrate Steel as a bounded adapter/probe evaluator
 
 **Choice:** Braid uses Steel as a bounded adapter/probe language through explicit engine identity, typed Rust host-function registration, declared built-in modules, module contracts, and deterministic receipts. Braid denies ambient filesystem, process, TCP, random, time, package, dylib, credential, and mutation authority by default. Steel bytecode, opaque closures, and JSON strings are not Braid canonical IR.
 
@@ -70,7 +79,7 @@ The Cairn delta is split into focused specs:
 
 **Rejected alternative:** Treat Steel as an unrestricted scripting host or as the canonical representation for Braid values. This would reintroduce ambient authority and confuse evaluation behavior with artifact identity.
 
-### 9. Use WebAssembly only as a target or sandbox boundary
+### 10. Use WebAssembly only as a target or sandbox boundary
 
 **Choice:** Braid does not use WebAssembly as the canonical IR. WASM may be used later as a portable target for validators, conformance probes, or untrusted adapters whose inputs and outputs are Braid IR/source-envelope bytes plus deterministic receipts.
 
@@ -78,7 +87,7 @@ The Cairn delta is split into focused specs:
 
 **Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
 
-### 10. Use LLVM only as a compiled-target provenance artifact
+### 11. Use LLVM only as a compiled-target provenance artifact
 
 **Choice:** Braid does not use LLVM IR as the canonical IR. LLVM may be used later for compiled Rust or adapter target evidence, with receipts binding compiler version, target triple, optimization level, pass pipeline, debug-info availability, source/artifact links, and BLAKE3 hashes.
 
@@ -86,7 +95,7 @@ The Cairn delta is split into focused specs:
 
 **Rejected alternative:** Normalize Nickel, Rust, or Steel through LLVM IR and treat that as the lossless bridge. This would erase source identity and conflate compiler artifacts with Braid's Preserves-backed interchange contract.
 
-### 11. Adapt Unison's identity model, not its language runtime
+### 12. Adapt Unison's identity model, not its language runtime
 
 **Choice:** Braid adapts Unison's content-addressed codebase ideas: canonical content owns identity, names are metadata, dependencies are hash-bound, effect needs are explicit labels, refactoring is structured over identities, and durable storage envelopes bind type/schema/codec/hash before decode. Braid still uses BLAKE3 over Braid-owned canonical bytes and does not adopt Unison syntax, runtime, codebase database, cloud/distributed execution, or arbitrary function persistence.
 
@@ -94,7 +103,7 @@ The Cairn delta is split into focused specs:
 
 **Rejected alternative:** Treat Unison itself as Braid's host language or storage format. That would conflict with Braid's Nickel/Rust/Steel adapter scope and Preserves-backed canonical value identity.
 
-### 12. Integrate with Valence and Octet through receipts first
+### 13. Integrate with Valence and Octet through receipts first
 
 **Choice:** Braid uses Valence closely as the evidence/linkage integration target and Octet closely as the checked Rust/provenance rail, but neither repo owns Braid's canonical IR. Initial integration is by exported Braid receipts, source spans, stable IDs, and fixtures rather than direct crate dependencies.
 
@@ -109,3 +118,4 @@ The Cairn delta is split into focused specs:
 - **Schema drift:** Mitigate with BLAKE3 hashes over canonical Preserves bytes and generated artifact freshness checks.
 - **Over-broad Steel authority:** Mitigate by requiring DTO-only evaluation and deterministic denied receipts for ambient authority requests.
 - **Nickel source confusion:** Mitigate by separating Nickel-authored source from exported runtime projections.
+- **Haskell principle overreach:** Mitigate by adapting purity, types, laws, explicit effects, and property-test discipline only as implementation guidance while rejecting Haskell/GHC artifacts as canonical IR.
