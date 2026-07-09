@@ -61,6 +61,26 @@ Do not adopt these by default:
 
 A Steel adapter should consume Braid IR/source-envelope bytes or declared DTO values and emit a deterministic Braid receipt. Any host capability must be declared before evaluation and denied by default.
 
+## Unison-inspired identity boundary
+
+Braid should adapt Unison's content-addressed codebase ideas without becoming Unison or storing executable code as the source of truth.
+
+Adopt or adapt these Unison patterns:
+
+- Content-addressed definitions: canonical Braid IR values and source envelopes get stable BLAKE3 identities over canonical content.
+- Names as metadata: human names, paths, aliases, and labels are review metadata, not identity.
+- Dependency-closure identity: receipts should bind dependency hashes and adapter/evaluator identities when a projection depends on other artifacts.
+- Ability/effect labels: adapter receipts should classify required effects/capabilities explicitly, like Unison abilities classify effectful computations.
+- Structured refactoring sessions: alias/name/schema migrations should be dry-run-first plans over identities, not text rewrites that imply semantic equivalence.
+- Typed durable storage envelopes: persisted Braid values should bind schema, codec, content hash, and non-claims before decoding.
+
+Do not adopt these by default:
+
+- Unison's syntax tree hash as Braid's hash algorithm; Braid defaults to BLAKE3 over its own canonical bytes.
+- Unison's codebase database as Braid's storage model.
+- Unison Cloud/distributed execution or arbitrary computation shipping.
+- Typed serialization of arbitrary functions as a Braid promise.
+
 ## Current status
 
 This repo is bootstrapped with native Cairn lifecycle artifacts. The first active change is:
@@ -92,6 +112,7 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 - [nickel-lang/json-scanner](https://github.com/nickel-lang/json-scanner) — reference for JSON projection parsing with byte positions and number lexeme preservation.
 - [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated Nickel contract corpus suitable for stress fixtures and schema-conversion regression cases.
 - [mattwparas/steel](https://github.com/mattwparas/steel) — reference implementation for embedded Steel evaluation, typed Rust host-function registration, module boundaries, and higher-order contract patterns used only as bounded adapter/probe surfaces.
+- [unisonweb/unison](https://github.com/unisonweb/unison) — reference for content-addressed definitions, names-as-metadata, dependency-closure identity, abilities/effect labels, structured refactoring, and typed durable storage boundaries.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
 - [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.
