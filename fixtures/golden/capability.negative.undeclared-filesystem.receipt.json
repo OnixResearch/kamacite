@@ -1,0 +1,43 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "capability.negative.undeclared-filesystem",
+    "artifact_class": "capability-shell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.rust_determinism.explicit_capabilities.filesystem]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "undeclared-filesystem-denied"
+    ],
+    "diagnostics": [
+      {
+        "code": "path-escape",
+        "requirement_id": "r[taenite.rust_determinism.capability_shells.escape_fixtures]",
+        "field": "capability.path",
+        "message": "shell path admission rejected deterministic escape or undeclared authority case",
+        "details": {
+          "path": "fixtures/core/source-envelopes/valid.nickel"
+        }
+      },
+      {
+        "code": "undeclared-capability",
+        "requirement_id": "r[taenite.rust_determinism.explicit_capabilities.filesystem]",
+        "field": "capability.declared_filesystem",
+        "message": "filesystem-backed shell fixture lacks declared filesystem authority",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "filesystem authority denied by default"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "f82fa58324965fd40e3f8a569c1259534275e6a54769aa3b0279d62793bb90c3"
+  }
+}

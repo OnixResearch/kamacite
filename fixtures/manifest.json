@@ -1,0 +1,992 @@
+{
+  "fixtures": [
+    {
+      "id": "source-envelope.valid.nickel-minimal",
+      "fixture_class": "positive",
+      "artifact_class": "source-envelope",
+      "requirement_ids": [
+        "r[taenite.validation_harness.seed_fixtures.valid_source_envelope]",
+        "r[taenite.lossless_ir.positive_fixtures.source_bytes]",
+        "r[taenite.rust_determinism.first_slice.source_envelope]"
+      ],
+      "non_claims": ["not Nickel evaluation semantics", "not arbitrary source translation"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["source-envelope-preservation", "names-as-metadata"],
+      "golden_receipt": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 1,
+        "language": "nickel",
+        "media_type": "text/x-nickel",
+        "parser_identity": "nickel-reference-deferred",
+        "source_path": "fixtures/core/source-envelopes/valid.nickel",
+        "declared_identity": {"domain": "source", "algorithm": "blake3", "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"},
+        "aliases": ["seed-valid"]
+      }
+    },
+    {
+      "id": "source-envelope.negative.stale-source-hash",
+      "fixture_class": "negative",
+      "artifact_class": "source-envelope",
+      "requirement_ids": [
+        "r[taenite.validation_harness.seed_fixtures.stale_source_hash]",
+        "r[taenite.rust_determinism.total_diagnostics.stale_hash]"
+      ],
+      "non_claims": ["not trusted source identity"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["fail-closed-stale-identity"],
+      "golden_receipt": "fixtures/golden/source-envelope.negative.stale-source-hash.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 1,
+        "language": "nickel",
+        "media_type": "text/x-nickel",
+        "parser_identity": "nickel-reference-deferred",
+        "source_path": "fixtures/core/source-envelopes/stale.nickel",
+        "declared_identity": {"domain": "source", "algorithm": "blake3", "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"},
+        "aliases": ["seed-stale"]
+      }
+    },
+    {
+      "id": "source-envelope.negative.wrong-identity-domain",
+      "fixture_class": "negative",
+      "artifact_class": "source-envelope",
+      "requirement_ids": [
+        "r[taenite.validation_harness.seed_fixtures.wrong_identity_domain]",
+        "r[taenite.rust_determinism.typed_identity_domains.constructor_validation]"
+      ],
+      "non_claims": ["not cross-domain coercion"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["typed-identity-domain"],
+      "golden_receipt": "fixtures/golden/source-envelope.negative.wrong-identity-domain.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 1,
+        "language": "nickel",
+        "media_type": "text/x-nickel",
+        "parser_identity": "nickel-reference-deferred",
+        "source_path": "fixtures/core/source-envelopes/wrong-domain.nickel",
+        "declared_identity": {"domain": "projection", "algorithm": "blake3", "hex": "afe694dfcd747b297c6638d11318a9a5063015cb50123a9bae763d160e2ad2b5"},
+        "aliases": ["seed-wrong-domain"]
+      }
+    },
+    {
+      "id": "source-envelope.negative.unsupported-version",
+      "fixture_class": "negative",
+      "artifact_class": "source-envelope",
+      "requirement_ids": ["r[taenite.lossless_ir.schema_vocabulary.unsupported_version]"],
+      "non_claims": ["not compatibility defaulting"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["fail-closed-version"],
+      "golden_receipt": "fixtures/golden/source-envelope.negative.unsupported-version.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 2,
+        "language": "nickel",
+        "media_type": "text/x-nickel",
+        "parser_identity": "nickel-reference-deferred",
+        "source_path": "fixtures/core/source-envelopes/valid.nickel",
+        "declared_identity": {"domain": "source", "algorithm": "blake3", "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"},
+        "aliases": ["seed-unsupported-version"]
+      }
+    },
+    {
+      "id": "source-envelope.negative.missing-source-bytes",
+      "fixture_class": "negative",
+      "artifact_class": "source-envelope",
+      "requirement_ids": ["r[taenite.lossless_ir.source_envelope_vocabulary.missing_bytes]"],
+      "non_claims": ["not source preservation"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["source-bytes-required"],
+      "golden_receipt": "fixtures/golden/source-envelope.negative.missing-source-bytes.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 1,
+        "language": "nickel",
+        "media_type": "text/x-nickel",
+        "parser_identity": "nickel-reference-deferred",
+        "source_path": "fixtures/core/source-envelopes/missing-source.nickel",
+        "declared_identity": {"domain": "source", "algorithm": "blake3", "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"},
+        "aliases": ["seed-missing-source"]
+      }
+    },
+    {
+      "id": "canonical-value.positive.preserves-minimal",
+      "fixture_class": "positive",
+      "artifact_class": "canonical-value",
+      "requirement_ids": [
+        "r[taenite.lossless_ir.format_strategy.preserves_roundtrip]",
+        "r[taenite.rust_determinism.canonical_identity.blake3]"
+      ],
+      "non_claims": ["JSON projection is compatibility only"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["preserves-bytes-authoritative", "projection-derived"],
+      "golden_receipt": "fixtures/golden/canonical-value.positive.preserves-minimal.receipt.json",
+      "payload": {
+        "kind": "canonical-value",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/canonical-values/minimal.preserves",
+        "declared_identity": {"domain": "canonical-value", "algorithm": "blake3", "hex": "b5a13f476a82437544848a283e7c0777e34615a3f1b0bb7e9b2ee4d5e40f94f0"},
+        "projection_identity": {"domain": "projection", "algorithm": "blake3", "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"},
+        "projection_claims_authority": false,
+        "aliases": ["minimal"]
+      }
+    },
+    {
+      "id": "canonical-value.negative.lossy-json-authority",
+      "fixture_class": "negative",
+      "artifact_class": "canonical-value",
+      "requirement_ids": ["r[taenite.lossless_ir.negative_fixtures.lossy_projection]"],
+      "non_claims": ["JSON is not canonical identity"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["projection-not-authority"],
+      "golden_receipt": "fixtures/golden/canonical-value.negative.lossy-json-authority.receipt.json",
+      "payload": {
+        "kind": "canonical-value",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/canonical-values/lossy-json.preserves",
+        "declared_identity": {"domain": "canonical-value", "algorithm": "blake3", "hex": "5683968fc5205261ba43e3ceee343b953ae91398dc126956f904dc5873ea9d30"},
+        "projection_identity": {"domain": "projection", "algorithm": "blake3", "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"},
+        "projection_claims_authority": true,
+        "aliases": ["lossy-json"]
+      }
+    },
+    {
+      "id": "identity.negative.projection-as-canonical",
+      "fixture_class": "negative",
+      "artifact_class": "receipt",
+      "requirement_ids": ["r[taenite.rust_determinism.typed_identity_domains.projection_not_canonical]"],
+      "non_claims": ["not identity-domain substitution"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["typed-domain-rejection"],
+      "golden_receipt": "fixtures/golden/identity.negative.projection-as-canonical.receipt.json",
+      "payload": {
+        "kind": "identity-use",
+        "required_domain": "canonical-value",
+        "supplied_identity": {"domain": "projection", "algorithm": "blake3", "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"}
+      }
+    },
+    {
+      "id": "identity.negative.source-as-receipt",
+      "fixture_class": "negative",
+      "artifact_class": "receipt",
+      "requirement_ids": ["r[taenite.rust_determinism.typed_identity_domains.source_not_receipt]"],
+      "non_claims": ["receipt identity is separate domain"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["receipt-identity-separation"],
+      "golden_receipt": "fixtures/golden/identity.negative.source-as-receipt.receipt.json",
+      "payload": {
+        "kind": "identity-use",
+        "required_domain": "receipt",
+        "supplied_identity": {"domain": "source", "algorithm": "blake3", "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"}
+      }
+    },
+    {
+      "id": "adapter.positive.nickel-source-export-separated",
+      "fixture_class": "positive",
+      "artifact_class": "adapter-receipt",
+      "requirement_ids": [
+        "r[taenite.lossless_ir.adapter_boundaries.nickel_projection]",
+        "r[taenite.lossless_ir.nickel_adapter_conformance.source_export_separation]"
+      ],
+      "non_claims": ["nickel export is derived projection"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["source-export-separation", "evaluator-identity-bound"],
+      "golden_receipt": "fixtures/golden/adapter.positive.nickel-source-export-separated.receipt.json",
+      "payload": {
+        "kind": "adapter-receipt",
+        "adapter_kind": "nickel-export",
+        "has_conformance_entry": true,
+        "declared_capabilities": [],
+        "observed_effects": [],
+        "claims_canonical_ir": false,
+        "checked_laws": ["source-export-separation"]
+      }
+    },
+    {
+      "id": "adapter.positive.steel-dto-only",
+      "fixture_class": "positive",
+      "artifact_class": "adapter-receipt",
+      "requirement_ids": [
+        "r[taenite.lossless_ir.steel_adapter_conformance.dto_only]",
+        "r[taenite.lossless_ir.steel_adapter_boundary.host_functions]"
+      ],
+      "non_claims": ["not ambient Steel scripting authority"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["declared-host-functions", "dto-only-evaluation"],
+      "golden_receipt": "fixtures/golden/adapter.positive.steel-dto-only.receipt.json",
+      "payload": {
+        "kind": "adapter-receipt",
+        "adapter_kind": "steel-dto-probe",
+        "has_conformance_entry": true,
+        "declared_capabilities": ["dto-evaluation"],
+        "observed_effects": ["dto-evaluation"],
+        "claims_canonical_ir": false,
+        "checked_laws": ["declared-host-functions", "dto-only-evaluation"]
+      }
+    },
+    {
+      "id": "adapter.negative.steel-ambient-filesystem",
+      "fixture_class": "negative",
+      "artifact_class": "adapter-receipt",
+      "requirement_ids": [
+        "r[taenite.lossless_ir.steel_adapter_boundary.ambient_libraries]",
+        "r[taenite.lossless_ir.steel_adapter_conformance.ambient_authority]"
+      ],
+      "non_claims": ["ambient filesystem denied"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["deny-undeclared-authority"],
+      "golden_receipt": "fixtures/golden/adapter.negative.steel-ambient-filesystem.receipt.json",
+      "payload": {
+        "kind": "adapter-receipt",
+        "adapter_kind": "steel-dto-probe",
+        "has_conformance_entry": true,
+        "declared_capabilities": ["dto-evaluation"],
+        "observed_effects": ["filesystem"],
+        "claims_canonical_ir": false,
+        "checked_laws": ["deny-undeclared-authority"]
+      }
+    },
+    {
+      "id": "adapter.negative.untrusted-without-conformance",
+      "fixture_class": "negative",
+      "artifact_class": "adapter-receipt",
+      "requirement_ids": ["r[taenite.lossless_ir.adapter_conformance.untrusted_without_entry]"],
+      "non_claims": ["no adapter-specific trust without conformance"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["conformance-entry-required"],
+      "golden_receipt": "fixtures/golden/adapter.negative.untrusted-without-conformance.receipt.json",
+      "payload": {
+        "kind": "adapter-receipt",
+        "adapter_kind": "unknown-adapter",
+        "has_conformance_entry": false,
+        "declared_capabilities": [],
+        "observed_effects": [],
+        "claims_canonical_ir": false,
+        "checked_laws": ["conformance-entry-required"]
+      }
+    },
+    {
+      "id": "adapter.negative.wasm-canonical-ir-overclaim",
+      "fixture_class": "negative",
+      "artifact_class": "adapter-receipt",
+      "requirement_ids": ["r[taenite.lossless_ir.wasm_adapter_conformance.not_ir]"],
+      "non_claims": ["compiled WASM is target artifact only"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["canonical-ir-overclaim-rejected"],
+      "golden_receipt": "fixtures/golden/adapter.negative.wasm-canonical-ir-overclaim.receipt.json",
+      "payload": {
+        "kind": "adapter-receipt",
+        "adapter_kind": "wasm-adapter",
+        "has_conformance_entry": true,
+        "declared_capabilities": [],
+        "observed_effects": [],
+        "claims_canonical_ir": true,
+        "checked_laws": ["canonical-ir-overclaim-rejected"]
+      }
+    },
+    {
+      "id": "target.positive.wasm-receipt-bounded",
+      "fixture_class": "positive",
+      "artifact_class": "target-artifact",
+      "requirement_ids": ["r[taenite.lossless_ir.wasm_adapter_conformance.receipt]"],
+      "non_claims": ["WASM artifact is not canonical Taenite IR"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["target-provenance-bound"],
+      "golden_receipt": "fixtures/golden/target.positive.wasm-receipt-bounded.receipt.json",
+      "payload": {
+        "kind": "target-artifact",
+        "target_kind": "wasm-component",
+        "output_path": "fixtures/core/targets/validator.wasm.txt",
+        "declared_identity": {"domain": "target-artifact", "algorithm": "blake3", "hex": "9ef8ccae140c9160f1e67f9fac066d5aecddbccf3693f6c30b9a0ab3a74a74db"},
+        "claims_canonical_ir": false,
+        "metadata": {"target": "wasm32-wasi", "adapter-role": "validator"}
+      }
+    },
+    {
+      "id": "target.positive.llvm-provenance-bounded",
+      "fixture_class": "positive",
+      "artifact_class": "target-artifact",
+      "requirement_ids": ["r[taenite.lossless_ir.compiler_target_conformance.llvm_metadata]"],
+      "non_claims": ["LLVM IR is target evidence only"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["compiler-target-provenance"],
+      "golden_receipt": "fixtures/golden/target.positive.llvm-provenance-bounded.receipt.json",
+      "payload": {
+        "kind": "target-artifact",
+        "target_kind": "llvm-ir",
+        "output_path": "fixtures/core/targets/validator.ll",
+        "declared_identity": {"domain": "target-artifact", "algorithm": "blake3", "hex": "1f2f5a5f9ff7f04d8a8e9e79890df6c797599ec381c1bba47ae615d9a2922dd5"},
+        "claims_canonical_ir": false,
+        "metadata": {"compiler": "rustc-deferred", "target-triple": "x86_64-unknown-linux-gnu", "optimization-level": "0", "debug-info": "not-recorded"}
+      }
+    },
+    {
+      "id": "claim.negative.arbitrary-source-translation",
+      "fixture_class": "negative",
+      "artifact_class": "unsupported-claim",
+      "requirement_ids": ["r[taenite.lossless_ir.negative_fixtures.unsupported_translation]"],
+      "non_claims": ["not arbitrary host-language equivalence"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["unsupported-claim-fails-closed"],
+      "golden_receipt": "fixtures/golden/claim.negative.arbitrary-source-translation.receipt.json",
+      "payload": {
+        "kind": "unsupported-claim",
+        "claim_class": "unsupported-source-translation",
+        "claim_text": "lossless arbitrary Nickel to Steel translation",
+        "preserve_source_only": true
+      }
+    },
+    {
+      "id": "claim.negative.ambiguous-semantic-equivalence",
+      "fixture_class": "negative",
+      "artifact_class": "unsupported-claim",
+      "requirement_ids": ["r[taenite.rust_determinism.total_diagnostics.ambiguous_claim]"],
+      "non_claims": ["not semantic equivalence proof"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["ambiguous-claim-rejected"],
+      "golden_receipt": "fixtures/golden/claim.negative.ambiguous-semantic-equivalence.receipt.json",
+      "payload": {
+        "kind": "unsupported-claim",
+        "claim_class": "semantic-equivalence",
+        "claim_text": "compiler and evaluator semantics are equivalent",
+        "preserve_source_only": false
+      }
+    },
+    {
+      "id": "capability.positive.normal-root-relative",
+      "fixture_class": "positive",
+      "artifact_class": "capability-shell",
+      "requirement_ids": ["r[taenite.rust_determinism.capability_shells.filesystem_root]"],
+      "non_claims": ["capability shell evidence is not core filesystem authority"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["root-relative-path"],
+      "golden_receipt": "fixtures/golden/capability.positive.normal-root-relative.receipt.json",
+      "payload": {
+        "kind": "capability-shell",
+        "declared_filesystem": true,
+        "path": "fixtures/core/source-envelopes/valid.nickel",
+        "observation": "normal-relative"
+      }
+    },
+    {
+      "id": "capability.negative.parent-traversal",
+      "fixture_class": "negative",
+      "artifact_class": "capability-shell",
+      "requirement_ids": ["r[taenite.rust_determinism.capability_shells.escape_fixtures]"],
+      "non_claims": ["path traversal denied"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["path-escape-denied"],
+      "golden_receipt": "fixtures/golden/capability.negative.parent-traversal.receipt.json",
+      "payload": {
+        "kind": "capability-shell",
+        "declared_filesystem": true,
+        "path": "../outside",
+        "observation": "parent-traversal"
+      }
+    },
+    {
+      "id": "capability.negative.absolute-path",
+      "fixture_class": "negative",
+      "artifact_class": "capability-shell",
+      "requirement_ids": ["r[taenite.rust_determinism.capability_shells.escape_fixtures]"],
+      "non_claims": ["absolute paths are not artifact authority"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["path-escape-denied"],
+      "golden_receipt": "fixtures/golden/capability.negative.absolute-path.receipt.json",
+      "payload": {
+        "kind": "capability-shell",
+        "declared_filesystem": true,
+        "path": "/etc/passwd",
+        "observation": "absolute-path"
+      }
+    },
+    {
+      "id": "capability.negative.symlink-escape",
+      "fixture_class": "negative",
+      "artifact_class": "capability-shell",
+      "requirement_ids": ["r[taenite.rust_determinism.capability_shells.escape_fixtures]"],
+      "non_claims": ["symlink escape denied"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["path-escape-denied"],
+      "golden_receipt": "fixtures/golden/capability.negative.symlink-escape.receipt.json",
+      "payload": {
+        "kind": "capability-shell",
+        "declared_filesystem": true,
+        "path": "fixtures/symlink-to-outside",
+        "observation": "symlink-escape"
+      }
+    },
+    {
+      "id": "capability.negative.undeclared-filesystem",
+      "fixture_class": "negative",
+      "artifact_class": "capability-shell",
+      "requirement_ids": ["r[taenite.rust_determinism.explicit_capabilities.filesystem]"],
+      "non_claims": ["filesystem authority denied by default"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["undeclared-filesystem-denied"],
+      "golden_receipt": "fixtures/golden/capability.negative.undeclared-filesystem.receipt.json",
+      "payload": {
+        "kind": "capability-shell",
+        "declared_filesystem": false,
+        "path": "fixtures/core/source-envelopes/valid.nickel",
+        "observation": "undeclared-filesystem"
+      }
+    },
+    {
+      "id": "stack.positive.valence-wrap-receipt",
+      "fixture_class": "positive",
+      "artifact_class": "stack-evidence",
+      "requirement_ids": ["r[taenite.lossless_ir.stack_evidence_boundary.valence_receipts]"],
+      "non_claims": ["Valence export does not broaden Taenite claim"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["bounded-valence-export"],
+      "golden_receipt": "fixtures/golden/stack.positive.valence-wrap-receipt.receipt.json",
+      "payload": {
+        "kind": "stack-evidence",
+        "role": "valence-export",
+        "bounded_claim": "wrap Taenite receipt identity and non-claims",
+        "broadens_claim": false,
+        "referenced_identities": [{"domain": "source", "algorithm": "blake3", "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"}]
+      }
+    },
+    {
+      "id": "stack.positive.octet-source-shape-only",
+      "fixture_class": "positive",
+      "artifact_class": "stack-evidence",
+      "requirement_ids": ["r[taenite.lossless_ir.evidence_integration_conformance.octet]"],
+      "non_claims": ["Octet check is source-shape evidence only"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["octet-source-shape-only"],
+      "golden_receipt": "fixtures/golden/stack.positive.octet-source-shape-only.receipt.json",
+      "payload": {
+        "kind": "stack-evidence",
+        "role": "octet-check-plan",
+        "bounded_claim": "Rust profile source-shape evidence",
+        "broadens_claim": false,
+        "referenced_identities": []
+      }
+    },
+    {
+      "id": "stack.positive.trellis-supporting-evidence",
+      "fixture_class": "positive",
+      "artifact_class": "stack-evidence",
+      "requirement_ids": ["r[taenite.algebraic_effects.stack_roles.trellis.supporting_evidence]"],
+      "non_claims": ["Trellis proof reference does not replace Taenite receipt"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["trellis-supporting-only"],
+      "golden_receipt": "fixtures/golden/stack.positive.trellis-supporting-evidence.receipt.json",
+      "payload": {
+        "kind": "stack-evidence",
+        "role": "trellis-proof-reference",
+        "bounded_claim": "supporting proof evidence for finite effect facts",
+        "broadens_claim": false,
+        "referenced_identities": []
+      }
+    },
+    {
+      "id": "stack.positive.aspen-handler-profile-reference",
+      "fixture_class": "positive",
+      "artifact_class": "stack-evidence",
+      "requirement_ids": ["r[taenite.algebraic_effects.stack_roles.aspen.handler_profile]"],
+      "non_claims": ["Aspen runtime evidence does not redefine Taenite effect schema"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["runtime-consumes-taenite-identity"],
+      "golden_receipt": "fixtures/golden/stack.positive.aspen-handler-profile-reference.receipt.json",
+      "payload": {
+        "kind": "stack-evidence",
+        "role": "aspen-runtime-consumption",
+        "bounded_claim": "runtime evidence references Taenite handler descriptor identity",
+        "broadens_claim": false,
+        "referenced_identities": [{"domain": "algebraic-effect", "algorithm": "blake3", "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"}]
+      }
+    },
+    {
+      "id": "stack.negative.valence-runtime-correctness-overclaim",
+      "fixture_class": "negative",
+      "artifact_class": "stack-evidence",
+      "requirement_ids": ["r[taenite.algebraic_effects.stack_roles.valence.wrap_receipt]"],
+      "non_claims": ["Valence wrapping is not runtime correctness"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["stack-overclaim-rejected"],
+      "golden_receipt": "fixtures/golden/stack.negative.valence-runtime-correctness-overclaim.receipt.json",
+      "payload": {
+        "kind": "stack-evidence",
+        "role": "valence-export",
+        "bounded_claim": "runtime correctness",
+        "broadens_claim": true,
+        "referenced_identities": []
+      }
+    },
+    {
+      "id": "algebraic.positive.declared-discharge-recorded-replay",
+      "fixture_class": "positive",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": [
+        "r[taenite.algebraic_effects.fixture_corpus.positive_discharge]",
+        "r[taenite.algebraic_effects.replay_profile.recorded_log]"
+      ],
+      "non_claims": ["effect log is replay evidence only", "not host authorization"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["exact-discharge", "recorded-replay-log-bound"],
+      "golden_receipt": "fixtures/golden/algebraic.positive.declared-discharge-recorded-replay.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"},
+        "signatures": [{"operation_id": "op.read-config", "display_name": "ReadConfig", "parameter_schema": "unit", "result_schema": "string"}],
+        "input_row": ["op.read-config"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": {"name": "memory-config-handler", "handled_operations": ["op.read-config"], "residual_operations": [], "continuation_policy": "no-continuation", "claims_discharge": true, "host_capability_requirements": []},
+        "receipt": {"discharged_operations": ["op.read-config"], "residual_operations": [], "continuation_policy": "no-continuation", "continuation_evidence": null, "observed_operations": ["op.read-config"], "checked_laws": ["exact-discharge"]},
+        "replay": {"replay_class": "recorded-replay", "effect_log_path": "fixtures/core/algebraic-effects/recorded-log.preserves", "effect_log_identity": {"domain": "effect-log", "algorithm": "blake3", "hex": "4d396292ffb7216f23256a072ad27c63bbd380c48c5c9f9bceed9c39ab39da85"}},
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.positive.single-use-continuation-evidence",
+      "fixture_class": "positive",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.continuation_policy.single_use_evidence]"],
+      "non_claims": ["single-use evidence is bounded receipt data"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["single-use-continuation-evidence"],
+      "golden_receipt": "fixtures/golden/algebraic.positive.single-use-continuation-evidence.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"},
+        "signatures": [{"operation_id": "op.resume-once", "display_name": "ResumeOnce", "parameter_schema": "unit", "result_schema": "unit"}],
+        "input_row": ["op.resume-once"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": {"name": "single-use-handler", "handled_operations": ["op.resume-once"], "residual_operations": [], "continuation_policy": "single-use-continuation", "claims_discharge": true, "host_capability_requirements": []},
+        "receipt": {"discharged_operations": ["op.resume-once"], "residual_operations": [], "continuation_policy": "single-use-continuation", "continuation_evidence": "used-once", "observed_operations": ["op.resume-once"], "checked_laws": ["single-use-continuation-evidence"]},
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.unsupported-version",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.ir_boundary.unsupported_version]"],
+      "non_claims": ["not compatibility defaulting"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["fail-closed-effect-version"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.unsupported-version.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 2,
+        "canonical_path": "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"},
+        "signatures": [{"operation_id": "op.read-config", "display_name": "ReadConfig", "parameter_schema": "unit", "result_schema": "string"}],
+        "input_row": ["op.read-config"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.missing-operation-schema",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.signature_vocabulary.missing_schema]"],
+      "non_claims": ["incomplete effect signature denied"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["operation-schema-required"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.missing-operation-schema.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/missing-schema.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "ac5aadeaa5f2b0caf715468850c620b728f746216919d8e529ae0244d462938a"},
+        "signatures": [{"operation_id": "op.broken", "display_name": "Broken", "parameter_schema": null, "result_schema": "unit"}],
+        "input_row": ["op.broken"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.undeclared-operation",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.row_summary_vocabulary.undeclared_operation]"],
+      "non_claims": ["undeclared operations fail closed"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["declared-operation-required"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.undeclared-operation.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/unknown-effect.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "778bda49e67beaf447354fc72138076bcaee9d59c805ff121350f3baed4cc4c3"},
+        "signatures": [{"operation_id": "op.known", "display_name": "Known", "parameter_schema": "unit", "result_schema": "unit"}],
+        "input_row": ["op.unknown"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.open-row-not-pure",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]"],
+      "non_claims": ["open rows are not inferred pure"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["open-row-preserved"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.open-row-not-pure.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/open-row.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "f6c3e98e687baab97f8f4d93a30fe7ceb7e383d001c8abba6512bcdb411dd7fe"},
+        "signatures": [{"operation_id": "op.trace", "display_name": "Trace", "parameter_schema": "string", "result_schema": "unit"}],
+        "input_row": ["op.trace"],
+        "row_open": true,
+        "claimed_pure": true,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.handler-name-not-discharge",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.handler_descriptor.name_not_discharge]"],
+      "non_claims": ["handler names are metadata"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["operation-ids-required-for-discharge"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.handler-name-not-discharge.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"},
+        "signatures": [{"operation_id": "op.read-config", "display_name": "ReadConfig", "parameter_schema": "unit", "result_schema": "string"}],
+        "input_row": ["op.read-config"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": {"name": "trusted-looking-handler", "handled_operations": [], "residual_operations": [], "continuation_policy": "no-continuation", "claims_discharge": true, "host_capability_requirements": []},
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.unknown-effect-in-receipt",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.handler_receipts.unknown_effect_denied]"],
+      "non_claims": ["unknown effects denied"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["receipt-effects-declared"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.unknown-effect-in-receipt.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/unknown-effect.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "778bda49e67beaf447354fc72138076bcaee9d59c805ff121350f3baed4cc4c3"},
+        "signatures": [{"operation_id": "op.known", "display_name": "Known", "parameter_schema": "unit", "result_schema": "unit"}],
+        "input_row": ["op.known"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": {"name": "known-handler", "handled_operations": ["op.known"], "residual_operations": [], "continuation_policy": "no-continuation", "claims_discharge": true, "host_capability_requirements": []},
+        "receipt": {"discharged_operations": ["op.known"], "residual_operations": [], "continuation_policy": "no-continuation", "continuation_evidence": null, "observed_operations": ["op.unknown"], "checked_laws": ["receipt-effects-declared"]},
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.continuation-policy-mismatch",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.continuation_policy.mismatch]"],
+      "non_claims": ["continuation use must match descriptor"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["continuation-policy-fail-closed"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.continuation-policy-mismatch.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/continuation-mismatch.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "6429db35866520466873c47b564214b29456a3139aa1ce528801d9567465f08b"},
+        "signatures": [{"operation_id": "op.resume", "display_name": "Resume", "parameter_schema": "unit", "result_schema": "unit"}],
+        "input_row": ["op.resume"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": {"name": "no-cont-handler", "handled_operations": ["op.resume"], "residual_operations": [], "continuation_policy": "no-continuation", "claims_discharge": true, "host_capability_requirements": []},
+        "receipt": {"discharged_operations": ["op.resume"], "residual_operations": [], "continuation_policy": "single-use-continuation", "continuation_evidence": "used-once", "observed_operations": ["op.resume"], "checked_laws": ["continuation-policy-fail-closed"]},
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.host-capability-confusion",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.fixture_corpus.negative_host_confusion]"],
+      "non_claims": ["operation declarations do not grant host authority"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["operation-not-authority"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.host-capability-confusion.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/non-replayable.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"},
+        "signatures": [{"operation_id": "op.random", "display_name": "Random", "parameter_schema": "unit", "result_schema": "bytes"}],
+        "input_row": ["op.random"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": ["random"],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.stale-canonical-identity",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.fixture_corpus.negative_stale_identity]"],
+      "non_claims": ["stale algebraic-effect identity rejected"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["algebraic-hash-match"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.stale-canonical-identity.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "f6c3e98e687baab97f8f4d93a30fe7ceb7e383d001c8abba6512bcdb411dd7fe"},
+        "signatures": [{"operation_id": "op.read-config", "display_name": "ReadConfig", "parameter_schema": "unit", "result_schema": "string"}],
+        "input_row": ["op.read-config"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.negative.non-replayable-evidence-misuse",
+      "fixture_class": "negative",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.replay_profile.non_replayable]"],
+      "non_claims": ["non-replayable effects are not replay evidence"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["non-replayable-not-replay"],
+      "golden_receipt": "fixtures/golden/algebraic.negative.non-replayable-evidence-misuse.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/non-replayable.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"},
+        "signatures": [{"operation_id": "op.random", "display_name": "Random", "parameter_schema": "unit", "result_schema": "bytes"}],
+        "input_row": ["op.random"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": {"replay_class": "non-replayable", "effect_log_path": "fixtures/core/algebraic-effects/recorded-log.preserves", "effect_log_identity": {"domain": "effect-log", "algorithm": "blake3", "hex": "4d396292ffb7216f23256a072ad27c63bbd380c48c5c9f9bceed9c39ab39da85"}},
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "source-envelope.positive.schema-generated-nickel-contract",
+      "fixture_class": "positive",
+      "artifact_class": "source-envelope",
+      "requirement_ids": ["r[taenite.lossless_ir.nickel_reference_boundary.generated_contracts]"],
+      "non_claims": ["generated contract corpus is fixture input, not Taenite schema authority"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["generated-contract-fixture-only"],
+      "golden_receipt": "fixtures/golden/source-envelope.positive.schema-generated-nickel-contract.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 1,
+        "language": "nickel",
+        "media_type": "text/x-nickel",
+        "parser_identity": "generated-contract-corpus-fixture",
+        "source_path": "fixtures/core/source-envelopes/generated-contract.ncl",
+        "declared_identity": {"domain": "source", "algorithm": "blake3", "hex": "736afb98ba28776754c93fb9fad56198b656ae759eef1949fff76e612bc93858"},
+        "aliases": ["generated-contract-stress"]
+      }
+    },
+    {
+      "id": "adapter.positive.tree-sitter-nickel-spans",
+      "fixture_class": "positive",
+      "artifact_class": "adapter-receipt",
+      "requirement_ids": ["r[taenite.lossless_ir.nickel_reference_boundary.parser_spans]"],
+      "non_claims": ["parser spans are syntax evidence only"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["parser-spans-not-evaluation"],
+      "golden_receipt": "fixtures/golden/adapter.positive.tree-sitter-nickel-spans.receipt.json",
+      "payload": {
+        "kind": "adapter-receipt",
+        "adapter_kind": "tree-sitter-nickel-span-index",
+        "has_conformance_entry": true,
+        "declared_capabilities": [],
+        "observed_effects": [],
+        "claims_canonical_ir": false,
+        "checked_laws": ["parser-spans-not-evaluation"]
+      }
+    },
+    {
+      "id": "source-envelope.positive.haskell-source-only",
+      "fixture_class": "positive",
+      "artifact_class": "source-envelope",
+      "requirement_ids": ["r[taenite.lossless_ir.haskell_boundary.source_envelope]"],
+      "non_claims": ["Haskell source is preserved source only, not Taenite IR"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["haskell-source-envelope-only"],
+      "golden_receipt": "fixtures/golden/source-envelope.positive.haskell-source-only.receipt.json",
+      "payload": {
+        "kind": "source-envelope",
+        "schema_version": 1,
+        "language": "haskell",
+        "media_type": "text/x-haskell",
+        "parser_identity": "haskell-parser-deferred",
+        "source_path": "fixtures/core/source-envelopes/example.hs",
+        "declared_identity": {"domain": "source", "algorithm": "blake3", "hex": "9401c4c4268b8632f3d4ab463dca3a330797b3181ba34d8fd2c0b65ec372f0e7"},
+        "aliases": ["haskell-source-only"]
+      }
+    },
+    {
+      "id": "target.positive.rust-mir-provenance-bounded",
+      "fixture_class": "positive",
+      "artifact_class": "target-artifact",
+      "requirement_ids": ["r[taenite.lossless_ir.compiler_target_conformance.ghc_mir_provenance]"],
+      "non_claims": ["Rust MIR is target provenance evidence only"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["rust-mir-provenance-only"],
+      "golden_receipt": "fixtures/golden/target.positive.rust-mir-provenance-bounded.receipt.json",
+      "payload": {
+        "kind": "target-artifact",
+        "target_kind": "rust-mir",
+        "output_path": "fixtures/core/targets/rust-mir.txt",
+        "declared_identity": {"domain": "target-artifact", "algorithm": "blake3", "hex": "df9f3ebc300fbe54feacf11de8aa4c65ea603bf198e2b2bd807b0ff62edac7c1"},
+        "claims_canonical_ir": false,
+        "metadata": {"compiler": "rustc-deferred", "target-triple": "x86_64-unknown-linux-gnu", "artifact-role": "mir-provenance"}
+      }
+    },
+    {
+      "id": "claim.negative.ghc-core-as-canonical-ir",
+      "fixture_class": "negative",
+      "artifact_class": "unsupported-claim",
+      "requirement_ids": ["r[taenite.lossless_ir.haskell_boundary.ghc_ir_not_braid_ir]"],
+      "non_claims": ["GHC Core/STG/bytecode/interface files are not canonical Taenite IR"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["ghc-ir-overclaim-rejected"],
+      "golden_receipt": "fixtures/golden/claim.negative.ghc-core-as-canonical-ir.receipt.json",
+      "payload": {
+        "kind": "unsupported-claim",
+        "claim_class": "semantic-equivalence",
+        "claim_text": "GHC Core is canonical lossless Taenite IR",
+        "preserve_source_only": false
+      }
+    },
+    {
+      "id": "canonical-value.property.names-dependencies-durable-storage",
+      "fixture_class": "property",
+      "artifact_class": "canonical-value",
+      "requirement_ids": [
+        "r[taenite.lossless_ir.property_fixtures.replayable]",
+        "r[taenite.lossless_ir.content_addressed_identity.names_metadata]",
+        "r[taenite.lossless_ir.content_addressed_identity.dependency_closure]",
+        "r[taenite.lossless_ir.content_addressed_identity.durable_storage]"
+      ],
+      "non_claims": ["property fixture is enumerated deterministic evidence, not generated randomness"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["names-as-metadata", "dependency-closure-bound", "durable-storage-validates-before-decode"],
+      "golden_receipt": "fixtures/golden/canonical-value.property.names-dependencies-durable-storage.receipt.json",
+      "payload": {
+        "kind": "canonical-value",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/canonical-values/minimal.preserves",
+        "declared_identity": {"domain": "canonical-value", "algorithm": "blake3", "hex": "b5a13f476a82437544848a283e7c0777e34615a3f1b0bb7e9b2ee4d5e40f94f0"},
+        "projection_identity": {"domain": "projection", "algorithm": "blake3", "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"},
+        "projection_claims_authority": false,
+        "aliases": ["alias-a", "alias-b"]
+      }
+    },
+    {
+      "id": "algebraic.positive.open-row-preserved-not-pure",
+      "fixture_class": "positive",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]"],
+      "non_claims": ["open row is preserved and not classified pure"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["open-row-status-preserved"],
+      "golden_receipt": "fixtures/golden/algebraic.positive.open-row-preserved-not-pure.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/open-row.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "f6c3e98e687baab97f8f4d93a30fe7ceb7e383d001c8abba6512bcdb411dd7fe"},
+        "signatures": [{"operation_id": "op.trace", "display_name": "Trace", "parameter_schema": "string", "result_schema": "unit"}],
+        "input_row": ["op.trace"],
+        "row_open": true,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": null,
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    },
+    {
+      "id": "algebraic.positive.deterministic-effect-summary",
+      "fixture_class": "positive",
+      "artifact_class": "algebraic-effect",
+      "requirement_ids": ["r[taenite.algebraic_effects.replay_profile]"],
+      "non_claims": ["deterministic replay class is receipt data only"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["deterministic-effect-classified"],
+      "golden_receipt": "fixtures/golden/algebraic.positive.deterministic-effect-summary.receipt.json",
+      "payload": {
+        "kind": "algebraic-effect",
+        "schema_version": 1,
+        "canonical_path": "fixtures/core/algebraic-effects/deterministic.preserves",
+        "declared_identity": {"domain": "algebraic-effect", "algorithm": "blake3", "hex": "8171a1c1a7c1161e3448fa3ba816fd2a03df4048f1537341b24a3c772e411a92"},
+        "signatures": [{"operation_id": "op.trace", "display_name": "Trace", "parameter_schema": "string", "result_schema": "unit"}],
+        "input_row": ["op.trace"],
+        "row_open": false,
+        "claimed_pure": false,
+        "handler": null,
+        "receipt": null,
+        "replay": {"replay_class": "deterministic", "effect_log_path": null, "effect_log_identity": null},
+        "claimed_host_authority": [],
+        "admitted_host_capabilities": []
+      }
+    }
+  ]
+}

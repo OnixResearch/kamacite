@@ -1,0 +1,34 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "source-envelope.negative.missing-source-bytes",
+    "artifact_class": "source-envelope",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.source_envelope_vocabulary.missing_bytes]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "source-bytes-required"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-source-bytes",
+        "requirement_id": "r[taenite.lossless_ir.source_envelope_vocabulary.missing_bytes]",
+        "field": "source.source_bytes",
+        "message": "source envelope must preserve original bytes",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "not source preservation"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "2028e04e5b86dc3c47b2e8253809f39debd8359920b4f0ba0ee2c66f66543425"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "target.positive.llvm-provenance-bounded",
+    "artifact_class": "target-artifact",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.compiler_target_conformance.llvm_metadata]"
+    ],
+    "input_identities": {
+      "declared-target": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "1f2f5a5f9ff7f04d8a8e9e79890df6c797599ec381c1bba47ae615d9a2922dd5"
+      }
+    },
+    "output_identities": {
+      "computed-target": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "1f2f5a5f9ff7f04d8a8e9e79890df6c797599ec381c1bba47ae615d9a2922dd5"
+      }
+    },
+    "checked_laws": [
+      "compiler-target-provenance"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "LLVM IR is target evidence only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "83b7c6ce5df61a8f49287df929efac8cca6dd9961271705eb42af68930318317"
+  }
+}

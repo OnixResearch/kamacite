@@ -1,0 +1,51 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "canonical-value.negative.lossy-json-authority",
+    "artifact_class": "canonical-value",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.negative_fixtures.lossy_projection]"
+    ],
+    "input_identities": {
+      "declared-canonical": {
+        "domain": "canonical-value",
+        "algorithm": "blake3",
+        "hex": "5683968fc5205261ba43e3ceee343b953ae91398dc126956f904dc5873ea9d30"
+      },
+      "projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
+      }
+    },
+    "output_identities": {
+      "computed-canonical": {
+        "domain": "canonical-value",
+        "algorithm": "blake3",
+        "hex": "5683968fc5205261ba43e3ceee343b953ae91398dc126956f904dc5873ea9d30"
+      }
+    },
+    "checked_laws": [
+      "projection-not-authority"
+    ],
+    "diagnostics": [
+      {
+        "code": "lossy-projection-overclaim",
+        "requirement_id": "r[taenite.lossless_ir.format_strategy.json_projection]",
+        "field": "canonical.projection_claims_authority",
+        "message": "compatibility projection cannot replace canonical Preserves bytes",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "JSON is not canonical identity"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "a918717376c9da38a1e32d75b806e1443750e6188bc318bc2957ef7319935d02"
+  }
+}

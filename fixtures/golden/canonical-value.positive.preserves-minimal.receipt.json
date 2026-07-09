@@ -1,0 +1,45 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "canonical-value.positive.preserves-minimal",
+    "artifact_class": "canonical-value",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.format_strategy.preserves_roundtrip]",
+      "r[taenite.rust_determinism.canonical_identity.blake3]"
+    ],
+    "input_identities": {
+      "declared-canonical": {
+        "domain": "canonical-value",
+        "algorithm": "blake3",
+        "hex": "b5a13f476a82437544848a283e7c0777e34615a3f1b0bb7e9b2ee4d5e40f94f0"
+      },
+      "projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
+      }
+    },
+    "output_identities": {
+      "computed-canonical": {
+        "domain": "canonical-value",
+        "algorithm": "blake3",
+        "hex": "b5a13f476a82437544848a283e7c0777e34615a3f1b0bb7e9b2ee4d5e40f94f0"
+      }
+    },
+    "checked_laws": [
+      "preserves-bytes-authoritative",
+      "projection-derived"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "JSON projection is compatibility only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "351bdcefbb4923234465dd4ce0d6820e96558934a701988abf8afacd729aba5a"
+  }
+}

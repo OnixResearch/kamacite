@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "source-envelope.positive.schema-generated-nickel-contract",
+    "artifact_class": "source-envelope",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.nickel_reference_boundary.generated_contracts]"
+    ],
+    "input_identities": {
+      "declared-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "736afb98ba28776754c93fb9fad56198b656ae759eef1949fff76e612bc93858"
+      }
+    },
+    "output_identities": {
+      "computed-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "736afb98ba28776754c93fb9fad56198b656ae759eef1949fff76e612bc93858"
+      }
+    },
+    "checked_laws": [
+      "generated-contract-fixture-only"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "generated contract corpus is fixture input, not Taenite schema authority"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "605a0037fda66b54c6349710bdcac83145e34dae9faabdefdc50a0cdf2fea847"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.unsupported-version",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.ir_boundary.unsupported_version]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      }
+    },
+    "checked_laws": [
+      "fail-closed-effect-version"
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported-algebraic-effect-version",
+        "requirement_id": "r[taenite.algebraic_effects.ir_boundary.unsupported_version]",
+        "field": "algebraic.schema_version",
+        "message": "unsupported algebraic-effect schema version rejected",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "not compatibility defaulting"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "acd2634f10b96f7fddff7e6863a7f0ca07fdd1c471121b901c7e51dcf545773a"
+  }
+}

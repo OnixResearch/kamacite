@@ -1,0 +1,41 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "claim.negative.ghc-core-as-canonical-ir",
+    "artifact_class": "unsupported-claim",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.haskell_boundary.ghc_ir_not_braid_ir]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "ghc-ir-overclaim-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "ambiguous-claim",
+        "requirement_id": "r[taenite.lossless_ir.total_diagnostics.malformed]",
+        "field": "claim.preserve_source_only",
+        "message": "unsupported source translation must remain source-envelope-only evidence",
+        "details": {}
+      },
+      {
+        "code": "unsupported-claim",
+        "requirement_id": "r[taenite.lossless_ir.losslessness_classes.arbitrary_source_denied]",
+        "field": "claim.claim_class",
+        "message": "unsupported lossless translation or semantic-equivalence claim rejected",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "GHC Core/STG/bytecode/interface files are not canonical Taenite IR"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "c73c6a08acbf28a14b22e3e6d285341eb9d424c6cfacb206fa449f4d171552d7"
+  }
+}

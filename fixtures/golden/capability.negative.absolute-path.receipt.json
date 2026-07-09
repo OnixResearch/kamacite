@@ -1,0 +1,36 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "capability.negative.absolute-path",
+    "artifact_class": "capability-shell",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.rust_determinism.capability_shells.escape_fixtures]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "path-escape-denied"
+    ],
+    "diagnostics": [
+      {
+        "code": "path-escape",
+        "requirement_id": "r[taenite.rust_determinism.capability_shells.escape_fixtures]",
+        "field": "capability.path",
+        "message": "shell path admission rejected deterministic escape or undeclared authority case",
+        "details": {
+          "path": "/etc/passwd"
+        }
+      }
+    ],
+    "non_claims": [
+      "absolute paths are not artifact authority"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "f668d3ba16c27f3e3ed7568c849c5d8b97f7fb92934850713a002c63d9d2106c"
+  }
+}

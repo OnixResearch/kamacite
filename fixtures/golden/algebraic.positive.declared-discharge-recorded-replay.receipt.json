@@ -1,0 +1,51 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.positive.declared-discharge-recorded-replay",
+    "artifact_class": "algebraic-effect",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.fixture_corpus.positive_discharge]",
+      "r[taenite.algebraic_effects.replay_profile.recorded_log]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      },
+      "declared-effect-log": {
+        "domain": "effect-log",
+        "algorithm": "blake3",
+        "hex": "4d396292ffb7216f23256a072ad27c63bbd380c48c5c9f9bceed9c39ab39da85"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      },
+      "computed-effect-log": {
+        "domain": "effect-log",
+        "algorithm": "blake3",
+        "hex": "4d396292ffb7216f23256a072ad27c63bbd380c48c5c9f9bceed9c39ab39da85"
+      }
+    },
+    "checked_laws": [
+      "exact-discharge",
+      "recorded-replay-log-bound"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "effect log is replay evidence only",
+      "not host authorization"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "e0b976222ca9b617eaf54fbc081ef32ab07f4f5d7c6682cb0dc15e07a2f297b5"
+  }
+}

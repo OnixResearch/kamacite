@@ -1,0 +1,1 @@
+let projected = { value = 1 } in projected

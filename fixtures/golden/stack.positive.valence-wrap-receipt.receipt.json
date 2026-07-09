@@ -1,0 +1,32 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "stack.positive.valence-wrap-receipt",
+    "artifact_class": "stack-evidence",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.stack_evidence_boundary.valence_receipts]"
+    ],
+    "input_identities": {
+      "valence-export:source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "bounded-valence-export"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Valence export does not broaden Taenite claim"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "9f598a7a135b0ecc9a7bfa1d41dc753b2691d6e77932cf2662d75aec67152332"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.wasm-canonical-ir-overclaim",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.wasm_adapter_conformance.not_ir]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "canonical-ir-overclaim-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "canonical-ir-overclaim",
+        "requirement_id": "r[taenite.lossless_ir.wasm_target_boundary.not_ir]",
+        "field": "adapter.claims_canonical_ir",
+        "message": "adapter or target artifact cannot replace Preserves canonical IR",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "compiled WASM is target artifact only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "6dce6c5b854cec4a98165957b2cd233f398df6e68db290722e07f7ae1cc6e66c"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "stack.negative.valence-runtime-correctness-overclaim",
+    "artifact_class": "stack-evidence",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.stack_roles.valence.wrap_receipt]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "stack-overclaim-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "ambiguous-claim",
+        "requirement_id": "r[taenite.lossless_ir.stack_evidence_boundary.octet_checks]",
+        "field": "stack.broadens_claim",
+        "message": "stack evidence export broadened Taenite bounded claim",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "Valence wrapping is not runtime correctness"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "406526b1aa4191dc9890224364baa672f2d98a6567a6f13aca1c5903347364c0"
+  }
+}

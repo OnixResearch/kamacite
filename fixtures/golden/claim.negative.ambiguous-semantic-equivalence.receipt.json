@@ -1,0 +1,41 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "claim.negative.ambiguous-semantic-equivalence",
+    "artifact_class": "unsupported-claim",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.rust_determinism.total_diagnostics.ambiguous_claim]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "ambiguous-claim-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "ambiguous-claim",
+        "requirement_id": "r[taenite.lossless_ir.total_diagnostics.malformed]",
+        "field": "claim.preserve_source_only",
+        "message": "unsupported source translation must remain source-envelope-only evidence",
+        "details": {}
+      },
+      {
+        "code": "unsupported-claim",
+        "requirement_id": "r[taenite.lossless_ir.losslessness_classes.arbitrary_source_denied]",
+        "field": "claim.claim_class",
+        "message": "unsupported lossless translation or semantic-equivalence claim rejected",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "not semantic equivalence proof"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "e6d5bdc329868a15d1013ccae24522e83854f8ee37e1d0b2a58e6871a64f517b"
+  }
+}

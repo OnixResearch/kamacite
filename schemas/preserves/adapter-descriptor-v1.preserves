@@ -1,0 +1,9 @@
+<taenite-preserves-schema-artifact-v1 {
+  family: "adapter-descriptor"
+  version: "v1"
+  schema-id: "taenite.adapter-descriptor.v1"
+  record-label: "taenite-adapter-descriptor-v1"
+  fields: ["schema-version" "adapter-kind" "adapter-version" "evaluator-identity" "input-schemas" "output-schemas" "declared-capabilities" "declared-effects" "checked-laws" "dependency-identities" "target-kind" "non-claims"]
+  identity: "blake3(canonical descriptor bytes) in adapter domain"
+  non-claims: ["adapter name is not authority"]
+}>

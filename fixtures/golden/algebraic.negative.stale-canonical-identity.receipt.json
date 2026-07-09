@@ -1,0 +1,46 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.stale-canonical-identity",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.fixture_corpus.negative_stale_identity]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "f6c3e98e687baab97f8f4d93a30fe7ceb7e383d001c8abba6512bcdb411dd7fe"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      }
+    },
+    "checked_laws": [
+      "algebraic-hash-match"
+    ],
+    "diagnostics": [
+      {
+        "code": "algebraic-effect-hash-mismatch",
+        "requirement_id": "r[taenite.algebraic_effects.fixture_corpus.negative_stale_identity]",
+        "field": "algebraic.declared_identity.hex",
+        "message": "declared algebraic-effect identity does not match canonical bytes",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "stale algebraic-effect identity rejected"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "1d2df366afd721e86ad36c624d98b82037706117a9f9c6952adcb94ab91ac3c1"
+  }
+}

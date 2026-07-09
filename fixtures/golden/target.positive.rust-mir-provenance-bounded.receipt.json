@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "target.positive.rust-mir-provenance-bounded",
+    "artifact_class": "target-artifact",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.compiler_target_conformance.ghc_mir_provenance]"
+    ],
+    "input_identities": {
+      "declared-target": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "df9f3ebc300fbe54feacf11de8aa4c65ea603bf198e2b2bd807b0ff62edac7c1"
+      }
+    },
+    "output_identities": {
+      "computed-target": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "df9f3ebc300fbe54feacf11de8aa4c65ea603bf198e2b2bd807b0ff62edac7c1"
+      }
+    },
+    "checked_laws": [
+      "rust-mir-provenance-only"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Rust MIR is target provenance evidence only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "9984d560ee66c419ec507bd8a7ed3bd51beaa574e9c1e5f76d907728e7f31136"
+  }
+}

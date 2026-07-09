@@ -1,0 +1,48 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.missing-operation-schema",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.signature_vocabulary.missing_schema]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "ac5aadeaa5f2b0caf715468850c620b728f746216919d8e529ae0244d462938a"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "ac5aadeaa5f2b0caf715468850c620b728f746216919d8e529ae0244d462938a"
+      }
+    },
+    "checked_laws": [
+      "operation-schema-required"
+    ],
+    "diagnostics": [
+      {
+        "code": "incomplete-effect-signature",
+        "requirement_id": "r[taenite.algebraic_effects.signature_vocabulary.missing_schema]",
+        "field": "algebraic.signatures",
+        "message": "effect operation requires parameter and result schemas",
+        "details": {
+          "operation": "op.broken"
+        }
+      }
+    ],
+    "non_claims": [
+      "incomplete effect signature denied"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "5a0cd9f4b78a51a06d36b7585b50c494809fe264c91c88d99da81267b11528a5"
+  }
+}

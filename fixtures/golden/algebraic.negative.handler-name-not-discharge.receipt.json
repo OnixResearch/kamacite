@@ -1,0 +1,55 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.handler-name-not-discharge",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.handler_descriptor.name_not_discharge]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "942f5029d23eed2821034d9990ac6fc32fdc4945a0cb5040841db49e104daa21"
+      }
+    },
+    "checked_laws": [
+      "operation-ids-required-for-discharge"
+    ],
+    "diagnostics": [
+      {
+        "code": "handler-name-not-discharge",
+        "requirement_id": "r[taenite.algebraic_effects.handler_descriptor.name_not_discharge]",
+        "field": "algebraic.handler.handled_operations",
+        "message": "handler names cannot prove discharge without operation identities",
+        "details": {}
+      },
+      {
+        "code": "unknown-effect-operation",
+        "requirement_id": "r[taenite.algebraic_effects.handler_descriptor.residual_row]",
+        "field": "algebraic.handler.residual_operations",
+        "message": "unhandled input operation is missing from residual row",
+        "details": {
+          "operation": "op.read-config"
+        }
+      }
+    ],
+    "non_claims": [
+      "handler names are metadata"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "e0e98757ab5b32c7a6e926fbf3195cb8d7cb6b2a36f28309a6a09b1b3d3f557c"
+  }
+}

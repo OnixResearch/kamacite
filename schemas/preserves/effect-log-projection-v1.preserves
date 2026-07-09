@@ -1,0 +1,9 @@
+<taenite-preserves-schema-artifact-v1 {
+  family: "effect-log-projection"
+  version: "v1"
+  schema-id: "taenite.algebraic-effect.effect-log-projection.v1"
+  record-label: "taenite-effect-log-projection-v1"
+  fields: ["schema-version" "effect-summary-identity" "handler-descriptor-identity" "canonical-log-bytes" "effect-log-identity" "entries" "non-claims"]
+  identity: "blake3(canonical log bytes) in effect-log domain"
+  non-claims: ["effect log is replay evidence only" "not semantic correctness"]
+}>

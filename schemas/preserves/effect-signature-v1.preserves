@@ -1,0 +1,9 @@
+<taenite-preserves-schema-artifact-v1 {
+  family: "effect-signature"
+  version: "v1"
+  schema-id: "taenite.algebraic-effect.signature.v1"
+  record-label: "taenite-effect-signature-v1"
+  fields: ["schema-version" "operation-identities" "operation-names" "parameter-schemas" "result-schemas" "determinism-class" "dependency-identities" "source-spans" "non-claims"]
+  identity: "blake3(canonical signature data) in effect-operation domain"
+  non-claims: ["operation names are metadata" "operation declaration is not host authority"]
+}>

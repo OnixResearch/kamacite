@@ -1,0 +1,34 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.untrusted-without-conformance",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.adapter_conformance.untrusted_without_entry]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "conformance-entry-required"
+    ],
+    "diagnostics": [
+      {
+        "code": "incomplete-metadata",
+        "requirement_id": "r[taenite.lossless_ir.adapter_conformance.untrusted_without_entry]",
+        "field": "adapter.has_conformance_entry",
+        "message": "adapter-specific claims require a conformance entry",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "no adapter-specific trust without conformance"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "45e2e26368e483135f744b8bf4416b0394d435a27ae690a3fe6c96e83e5d44de"
+  }
+}

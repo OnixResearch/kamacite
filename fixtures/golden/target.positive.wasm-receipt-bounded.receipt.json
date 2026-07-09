@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "target.positive.wasm-receipt-bounded",
+    "artifact_class": "target-artifact",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.wasm_adapter_conformance.receipt]"
+    ],
+    "input_identities": {
+      "declared-target": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "9ef8ccae140c9160f1e67f9fac066d5aecddbccf3693f6c30b9a0ab3a74a74db"
+      }
+    },
+    "output_identities": {
+      "computed-target": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "9ef8ccae140c9160f1e67f9fac066d5aecddbccf3693f6c30b9a0ab3a74a74db"
+      }
+    },
+    "checked_laws": [
+      "target-provenance-bound"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "WASM artifact is not canonical Taenite IR"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "ace624fe687dbd5e3e212034901946f685b36e6b11f2b1b7bf3ccc8a55e03c6e"
+  }
+}

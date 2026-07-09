@@ -1,0 +1,9 @@
+<taenite-preserves-schema-artifact-v1 {
+  family: "effect-row"
+  version: "v1"
+  schema-id: "taenite.algebraic-effect.row.v1"
+  record-label: "taenite-effect-row-v1"
+  fields: ["schema-version" "required-operations" "provided-operations" "row-openness" "dependency-identities" "canonical-order" "non-claims"]
+  identity: "blake3(canonical row bytes) in algebraic-effect domain"
+  non-claims: ["open rows are not inferred pure"]
+}>

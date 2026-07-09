@@ -1,0 +1,10 @@
+<taenite-preserves-schema-artifact-v1 {
+  family: "replay-profile"
+  version: "v1"
+  schema-id: "taenite.algebraic-effect.replay-profile.v1"
+  record-label: "taenite-replay-profile-v1"
+  fields: ["schema-version" "replay-class" "effect-summary-identity" "handler-descriptor-identity" "effect-log-identity" "non-claims"]
+  identity: "blake3(canonical replay profile bytes) in algebraic-effect domain"
+  replay-classes: ["deterministic" "recorded-replay" "denied" "non-replayable"]
+  non-claims: ["recorded replay is not host authorization"]
+}>

@@ -1,0 +1,53 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.continuation-policy-mismatch",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.continuation_policy.mismatch]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "6429db35866520466873c47b564214b29456a3139aa1ce528801d9567465f08b"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "6429db35866520466873c47b564214b29456a3139aa1ce528801d9567465f08b"
+      }
+    },
+    "checked_laws": [
+      "continuation-policy-fail-closed"
+    ],
+    "diagnostics": [
+      {
+        "code": "continuation-policy-mismatch",
+        "requirement_id": "r[taenite.algebraic_effects.continuation_policy.mismatch]",
+        "field": "algebraic.receipt.continuation_evidence",
+        "message": "no-continuation handler receipt recorded continuation evidence",
+        "details": {}
+      },
+      {
+        "code": "continuation-policy-mismatch",
+        "requirement_id": "r[taenite.algebraic_effects.continuation_policy.mismatch]",
+        "field": "algebraic.receipt.continuation_policy",
+        "message": "handler descriptor and receipt continuation policies differ",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "continuation use must match descriptor"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "98089a942159bd135471c0806873833ba75b89b40fb7b294db6681c05a712d4a"
+  }
+}

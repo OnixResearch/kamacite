@@ -1,0 +1,46 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.non-replayable-evidence-misuse",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.replay_profile.non_replayable]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"
+      }
+    },
+    "checked_laws": [
+      "non-replayable-not-replay"
+    ],
+    "diagnostics": [
+      {
+        "code": "non-replayable-evidence-misuse",
+        "requirement_id": "r[taenite.algebraic_effects.replay_profile.non_replayable]",
+        "field": "algebraic.replay.effect_log_identity",
+        "message": "non-replayable effects cannot be accepted as replay evidence",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "non-replayable effects are not replay evidence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "d1ccf8f17124dca803cbb6d98326231ad5f320bf676ce040ce45bc07653c04e5"
+  }
+}

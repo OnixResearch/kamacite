@@ -1,0 +1,43 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "identity.negative.projection-as-canonical",
+    "artifact_class": "receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.rust_determinism.typed_identity_domains.projection_not_canonical]"
+    ],
+    "input_identities": {
+      "supplied": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "typed-domain-rejection"
+    ],
+    "diagnostics": [
+      {
+        "code": "identity-domain-mismatch",
+        "requirement_id": "r[taenite.lossless_ir.typed_identity_domains.projection_not_canonical]",
+        "field": "identity_use.supplied_identity",
+        "message": "identity domain did not match required typed domain",
+        "details": {
+          "actual": "projection",
+          "expected": "canonical-value"
+        }
+      }
+    ],
+    "non_claims": [
+      "not identity-domain substitution"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "c523756e4adcb1816ac0276eaa61b1a6429c185437b5112db4fece5e19a76836"
+  }
+}

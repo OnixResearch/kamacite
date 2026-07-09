@@ -1,0 +1,2 @@
+// rust MIR provenance placeholder for taenite validator
+fn source_envelope_slice() -> ValidationReport

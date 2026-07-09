@@ -1,0 +1,37 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.steel-ambient-filesystem",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.steel_adapter_boundary.ambient_libraries]",
+      "r[taenite.lossless_ir.steel_adapter_conformance.ambient_authority]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "deny-undeclared-authority"
+    ],
+    "diagnostics": [
+      {
+        "code": "undeclared-capability",
+        "requirement_id": "r[taenite.rust_determinism.explicit_capabilities.filesystem]",
+        "field": "adapter.observed_effects",
+        "message": "observed host effect was not declared by adapter descriptor",
+        "details": {
+          "effect": "filesystem"
+        }
+      }
+    ],
+    "non_claims": [
+      "ambient filesystem denied"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "1b10817bd2e0544cf21e71b69a7d14cec9d0c8925e20c94fd760f454ea02a74c"
+  }
+}

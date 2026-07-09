@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "source-envelope.positive.haskell-source-only",
+    "artifact_class": "source-envelope",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.haskell_boundary.source_envelope]"
+    ],
+    "input_identities": {
+      "declared-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "9401c4c4268b8632f3d4ab463dca3a330797b3181ba34d8fd2c0b65ec372f0e7"
+      }
+    },
+    "output_identities": {
+      "computed-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "9401c4c4268b8632f3d4ab463dca3a330797b3181ba34d8fd2c0b65ec372f0e7"
+      }
+    },
+    "checked_laws": [
+      "haskell-source-envelope-only"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Haskell source is preserved source only, not Taenite IR"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "558a8d249b9b3fa892fb40b59c17b2d24a699d3accf3a89dac0918bce5e87be0"
+  }
+}

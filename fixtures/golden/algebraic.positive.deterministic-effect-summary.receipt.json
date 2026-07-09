@@ -1,0 +1,38 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.positive.deterministic-effect-summary",
+    "artifact_class": "algebraic-effect",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.replay_profile]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "8171a1c1a7c1161e3448fa3ba816fd2a03df4048f1537341b24a3c772e411a92"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "8171a1c1a7c1161e3448fa3ba816fd2a03df4048f1537341b24a3c772e411a92"
+      }
+    },
+    "checked_laws": [
+      "deterministic-effect-classified"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "deterministic replay class is receipt data only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "b76736736de08329b8a37b522dde1ab07b19addb8201e703f838acbc05572c46"
+  }
+}

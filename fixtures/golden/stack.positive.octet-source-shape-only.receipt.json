@@ -1,0 +1,26 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "stack.positive.octet-source-shape-only",
+    "artifact_class": "stack-evidence",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.evidence_integration_conformance.octet]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "octet-source-shape-only"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Octet check is source-shape evidence only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "33e79d5a684322a338303f6e88ed80e04e4ba378f031349352a7a1a4426b3500"
+  }
+}

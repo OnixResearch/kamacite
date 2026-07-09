@@ -1,0 +1,48 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "algebraic.negative.host-capability-confusion",
+    "artifact_class": "algebraic-effect",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.algebraic_effects.fixture_corpus.negative_host_confusion]"
+    ],
+    "input_identities": {
+      "declared-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"
+      }
+    },
+    "output_identities": {
+      "computed-algebraic-effect": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "f3c419abce1f22c69717758c7be9bac26d20aab5ae1734f285c50a9fa3105dbd"
+      }
+    },
+    "checked_laws": [
+      "operation-not-authority"
+    ],
+    "diagnostics": [
+      {
+        "code": "host-capability-confusion",
+        "requirement_id": "r[taenite.algebraic_effects.host_boundary.operation_not_authority]",
+        "field": "algebraic.claimed_host_authority",
+        "message": "algebraic operation declaration does not grant host authority",
+        "details": {
+          "authority": "random"
+        }
+      }
+    ],
+    "non_claims": [
+      "operation declarations do not grant host authority"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "f1b62484c101fbf8e9b4d6a85919d00c014a79c90db29d95eeecd252d3b0ccb5"
+  }
+}

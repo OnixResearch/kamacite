@@ -1,0 +1,26 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "capability.positive.normal-root-relative",
+    "artifact_class": "capability-shell",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.rust_determinism.capability_shells.filesystem_root]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "root-relative-path"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "capability shell evidence is not core filesystem authority"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "19bf7fb0150ce1687e4818ae27fb34ed249a1d67f5651a0ca7ed184372ea9322"
+  }
+}

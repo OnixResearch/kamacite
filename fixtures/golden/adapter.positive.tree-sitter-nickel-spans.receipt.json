@@ -1,0 +1,26 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.positive.tree-sitter-nickel-spans",
+    "artifact_class": "adapter-receipt",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[taenite.lossless_ir.nickel_reference_boundary.parser_spans]"
+    ],
+    "input_identities": {},
+    "output_identities": {},
+    "checked_laws": [
+      "parser-spans-not-evaluation"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "parser spans are syntax evidence only"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "3f3fbb3bb8323f39e6fce0e3757b12662c3f2d8ad26aede2fbb653c1092842cf"
+  }
+}

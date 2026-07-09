@@ -1,0 +1,9 @@
+<taenite-preserves-schema-artifact-v1 {
+  family: "handler-descriptor"
+  version: "v1"
+  schema-id: "taenite.algebraic-effect.handler-descriptor.v1"
+  record-label: "taenite-handler-descriptor-v1"
+  fields: ["schema-version" "handler-identity" "accepted-input-rows" "handled-operations" "produced-residual-rows" "adapter-identity" "dependency-identities" "checked-laws" "continuation-policy" "replay-profile" "host-capability-requirements" "diagnostics-policy" "non-claims"]
+  identity: "blake3(canonical handler descriptor bytes) in algebraic-effect domain"
+  non-claims: ["handler name is not discharge evidence"]
+}>

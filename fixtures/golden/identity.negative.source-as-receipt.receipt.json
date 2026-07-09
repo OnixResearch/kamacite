@@ -1,0 +1,43 @@
+{
+  "body": {
+    "schema_version": "taenite.receipt.v1",
+    "canonical_codec": "taenite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "identity.negative.source-as-receipt",
+    "artifact_class": "receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[taenite.rust_determinism.typed_identity_domains.source_not_receipt]"
+    ],
+    "input_identities": {
+      "supplied": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "receipt-identity-separation"
+    ],
+    "diagnostics": [
+      {
+        "code": "identity-domain-mismatch",
+        "requirement_id": "r[taenite.lossless_ir.typed_identity_domains.projection_not_canonical]",
+        "field": "identity_use.supplied_identity",
+        "message": "identity domain did not match required typed domain",
+        "details": {
+          "actual": "source",
+          "expected": "receipt"
+        }
+      }
+    ],
+    "non_claims": [
+      "receipt identity is separate domain"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "7f8e2bad7d746b5feebf6c5eb579f98f25d107e988f1dc5b8d41047314c0d54f"
+  }
+}
