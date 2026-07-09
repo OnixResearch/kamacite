@@ -13,6 +13,12 @@ Yes: Braid should use Preserves too. Preserves is the canonical encoded IR candi
 | Constrained policy DSL | A policy authored in the Braid schema can render to Nickel/Rust/Steel adapters and round-trip back to the same IR. | Only for the constrained schema, not arbitrary host-language code. |
 | Unsupported source translation | Arbitrary Nickel, Rust, or Steel source is translated into another language. | Out of scope unless represented as preserved source plus explicit non-claims. |
 
+## WASM boundary
+
+Braid should not use WebAssembly as its canonical IR. Preserves remains the authority for canonical values, source envelopes, and receipt identity.
+
+WASM is a good later target for sandboxed adapters and portable validators. A WASM adapter should accept Braid IR or source-envelope bytes, run with declared capabilities only, and return a deterministic Braid receipt. WIT or the component model may describe the adapter ABI, but they must not replace the Preserves schema as the source of truth.
+
 ## Current status
 
 This repo is bootstrapped with native Cairn lifecycle artifacts. The first active change is:

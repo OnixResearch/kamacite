@@ -38,6 +38,14 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rationale:** This preserves functional-core / imperative-shell boundaries and gives tests a pure unit under test. Nickel remains the reviewable authoring language for configs/contracts. Steel remains bounded dynamic predicate/probe logic without ambient host authority.
 
+### 6. Use WebAssembly only as a target or sandbox boundary
+
+**Choice:** Braid does not use WebAssembly as the canonical IR. WASM may be used later as a portable target for validators, conformance probes, or untrusted adapters whose inputs and outputs are Braid IR/source-envelope bytes plus deterministic receipts.
+
+**Rationale:** WebAssembly is an execution format and sandbox boundary, not a source-preserving interchange format. Using it as the IR would confuse executable behavior with artifact identity. Keeping Preserves as the canonical IR while allowing WASM adapter targets lets Braid isolate evaluation without weakening losslessness claims.
+
+**Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
+
 ## Risks / Trade-offs
 
 - **Preserves dependency uncertainty:** Mitigate by keeping the first change at the format-contract level and adding fixtures before relying on a concrete library.

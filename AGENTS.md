@@ -25,6 +25,7 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 - Nickel remains the preferred human-authored contract/config language.
 - Rust owns pure validation cores, canonicalization, hashing, adapter DTOs, and receipts.
 - Steel Scheme is bounded adapter/probe logic only; do not grant ambient filesystem, process, network, credential, or mutation authority.
+- WebAssembly is an optional adapter/validator target, not Braid's IR. WASM inputs and outputs must remain Braid IR/source-envelope bytes plus deterministic receipts.
 
 ## Losslessness claims
 

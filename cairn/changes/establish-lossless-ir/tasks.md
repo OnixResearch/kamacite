@@ -12,4 +12,5 @@
 - [ ] [parallel] Add Nickel positive and negative fixtures that distinguish source envelopes from exported projections. r[braid.lossless_ir.adapter_boundaries.nickel_projection]
 - [ ] [parallel] Add Steel positive and negative fixtures that prove DTO-only evaluation and fail closed for undeclared host authority. r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
 - [ ] [parallel] Add canonical value fixtures that round-trip through Preserves and reject stale hashes or lossy JSON projections. r[braid.lossless_ir.round_trip_evidence]
+- [ ] [parallel] Add WASM target fixtures that prove adapter receipts stay Preserves-backed and reject compiled WASM as canonical IR. r[braid.lossless_ir.wasm_target_boundary]
 - [ ] [serial] Add a focused validation command that runs all positive and negative fixtures and emits a deterministic receipt. r[braid.lossless_ir.round_trip_evidence]

@@ -86,6 +86,26 @@ r[braid.lossless_ir.adapter_boundaries.steel_no_ambient_authority]
 - WHEN Braid validates the evaluation request or receipt
 - THEN validation MUST deny the request or receipt deterministically without evaluating the undeclared host action.
 
+### Requirement: WASM target boundary
+
+r[braid.lossless_ir.wasm_target_boundary] Braid MUST treat WebAssembly as an optional adapter, validator, or conformance target rather than the canonical IR. WASM components or modules MAY consume Braid IR/source-envelope bytes and emit deterministic receipts, but they MUST NOT replace Preserves as the authoritative value or source-envelope identity.
+
+#### Scenario: WASM adapter stays receipt-bounded
+
+r[braid.lossless_ir.wasm_target_boundary.adapter_receipt]
+
+- GIVEN a Braid adapter is packaged as a WebAssembly module or component
+- WHEN Braid invokes or validates the adapter
+- THEN the adapter MUST receive only declared inputs and capabilities and MUST return a deterministic Braid receipt over Preserves-backed identity.
+
+#### Scenario: WASM is rejected as canonical IR
+
+r[braid.lossless_ir.wasm_target_boundary.not_ir]
+
+- GIVEN a tool claims that compiled WebAssembly is the lossless representation of arbitrary Nickel, Rust, or Steel source
+- WHEN Braid classifies the claim
+- THEN validation MUST reject the canonical-IR claim and MAY accept the WebAssembly artifact only as a target artifact or source envelope with explicit non-claims.
+
 ### Requirement: Round-trip evidence
 
 r[braid.lossless_ir.round_trip_evidence] Braid MUST require positive and negative fixtures for every implemented conversion, adapter, or validation claim before the claim is accepted.
