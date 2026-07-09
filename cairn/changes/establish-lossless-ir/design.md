@@ -8,7 +8,7 @@ The Cairn delta is split into focused specs:
 
 - `lossless-ir`: top-level format strategy, naming, losslessness classes, evidence, and non-claims.
 - `source-envelopes`: source byte preservation and Nickel reference-tool boundaries.
-- `adapter-boundaries`: Nickel/Rust/Steel/WASM adapter trust boundaries.
+- `adapter-boundaries`: Nickel/Rust/Steel/WASM/LLVM adapter and target-artifact trust boundaries.
 - `identity-model`: content-addressed identity, metadata aliases, dependency closure, effects, and durable storage.
 - `stack-integration`: Valence and Octet receipt/provenance integration boundaries.
 
@@ -78,7 +78,15 @@ The Cairn delta is split into focused specs:
 
 **Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
 
-### 10. Adapt Unison's identity model, not its language runtime
+### 10. Use LLVM only as a compiled-target provenance artifact
+
+**Choice:** Braid does not use LLVM IR as the canonical IR. LLVM may be used later for compiled Rust or adapter target evidence, with receipts binding compiler version, target triple, optimization level, pass pipeline, debug-info availability, source/artifact links, and BLAKE3 hashes.
+
+**Rationale:** LLVM IR is not source-preserving and is intentionally tied to compiler lowering, target behavior, optimization choices, and unstable semantic details such as poison and undef. It can provide useful provenance for compiled artifacts, but using it as Braid's cross-language identity layer would overclaim source losslessness and semantic equivalence.
+
+**Rejected alternative:** Normalize Nickel, Rust, or Steel through LLVM IR and treat that as the lossless bridge. This would erase source identity and conflate compiler artifacts with Braid's Preserves-backed interchange contract.
+
+### 11. Adapt Unison's identity model, not its language runtime
 
 **Choice:** Braid adapts Unison's content-addressed codebase ideas: canonical content owns identity, names are metadata, dependencies are hash-bound, effect needs are explicit labels, refactoring is structured over identities, and durable storage envelopes bind type/schema/codec/hash before decode. Braid still uses BLAKE3 over Braid-owned canonical bytes and does not adopt Unison syntax, runtime, codebase database, cloud/distributed execution, or arbitrary function persistence.
 
@@ -86,7 +94,7 @@ The Cairn delta is split into focused specs:
 
 **Rejected alternative:** Treat Unison itself as Braid's host language or storage format. That would conflict with Braid's Nickel/Rust/Steel adapter scope and Preserves-backed canonical value identity.
 
-### 11. Integrate with Valence and Octet through receipts first
+### 12. Integrate with Valence and Octet through receipts first
 
 **Choice:** Braid uses Valence closely as the evidence/linkage integration target and Octet closely as the checked Rust/provenance rail, but neither repo owns Braid's canonical IR. Initial integration is by exported Braid receipts, source spans, stable IDs, and fixtures rather than direct crate dependencies.
 

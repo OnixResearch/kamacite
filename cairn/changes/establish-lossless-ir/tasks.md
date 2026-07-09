@@ -18,6 +18,7 @@
 - [ ] [parallel] Add Steel ambient-library negative fixtures for filesystem, process, TCP, random, time, package, dylib, credential, and mutation requests. r[braid.lossless_ir.steel_adapter_boundary.ambient_libraries]
 - [ ] [parallel] Add canonical value fixtures that round-trip through Preserves and reject stale hashes or lossy JSON projections. r[braid.lossless_ir.round_trip_evidence]
 - [ ] [parallel] Add WASM target fixtures that prove adapter receipts stay Preserves-backed and reject compiled WASM as canonical IR. r[braid.lossless_ir.wasm_target_boundary]
+- [ ] [parallel] Add LLVM target-artifact fixtures that bind compiler identity, target triple, optimization profile, debug-info status, and BLAKE3 artifact hashes while rejecting LLVM as canonical IR. r[braid.lossless_ir.llvm_target_boundary]
 - [ ] [parallel] Add content-addressed identity fixtures proving names/paths are metadata and canonical bytes own identity. r[braid.lossless_ir.content_addressed_identity.names_metadata]
 - [ ] [parallel] Add dependency-closure receipt fixtures that bind adapter/evaluator identities and dependency hashes. r[braid.lossless_ir.content_addressed_identity.dependency_closure]
 - [ ] [parallel] Add effect/capability label fixtures that fail closed on undeclared host effects. r[braid.lossless_ir.content_addressed_identity.effect_labels]

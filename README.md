@@ -21,6 +21,12 @@ Braid should not use WebAssembly as its canonical IR. Preserves remains the auth
 
 WASM is a good later target for sandboxed adapters and portable validators. A WASM adapter should accept Braid IR or source-envelope bytes, run with declared capabilities only, and return a deterministic Braid receipt. WIT or the component model may describe the adapter ABI, but they must not replace the Preserves schema as the source of truth.
 
+## LLVM boundary
+
+Braid should not use LLVM IR as its canonical IR. LLVM is a compiler target/provenance artifact, not a source-preserving interchange format.
+
+LLVM can be useful later for compiled Rust or adapter evidence: record LLVM IR, bitcode, target triple, optimization level, compiler version, pass pipeline, debug-info availability, and BLAKE3 hashes as target-artifact receipts. Those receipts can help explain lowering/provenance, but they must not claim Nickel/Rust/Steel semantic equivalence or source losslessness. LLVM `poison`, `undef`, target-specific behavior, optimization instability, and toolchain-version sensitivity make it unsuitable as Braid's cross-language identity layer.
+
 ## Octet and Valence boundary
 
 Braid should use Valence closely at the evidence layer. Braid receipts should be easy to wrap as Valence Evidence IR artifacts with stable IDs, spans, roles, BLAKE3 hashes, and explicit non-claims. Valence remains the stack evidence/linkage authority; Braid owns source preservation, value interchange, adapter classification, and round-trip receipts.
@@ -113,6 +119,7 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 - [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated Nickel contract corpus suitable for stress fixtures and schema-conversion regression cases.
 - [mattwparas/steel](https://github.com/mattwparas/steel) — reference implementation for embedded Steel evaluation, typed Rust host-function registration, module boundaries, and higher-order contract patterns used only as bounded adapter/probe surfaces.
 - [unisonweb/unison](https://github.com/unisonweb/unison) — reference for content-addressed definitions, names-as-metadata, dependency-closure identity, abilities/effect labels, structured refactoring, and typed durable storage boundaries.
+- [llvm/llvm-project](https://github.com/llvm/llvm-project) — reference for compiled target artifacts and toolchain/provenance receipts only; LLVM IR is not Braid's canonical IR.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
 - [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.

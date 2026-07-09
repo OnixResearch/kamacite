@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines Braid adapter trust boundaries for Nickel, Rust, Steel, and WebAssembly targets.
+Defines Braid adapter trust boundaries for Nickel, Rust, Steel, WebAssembly targets, and LLVM compiled-artifact evidence.
 
 ## Requirements
 
@@ -73,3 +73,23 @@ r[braid.lossless_ir.wasm_target_boundary.not_ir]
 - GIVEN a tool claims that compiled WebAssembly is the lossless representation of arbitrary Nickel, Rust, or Steel source
 - WHEN Braid classifies the claim
 - THEN validation MUST reject the canonical-IR claim and MAY accept the WebAssembly artifact only as a target artifact or source envelope with explicit non-claims.
+
+### Requirement: LLVM target artifact boundary
+
+r[braid.lossless_ir.llvm_target_boundary] Braid MUST treat LLVM IR, bitcode, object files, and compiler reports as compiled target artifacts or provenance evidence rather than canonical IR. LLVM-backed receipts MUST bind compiler identity, target triple, optimization level, pass pipeline, debug-info availability, source/artifact links, and BLAKE3 artifact hashes before target evidence is trusted.
+
+#### Scenario: LLVM artifact receipt is bounded
+
+r[braid.lossless_ir.llvm_target_boundary.artifact_receipt]
+
+- GIVEN Braid records LLVM IR, bitcode, object output, or a compiler report for a Rust validator or adapter
+- WHEN the target-artifact receipt is emitted
+- THEN the receipt MUST include compiler/toolchain identity, target triple, optimization level, pass pipeline or profile, debug-info status, source envelope or input artifact identity, output artifact hash, and explicit non-claims.
+
+#### Scenario: LLVM is rejected as canonical IR
+
+r[braid.lossless_ir.llvm_target_boundary.not_ir]
+
+- GIVEN a tool claims LLVM IR is the lossless cross-language representation of arbitrary Nickel, Rust, or Steel source
+- WHEN Braid classifies the claim
+- THEN validation MUST reject the canonical-IR claim and MAY accept the LLVM artifact only as target evidence with explicit toolchain and semantic-equivalence non-claims.

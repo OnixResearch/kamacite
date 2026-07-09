@@ -9,7 +9,7 @@ Braid is needed to make the losslessness boundary explicit before implementation
 - Create the Braid repository as the OnixResearch home for Nickel/Rust/Steel lossless interchange work.
 - Adopt Preserves as the canonical encoded IR candidate for value-level interchange and source envelopes.
 - Define losslessness classes so arbitrary source translation is not confused with source preservation or constrained-DSL round trips.
-- Specify adapter boundaries for Nickel, Rust, bounded Steel Scheme evaluation, and future WASM targets.
+- Specify adapter boundaries for Nickel, Rust, bounded Steel Scheme evaluation, future WASM targets, and LLVM compiled-target provenance artifacts.
 - Split the Cairn delta into focused specs for core IR, source envelopes, adapters, identity, and stack integration.
 - Require positive and negative round-trip fixtures before any conversion claim is accepted.
 
