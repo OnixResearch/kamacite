@@ -23,7 +23,7 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 - Preserves is the canonical encoded IR candidate for Braid value/envelope identity.
 - JSON is a compatibility projection only; do not treat JSON export as the authority for losslessness.
 - MLIR is an architecture reference for dialect-style vocabularies, verifiers, attributes, locations, and receipt-producing passes; do not treat MLIR text or bytecode as Braid canonical IR.
-- Chelis is a layered language-pipeline reference for human syntax, canonical machine syntax, typed/effectful validation, DAG lowering, backend conformance, and CI-validated examples. Do not treat Chelis Deep, its RISC DAG, tensor semantics, numerical oracle, or backend outputs as Braid canonical IR.
+- Use Braid-owned layering instead of another language's IR: source envelopes, canonical Preserves values, adapter descriptors, target artifacts, and receipts have separate identities and non-claims.
 - Nickel remains the preferred human-authored contract/config language.
 - Nickel integration must preserve source envelopes separately from `nickel export` projections; use Nickel's reference CLI/crates for evaluation semantics instead of reimplementing them.
 - Rust owns pure validation cores, canonicalization, hashing, adapter DTOs, and receipts.

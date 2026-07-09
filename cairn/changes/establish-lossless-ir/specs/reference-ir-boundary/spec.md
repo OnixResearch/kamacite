@@ -8,7 +8,7 @@ Defines which intermediate representations Braid uses directly and which IRs are
 
 ### Requirement: Reference IR hierarchy
 
-r[braid.lossless_ir.reference_ir_boundary] Braid MUST keep its IR references in explicit roles. Preserves is the canonical Braid IR/encoding authority for value identity, source envelopes, and receipts. MLIR MAY be used as an architecture reference for dialect-style organization, verifiers, attributes, locations, and passes. Valence Evidence IR MAY be used as the evidence export shape. Unison MAY be used as an identity-discipline reference. Chelis MAY be used as a layered language-pipeline reference for human syntax, canonical machine syntax, typed/effectful validation, DAG lowering, backend conformance, and CI-validated examples. LLVM IR, WebAssembly, GHC Core, STG, Rust MIR, bytecode, object files, and other compiler IRs MUST be treated only as bounded target/provenance artifacts unless a later accepted change defines a narrower role.
+r[braid.lossless_ir.reference_ir_boundary] Braid MUST keep its IR references in explicit roles. Preserves is the canonical Braid IR/encoding authority for value identity, source envelopes, and receipts. MLIR MAY be used as an architecture reference for dialect-style organization, verifiers, attributes, locations, and passes. Valence Evidence IR MAY be used as the evidence export shape. Unison MAY be used as an identity-discipline reference. Braid MUST own its layered pipeline instead of adopting another language's IR: source envelopes, canonical Preserves values, adapter descriptors, target artifacts, and receipts have separate identities. LLVM IR, WebAssembly, GHC Core, STG, Rust MIR, bytecode, object files, and other compiler IRs MUST be treated only as bounded target/provenance artifacts unless a later accepted change defines a narrower role.
 
 #### Scenario: Preserves remains authority
 
@@ -42,13 +42,13 @@ r[braid.lossless_ir.reference_ir_boundary.unison_identity_reference]
 - WHEN Braid computes identity or emits a receipt
 - THEN the identity MUST be BLAKE3 over Braid-owned canonical bytes and MUST NOT use Unison's codebase, syntax tree hash, runtime, or function serialization as Braid authority.
 
-#### Scenario: Chelis pipeline is adapted, not adopted
+#### Scenario: Braid-owned layers do separate jobs
 
-r[braid.lossless_ir.reference_ir_boundary.chelis_pipeline_reference]
+r[braid.lossless_ir.reference_ir_boundary.braid_owned_layers]
 
-- GIVEN Braid adapts Chelis concepts such as Surf/Deep layering, canonical machine syntax, explicit tensor/effect typing, validation commands, RISC-DAG lowering, backend conformance, or CI-validated examples
-- WHEN Braid defines schemas, fixtures, validators, or adapter receipts
-- THEN those concepts MUST be expressed as Braid-owned Preserves schemas, source envelopes, fixture metadata, and receipts, and MUST NOT treat Chelis Deep, its RISC DAG, tensor semantics, numerical oracle, or backend outputs as Braid canonical IR.
+- GIVEN a Braid workflow preserves source, canonicalizes values, runs adapters, records target artifacts, or emits receipts
+- WHEN Braid computes identities and claims
+- THEN source envelopes, canonical Preserves values, adapter descriptors, target artifacts, and receipts MUST remain separate layers with separate BLAKE3 identity domains and explicit derivation receipts between layers.
 
 #### Scenario: Compiler IRs are target evidence only
 

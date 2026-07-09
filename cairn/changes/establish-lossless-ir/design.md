@@ -44,11 +44,11 @@ The Cairn delta is split into focused specs:
 
 ### 4. Keep the reference IR hierarchy explicit
 
-**Choice:** Braid uses Preserves as the actual canonical IR/encoding authority. MLIR is an architecture reference for dialect-style vocabularies, verifier organization, attributes, locations, and pass pipelines. Valence Evidence IR is the evidence export shape. Unison is an identity-discipline reference. Chelis is a layered language-pipeline reference for separating human syntax, canonical machine syntax, typed/effectful validation, DAG lowering, backend conformance, and CI-validated examples. LLVM IR, WebAssembly, GHC Core, STG, Rust MIR, bytecode, object files, and compiler reports are target/provenance artifacts only.
+**Choice:** Braid uses Preserves as the actual canonical IR/encoding authority. MLIR is an architecture reference for dialect-style vocabularies, verifier organization, attributes, locations, and pass pipelines. Valence Evidence IR is the evidence export shape. Unison is an identity-discipline reference. Braid owns its layered pipeline: source envelopes, canonical Preserves values, adapter descriptors, target artifacts, and receipts have separate identities. LLVM IR, WebAssembly, GHC Core, STG, Rust MIR, bytecode, object files, and compiler reports are target/provenance artifacts only.
 
-**Rationale:** Braid needs one authority for identity and several bounded references for design, evidence, identity, layered validation, and target provenance. Keeping those roles separate prevents compiler artifacts, language-specific DAGs, backend outputs, or evidence projections from being mistaken for source-preserving interchange.
+**Rationale:** Braid needs one authority for identity and several bounded references for design, evidence, identity, and target provenance. Keeping those roles separate prevents compiler artifacts, language-specific DAGs, backend outputs, or evidence projections from being mistaken for source-preserving interchange. Braid can use the layered pipeline pattern directly without adopting another language's IR.
 
-**Rejected alternative:** Use MLIR, Chelis Deep, Chelis RISC DAG, LLVM IR, WebAssembly, GHC Core/STG, Rust MIR, or another compiler/language IR as Braid's canonical cross-language IR. These forms do not preserve the original source boundary for Braid and would overclaim semantic equivalence across Nickel, Rust, Steel, and future adapters.
+**Rejected alternative:** Use MLIR, LLVM IR, WebAssembly, GHC Core/STG, Rust MIR, or another compiler/language IR as Braid's canonical cross-language IR. These forms do not preserve the original source boundary for Braid and would overclaim semantic equivalence across Nickel, Rust, Steel, and future adapters.
 
 ### 5. Preserve source separately from semantic projections
 
@@ -127,7 +127,7 @@ The Cairn delta is split into focused specs:
 ## Risks / Trade-offs
 
 - **Preserves dependency uncertainty:** Mitigate by keeping the first change at the format-contract level and adding fixtures before relying on a concrete library.
-- **Reference role confusion:** Mitigate by specifying Preserves as the only canonical authority while MLIR, Valence, Unison, Chelis, LLVM, WASM, GHC, and Rust MIR keep bounded reference/evidence roles.
+- **Reference role confusion:** Mitigate by specifying Preserves as the only canonical authority while MLIR, Valence, Unison, LLVM, WASM, GHC, and Rust MIR keep bounded reference/evidence roles and Braid owns its own layered pipeline.
 - **False lossless claims:** Mitigate with explicit classes, non-claims, and negative fixtures.
 - **Schema drift:** Mitigate with BLAKE3 hashes over canonical Preserves bytes and generated artifact freshness checks.
 - **Fixture drift:** Mitigate with positive, negative, property-style, and golden-receipt fixtures plus explicit update receipts.

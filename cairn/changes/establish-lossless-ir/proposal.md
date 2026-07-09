@@ -8,7 +8,7 @@ Braid is needed to make the losslessness boundary explicit before implementation
 
 - Create the Braid repository as the OnixResearch home for Nickel/Rust/Steel lossless interchange work.
 - Adopt Preserves as the canonical encoded IR candidate for value-level interchange and source envelopes.
-- Define a reference IR hierarchy: Preserves is canonical, MLIR is architecture reference, Valence is evidence shape, Unison is identity discipline, Chelis is layered language-pipeline reference, and compiler IRs are target/provenance only.
+- Define a reference IR hierarchy: Preserves is canonical, MLIR is architecture reference, Valence is evidence shape, Unison is identity discipline, Braid owns its layered pipeline, and compiler IRs are target/provenance only.
 - Define losslessness classes so arbitrary source translation is not confused with source preservation or constrained-DSL round trips.
 - Specify adapter boundaries for Nickel, Rust, bounded Steel Scheme evaluation, future WASM targets, LLVM compiled-target provenance artifacts, GHC artifacts, and Rust MIR provenance.
 - Split the Cairn delta into focused specs for core IR, source envelopes, adapters, adapter conformance, identity, typed-core discipline, schema vocabulary, fixture corpus, validation command, reference IR boundaries, and stack integration.

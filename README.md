@@ -33,10 +33,10 @@ Keep the roles explicit:
 - MLIR: architecture reference only; no MLIR textual or bytecode authority.
 - Valence Evidence IR: downstream evidence/export shape.
 - Unison: content-addressed identity discipline.
-- Chelis: layered language-pipeline reference for human syntax, canonical machine syntax, typed/effectful validation, DAG lowering, backend conformance, and CI-validated examples.
+- Braid-owned layered pipeline: source envelopes, canonical Preserves values, adapter descriptors, target artifacts, and receipts are separate layers with separate identities.
 - LLVM IR, WASM, GHC Core/STG, Rust MIR, bytecode, object files, and compiler reports: target/provenance evidence only.
 
-Chelis is especially useful because it separates Surf as human syntax, Deep as canonical machine syntax, RISC DAG lowering, backend source emission, and `chelis validate` conformance checks. Braid should adapt that layering and validation discipline without adopting Chelis Deep, its RISC DAG, tensor language semantics, numerical oracle, or backends as Braid canonical IR.
+Braid should use that layered pattern directly rather than borrowing another language's IR. Human-authored sources stay source envelopes; canonical machine identity is Preserves; transformations are receipt-producing adapter steps; backend/compiler outputs are target artifacts with non-claims.
 
 ## Haskell-inspired discipline
 
@@ -165,7 +165,6 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 - [ghc/ghc](https://gitlab.haskell.org/ghc/ghc) — reference for Haskell/GHC concepts used only to bound what Braid does not adopt as IR: Core, STG, bytecode, interface files, laziness, and typeclass resolution.
 - [llvm/llvm-project](https://github.com/llvm/llvm-project) — reference for MLIR architecture concepts and LLVM compiled target artifacts; neither MLIR nor LLVM IR is Braid's canonical IR.
 - [rust-lang/rust](https://github.com/rust-lang/rust) — reference for Rust MIR and rustc compiler reports as Rust provenance evidence only, not Braid IR.
-- [Chelis Developer Book](https://chelis.ch/docs/chelis/) — reference for a layered Surf/Deep/RISC-DAG/backend pipeline, explicit tensor/effect typing, validation command discipline, and CI-validated examples; Chelis Deep and RISC DAG are not Braid IR.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
 - [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.
