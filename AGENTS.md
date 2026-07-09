@@ -22,6 +22,7 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 
 - Preserves is the canonical encoded IR candidate for Braid value/envelope identity.
 - JSON is a compatibility projection only; do not treat JSON export as the authority for losslessness.
+- MLIR is an architecture reference for dialect-style vocabularies, verifiers, attributes, locations, and receipt-producing passes; do not treat MLIR text or bytecode as Braid canonical IR.
 - Nickel remains the preferred human-authored contract/config language.
 - Nickel integration must preserve source envelopes separately from `nickel export` projections; use Nickel's reference CLI/crates for evaluation semantics instead of reimplementing them.
 - Rust owns pure validation cores, canonicalization, hashing, adapter DTOs, and receipts.
@@ -29,6 +30,7 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 - Steel integration should use explicit Engine/evaluator identity, typed host-function registration, declared built-in modules, module contracts, and deterministic receipts. Do not treat Steel bytecode, opaque closures, or JSON strings as Braid canonical IR.
 - WebAssembly is an optional adapter/validator target, not Braid's IR. WASM inputs and outputs must remain Braid IR/source-envelope bytes plus deterministic receipts.
 - LLVM is an optional compiled-target/provenance artifact, not Braid's IR. LLVM receipts must bind compiler version, target triple, optimization level, pass pipeline, debug-info availability, and BLAKE3 artifact hashes without claiming source losslessness or semantic equivalence.
+- Rust MIR, rustc reports, GHC Core, STG, bytecode, interface files, object files, and compiler reports are target/provenance evidence only unless a later Cairn narrows their role.
 - Use Haskell-inspired design discipline only as implementation guidance: pure core/effect shell, algebraic artifact alternatives, explicit effect data, law-based adapters, property-style fixtures, typed identity domains, and total diagnostics. Do not treat Haskell source, GHC Core, STG, bytecode, interface files, laziness, typeclass resolution, or monad terminology as Braid IR or receipt authority.
 - Follow Unison-inspired identity discipline: canonical content owns identity; names, paths, aliases, and labels are metadata. Use BLAKE3 over Braid canonical bytes rather than adopting another language's hash format.
 - Valence is the evidence/linkage integration target for Braid receipts; Braid still owns source preservation, value interchange, adapter classes, and round-trip claims.

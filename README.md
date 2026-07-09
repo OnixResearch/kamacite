@@ -15,6 +15,26 @@ Yes: Braid should use Preserves too. Preserves is the canonical encoded IR candi
 | Constrained policy DSL | A policy authored in the Braid schema can render to Nickel/Rust/Steel adapters and round-trip back to the same IR. | Only for the constrained schema, not arbitrary host-language code. |
 | Unsupported source translation | Arbitrary Nickel, Rust, or Steel source is translated into another language. | Out of scope unless represented as preserved source plus explicit non-claims. |
 
+## Reference IR hierarchy
+
+Braid should use Preserves as the actual canonical IR/encoding authority and MLIR only as an architecture reference.
+
+Adopt or adapt these MLIR ideas:
+
+- dialect-like vocabularies for artifact classes and adapter surfaces;
+- verifier-style deterministic validation;
+- attributes/types as schema-bound metadata, not ambient state;
+- locations as source-envelope spans;
+- passes as receipt-producing transformations with explicit checked laws.
+
+Keep the roles explicit:
+
+- Preserves: canonical Braid value, source-envelope, and receipt identity.
+- MLIR: architecture reference only; no MLIR textual or bytecode authority.
+- Valence Evidence IR: downstream evidence/export shape.
+- Unison: content-addressed identity discipline.
+- LLVM IR, WASM, GHC Core/STG, Rust MIR, bytecode, object files, and compiler reports: target/provenance evidence only.
+
 ## Haskell-inspired discipline
 
 Braid should adapt Haskell's design discipline, not Haskell as a runtime or IR.
@@ -140,7 +160,8 @@ Braid validation does not prove compiler correctness, evaluator soundness, verif
 - [mattwparas/steel](https://github.com/mattwparas/steel) — reference implementation for embedded Steel evaluation, typed Rust host-function registration, module boundaries, and higher-order contract patterns used only as bounded adapter/probe surfaces.
 - [unisonweb/unison](https://github.com/unisonweb/unison) — reference for content-addressed definitions, names-as-metadata, dependency-closure identity, abilities/effect labels, structured refactoring, and typed durable storage boundaries.
 - [ghc/ghc](https://gitlab.haskell.org/ghc/ghc) — reference for Haskell/GHC concepts used only to bound what Braid does not adopt as IR: Core, STG, bytecode, interface files, laziness, and typeclass resolution.
-- [llvm/llvm-project](https://github.com/llvm/llvm-project) — reference for compiled target artifacts and toolchain/provenance receipts only; LLVM IR is not Braid's canonical IR.
+- [llvm/llvm-project](https://github.com/llvm/llvm-project) — reference for MLIR architecture concepts and LLVM compiled target artifacts; neither MLIR nor LLVM IR is Braid's canonical IR.
+- [rust-lang/rust](https://github.com/rust-lang/rust) — reference for Rust MIR and rustc compiler reports as Rust provenance evidence only, not Braid IR.
 - [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
 - [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
 - [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.
