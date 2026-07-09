@@ -26,6 +26,26 @@ r[braid.lossless_ir.format_strategy.json_projection]
 - WHEN the two disagree or the JSON projection cannot represent the full value identity
 - THEN validation MUST treat the Preserves value as authoritative and mark the JSON projection as invalid or incomplete.
 
+### Requirement: Language naming boundary
+
+r[braid.lossless_ir.language_boundary] Braid MUST NOT be described as a programming language unless a later accepted change defines a human-authored syntax, grammar, evaluator, type rules, and semantics. Current Braid surfaces SHOULD be described as an interchange IR, source-envelope format, receipt contract, or constrained policy vocabulary.
+
+#### Scenario: Braid is presented as an IR
+
+r[braid.lossless_ir.language_boundary.ir_terms]
+
+- GIVEN Braid documentation describes the current project scope
+- WHEN it names the artifact model
+- THEN it SHOULD use terms such as interchange IR, source-envelope format, receipt contract, or constrained policy vocabulary rather than programming language.
+
+#### Scenario: DSL claim requires semantics
+
+r[braid.lossless_ir.language_boundary.dsl_requires_semantics]
+
+- GIVEN a Braid surface is proposed as a DSL or language
+- WHEN the proposal is reviewed
+- THEN it MUST define the syntax, grammar, evaluator, type rules, semantics, and non-claims before the language label is accepted.
+
 ### Requirement: Explicit losslessness classes
 
 r[braid.lossless_ir.losslessness_classes] Braid MUST classify each artifact claim as `source-envelope`, `canonical-value`, `constrained-policy`, or `unsupported-source-translation` before accepting a round-trip or conversion claim.

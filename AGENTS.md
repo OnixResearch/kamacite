@@ -33,4 +33,6 @@ nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
 
 Never claim arbitrary source-to-source translation across Nickel, Rust, and Steel. Preserve original source bytes and BLAKE3 hashes, then make narrower claims about parsed projections or constrained Braid IR values.
 
+Do not call Braid a programming language unless a later Cairn change defines a human-authored syntax, grammar, evaluator, type rules, and semantics. Prefer "IR", "source-envelope format", "receipt contract", or "constrained policy vocabulary" for the current scope.
+
 Every new conversion or validation behavior needs positive and negative fixtures before it is considered implemented.

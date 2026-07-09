@@ -12,7 +12,15 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rationale:** The project braids three language strands without claiming they become one language. The name fits a boundary repo rather than a compiler or evaluator.
 
-### 2. Use Preserves as the canonical encoded IR candidate
+### 2. Do not call Braid a new language yet
+
+**Choice:** Braid is an interchange IR, source-envelope format, receipt contract, and constrained policy vocabulary. It is not a programming language unless a later change defines a human-authored syntax, grammar, evaluator, type rules, and semantics.
+
+**Rationale:** Calling Braid a language would imply semantics and evaluation authority that the project explicitly does not claim. Nickel, Rust, and Steel remain the languages; Braid preserves sources, classifies artifacts, and verifies bounded interchange receipts.
+
+**Rejected alternative:** Market Braid as a universal cross-language language. This would encourage unsupported source-to-source and semantic-equivalence claims.
+
+### 3. Use Preserves as the canonical encoded IR candidate
 
 **Choice:** Braid uses Preserves as the authoritative encoded form for canonical IR values, source envelopes, and receipt hash material where the project controls the format.
 
@@ -20,25 +28,25 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rejected alternative:** Use JSON as the only IR. This would repeat the current lossy boundary and make source fidelity and typed identity claims fragile.
 
-### 3. Preserve source separately from semantic projections
+### 4. Preserve source separately from semantic projections
 
 **Choice:** Ingested Nickel, Rust, and Steel source artifacts keep original bytes, declared language, parser/normalizer identity, and BLAKE3 source hash. Parsed or normalized projections are derived evidence and must not replace the original source.
 
 **Rationale:** Arbitrary source-to-source translation is not lossless in a useful sense. Preserving source plus declaring narrower derived claims is honest and testable.
 
-### 4. Constrain adapter claims to explicit artifact classes
+### 5. Constrain adapter claims to explicit artifact classes
 
 **Choice:** Braid recognizes source envelopes, canonical values, constrained policy DSL values, and unsupported arbitrary source translation as distinct classes.
 
 **Rationale:** The same bytes may support different claims. A constrained DSL can round-trip through adapters, while arbitrary Rust or Steel source can only be preserved unless a specific parser/projection contract exists.
 
-### 5. Keep Rust as the pure validation core
+### 6. Keep Rust as the pure validation core
 
 **Choice:** Rust owns pure deterministic validation, canonicalization, hash material construction, adapter DTO validation, and receipt checks. Nickel and Steel adapters stay at the boundary.
 
 **Rationale:** This preserves functional-core / imperative-shell boundaries and gives tests a pure unit under test. Nickel remains the reviewable authoring language for configs/contracts. Steel remains bounded dynamic predicate/probe logic without ambient host authority.
 
-### 6. Use WebAssembly only as a target or sandbox boundary
+### 7. Use WebAssembly only as a target or sandbox boundary
 
 **Choice:** Braid does not use WebAssembly as the canonical IR. WASM may be used later as a portable target for validators, conformance probes, or untrusted adapters whose inputs and outputs are Braid IR/source-envelope bytes plus deterministic receipts.
 
@@ -46,7 +54,7 @@ Braid starts by documenting the invariant rather than pretending arbitrary sourc
 
 **Rejected alternative:** Compile Nickel, Rust, or Steel into WASM and call that the lossless interchange. This loses source-level identity and overclaims semantic equivalence.
 
-### 7. Integrate with Valence and Octet through receipts first
+### 8. Integrate with Valence and Octet through receipts first
 
 **Choice:** Braid uses Valence closely as the evidence/linkage integration target and Octet closely as the checked Rust/provenance rail, but neither repo owns Braid's canonical IR. Initial integration is by exported Braid receipts, source spans, stable IDs, and fixtures rather than direct crate dependencies.
 

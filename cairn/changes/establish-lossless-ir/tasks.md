@@ -1,7 +1,7 @@
 ## Phase 1: Foundation Cairns
 
 - [x] [serial] Bootstrap the Braid repository with native Cairn layout and repo-local guidance. r[braid.lossless_ir.format_strategy]
-- [x] [serial] Document the Preserves-versus-JSON format decision and losslessness classes. r[braid.lossless_ir.losslessness_classes]
+- [x] [serial] Document the language naming boundary, Preserves-versus-JSON format decision, and losslessness classes. r[braid.lossless_ir.language_boundary] r[braid.lossless_ir.losslessness_classes]
 - [x] [serial] Add the initial lossless IR spec with adapter boundaries, evidence requirements, and non-claims. r[braid.lossless_ir.adapter_boundaries] r[braid.lossless_ir.non_claims]
 - [x] [serial] Validate the initial Cairn package with proposal, design, tasks, and repo validation gates. r[braid.lossless_ir.round_trip_evidence]
 

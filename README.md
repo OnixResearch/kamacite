@@ -2,6 +2,8 @@
 
 Braid is an OnixResearch repo for lossless interchange boundaries across Nickel, Rust, and Steel Scheme.
 
+Braid is not a new programming language at this stage. Call it an interchange IR, source-envelope format, receipt contract, and constrained policy vocabulary. If Braid later grows a human-authored syntax with its own grammar, evaluator, type rules, and semantics, that bounded surface can be named a DSL; until then, calling Braid a language would overclaim what it proves.
+
 Yes: Braid should use Preserves too. Preserves is the canonical encoded IR candidate for value-level interchange and source envelopes because plain JSON cannot preserve enough identity for this problem. Nickel exports, Rust Serde DTOs, and Steel data can all project through the Braid IR, but the IR must keep original source bytes and hashes when source fidelity matters.
 
 ## Losslessness classes
