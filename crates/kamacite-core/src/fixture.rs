@@ -1,6 +1,9 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
 use crate::receipt::{ReceiptBody, ReceiptEnvelope};
+use crate::valence_export::{
+    ValenceReceiptExportInput, export_identity_key, export_valence_receipt,
+};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -100,6 +103,7 @@ pub enum ArtifactClass {
     CapabilityShell,
     AlgebraicEffect,
     StackEvidence,
+    ValenceReceiptExport,
 }
 
 impl ArtifactClass {
@@ -115,6 +119,7 @@ impl ArtifactClass {
             Self::CapabilityShell => "capability-shell",
             Self::AlgebraicEffect => "algebraic-effect",
             Self::StackEvidence => "stack-evidence",
+            Self::ValenceReceiptExport => "valence-receipt-export",
         }
     }
 }
@@ -144,6 +149,7 @@ pub enum FixturePayload {
     CapabilityShell(CapabilityShellInput),
     StackEvidence(StackEvidenceInput),
     AlgebraicEffect(Box<AlgebraicEffectInput>),
+    ValenceReceiptExport(Box<ValenceReceiptExportInput>),
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -375,6 +381,9 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         FixturePayload::StackEvidence(input) => validate_stack_evidence(input, &mut accumulator),
         FixturePayload::AlgebraicEffect(input) => {
             validate_algebraic_effect(input, &mut accumulator)
+        }
+        FixturePayload::ValenceReceiptExport(input) => {
+            validate_valence_receipt_export(input, &mut accumulator)
         }
     }
 
@@ -889,6 +898,34 @@ fn validate_stack_evidence(input: &StackEvidenceInput, accumulator: &mut Validat
             "stack.role",
             "stack evidence role and bounded claim are required",
         ));
+    }
+}
+
+fn validate_valence_receipt_export(
+    input: &ValenceReceiptExportInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    accumulator.input_identities.insert(
+        "valence-source-receipt".to_string(),
+        input.source_receipt.receipt_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "valence-conformance".to_string(),
+        input.conformance.conformance_identity.clone(),
+    );
+    accumulator
+        .checked_laws
+        .extend(input.source_receipt.body.checked_laws.clone());
+    accumulator
+        .checked_laws
+        .extend(input.conformance.checked_laws.clone());
+
+    let result = export_valence_receipt(input);
+    accumulator.diagnostics.extend(result.diagnostics);
+    if let Some(export) = result.export {
+        accumulator
+            .output_identities
+            .insert(export_identity_key(), export.export_identity);
     }
 }
 

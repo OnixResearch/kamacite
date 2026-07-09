@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "valence-receipt-export"
+  version: "v1"
+  schema-id: "kamacite.valence_receipt_export.v1"
+  record-label: "kamacite-valence-receipt-export-v1"
+  fields: ["profile-version" "source-receipt-identity" "export-identity" "artifact-identities" "typed-identity-domains" "roles" "blake3-hashes" "checked-laws" "diagnostic-summary" "source-spans" "conformance-identity" "coupling-boundary" "non-claims"]
+  source-schema: "kamacite.receipt.v1"
+  identity: "blake3(canonical Valence export projection body without export-identity) in projection domain"
+  dependency-profile: "artifacts-first-no-valence-runtime"
+  non-claims: ["derived compatibility evidence only" "not canonical Kamacite IR" "not Valence semantic ownership" "not runtime correctness" "not evaluator soundness" "not compiler correctness"]
+}>

@@ -1201,6 +1201,204 @@
         "claimed_host_authority": [],
         "admitted_host_capabilities": []
       }
+    },
+    {
+      "id": "valence-export.positive.source-envelope-absent-spans",
+      "fixture_class": "positive",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.profile]", "r[kamacite.valence_receipt_export.profile.bounded_projection]", "r[kamacite.valence_receipt_export.profile.export_identity]", "r[kamacite.valence_receipt_export.profile.source_spans]"],
+      "non_claims": ["Valence export is derived projection only", "not canonical Kamacite IR", "not runtime correctness"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["source-receipt-identity-bound", "artifact-identity-preservation", "non-claim-preservation", "checked-law-preservation", "source-span-absence-explicit"],
+      "golden_receipt": "fixtures/golden/valence-export.positive.source-envelope-absent-spans.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.positive.source-envelope-present-spans",
+      "fixture_class": "positive",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.profile.source_spans]", "r[kamacite.valence_receipt_export.profile.bounded_projection]"],
+      "non_claims": ["source spans are optional evidence only", "not fabricated from paths or labels"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["source-span-preservation", "non-claim-preservation"],
+      "golden_receipt": "fixtures/golden/valence-export.positive.source-envelope-present-spans.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": "fixtures/valence-export/source-spans-present.json",
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.positive.nickel-adapter-artifacts-first",
+      "fixture_class": "positive",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.coupling_boundary.artifacts_first]", "r[kamacite.valence_receipt_export.conformance]"],
+      "non_claims": ["artifacts-first export does not require live Valence crates", "not Nickel semantic-equivalence proof"],
+      "expected_verdict": "accepted",
+      "checked_laws": ["artifacts-first-no-valence-runtime", "adapter-identity-preserved", "non-claim-preservation"],
+      "golden_receipt": "fixtures/golden/valence-export.positive.nickel-adapter-artifacts-first.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/adapter.positive.nickel-source-export-separated.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.identity-domain-substitution",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.identity_domains]"],
+      "non_claims": ["receipt identity cannot be substituted with source identity"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["identity-domain-substitution-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.identity-domain-substitution.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/valence-export/source-receipt-identity-domain-substitution.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.missing-non-claims",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.missing_non_claims]", "r[kamacite.valence_receipt_export.profile.non_claims]"],
+      "non_claims": ["missing source non-claims fail closed"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["missing-non-claims-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.missing-non-claims.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/valence-export/source-receipt-missing-non-claims.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.semantic-equivalence-overclaim",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.semantic_overclaim]"],
+      "non_claims": ["Valence export does not prove semantic equivalence"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["semantic-overclaim-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.semantic-equivalence-overclaim.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": ["Valence proves Nickel/Rust/Steel semantic equivalence"],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.unsupported-profile-version",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.malformed_input]"],
+      "non_claims": ["unsupported export profile versions are not trusted"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["unsupported-profile-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.unsupported-profile-version.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance-unsupported-profile.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.duplicate-artifact-identity",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.malformed_input]"],
+      "non_claims": ["duplicate artifact identity keys fail closed"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["duplicate-artifact-identity-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.duplicate-artifact-identity.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/valence-export/source-receipt-duplicate-artifact-key.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.missing-checked-laws",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.malformed_input]"],
+      "non_claims": ["exports without checked laws fail closed"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["missing-checked-laws-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.missing-checked-laws.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/valence-export/source-receipt-missing-checked-laws.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
+    },
+    {
+      "id": "valence-export.negative.stale-export-identity",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.profile.export_identity]", "r[kamacite.valence_receipt_export.command.fail_closed]"],
+      "non_claims": ["stale export identities fail closed"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["stale-export-identity-rejected"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.stale-export-identity.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": {"domain": "projection", "algorithm": "blake3", "hex": "0000000000000000000000000000000000000000000000000000000000000000"}
+      }
+    },
+    {
+      "id": "valence-export.negative.untrusted-without-conformance",
+      "fixture_class": "negative",
+      "artifact_class": "valence-receipt-export",
+      "requirement_ids": ["r[kamacite.valence_receipt_export.conformance.entry_required]"],
+      "non_claims": ["Valence-like exports without conformance are untrusted"],
+      "expected_verdict": "rejected",
+      "checked_laws": ["conformance-entry-required"],
+      "golden_receipt": "fixtures/golden/valence-export.negative.untrusted-without-conformance.receipt.json",
+      "payload": {
+        "kind": "valence-receipt-export",
+        "source_receipt_path": "fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json",
+        "conformance_path": "fixtures/valence-export/conformance-untrusted.json",
+        "source_spans_path": null,
+        "semantic_claims": [],
+        "declared_export_identity": null
+      }
     }
   ]
 }

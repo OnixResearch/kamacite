@@ -1,0 +1,55 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "valence-export.negative.stale-export-identity",
+    "artifact_class": "valence-receipt-export",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.valence_receipt_export.command.fail_closed]",
+      "r[kamacite.valence_receipt_export.profile.export_identity]"
+    ],
+    "input_identities": {
+      "valence-conformance": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+      },
+      "valence-source-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "artifact-identity-preservation",
+      "artifacts-first-no-valence-runtime",
+      "checked-law-preservation",
+      "diagnostic-summary-preservation",
+      "names-as-metadata",
+      "non-claim-preservation",
+      "source-envelope-preservation",
+      "source-receipt-identity-bound",
+      "source-span-absence-explicit",
+      "stale-export-identity-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "stale-identity",
+        "requirement_id": "r[kamacite.valence_receipt_export.profile.export_identity]",
+        "field": "declared_export_identity.hex",
+        "message": "declared Valence export identity is stale for the computed projection body",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "stale export identities fail closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "fb52e599174020c126764ac2ddc2a20e55ba8943bfc70aa3e27def18c330828c"
+  }
+}

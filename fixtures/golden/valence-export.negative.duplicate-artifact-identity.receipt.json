@@ -1,0 +1,63 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "valence-export.negative.duplicate-artifact-identity",
+    "artifact_class": "valence-receipt-export",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.valence_receipt_export.conformance.malformed_input]"
+    ],
+    "input_identities": {
+      "valence-conformance": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+      },
+      "valence-source-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "artifact-identity-preservation",
+      "artifacts-first-no-valence-runtime",
+      "checked-law-preservation",
+      "diagnostic-summary-preservation",
+      "duplicate-artifact-identity-rejected",
+      "names-as-metadata",
+      "non-claim-preservation",
+      "source-envelope-preservation",
+      "source-receipt-identity-bound",
+      "source-span-absence-explicit"
+    ],
+    "diagnostics": [
+      {
+        "code": "duplicate-artifact-identity",
+        "requirement_id": "r[kamacite.valence_receipt_export.conformance.malformed_input]",
+        "field": "source_receipt.body.artifact_identities",
+        "message": "Valence export rejects duplicate artifact identity keys before emitting trusted evidence",
+        "details": {
+          "key": "declared-source"
+        }
+      },
+      {
+        "code": "stale-identity",
+        "requirement_id": "r[kamacite.valence_receipt_export.conformance.malformed_input]",
+        "field": "source_receipt.receipt_identity.hex",
+        "message": "source receipt identity does not match the canonical source receipt body",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "duplicate artifact identity keys fail closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "e7ce73d2903cc79bde3e535f48633b547d76ef736b06de9fae0c7a4da28a815a"
+  }
+}

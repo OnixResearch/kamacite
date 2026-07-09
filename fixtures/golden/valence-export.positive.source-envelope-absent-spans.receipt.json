@@ -1,0 +1,56 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "valence-export.positive.source-envelope-absent-spans",
+    "artifact_class": "valence-receipt-export",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.valence_receipt_export.profile.bounded_projection]",
+      "r[kamacite.valence_receipt_export.profile.export_identity]",
+      "r[kamacite.valence_receipt_export.profile.source_spans]",
+      "r[kamacite.valence_receipt_export.profile]"
+    ],
+    "input_identities": {
+      "valence-conformance": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+      },
+      "valence-source-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+      }
+    },
+    "output_identities": {
+      "valence-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "964b652666cf388feb4f8a0a047880030e5e792fd1e5fff5903b5ad6d0d44149"
+      }
+    },
+    "checked_laws": [
+      "artifact-identity-preservation",
+      "artifacts-first-no-valence-runtime",
+      "checked-law-preservation",
+      "diagnostic-summary-preservation",
+      "names-as-metadata",
+      "non-claim-preservation",
+      "source-envelope-preservation",
+      "source-receipt-identity-bound",
+      "source-span-absence-explicit"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "Valence export is derived projection only",
+      "not canonical Kamacite IR",
+      "not runtime correctness"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "edbeba53f5b8a655130cf3d15230fb4cab6e0acf7249a2a42ec63dee8f3be5d7"
+  }
+}

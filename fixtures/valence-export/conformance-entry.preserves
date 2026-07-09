@@ -1,0 +1,11 @@
+<kamacite-valence-export-conformance-v1 {
+  profile-version: "kamacite.valence_receipt_export.v1"
+  source-schema: "kamacite.receipt.v1"
+  output-schema: "kamacite.valence_receipt_export.v1"
+  required-input-identity-domains: ["receipt"]
+  output-identity-domain: "projection"
+  checked-laws: ["source-receipt-identity-bound" "artifact-identity-preservation" "non-claim-preservation" "checked-law-preservation" "diagnostic-summary-preservation" "source-span-absence-explicit" "artifacts-first-no-valence-runtime"]
+  dependency-profile: "artifacts-first-no-valence-runtime"
+  fixture-coverage: ["positive" "negative" "source-spans" "identity-domains" "missing-non-claims" "semantic-overclaim" "malformed-input" "stale-export-identity" "entry-required"]
+  non-claims: ["Valence export is derived compatibility evidence" "not canonical Kamacite IR" "not Valence semantic ownership" "not runtime correctness" "not evaluator soundness" "not compiler correctness"]
+}>

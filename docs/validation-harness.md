@@ -24,6 +24,14 @@ nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/britt
 
 Only fixtures that declare `execution_mode = "reference-export"` run the Nickel reference CLI. The shell records `fixture-read`, `nickel-reference-export`, and `capture-stdout` as declared capabilities, captures `nickel --version` as evaluator identity material, runs `nickel export` outside `kamacite-core`, and passes source bytes, export bytes, evaluator identity, projection identity, diagnostics, checked laws, and non-claims to the pure core. Default `validate` remains stored-evidence-only and does not silently treat prerecorded export bytes as a fresh Nickel run.
 
+The explicit Valence receipt export command is:
+
+```bash
+nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json'
+```
+
+The command reads explicit source receipt, conformance, optional source-span, and optional golden-projection inputs. It calls pure core export logic, reports deterministic JSON, and remains non-mutating by default. `--update-golden` is the only mode that writes a Valence export projection and emits `target/kamacite-valence-export-update-receipt.json` with old/new export identities, source receipt identity, checked laws, and non-claims.
+
 The explicit golden receipt update workflow is:
 
 ```bash
@@ -37,8 +45,8 @@ That mode writes checked golden receipt projections and emits `target/kamacite-g
 - `crates/kamacite-core` is the pure deterministic core. It receives in-memory DTOs and bytes, returns deterministic diagnostics and receipts, and does not read files, inspect environment, spawn processes, print, access clocks, access randomness, or mutate state.
 - `crates/kamacite-cli` is the thin imperative shell. It reads the manifest projection and fixture bytes, optionally invokes the Nickel reference evaluator for explicitly declared Nickel fixtures, compares or writes golden receipts, and renders JSON reports.
 - `fixtures/manifest.ncl` is the reviewed Nickel manifest source for the fixture corpus. `fixtures/manifest.json` is the runtime projection consumed by the shell after source-declared projection identity and fixture-ID freshness checks pass.
-- `fixtures/core/**` contains pure in-memory fixtures. `fixtures/adapters/nickel/**` contains Nickel export projection bytes for the executable Nickel adapter suite. Other adapter/probe execution suites remain deferred until their own changes add declared capabilities and receipt-only modes.
+- `fixtures/core/**` contains pure in-memory fixtures. `fixtures/adapters/nickel/**` contains Nickel export projection bytes for the executable Nickel adapter suite. `fixtures/valence-export/**` contains reviewed Valence export conformance data, source-span fixtures, negative receipt inputs, and golden export projections. Other adapter/probe execution suites remain deferred until their own changes add declared capabilities and receipt-only modes.
 
 ## Current seed evidence
 
-The seed corpus includes a positive source-envelope fixture, stale source-hash rejection, wrong identity-domain rejection, unsupported schema rejection, missing source-bytes rejection, positive and negative canonical value cases, Nickel adapter positive/negative execution-boundary fixtures, shell capability escape cases, stack role cases, and algebraic-effect positive/negative fixtures. Each fixture has a checked golden receipt under `fixtures/golden/`.
+The seed corpus includes a positive source-envelope fixture, stale source-hash rejection, wrong identity-domain rejection, unsupported schema rejection, missing source-bytes rejection, positive and negative canonical value cases, Nickel adapter positive/negative execution-boundary fixtures, Valence export positive/negative profile fixtures, shell capability escape cases, stack role cases, and algebraic-effect positive/negative fixtures. Each fixture has a checked golden receipt under `fixtures/golden/`.

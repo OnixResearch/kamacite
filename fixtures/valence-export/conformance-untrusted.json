@@ -1,0 +1,17 @@
+{
+  "has_entry": false,
+  "profile_version": "kamacite.valence_receipt_export.v1",
+  "source_schema": "kamacite.receipt.v1",
+  "output_schema": "kamacite.valence_receipt_export.v1",
+  "required_input_identity_domains": ["receipt"],
+  "output_identity_domain": "projection",
+  "checked_laws": ["source-receipt-identity-bound", "non-claim-preservation"],
+  "dependency_profile": "artifacts-first-no-valence-runtime",
+  "fixture_coverage": ["positive", "negative"],
+  "non_claims": ["not canonical Kamacite IR", "not runtime correctness"],
+  "conformance_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+  }
+}

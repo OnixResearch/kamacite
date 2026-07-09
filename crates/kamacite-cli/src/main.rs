@@ -4,8 +4,10 @@ use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
     CapabilityShellInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload, FixtureSuite,
     HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
-    NickelAdapterReceiptInput, ReplayProfileInput, SourceEnvelopeInput, StackEvidenceInput,
-    TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict, compute_identity, receipt_json,
+    NickelAdapterReceiptInput, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
+    SourceSpanSet, StackEvidenceInput, TargetArtifactInput, UnsupportedClaimInput,
+    ValenceExportConformance, ValenceReceiptExportEnvelope, ValenceReceiptExportInput,
+    ValidationVerdict, compute_identity, export_valence_receipt, receipt_json,
     validate_fixture_suite,
 };
 use serde::{Deserialize, Serialize};
@@ -18,6 +20,8 @@ const DEFAULT_ROOT: &str = ".";
 const DEFAULT_MANIFEST: &str = "fixtures/manifest.json";
 const DEFAULT_MANIFEST_SOURCE: &str = "fixtures/manifest.ncl";
 const DEFAULT_UPDATE_REPORT: &str = "target/kamacite-golden-update-receipt.json";
+const DEFAULT_VALENCE_EXPORT_UPDATE_REPORT: &str =
+    "target/kamacite-valence-export-update-receipt.json";
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_FAILURE: i32 = 1;
 const DOMAIN_SOURCE: &str = "source";
@@ -71,6 +75,7 @@ enum Command {
     ValidateNickelAdapter(NickelAdapterArgs),
     HashFile(HashArgs),
     CheckManifestProjection(ManifestProjectionArgs),
+    ExportValenceReceipt(ValenceExportArgs),
     Help,
 }
 
@@ -104,6 +109,17 @@ struct HashArgs {
 struct ManifestProjectionArgs {
     source: PathBuf,
     projection: PathBuf,
+}
+
+#[derive(Clone, Debug)]
+struct ValenceExportArgs {
+    root: PathBuf,
+    receipt: PathBuf,
+    conformance: PathBuf,
+    source_spans: Option<PathBuf>,
+    golden: Option<PathBuf>,
+    update_golden: bool,
+    update_report: PathBuf,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -172,6 +188,13 @@ enum PayloadProjection {
     IdentityUse(IdentityUseInput),
     CapabilityShell(CapabilityShellInput),
     StackEvidence(StackEvidenceInput),
+    ValenceReceiptExport {
+        source_receipt_path: String,
+        conformance_path: String,
+        source_spans_path: Option<String>,
+        semantic_claims: Vec<String>,
+        declared_export_identity: Option<Identity>,
+    },
     AlgebraicEffect {
         schema_version: u32,
         canonical_path: String,
@@ -254,6 +277,39 @@ struct GoldenUpdate {
     non_claims: Vec<String>,
 }
 
+#[derive(Debug, Serialize)]
+struct ValenceExportCommandReport {
+    passed: bool,
+    validation_passed: bool,
+    diagnostics: Vec<kamacite_core::Diagnostic>,
+    export_identity: Option<Identity>,
+    golden_result: Option<ValenceExportGoldenResult>,
+    export: Option<ValenceReceiptExportEnvelope>,
+}
+
+#[derive(Debug, Serialize)]
+struct ValenceExportGoldenResult {
+    path: String,
+    status: String,
+    old_export_identity: Option<Identity>,
+    new_export_identity: Option<Identity>,
+}
+
+#[derive(Debug, Serialize)]
+struct ValenceExportUpdateReport {
+    changed_exports: Vec<ValenceExportUpdate>,
+}
+
+#[derive(Debug, Serialize)]
+struct ValenceExportUpdate {
+    path: String,
+    source_receipt_identity: Identity,
+    old_export_identity: Option<Identity>,
+    new_export_identity: Identity,
+    checked_laws: Vec<String>,
+    non_claims: Vec<String>,
+}
+
 fn main() {
     match run() {
         Ok(exit_code) => std::process::exit(exit_code),
@@ -271,6 +327,7 @@ fn run() -> CliResult<i32> {
         Command::ValidateNickelAdapter(args) => run_validate_nickel_adapter(args),
         Command::HashFile(args) => run_hash_file(args),
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
+        Command::ExportValenceReceipt(args) => run_export_valence_receipt(args),
         Command::Help => {
             print_help();
             Ok(EXIT_SUCCESS)
@@ -288,6 +345,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
         "validate-nickel-adapter" => parse_nickel_adapter_args(args_iter.collect()),
         "hash-file" => parse_hash_args(args_iter.collect()),
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
+        "export-valence-receipt" => parse_valence_export_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
         unknown => Err(CliError(format!("unknown command: {unknown}"))),
     }
@@ -403,6 +461,57 @@ fn parse_manifest_projection_args(args: Vec<String>) -> CliResult<Command> {
     Ok(Command::CheckManifestProjection(parsed))
 }
 
+fn parse_valence_export_args(args: Vec<String>) -> CliResult<Command> {
+    let mut root = PathBuf::from(DEFAULT_ROOT);
+    let mut receipt = None;
+    let mut conformance = None;
+    let mut source_spans = None;
+    let mut golden = None;
+    let mut update_golden = false;
+    let mut update_report = PathBuf::from(DEFAULT_VALENCE_EXPORT_UPDATE_REPORT);
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--root" => root = next_path(&mut index, "--root")?,
+            "--receipt" => receipt = Some(next_path(&mut index, "--receipt")?),
+            "--conformance" => conformance = Some(next_path(&mut index, "--conformance")?),
+            "--source-spans" => source_spans = Some(next_path(&mut index, "--source-spans")?),
+            "--golden" => golden = Some(next_path(&mut index, "--golden")?),
+            "--update-golden" => update_golden = true,
+            "--update-report" => update_report = next_path(&mut index, "--update-report")?,
+            unknown => {
+                return Err(CliError(format!(
+                    "unknown Valence export argument: {unknown}"
+                )));
+            }
+        }
+    }
+    let Some(receipt) = receipt else {
+        return Err(CliError(
+            "export-valence-receipt requires --receipt".to_string(),
+        ));
+    };
+    let Some(conformance) = conformance else {
+        return Err(CliError(
+            "export-valence-receipt requires --conformance".to_string(),
+        ));
+    };
+    if update_golden && golden.is_none() {
+        return Err(CliError(
+            "export-valence-receipt --update-golden requires --golden".to_string(),
+        ));
+    }
+    Ok(Command::ExportValenceReceipt(ValenceExportArgs {
+        root,
+        receipt,
+        conformance,
+        source_spans,
+        golden,
+        update_golden,
+        update_report,
+    }))
+}
+
 fn next_value(index: &mut impl Iterator<Item = String>, flag: &str) -> CliResult<String> {
     index
         .next()
@@ -459,6 +568,172 @@ fn run_check_manifest_projection(args: ManifestProjectionArgs) -> CliResult<i32>
     } else {
         Ok(EXIT_FAILURE)
     }
+}
+
+fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
+    let root = args.root.clone();
+    let receipt_path = resolve_under_root(&root, &args.receipt)?;
+    let conformance_path = resolve_under_root(&root, &args.conformance)?;
+    let source_receipt: ReceiptEnvelope = read_json(&receipt_path, "Valence source receipt")?;
+    let conformance: ValenceExportConformance =
+        read_json(&conformance_path, "Valence export conformance")?;
+    let source_spans = match &args.source_spans {
+        Some(path) => read_json(
+            &resolve_under_root(&root, path)?,
+            "Valence export source spans",
+        )?,
+        None => SourceSpanSet::default(),
+    };
+    let input = ValenceReceiptExportInput {
+        source_receipt,
+        conformance,
+        source_spans,
+        semantic_claims: Vec::new(),
+        declared_export_identity: None,
+    };
+    let result = export_valence_receipt(&input);
+    let export_identity = result
+        .export
+        .as_ref()
+        .map(|export| export.export_identity.clone());
+    let (golden_result, golden_passed) =
+        check_or_update_valence_export_golden(&root, &args, result.export.as_ref())?;
+    let passed = result.passed && golden_passed;
+    let report = ValenceExportCommandReport {
+        passed,
+        validation_passed: result.passed,
+        diagnostics: result.diagnostics,
+        export_identity,
+        golden_result,
+        export: result.export,
+    };
+    let json = serde_json::to_string_pretty(&report).map_err(|error| {
+        CliError(format!(
+            "Valence export report serialization failed: {error}"
+        ))
+    })?;
+    println!("{json}");
+    if passed {
+        Ok(EXIT_SUCCESS)
+    } else {
+        Ok(EXIT_FAILURE)
+    }
+}
+
+fn check_or_update_valence_export_golden(
+    root: &Path,
+    args: &ValenceExportArgs,
+    export: Option<&ValenceReceiptExportEnvelope>,
+) -> CliResult<(Option<ValenceExportGoldenResult>, bool)> {
+    let Some(golden_path) = &args.golden else {
+        return Ok((None, true));
+    };
+    let Some(export) = export else {
+        return Ok((
+            Some(ValenceExportGoldenResult {
+                path: golden_path.display().to_string(),
+                status: GOLDEN_STATUS_MISSING_RECEIPT.to_string(),
+                old_export_identity: None,
+                new_export_identity: None,
+            }),
+            false,
+        ));
+    };
+    let rendered = serde_json::to_string_pretty(export)
+        .map_err(|error| CliError(format!("Valence export serialization failed: {error}")))?;
+    let resolved = resolve_under_root(root, golden_path)?;
+    if args.update_golden {
+        let old_export_identity = read_existing_valence_export_identity(&resolved)?;
+        write_path(&resolved, rendered.as_bytes())?;
+        write_valence_export_update_report(root, args, export, old_export_identity.clone())?;
+        return Ok((
+            Some(ValenceExportGoldenResult {
+                path: golden_path.display().to_string(),
+                status: GOLDEN_STATUS_UPDATED.to_string(),
+                old_export_identity,
+                new_export_identity: Some(export.export_identity.clone()),
+            }),
+            true,
+        ));
+    }
+    if !resolved.exists() {
+        return Ok((
+            Some(ValenceExportGoldenResult {
+                path: golden_path.display().to_string(),
+                status: GOLDEN_STATUS_MISSING_GOLDEN.to_string(),
+                old_export_identity: None,
+                new_export_identity: Some(export.export_identity.clone()),
+            }),
+            false,
+        ));
+    }
+    let existing = read_path(&resolved)?;
+    let matched = existing == rendered.as_bytes();
+    Ok((
+        Some(ValenceExportGoldenResult {
+            path: golden_path.display().to_string(),
+            status: if matched {
+                GOLDEN_STATUS_MATCHED.to_string()
+            } else {
+                GOLDEN_STATUS_MISMATCHED.to_string()
+            },
+            old_export_identity: read_existing_valence_export_identity(&resolved)?,
+            new_export_identity: Some(export.export_identity.clone()),
+        }),
+        matched,
+    ))
+}
+
+fn write_valence_export_update_report(
+    root: &Path,
+    args: &ValenceExportArgs,
+    export: &ValenceReceiptExportEnvelope,
+    old_export_identity: Option<Identity>,
+) -> CliResult<()> {
+    let Some(golden_path) = &args.golden else {
+        return Ok(());
+    };
+    let update = ValenceExportUpdate {
+        path: golden_path.display().to_string(),
+        source_receipt_identity: export.body.source_receipt_identity.clone(),
+        old_export_identity,
+        new_export_identity: export.export_identity.clone(),
+        checked_laws: export.body.checked_laws.clone(),
+        non_claims: export.body.non_claims.clone(),
+    };
+    let report = ValenceExportUpdateReport {
+        changed_exports: vec![update],
+    };
+    let rendered = serde_json::to_string_pretty(&report).map_err(|error| {
+        CliError(format!(
+            "Valence export update report serialization failed: {error}"
+        ))
+    })?;
+    let path = resolve_under_root(root, &args.update_report)?;
+    write_path(&path, rendered.as_bytes())
+}
+
+fn read_existing_valence_export_identity(path: &Path) -> CliResult<Option<Identity>> {
+    if !path.exists() {
+        return Ok(None);
+    }
+    let bytes = read_path(path)?;
+    let parsed: Result<ValenceReceiptExportEnvelope, serde_json::Error> =
+        serde_json::from_slice(&bytes);
+    match parsed {
+        Ok(export) => Ok(Some(export.export_identity)),
+        Err(_) => Ok(None),
+    }
+}
+
+fn read_json<T: for<'de> Deserialize<'de>>(path: &Path, label: &str) -> CliResult<T> {
+    let bytes = read_path(path)?;
+    serde_json::from_slice(&bytes).map_err(|error| {
+        CliError(format!(
+            "{label} parse failed for {}: {error}",
+            path.display()
+        ))
+    })
 }
 
 fn run_validate(args: ValidateArgs) -> CliResult<i32> {
@@ -728,6 +1003,26 @@ fn materialize_fixture(
         PayloadProjection::IdentityUse(input) => FixturePayload::IdentityUse(input.clone()),
         PayloadProjection::CapabilityShell(input) => FixturePayload::CapabilityShell(input.clone()),
         PayloadProjection::StackEvidence(input) => FixturePayload::StackEvidence(input.clone()),
+        PayloadProjection::ValenceReceiptExport {
+            source_receipt_path,
+            conformance_path,
+            source_spans_path,
+            semantic_claims,
+            declared_export_identity,
+        } => FixturePayload::ValenceReceiptExport(Box::new(ValenceReceiptExportInput {
+            source_receipt: read_manifest_json(
+                root,
+                source_receipt_path,
+                "Valence source receipt",
+            )?,
+            conformance: read_manifest_json(root, conformance_path, "Valence export conformance")?,
+            source_spans: match source_spans_path {
+                Some(path) => read_manifest_json(root, path, "Valence export source spans")?,
+                None => SourceSpanSet::default(),
+            },
+            semantic_claims: semantic_claims.clone(),
+            declared_export_identity: declared_export_identity.clone(),
+        })),
         PayloadProjection::AlgebraicEffect {
             schema_version,
             canonical_path,
@@ -1007,6 +1302,15 @@ fn read_manifest_bytes(root: &Path, path: &str) -> CliResult<Vec<u8>> {
     read_path(&resolved)
 }
 
+fn read_manifest_json<T: for<'de> Deserialize<'de>>(
+    root: &Path,
+    path: &str,
+    label: &str,
+) -> CliResult<T> {
+    let resolved = resolve_under_root(root, Path::new(path))?;
+    read_json(&resolved, label)
+}
+
 fn resolve_under_root(root: &Path, path: &Path) -> CliResult<PathBuf> {
     if path.is_absolute() {
         return Err(CliError(format!(
@@ -1049,7 +1353,8 @@ fn print_help() {
         "kamacite-validate validate [--root PATH] [--manifest PATH] [--manifest-source PATH] [--skip-manifest-source-check] [--update-golden] [--update-report PATH]\n\
          kamacite-validate validate-nickel-adapter [--root PATH] [--manifest PATH] [--manifest-source PATH] [--evaluator-command PATH] [--update-golden] [--update-report PATH]\n\
          kamacite-validate hash-file --domain DOMAIN --path PATH\n\
-         kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]"
+         kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]\n\
+         kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]"
     );
 }
 

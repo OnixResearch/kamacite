@@ -1,0 +1,57 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "valence-export.negative.identity-domain-substitution",
+    "artifact_class": "valence-receipt-export",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.valence_receipt_export.conformance.identity_domains]"
+    ],
+    "input_identities": {
+      "valence-conformance": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+      },
+      "valence-source-receipt": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "artifact-identity-preservation",
+      "artifacts-first-no-valence-runtime",
+      "checked-law-preservation",
+      "diagnostic-summary-preservation",
+      "identity-domain-substitution-rejected",
+      "names-as-metadata",
+      "non-claim-preservation",
+      "source-envelope-preservation",
+      "source-receipt-identity-bound",
+      "source-span-absence-explicit"
+    ],
+    "diagnostics": [
+      {
+        "code": "identity-domain-mismatch",
+        "requirement_id": "r[kamacite.valence_receipt_export.conformance.identity_domains]",
+        "field": "source_receipt.receipt_identity",
+        "message": "Valence export source receipt identity must use the receipt domain",
+        "details": {
+          "actual": "source",
+          "expected": "receipt"
+        }
+      }
+    ],
+    "non_claims": [
+      "receipt identity cannot be substituted with source identity"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "9d35bfef32f1924fcfa4f29b58acb1cc43b63170c31d15163a366ebe3b5c5d6d"
+  }
+}

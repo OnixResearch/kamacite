@@ -1,0 +1,10 @@
+{
+  "state": "present",
+  "spans": [
+    {
+      "artifact_key": "declared-source",
+      "start_byte": 0,
+      "end_byte": 25
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "source-envelope.valid.nickel-minimal",
+    "artifact_class": "source-envelope",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.lossless_ir.positive_fixtures.source_bytes]",
+      "r[kamacite.rust_determinism.first_slice.source_envelope]",
+      "r[kamacite.validation_harness.seed_fixtures.valid_source_envelope]"
+    ],
+    "input_identities": {
+      "declared-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "output_identities": {
+      "declared-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+      }
+    },
+    "checked_laws": [
+      "names-as-metadata",
+      "source-envelope-preservation"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "not Nickel evaluation semantics",
+      "not arbitrary source translation"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+  }
+}

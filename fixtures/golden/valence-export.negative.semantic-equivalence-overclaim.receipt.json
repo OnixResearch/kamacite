@@ -1,0 +1,56 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "valence-export.negative.semantic-equivalence-overclaim",
+    "artifact_class": "valence-receipt-export",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.valence_receipt_export.conformance.semantic_overclaim]"
+    ],
+    "input_identities": {
+      "valence-conformance": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+      },
+      "valence-source-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "artifact-identity-preservation",
+      "artifacts-first-no-valence-runtime",
+      "checked-law-preservation",
+      "diagnostic-summary-preservation",
+      "names-as-metadata",
+      "non-claim-preservation",
+      "semantic-overclaim-rejected",
+      "source-envelope-preservation",
+      "source-receipt-identity-bound",
+      "source-span-absence-explicit"
+    ],
+    "diagnostics": [
+      {
+        "code": "semantic-overclaim",
+        "requirement_id": "r[kamacite.valence_receipt_export.conformance.semantic_overclaim]",
+        "field": "semantic_claims",
+        "message": "Valence export rejected semantic-equivalence or runtime correctness overclaim",
+        "details": {
+          "claim": "Valence proves Nickel/Rust/Steel semantic equivalence"
+        }
+      }
+    ],
+    "non_claims": [
+      "Valence export does not prove semantic equivalence"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "151d6198ed16b9ede3ae3a50c4cd61c2eb2d9d0d0169c47403c20325630e122e"
+  }
+}

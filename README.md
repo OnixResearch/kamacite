@@ -151,9 +151,9 @@ Kamacite has a first walking-skeleton validation harness and Rust core profile i
 
 - `crates/kamacite-core/` is the pure deterministic core for typed identities, source-envelope validation, canonical/target/adapter boundary checks, algebraic-effect artifact checks, deterministic diagnostics, and receipt construction.
 - `crates/kamacite-cli/` is the thin fixture runner shell for manifest/file IO, golden receipt comparison, and explicit update workflows.
-- `schemas/preserves/` contains Kamacite-owned Preserves boundary schema artifacts for source envelopes, canonical values, adapter descriptors, target artifacts, receipts, and algebraic-effect artifacts.
-- `fixtures/` contains the Nickel source manifest, freshness-checked runtime JSON projection, positive and negative fixture materials, Nickel adapter export projections, and checked golden receipts.
-- `docs/validation-harness.md`, `docs/rust-core-profile.md`, `docs/deferred-adapter-suites.md`, and `docs/algebraic-effects-stack-roles.md` describe the current executable boundary and deferred integration suites.
+- `schemas/preserves/` contains Kamacite-owned Preserves boundary schema artifacts for source envelopes, canonical values, adapter descriptors, target artifacts, receipts, Valence receipt exports, and algebraic-effect artifacts.
+- `fixtures/` contains the Nickel source manifest, freshness-checked runtime JSON projection, positive and negative fixture materials, Nickel adapter export projections, Valence export conformance/projection fixtures, and checked golden receipts.
+- `docs/validation-harness.md`, `docs/rust-core-profile.md`, `docs/deferred-adapter-suites.md`, `docs/valence-receipt-export.md`, and `docs/algebraic-effects-stack-roles.md` describe the current executable boundary, Valence export profile, and deferred integration suites.
 
 Run harness validation through the sibling Cairn dev shell until Kamacite grows its own package:
 
@@ -161,8 +161,10 @@ Run harness validation through the sibling Cairn dev shell until Kamacite grows 
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo test --workspace'
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate --root . --manifest fixtures/manifest.json'
 nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate-nickel-adapter --root . --manifest fixtures/manifest.json'
+nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json'
 # The validate command checks fixtures/manifest.ncl against fixtures/manifest.json before trusting fixture receipts.
 # The validate-nickel-adapter command additionally runs explicitly declared Nickel reference-export fixtures in the shell.
+# The export-valence-receipt command validates deterministic Valence-friendly projections without invoking live Valence APIs.
 ```
 
 Run lifecycle validation with the sibling Cairn repo and its generated policy bundle:
