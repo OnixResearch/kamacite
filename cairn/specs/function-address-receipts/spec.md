@@ -106,6 +106,66 @@ r[kamacite.function_address_receipts.valence_export.non_claims]
 - WHEN the projection is inspected
 - THEN every non-claim MUST survive and the projection MUST NOT claim behavioral correctness, verifier soundness, or release eligibility.
 
+### Requirement: Dependency identity kind is preserved
+
+r[kamacite.function_address_receipts.dependency_vocabulary.kind] Kamacite MUST preserve an explicit dependency identity kind for each function-address dependency identity supplied by a producer.
+
+#### Scenario: Octet token-set dependency is represented
+r[kamacite.function_address_receipts.dependency_vocabulary.positive]
+- GIVEN Octet supplies a source-token dependency-set hash for a function-address record
+- WHEN Kamacite builds the portable receipt
+- THEN the receipt MUST preserve that identity as source-token/source-shape dependency evidence, not semantic dependency closure.
+
+### Requirement: Existing dependency fields remain bounded
+
+r[kamacite.function_address_receipts.dependency_vocabulary.compat] Kamacite MAY continue reading existing `dependency_closure` fields as compatibility inputs, but MUST NOT treat them as stronger than their declared dependency identity kind.
+
+#### Scenario: Compatibility field does not overclaim
+r[kamacite.function_address_receipts.dependency_vocabulary.validation]
+- GIVEN a v1 receipt has an existing dependency identity field and an explicit token-set kind
+- WHEN validation runs
+- THEN Kamacite MUST preserve the field while reporting only the bounded token-set claim.
+
+### Requirement: Closure overclaims fail closed
+
+r[kamacite.function_address_receipts.dependency_vocabulary.negative] Kamacite MUST reject function-address receipts that claim token dependency identity proves Rust semantic dependency closure, compiler-resolved call graphs, whole-program safety, or release eligibility.
+
+#### Scenario: Projection preserves dependency kind
+r[kamacite.function_address_receipts.dependency_vocabulary.projection]
+- GIVEN a valid receipt includes dependency identity kind metadata
+- WHEN Kamacite exports a Valence projection
+- THEN the projection MUST carry enough dependency-kind metadata for Valence to avoid inferring semantic closure from a hash alone.
+
+### Requirement: CLI emits portable function-address receipts
+
+r[kamacite.function_address_receipts.cli_adapter.command] Kamacite MUST provide a CLI command that ingests an Octet function-address report and emits a validated Kamacite function-address receipt.
+
+#### Scenario: Valid Octet report becomes Kamacite receipt
+r[kamacite.function_address_receipts.cli_adapter.positive]
+- GIVEN an Octet function-address report has supported producer metadata, source envelopes, function records, BLAKE3 identities, and required non-claims
+- WHEN the Kamacite CLI validates it with matching source envelope bytes
+- THEN the CLI MUST emit a valid Kamacite function-address receipt and receipt identity.
+
+### Requirement: CLI shell owns I/O
+
+r[kamacite.function_address_receipts.cli_adapter.shell] Kamacite CLI filesystem reads, path resolution, stdout/stderr, and file writes MUST remain outside `kamacite-core` receipt validation.
+
+#### Scenario: Core receives in-memory input
+r[kamacite.function_address_receipts.cli_adapter.validation]
+- GIVEN the CLI has loaded and parsed an Octet function-address report
+- WHEN it invokes receipt validation
+- THEN `kamacite-core` MUST receive in-memory typed input without reading files or environment state.
+
+### Requirement: Valence projection output is explicit
+
+r[kamacite.function_address_receipts.cli_adapter.valence_projection] Kamacite SHOULD provide an explicit CLI output for the function-address Valence projection derived from a valid Kamacite receipt.
+
+#### Scenario: Projection is emitted with receipt identity
+r[kamacite.function_address_receipts.cli_adapter.negative]
+- GIVEN a valid Kamacite function-address receipt is emitted
+- WHEN the operator requests Valence projection output
+- THEN the projection MUST bind the source Kamacite receipt identity and MUST fail closed if receipt validation failed.
+
 ### Requirement: Documentation and final validation
 
 r[kamacite.function_address_receipts.docs] Kamacite documentation MUST describe function-address receipts as portable identity/interchange evidence with explicit Octet, Valence, Mantle, and Cairn ownership boundaries. r[kamacite.function_address_receipts.final_validation] The change MUST include positive and negative fixtures plus focused validation before archive.

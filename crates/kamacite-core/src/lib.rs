@@ -30,13 +30,14 @@ pub use fixture::{
 pub use function_address::{
     FUNCTION_ADDRESS_CANONICAL_CODEC, FUNCTION_ADDRESS_JSON_PROJECTION,
     FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION, FUNCTION_ADDRESS_VALENCE_PROJECTION_SCHEMA_VERSION,
-    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressJsonProjection,
-    FunctionAddressProducer, FunctionAddressReceiptBody, FunctionAddressReceiptEnvelope,
-    FunctionAddressReceiptInput, FunctionAddressReceiptResult, FunctionAddressRecord,
-    FunctionAddressSourceEnvelope, FunctionAddressSpan, FunctionAddressValenceArtifact,
-    FunctionAddressValenceProjection, export_function_address_valence_projection,
-    function_address_canonical_bytes, function_address_json_projection,
-    function_address_projection_json, validate_function_address_receipt,
+    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressDependencyIdentityKind,
+    FunctionAddressJsonProjection, FunctionAddressProducer, FunctionAddressReceiptBody,
+    FunctionAddressReceiptEnvelope, FunctionAddressReceiptInput, FunctionAddressReceiptResult,
+    FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
+    FunctionAddressValenceArtifact, FunctionAddressValenceProjection,
+    export_function_address_valence_projection, function_address_canonical_bytes,
+    function_address_json_projection, function_address_projection_json,
+    validate_function_address_receipt,
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,

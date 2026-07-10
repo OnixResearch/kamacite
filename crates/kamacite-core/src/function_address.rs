@@ -16,6 +16,12 @@ const REQUIREMENT_CANONICAL_IDENTITY: &str =
     "r[kamacite.function_address_receipts.canonical_identity]";
 const REQUIREMENT_VALIDATION: &str = "r[kamacite.function_address_receipts.validation]";
 const REQUIREMENT_OCTET_INTEROP: &str = "r[kamacite.function_address_receipts.octet_interop]";
+const REQUIREMENT_DEPENDENCY_KIND: &str =
+    "r[kamacite.function_address_receipts.dependency_vocabulary.kind]";
+const REQUIREMENT_DEPENDENCY_COMPAT: &str =
+    "r[kamacite.function_address_receipts.dependency_vocabulary.compat]";
+const REQUIREMENT_DEPENDENCY_OVERCLAIM: &str =
+    "r[kamacite.function_address_receipts.dependency_vocabulary.negative]";
 const NON_CLAIM_HOST_LANGUAGE_SEMANTICS: &str = "not host-language semantic correctness";
 const NON_CLAIM_COMPILER_CORRECTNESS: &str = "not compiler correctness";
 const NON_CLAIM_RUNTIME_BEHAVIOR: &str = "not runtime behavior";
@@ -39,6 +45,10 @@ const FORBIDDEN_CLAIM_FRAGMENTS: &[&str] = &[
     "release eligibility",
     "semantic equivalence",
     "source equivalence",
+    "semantic dependency closure",
+    "compiler-resolved call graph",
+    "semantic call graph",
+    "whole-program dependency closure",
 ];
 const OCTET_PRODUCER: &str = "octet";
 
@@ -65,6 +75,26 @@ pub struct FunctionAddressSpan {
     pub end_byte: u64,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum FunctionAddressDependencyIdentityKind {
+    SourceTokenDependencySet,
+    SourceShapeDependencySet,
+}
+
+impl FunctionAddressDependencyIdentityKind {
+    fn label(&self) -> &'static str {
+        match self {
+            Self::SourceTokenDependencySet => "source-token-dependency-set",
+            Self::SourceShapeDependencySet => "source-shape-dependency-set",
+        }
+    }
+
+    fn expected_domain(&self) -> IdentityDomain {
+        IdentityDomain::DependencyClosure
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FunctionAddressRecord {
     pub locator: String,
@@ -73,6 +103,8 @@ pub struct FunctionAddressRecord {
     pub span: Option<FunctionAddressSpan>,
     pub function_address: Identity,
     pub dependency_closure: Option<Identity>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
     pub caveats: Vec<String>,
 }
 
@@ -81,6 +113,8 @@ pub struct FunctionAddressDependencyEdge {
     pub from_locator: String,
     pub to_locator: String,
     pub dependency_identity: Option<Identity>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -161,6 +195,7 @@ struct CanonicalFunctionRecord {
     source_identity: Identity,
     function_address: Identity,
     dependency_closure: Option<Identity>,
+    dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
     caveats: Vec<String>,
 }
 
@@ -182,6 +217,7 @@ struct CanonicalDependencyEdge {
     from_address: Identity,
     to_address: Identity,
     dependency_identity: Option<Identity>,
+    dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
 }
 
 pub fn validate_function_address_receipt(
@@ -192,8 +228,19 @@ pub fn validate_function_address_receipt(
     validate_non_claims(&input.non_claims, &mut diagnostics);
     validate_semantic_claims(&input.semantic_claims, &mut diagnostics);
     let source_identities = validate_sources(&input.source_envelopes, &mut diagnostics);
-    let function_addresses = validate_functions(input, &source_identities, &mut diagnostics);
-    validate_dependency_edges(input, &function_addresses, &mut diagnostics);
+    let mut dependency_kinds = BTreeMap::new();
+    let function_addresses = validate_functions(
+        input,
+        &source_identities,
+        &mut dependency_kinds,
+        &mut diagnostics,
+    );
+    validate_dependency_edges(
+        input,
+        &function_addresses,
+        &mut dependency_kinds,
+        &mut diagnostics,
+    );
     validate_caveats(input, &function_addresses, &mut diagnostics);
 
     diagnostics.sort();
@@ -337,6 +384,7 @@ fn canonical_receipt<'a>(
                     source_identity: source_identity.clone(),
                     function_address: function.function_address.clone(),
                     dependency_closure: function.dependency_closure.clone(),
+                    dependency_identity_kind: function.dependency_identity_kind.clone(),
                     caveats: function.caveats.clone(),
                 })
         })
@@ -358,6 +406,7 @@ fn canonical_receipt<'a>(
                 from_address: from_address.clone(),
                 to_address: to_address.clone(),
                 dependency_identity: edge.dependency_identity.clone(),
+                dependency_identity_kind: edge.dependency_identity_kind.clone(),
             })
         })
         .collect::<Vec<_>>();
@@ -438,7 +487,7 @@ fn validate_semantic_claims(claims: &[String], diagnostics: &mut Vec<Diagnostic>
             diagnostics.push(
                 Diagnostic::new(
                     DiagnosticCode::SemanticOverclaim,
-                    REQUIREMENT_VALIDATION,
+                    REQUIREMENT_DEPENDENCY_OVERCLAIM,
                     "semantic_claims",
                     "function-address receipt contains forbidden overclaim text",
                 )
@@ -502,6 +551,7 @@ fn validate_sources(
 fn validate_functions(
     input: &FunctionAddressReceiptInput,
     source_identities: &BTreeMap<String, Identity>,
+    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
 ) -> BTreeMap<String, Identity> {
     let mut function_addresses = BTreeMap::new();
@@ -536,14 +586,14 @@ fn validate_functions(
             "functions.function_address",
             diagnostics,
         );
-        if let Some(dependency_closure) = &function.dependency_closure {
-            validate_identity_domain(
-                dependency_closure,
-                IdentityDomain::DependencyClosure,
-                "functions.dependency_closure",
-                diagnostics,
-            );
-        }
+        validate_dependency_identity_metadata(
+            &function.dependency_closure,
+            &function.dependency_identity_kind,
+            "functions.dependency_closure",
+            "functions.dependency_identity_kind",
+            dependency_kinds,
+            diagnostics,
+        );
         function_addresses.insert(function.locator.clone(), function.function_address.clone());
     }
     if input.functions.is_empty() {
@@ -560,6 +610,7 @@ fn validate_functions(
 fn validate_dependency_edges(
     input: &FunctionAddressReceiptInput,
     function_addresses: &BTreeMap<String, Identity>,
+    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     for edge in &input.dependency_edges {
@@ -585,15 +636,92 @@ fn validate_dependency_edges(
                 .with_detail("to_locator", edge.to_locator.clone()),
             );
         }
-        if let Some(identity) = &edge.dependency_identity {
+        validate_dependency_identity_metadata(
+            &edge.dependency_identity,
+            &edge.dependency_identity_kind,
+            "dependency_edges.dependency_identity",
+            "dependency_edges.dependency_identity_kind",
+            dependency_kinds,
+            diagnostics,
+        );
+    }
+}
+
+fn validate_dependency_identity_metadata(
+    identity: &Option<Identity>,
+    kind: &Option<FunctionAddressDependencyIdentityKind>,
+    identity_field: &str,
+    kind_field: &str,
+    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    match (identity, kind) {
+        (Some(identity), Some(kind)) => {
             validate_identity_domain(
                 identity,
-                IdentityDomain::DependencyClosure,
-                "dependency_edges.dependency_identity",
+                kind.expected_domain(),
+                identity_field,
+                diagnostics,
+            );
+            validate_dependency_kind_consistency(
+                identity,
+                kind,
+                kind_field,
+                dependency_kinds,
                 diagnostics,
             );
         }
+        (Some(identity), None) => {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_DEPENDENCY_KIND,
+                    kind_field,
+                    "dependency identities must declare whether they are token/source-shape evidence or stronger closure evidence",
+                )
+                .with_detail("identity_domain", identity.domain.to_string())
+                .with_detail("identity_hex", identity.hex.as_str()),
+            );
+        }
+        (None, Some(kind)) => {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_DEPENDENCY_COMPAT,
+                    identity_field,
+                    "dependency identity kind cannot appear without a dependency identity slot",
+                )
+                .with_detail("kind", kind.label()),
+            );
+        }
+        (None, None) => {}
     }
+}
+
+fn validate_dependency_kind_consistency(
+    identity: &Identity,
+    kind: &FunctionAddressDependencyIdentityKind,
+    kind_field: &str,
+    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    if let Some(existing) = dependency_kinds.get(identity) {
+        if existing != kind {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UnsupportedClaim,
+                    REQUIREMENT_DEPENDENCY_KIND,
+                    kind_field,
+                    "the same dependency identity cannot be assigned multiple dependency evidence kinds",
+                )
+                .with_detail("identity_hex", identity.hex.as_str())
+                .with_detail("existing_kind", existing.label())
+                .with_detail("actual_kind", kind.label()),
+            );
+        }
+        return;
+    }
+    dependency_kinds.insert(identity.clone(), kind.clone());
 }
 
 fn validate_caveats(
@@ -706,6 +834,9 @@ mod tests {
                     }),
                     function_address: function_f,
                     dependency_closure: Some(dependency.clone()),
+                    dependency_identity_kind: Some(
+                        FunctionAddressDependencyIdentityKind::SourceTokenDependencySet,
+                    ),
                     caveats: Vec::new(),
                 },
                 FunctionAddressRecord {
@@ -715,6 +846,9 @@ mod tests {
                     span: None,
                     function_address: function_g,
                     dependency_closure: Some(dependency.clone()),
+                    dependency_identity_kind: Some(
+                        FunctionAddressDependencyIdentityKind::SourceTokenDependencySet,
+                    ),
                     caveats: vec!["dependency-closure-review-required".to_string()],
                 },
             ],
@@ -722,6 +856,9 @@ mod tests {
                 from_locator: FUNCTION_G_LOCATOR.to_string(),
                 to_locator: FUNCTION_F_LOCATOR.to_string(),
                 dependency_identity: Some(dependency),
+                dependency_identity_kind: Some(
+                    FunctionAddressDependencyIdentityKind::SourceTokenDependencySet,
+                ),
             }],
             caveats: vec![FunctionAddressCaveat {
                 locator: FUNCTION_G_LOCATOR.to_string(),
@@ -798,6 +935,10 @@ mod tests {
                 .non_claims
                 .iter()
                 .any(|claim| claim == NON_CLAIM_RELEASE_ELIGIBILITY)
+        );
+        assert_eq!(
+            projection.dependency_edges[0].dependency_identity_kind,
+            Some(FunctionAddressDependencyIdentityKind::SourceTokenDependencySet)
         );
         assert!(
             projection
@@ -895,6 +1036,53 @@ mod tests {
                 .diagnostics
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::IdentityDomainMismatch)
+        );
+    }
+
+    #[test]
+    fn missing_dependency_identity_kind_is_rejected() {
+        let mut input = valid_input();
+        input.functions[0].dependency_identity_kind = None;
+
+        let result = validate_function_address_receipt(&input);
+
+        assert!(!result.passed);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_DEPENDENCY_KIND
+                && diagnostic.field == "functions.dependency_identity_kind"
+        }));
+    }
+
+    #[test]
+    fn dependency_identity_kind_mismatch_is_rejected() {
+        let mut input = valid_input();
+        input.dependency_edges[0].dependency_identity_kind =
+            Some(FunctionAddressDependencyIdentityKind::SourceShapeDependencySet);
+
+        let result = validate_function_address_receipt(&input);
+
+        assert!(!result.passed);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_DEPENDENCY_KIND
+                && diagnostic.code == DiagnosticCode::UnsupportedClaim
+        }));
+    }
+
+    #[test]
+    fn semantic_dependency_closure_overclaim_is_rejected() {
+        let mut input = valid_input();
+        input
+            .semantic_claims
+            .push("token dependencies prove semantic dependency closure".to_string());
+
+        let result = validate_function_address_receipt(&input);
+
+        assert!(!result.passed);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::SemanticOverclaim)
         );
     }
 

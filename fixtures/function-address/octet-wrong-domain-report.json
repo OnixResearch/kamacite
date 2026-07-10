@@ -1,0 +1,46 @@
+{
+  "producer": {
+    "name": "octet",
+    "canonicalizer": "octet-source-token-function-address-v1",
+    "tool_version": "octet-fixture"
+  },
+  "source_envelopes": [
+    {
+      "key": "fixtures/function-address/source.rs",
+      "display_path": "fixtures/function-address/source.rs",
+      "language": "rust",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2c9045e6f614e37c42e7d6f1823994d17444b21dc4d8f1b037d08bfbd21e5570"
+      }
+    }
+  ],
+  "functions": [
+    {
+      "locator": "fixtures/function-address/source.rs::f",
+      "display_name": "f",
+      "source_key": "fixtures/function-address/source.rs",
+      "span": null,
+      "function_address": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "680af701c517bd7cad2f6e6f0b218a45d463afd40a84ba53eeb36f65bfd45a79"
+      },
+      "dependency_closure": null,
+      "dependency_identity_kind": null,
+      "caveats": []
+    }
+  ],
+  "dependency_edges": [],
+  "caveats": [],
+  "semantic_claims": [],
+  "non_claims": [
+    "not host-language semantic correctness",
+    "not compiler correctness",
+    "not runtime behavior",
+    "not whole-program safety",
+    "not verifier soundness",
+    "not release eligibility"
+  ]
+}

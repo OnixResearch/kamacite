@@ -1,0 +1,24 @@
+{
+  "producer": {
+    "name": "octet",
+    "canonicalizer": "octet-source-token-function-address-v1",
+    "tool_version": "octet-fixture"
+  },
+  "source_envelopes": [
+    {
+      "key": "fixtures/function-address/source.rs",
+      "display_path": "fixtures/function-address/source.rs",
+      "language": "rust",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2c9045e6f614e37c42e7d6f1823994d17444b21dc4d8f1b037d08bfbd21e5570"
+      }
+    }
+  ],
+  "functions": [],
+  "dependency_edges": [],
+  "caveats": [],
+  "semantic_claims": [],
+  "non_claims": []
+}

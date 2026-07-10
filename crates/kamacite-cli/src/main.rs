@@ -6,12 +6,17 @@ use kamacite_core::{
     DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
     FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
     FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
-    HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
-    NickelAdapterReceiptInput, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
-    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
-    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
-    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict, compute_identity,
-    export_valence_receipt, receipt_json, validate_fixture_suite,
+    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressProducer,
+    FunctionAddressReceiptInput, FunctionAddressRecord, FunctionAddressSourceEnvelope,
+    FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
+    IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput, ReceiptEnvelope,
+    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
+    SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
+    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
+    ValenceReceiptExportInput, ValidationVerdict, compute_identity,
+    export_function_address_valence_projection, export_valence_receipt,
+    function_address_projection_json, receipt_json, validate_fixture_suite,
+    validate_function_address_receipt,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -35,6 +40,8 @@ const DOMAIN_ADAPTER: &str = "adapter";
 const DOMAIN_EVALUATOR: &str = "evaluator";
 const DOMAIN_COMPILER: &str = "compiler";
 const DOMAIN_RECEIPT: &str = "receipt";
+const DOMAIN_FUNCTION_ADDRESS: &str = "function-address";
+const DOMAIN_DEPENDENCY_CLOSURE: &str = "dependency-closure";
 const DOMAIN_ALGEBRAIC_EFFECT: &str = "algebraic-effect";
 const DOMAIN_EFFECT_OPERATION: &str = "effect-operation";
 const DOMAIN_EFFECT_LOG: &str = "effect-log";
@@ -89,6 +96,7 @@ enum Command {
     HashFile(HashArgs),
     CheckManifestProjection(ManifestProjectionArgs),
     ExportValenceReceipt(ValenceExportArgs),
+    EmitFunctionAddressReceipt(FunctionAddressReceiptArgs),
     Help,
 }
 
@@ -144,6 +152,44 @@ struct ValenceExportArgs {
     golden: Option<PathBuf>,
     update_golden: bool,
     update_report: PathBuf,
+}
+
+#[derive(Clone, Debug)]
+struct FunctionAddressReceiptArgs {
+    root: PathBuf,
+    report: PathBuf,
+    sources: BTreeMap<String, PathBuf>,
+    out: Option<PathBuf>,
+    valence_out: Option<PathBuf>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct OctetFunctionAddressReport {
+    producer: FunctionAddressProducer,
+    source_envelopes: Vec<OctetFunctionAddressSourceEnvelope>,
+    functions: Vec<FunctionAddressRecord>,
+    dependency_edges: Vec<FunctionAddressDependencyEdge>,
+    caveats: Vec<FunctionAddressCaveat>,
+    semantic_claims: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct OctetFunctionAddressSourceEnvelope {
+    key: String,
+    display_path: String,
+    language: String,
+    source_identity: Identity,
+}
+
+#[derive(Debug, Serialize)]
+struct FunctionAddressReceiptCommandReport {
+    passed: bool,
+    diagnostics: Vec<kamacite_core::Diagnostic>,
+    receipt_identity: Option<Identity>,
+    receipt_path: Option<String>,
+    valence_projection_path: Option<String>,
+    valence_projection: Option<FunctionAddressValenceProjection>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -509,6 +555,7 @@ fn run() -> CliResult<i32> {
         Command::HashFile(args) => run_hash_file(args),
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::ExportValenceReceipt(args) => run_export_valence_receipt(args),
+        Command::EmitFunctionAddressReceipt(args) => run_emit_function_address_receipt(args),
         Command::Help => {
             print_help();
             Ok(EXIT_SUCCESS)
@@ -528,6 +575,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
         "hash-file" => parse_hash_args(args_iter.collect()),
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "export-valence-receipt" => parse_valence_export_args(args_iter.collect()),
+        "emit-function-address-receipt" => parse_function_address_receipt_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
         unknown => Err(CliError(format!("unknown command: {unknown}"))),
     }
@@ -727,6 +775,67 @@ fn parse_valence_export_args(args: Vec<String>) -> CliResult<Command> {
     }))
 }
 
+fn parse_function_address_receipt_args(args: Vec<String>) -> CliResult<Command> {
+    let mut root = PathBuf::from(DEFAULT_ROOT);
+    let mut report = None;
+    let mut sources = BTreeMap::new();
+    let mut out = None;
+    let mut valence_out = None;
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--root" => root = next_path(&mut index, "--root")?,
+            "--report" => report = Some(next_path(&mut index, "--report")?),
+            "--source" => {
+                let assignment = next_value(&mut index, "--source")?;
+                let (key, path) = parse_source_assignment(&assignment)?;
+                sources.insert(key, path);
+            }
+            "--out" => out = Some(next_path(&mut index, "--out")?),
+            "--valence-out" => valence_out = Some(next_path(&mut index, "--valence-out")?),
+            unknown => {
+                return Err(CliError(format!(
+                    "unknown emit-function-address-receipt argument: {unknown}"
+                )));
+            }
+        }
+    }
+    let Some(report) = report else {
+        return Err(CliError(
+            "emit-function-address-receipt requires --report".to_string(),
+        ));
+    };
+    if sources.is_empty() {
+        return Err(CliError(
+            "emit-function-address-receipt requires at least one --source KEY=PATH".to_string(),
+        ));
+    }
+    Ok(Command::EmitFunctionAddressReceipt(
+        FunctionAddressReceiptArgs {
+            root,
+            report,
+            sources,
+            out,
+            valence_out,
+        },
+    ))
+}
+
+fn parse_source_assignment(value: &str) -> CliResult<(String, PathBuf)> {
+    let Some((key, path)) = value.split_once('=') else {
+        return Err(CliError(
+            "--source must use KEY=PATH syntax for function-address receipts".to_string(),
+        ));
+    };
+    if key.is_empty() {
+        return Err(CliError("--source key cannot be empty".to_string()));
+    }
+    if path.is_empty() {
+        return Err(CliError("--source path cannot be empty".to_string()));
+    }
+    Ok((key.to_string(), PathBuf::from(path)))
+}
+
 fn next_value(index: &mut impl Iterator<Item = String>, flag: &str) -> CliResult<String> {
     index
         .next()
@@ -747,6 +856,8 @@ fn parse_domain(value: &str) -> CliResult<IdentityDomain> {
         DOMAIN_EVALUATOR => Ok(IdentityDomain::Evaluator),
         DOMAIN_COMPILER => Ok(IdentityDomain::Compiler),
         DOMAIN_RECEIPT => Ok(IdentityDomain::Receipt),
+        DOMAIN_FUNCTION_ADDRESS => Ok(IdentityDomain::FunctionAddress),
+        DOMAIN_DEPENDENCY_CLOSURE => Ok(IdentityDomain::DependencyClosure),
         DOMAIN_ALGEBRAIC_EFFECT => Ok(IdentityDomain::AlgebraicEffect),
         DOMAIN_EFFECT_OPERATION => Ok(IdentityDomain::EffectOperation),
         DOMAIN_EFFECT_LOG => Ok(IdentityDomain::EffectLog),
@@ -838,6 +949,149 @@ fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
     } else {
         Ok(EXIT_FAILURE)
     }
+}
+
+fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliResult<i32> {
+    let root = args.root.clone();
+    let report_path = resolve_under_root(&root, &args.report)?;
+    let report: OctetFunctionAddressReport =
+        read_json(&report_path, "Octet function-address report")?;
+    let source_bytes = read_function_address_sources(&root, &args.sources)?;
+    let input = build_function_address_receipt_input(report, &source_bytes)?;
+    let result = validate_function_address_receipt(&input);
+    let receipt_identity = result
+        .receipt
+        .as_ref()
+        .map(|receipt| receipt.receipt_identity.clone());
+    let Some(receipt) = result.receipt else {
+        let report = FunctionAddressReceiptCommandReport {
+            passed: false,
+            diagnostics: result.diagnostics,
+            receipt_identity,
+            receipt_path: args.out.as_ref().map(path_display),
+            valence_projection_path: args.valence_out.as_ref().map(path_display),
+            valence_projection: None,
+        };
+        print_json_report(&report, "function-address receipt report")?;
+        return Ok(EXIT_FAILURE);
+    };
+
+    let receipt_json = function_address_projection_json(&receipt).map_err(|error| {
+        CliError(format!(
+            "function-address receipt projection serialization failed: {error}"
+        ))
+    })?;
+    let receipt_path = match &args.out {
+        Some(path) => {
+            let resolved = resolve_under_root(&root, path)?;
+            write_path(&resolved, receipt_json.as_bytes())?;
+            Some(path_display(path))
+        }
+        None => None,
+    };
+
+    let (valence_projection, valence_projection_path) = match &args.valence_out {
+        Some(path) => {
+            let projection = export_function_address_valence_projection(&receipt);
+            let rendered = serde_json::to_string_pretty(&projection).map_err(|error| {
+                CliError(format!(
+                    "function-address Valence projection serialization failed: {error}"
+                ))
+            })?;
+            let resolved = resolve_under_root(&root, path)?;
+            write_path(&resolved, rendered.as_bytes())?;
+            (Some(projection), Some(path_display(path)))
+        }
+        None => (None, None),
+    };
+
+    if args.out.is_none() {
+        println!("{receipt_json}");
+        return Ok(EXIT_SUCCESS);
+    }
+
+    let report = FunctionAddressReceiptCommandReport {
+        passed: true,
+        diagnostics: result.diagnostics,
+        receipt_identity,
+        receipt_path,
+        valence_projection_path,
+        valence_projection,
+    };
+    print_json_report(&report, "function-address receipt report")?;
+    Ok(EXIT_SUCCESS)
+}
+
+fn read_function_address_sources(
+    root: &Path,
+    sources: &BTreeMap<String, PathBuf>,
+) -> CliResult<BTreeMap<String, String>> {
+    let mut source_bytes = BTreeMap::new();
+    for (key, path) in sources {
+        let resolved = resolve_under_root(root, path)?;
+        let bytes = read_path(&resolved)?;
+        let source = String::from_utf8(bytes).map_err(|error| {
+            CliError(format!(
+                "function-address source is not UTF-8 for {}: {error}",
+                path.display()
+            ))
+        })?;
+        source_bytes.insert(key.clone(), source);
+    }
+    Ok(source_bytes)
+}
+
+fn build_function_address_receipt_input(
+    report: OctetFunctionAddressReport,
+    source_bytes: &BTreeMap<String, String>,
+) -> CliResult<FunctionAddressReceiptInput> {
+    for key in source_bytes.keys() {
+        if !report
+            .source_envelopes
+            .iter()
+            .any(|source| source.key == *key)
+        {
+            return Err(CliError(format!(
+                "--source key {key} is not declared by the Octet function-address report"
+            )));
+        }
+    }
+    let mut source_envelopes = Vec::new();
+    for source in report.source_envelopes {
+        let Some(bytes) = source_bytes.get(&source.key) else {
+            return Err(CliError(format!(
+                "Octet function-address report source {} has no matching --source KEY=PATH input",
+                source.key
+            )));
+        };
+        source_envelopes.push(FunctionAddressSourceEnvelope {
+            key: source.key,
+            display_path: source.display_path,
+            language: source.language,
+            source_bytes: bytes.clone(),
+            source_identity: source.source_identity,
+        });
+    }
+    Ok(FunctionAddressReceiptInput {
+        producer: report.producer,
+        source_envelopes,
+        functions: report.functions,
+        dependency_edges: report.dependency_edges,
+        caveats: report.caveats,
+        semantic_claims: report.semantic_claims,
+        non_claims: report.non_claims,
+    })
+}
+
+fn print_json_report<T: Serialize>(report: &T, label: &str) -> CliResult<()> {
+    let json = serde_json::to_string_pretty(report)
+        .map_err(|error| CliError(format!("{label} serialization failed: {error}")))?;
+    println!("{json}");
+    Ok(())
+}
+
+fn path_display(path: &PathBuf) -> String {
+    path.display().to_string()
 }
 
 fn check_or_update_valence_export_golden(
@@ -1919,7 +2173,8 @@ fn print_help() {
          kamacite-validate validate-steel-adapter [--root PATH] [--manifest PATH] [--manifest-source PATH] [--evaluator-descriptor TEXT] [--update-golden] [--update-report PATH]\n\
          kamacite-validate hash-file --domain DOMAIN --path PATH\n\
          kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]\n\
-         kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]"
+         kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]\n\
+         kamacite-validate emit-function-address-receipt --report PATH --source KEY=PATH [--root PATH] [--out PATH] [--valence-out PATH]"
     );
 }
 
@@ -1930,6 +2185,13 @@ mod tests {
     const TEST_FIXTURE_ID: &str = "unit.fixture";
     const TEST_OTHER_FIXTURE_ID: &str = "unit.other";
     const TEST_ZERO_HEX: &str = "0000000000000000000000000000000000000000000000000000000000000000";
+    const TEST_SOURCE_KEY: &str = "src/lib.rs";
+    const TEST_SOURCE_PATH: &str = "src/lib.rs";
+    const TEST_SOURCE_BYTES: &str = "pub fn f() -> u32 { 1 }\n";
+    const TEST_FUNCTION_LOCATOR: &str = "src/lib.rs::f";
+    const TEST_FUNCTION_NAME: &str = "f";
+    const TEST_CANONICALIZER: &str = "octet-source-token-function-address-v1";
+    const TEST_OCTET_VERSION: &str = "octet-test";
 
     fn projection_json(fixture_id: &str) -> String {
         format!(
@@ -1948,6 +2210,62 @@ mod tests {
             Ok(parsed) => parsed,
             Err(error) => panic!("test projection must parse: {error}"),
         }
+    }
+
+    fn valid_octet_function_address_report() -> OctetFunctionAddressReport {
+        let source_identity =
+            compute_identity(IdentityDomain::Source, TEST_SOURCE_BYTES.as_bytes());
+        let function_address = compute_identity(IdentityDomain::FunctionAddress, b"function f");
+        let dependency_identity = compute_identity(IdentityDomain::DependencyClosure, b"tokens f");
+        OctetFunctionAddressReport {
+            producer: FunctionAddressProducer {
+                name: "octet".to_string(),
+                canonicalizer: TEST_CANONICALIZER.to_string(),
+                tool_version: TEST_OCTET_VERSION.to_string(),
+            },
+            source_envelopes: vec![OctetFunctionAddressSourceEnvelope {
+                key: TEST_SOURCE_KEY.to_string(),
+                display_path: TEST_SOURCE_PATH.to_string(),
+                language: "rust".to_string(),
+                source_identity,
+            }],
+            functions: vec![FunctionAddressRecord {
+                locator: TEST_FUNCTION_LOCATOR.to_string(),
+                display_name: TEST_FUNCTION_NAME.to_string(),
+                source_key: TEST_SOURCE_KEY.to_string(),
+                span: None,
+                function_address,
+                dependency_closure: Some(dependency_identity.clone()),
+                dependency_identity_kind: Some(
+                    kamacite_core::FunctionAddressDependencyIdentityKind::SourceTokenDependencySet,
+                ),
+                caveats: Vec::new(),
+            }],
+            dependency_edges: vec![FunctionAddressDependencyEdge {
+                from_locator: TEST_FUNCTION_LOCATOR.to_string(),
+                to_locator: TEST_FUNCTION_LOCATOR.to_string(),
+                dependency_identity: Some(dependency_identity),
+                dependency_identity_kind: Some(
+                    kamacite_core::FunctionAddressDependencyIdentityKind::SourceTokenDependencySet,
+                ),
+            }],
+            caveats: Vec::new(),
+            semantic_claims: Vec::new(),
+            non_claims: vec![
+                "not host-language semantic correctness".to_string(),
+                "not compiler correctness".to_string(),
+                "not runtime behavior".to_string(),
+                "not whole-program safety".to_string(),
+                "not verifier soundness".to_string(),
+                "not release eligibility".to_string(),
+            ],
+        }
+    }
+
+    fn valid_function_address_sources() -> BTreeMap<String, String> {
+        let mut sources = BTreeMap::new();
+        sources.insert(TEST_SOURCE_KEY.to_string(), TEST_SOURCE_BYTES.to_string());
+        sources
     }
 
     #[test]
@@ -1997,5 +2315,51 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic == DIAGNOSTIC_FIXTURE_ID_DRIFT)
         );
+    }
+
+    #[test]
+    fn materializes_octet_function_address_report_with_source_bytes() {
+        let report = valid_octet_function_address_report();
+        let sources = valid_function_address_sources();
+
+        let input = match build_function_address_receipt_input(report, &sources) {
+            Ok(input) => input,
+            Err(error) => panic!("test input should materialize: {error}"),
+        };
+        let result = validate_function_address_receipt(&input);
+
+        assert!(
+            result.passed,
+            "unexpected diagnostics: {:?}",
+            result.diagnostics
+        );
+    }
+
+    #[test]
+    fn rejects_function_address_report_without_matching_source_bytes() {
+        let report = valid_octet_function_address_report();
+        let sources = BTreeMap::new();
+
+        let result = build_function_address_receipt_input(report, &sources);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn rejects_unknown_function_address_source_assignment() {
+        let report = valid_octet_function_address_report();
+        let mut sources = valid_function_address_sources();
+        sources.insert("src/extra.rs".to_string(), TEST_SOURCE_BYTES.to_string());
+
+        let result = build_function_address_receipt_input(report, &sources);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn rejects_malformed_function_address_source_flag() {
+        let result = parse_source_assignment("missing-separator");
+
+        assert!(result.is_err());
     }
 }

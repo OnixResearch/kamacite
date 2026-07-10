@@ -32,6 +32,7 @@ FunctionRecord = {
   span: Span | false,
   function-address: Identity,
   dependency-closure: Identity | false,
+  dependency-identity-kind: DependencyIdentityKind | false,
   caveats: [string ...]
 }
 
@@ -44,8 +45,11 @@ Span = {
 DependencyEdge = {
   from-locator: string,
   to-locator: string,
-  dependency-identity: Identity | false
+  dependency-identity: Identity | false,
+  dependency-identity-kind: DependencyIdentityKind | false
 }
+
+DependencyIdentityKind = "source-token-dependency-set" | "source-shape-dependency-set"
 
 Caveat = {
   locator: string,

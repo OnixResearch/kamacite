@@ -1,0 +1,31 @@
+{
+  "producer": {
+    "name": "octet",
+    "canonicalizer": "octet-source-token-function-address-v1",
+    "tool_version": "octet-fixture"
+  },
+  "source_envelopes": [
+    {
+      "key": "fixtures/function-address/source.rs",
+      "display_path": "fixtures/function-address/source.rs",
+      "language": "rust",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  ],
+  "functions": [],
+  "dependency_edges": [],
+  "caveats": [],
+  "semantic_claims": [],
+  "non_claims": [
+    "not host-language semantic correctness",
+    "not compiler correctness",
+    "not runtime behavior",
+    "not whole-program safety",
+    "not verifier soundness",
+    "not release eligibility"
+  ]
+}
