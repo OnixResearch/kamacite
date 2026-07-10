@@ -1,0 +1,23 @@
+; Kamacite dialect roundtrip reference profile schema v1.
+; Inspired by tMIR dialect vocabulary preservation, but Preserves is canonical authority.
+
+DialectRoundtripProfile = <dialect-roundtrip-profile-v1 {
+  namespace: string,
+  operation-name: string,
+  payload-version: int,
+  payload-identity: Identity,
+  source-identity: Identity,
+  source-spans: [DialectSourceSpan ...],
+  lowering-receipt-identities: [Identity ...],
+  compatibility-projection-identity: Identity | false,
+  opaque-unknown-namespace: bool,
+  non-claims: [string ...]
+}>
+
+DialectSourceSpan = {
+  source-identity: Identity,
+  start-byte: int,
+  end-byte: int
+}
+
+Identity = { domain: string, algorithm: "blake3", hex: string }

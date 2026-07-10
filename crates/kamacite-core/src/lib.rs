@@ -7,6 +7,7 @@
 #![deny(clippy::unwrap_used)]
 
 mod diagnostic;
+mod dialect_roundtrip;
 mod docs_generation;
 mod evidence_chain;
 mod fixture;
@@ -17,6 +18,14 @@ mod receipt;
 mod valence_export;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
+pub use dialect_roundtrip::{
+    DIALECT_ROUNDTRIP_CANONICAL_OWNER, DIALECT_ROUNDTRIP_JSON_PROJECTION,
+    DIALECT_ROUNDTRIP_PROFILE_SCHEMA_VERSION, DialectRoundtripInput,
+    DialectRoundtripJsonProjection, DialectRoundtripProfile, DialectRoundtripValenceProjection,
+    DialectSourceSpan, dialect_payload_identity, dialect_roundtrip_json_projection,
+    dialect_roundtrip_profile, dialect_roundtrip_valence_projection,
+    validate_dialect_roundtrip_input, validate_dialect_roundtrip_json_projection,
+};
 pub use docs_generation::{
     DOCS_CONFIG_SCHEMA_VERSION, DOCUMENTATION_IR_SCHEMA_VERSION, DocsAssemblyInput,
     LANGUAGE_DOCUMENTATION_FACTS_SCHEMA_VERSION, LanguageDocumentationFactsArtifact,

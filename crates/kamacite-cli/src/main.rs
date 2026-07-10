@@ -54,6 +54,7 @@ const DOMAIN_FSM_COVERAGE: &str = "fsm-coverage";
 const DOMAIN_DOCUMENTATION_IR: &str = "documentation-ir";
 const DOMAIN_DOCUMENTATION_OUTPUT: &str = "documentation-output";
 const DOMAIN_DOCUMENTATION_FACTS: &str = "documentation-facts";
+const DOMAIN_DIALECT_PAYLOAD: &str = "dialect-payload";
 const DOMAIN_EVIDENCE_CHAIN: &str = "evidence-chain";
 const PROJECTION_IDENTITY_FIELD: &str = "projection_identity_hex";
 const FIXTURE_ID_FIELD_PREFIX: &str = "id = \"";
@@ -980,6 +981,7 @@ fn parse_domain(value: &str) -> CliResult<IdentityDomain> {
         DOMAIN_DOCUMENTATION_IR => Ok(IdentityDomain::DocumentationIr),
         DOMAIN_DOCUMENTATION_OUTPUT => Ok(IdentityDomain::DocumentationOutput),
         DOMAIN_DOCUMENTATION_FACTS => Ok(IdentityDomain::DocumentationFacts),
+        DOMAIN_DIALECT_PAYLOAD => Ok(IdentityDomain::DialectPayload),
         DOMAIN_EVIDENCE_CHAIN => Ok(IdentityDomain::EvidenceChain),
         unknown => Err(CliError(format!("unknown identity domain: {unknown}"))),
     }

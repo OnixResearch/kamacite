@@ -64,6 +64,7 @@ pub enum IdentityDomain {
     DocumentationIr,
     DocumentationOutput,
     DocumentationFacts,
+    DialectPayload,
     EvidenceChain,
 }
 
@@ -89,6 +90,7 @@ impl Display for IdentityDomain {
             Self::DocumentationIr => "documentation-ir",
             Self::DocumentationOutput => "documentation-output",
             Self::DocumentationFacts => "documentation-facts",
+            Self::DialectPayload => "dialect-payload",
             Self::EvidenceChain => "evidence-chain",
         };
         formatter.write_str(label)
