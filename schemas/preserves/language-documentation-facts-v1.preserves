@@ -1,0 +1,47 @@
+; Kamacite language documentation facts schema v1.
+; Facts are bounded collector outputs, not source-language semantic proof.
+
+LanguageDocumentationFacts = <language-documentation-facts-v1 {
+  language: "rust" | "nickel" | "steel",
+  source-identity: Identity,
+  collector-identity: Identity,
+  collector-profile-identity: Identity,
+  items: [DocumentationItem ...],
+  diagnostics: [string ...],
+  checked-laws: [string ...],
+  non-claims: [string ...]
+}>
+
+DocumentationItem = {
+  item-id: string,
+  symbol-path: string,
+  title: string,
+  signature: string | false,
+  contract-summary: string | false,
+  source-span: SourceByteSpan,
+  doc-blocks: [string ...],
+  code-blocks: [string ...],
+  runnable-cells: [RunnableCellRef ...],
+  links: [string ...],
+  dependency-identities: [Identity ...]
+}
+
+RunnableCellRef = {
+  cell-id: string,
+  language: "rust" | "nickel" | "steel",
+  source-identity: Identity,
+  required-capabilities: [string ...],
+  expected-result: string,
+  evaluator-identity: Identity | false,
+  wasm-target: WasmTargetBinding | false,
+  non-claims: [string ...]
+}
+
+WasmTargetBinding = {
+  module-identity: Identity,
+  runner-profile-identity: Identity,
+  expected-output-identity: Identity | false
+}
+
+SourceByteSpan = { start-byte: int, end-byte: int }
+Identity = { domain: string, algorithm: "blake3", hex: string }

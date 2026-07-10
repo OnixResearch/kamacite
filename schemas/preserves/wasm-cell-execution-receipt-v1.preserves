@@ -1,0 +1,21 @@
+; Kamacite WASM documentation cell execution receipt schema v1.
+
+WasmCellExecutionReceipt = <wasm-cell-execution-receipt-v1 {
+  cell-id: string,
+  source-identity: Identity,
+  module-identity: Identity,
+  runner-profile-identity: Identity,
+  engine-identity: Identity,
+  declared-imports: [string ...],
+  observed-imports: [string ...],
+  declared-capabilities: [string ...],
+  observed-effects: [string ...],
+  fuel-used: int,
+  memory-used-bytes: int,
+  output-identity: Identity | false,
+  diagnostics: [string ...],
+  receipt-identity: Identity,
+  non-claims: [string ...]
+}>
+
+Identity = { domain: string, algorithm: "blake3", hex: string }

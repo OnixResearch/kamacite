@@ -1,0 +1,15 @@
+; Kamacite documentation collection receipt schema v1.
+
+DocumentationCollectionReceipt = <documentation-collection-receipt-v1 {
+  source-identities: [Identity ...],
+  collector-identity: Identity,
+  collector-profile-identity: Identity,
+  facts-identity: Identity,
+  dependency-identities: [Identity ...],
+  diagnostics: [string ...],
+  checked-laws: [string ...],
+  receipt-identity: Identity,
+  non-claims: [string ...]
+}>
+
+Identity = { domain: string, algorithm: "blake3", hex: string }

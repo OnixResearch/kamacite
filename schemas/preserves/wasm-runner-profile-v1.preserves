@@ -1,0 +1,15 @@
+; Kamacite WASM runner profile schema v1.
+; WASM is a runnable documentation execution target, not canonical Kamacite IR.
+
+WasmRunnerProfile = <wasm-runner-profile-v1 {
+  profile-id: string,
+  engine-identity: Identity,
+  declared-imports: [string ...],
+  declared-capabilities: [string ...],
+  fuel-limit: int,
+  memory-limit-bytes: int,
+  output-limit-bytes: int,
+  non-claims: [string ...]
+}>
+
+Identity = { domain: string, algorithm: "blake3", hex: string }

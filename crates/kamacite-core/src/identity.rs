@@ -63,6 +63,7 @@ pub enum IdentityDomain {
     FsmCoverage,
     DocumentationIr,
     DocumentationOutput,
+    DocumentationFacts,
     EvidenceChain,
 }
 
@@ -87,6 +88,7 @@ impl Display for IdentityDomain {
             Self::FsmCoverage => "fsm-coverage",
             Self::DocumentationIr => "documentation-ir",
             Self::DocumentationOutput => "documentation-output",
+            Self::DocumentationFacts => "documentation-facts",
             Self::EvidenceChain => "evidence-chain",
         };
         formatter.write_str(label)

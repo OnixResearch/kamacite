@@ -2,18 +2,19 @@
 
 use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
-    CapabilityShellInput, DocumentationCellInput, DocumentationIrInput, DocumentationOutputInput,
-    DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
-    FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
-    FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
-    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressDependencyIdentityKind,
-    FunctionAddressProducer, FunctionAddressReceiptInput, FunctionAddressRecord,
-    FunctionAddressSourceEnvelope, FunctionAddressSpan, FunctionAddressValenceProjection,
-    HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
-    NickelAdapterReceiptInput, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
-    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
-    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
-    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict, compute_identity,
+    CapabilityShellInput, DOCS_CONFIG_SCHEMA_VERSION, DocumentationCellInput, DocumentationIrInput,
+    DocumentationOutputInput, DocumentationPageInput, DocumentationReceiptInput, EffectOperation,
+    FixtureCase, FixtureClass, FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput,
+    FsmGuardInput, FsmReceiptInput, FsmSideEffectInput, FsmSpecInput, FsmStateInput,
+    FsmTraceStepInput, FsmTransitionRowInput, FunctionAddressCaveat, FunctionAddressDependencyEdge,
+    FunctionAddressDependencyIdentityKind, FunctionAddressProducer, FunctionAddressReceiptInput,
+    FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
+    FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
+    IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput, ReceiptEnvelope,
+    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
+    SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
+    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
+    ValenceReceiptExportInput, ValidationVerdict, compute_identity, docs_config_identity,
     export_function_address_valence_projection, export_valence_receipt,
     function_address_projection_json, receipt_json, validate_fixture_suite,
     validate_function_address_receipt,
@@ -30,6 +31,8 @@ const DEFAULT_MANIFEST_SOURCE: &str = "fixtures/manifest.ncl";
 const DEFAULT_UPDATE_REPORT: &str = "target/kamacite-golden-update-receipt.json";
 const DEFAULT_VALENCE_EXPORT_UPDATE_REPORT: &str =
     "target/kamacite-valence-export-update-receipt.json";
+const DEFAULT_DOCS_CONFIG: &str = "docs/site.ncl";
+const DOCS_TARGET_WASM: &str = "wasm";
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_FAILURE: i32 = 1;
 const DOMAIN_SOURCE: &str = "source";
@@ -50,6 +53,7 @@ const DOMAIN_FSM_UNIVERSE: &str = "fsm-universe";
 const DOMAIN_FSM_COVERAGE: &str = "fsm-coverage";
 const DOMAIN_DOCUMENTATION_IR: &str = "documentation-ir";
 const DOMAIN_DOCUMENTATION_OUTPUT: &str = "documentation-output";
+const DOMAIN_DOCUMENTATION_FACTS: &str = "documentation-facts";
 const DOMAIN_EVIDENCE_CHAIN: &str = "evidence-chain";
 const PROJECTION_IDENTITY_FIELD: &str = "projection_identity_hex";
 const FIXTURE_ID_FIELD_PREFIX: &str = "id = \"";
@@ -98,6 +102,7 @@ enum Command {
     CheckManifestProjection(ManifestProjectionArgs),
     ExportValenceReceipt(ValenceExportArgs),
     EmitFunctionAddressReceipt(FunctionAddressReceiptArgs),
+    Docs(DocsArgs),
     Help,
 }
 
@@ -162,6 +167,42 @@ struct FunctionAddressReceiptArgs {
     sources: BTreeMap<String, PathBuf>,
     out: Option<PathBuf>,
     valence_out: Option<PathBuf>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "kebab-case")]
+enum DocsAction {
+    Collect,
+    Check,
+    Render,
+    RunCells,
+    Update,
+}
+
+#[derive(Clone, Debug)]
+struct DocsArgs {
+    action: DocsAction,
+    config: PathBuf,
+    format: Option<String>,
+    profile: Option<String>,
+    target: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+struct DocsCommandReport {
+    passed: bool,
+    action: DocsAction,
+    config_path: String,
+    config_schema_version: u32,
+    config_identity: Option<Identity>,
+    format: Option<String>,
+    profile: Option<String>,
+    target: Option<String>,
+    mutation_admitted: bool,
+    mutated: bool,
+    execution_admitted: bool,
+    executed: bool,
+    diagnostics: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -592,6 +633,7 @@ fn run() -> CliResult<i32> {
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::ExportValenceReceipt(args) => run_export_valence_receipt(args),
         Command::EmitFunctionAddressReceipt(args) => run_emit_function_address_receipt(args),
+        Command::Docs(args) => run_docs(args),
         Command::Help => {
             print_help();
             Ok(EXIT_SUCCESS)
@@ -612,6 +654,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "export-valence-receipt" => parse_valence_export_args(args_iter.collect()),
         "emit-function-address-receipt" => parse_function_address_receipt_args(args_iter.collect()),
+        "docs" => parse_docs_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
         unknown => Err(CliError(format!("unknown command: {unknown}"))),
     }
@@ -857,6 +900,40 @@ fn parse_function_address_receipt_args(args: Vec<String>) -> CliResult<Command> 
     ))
 }
 
+fn parse_docs_args(args: Vec<String>) -> CliResult<Command> {
+    let mut index = args.into_iter();
+    let Some(action) = index.next() else {
+        return Err(CliError(
+            "docs requires an action: collect, check, render, run-cells, or update".to_string(),
+        ));
+    };
+    let action = match action.as_str() {
+        "collect" => DocsAction::Collect,
+        "check" => DocsAction::Check,
+        "render" => DocsAction::Render,
+        "run-cells" => DocsAction::RunCells,
+        "update" => DocsAction::Update,
+        unknown => return Err(CliError(format!("unknown docs action: {unknown}"))),
+    };
+    let mut parsed = DocsArgs {
+        action,
+        config: PathBuf::from(DEFAULT_DOCS_CONFIG),
+        format: None,
+        profile: None,
+        target: None,
+    };
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--config" => parsed.config = next_path(&mut index, "--config")?,
+            "--format" => parsed.format = Some(next_value(&mut index, "--format")?),
+            "--profile" => parsed.profile = Some(next_value(&mut index, "--profile")?),
+            "--target" => parsed.target = Some(next_value(&mut index, "--target")?),
+            unknown => return Err(CliError(format!("unknown docs argument: {unknown}"))),
+        }
+    }
+    Ok(Command::Docs(parsed))
+}
+
 fn parse_source_assignment(value: &str) -> CliResult<(String, PathBuf)> {
     let Some((key, path)) = value.split_once('=') else {
         return Err(CliError(
@@ -902,8 +979,70 @@ fn parse_domain(value: &str) -> CliResult<IdentityDomain> {
         DOMAIN_FSM_COVERAGE => Ok(IdentityDomain::FsmCoverage),
         DOMAIN_DOCUMENTATION_IR => Ok(IdentityDomain::DocumentationIr),
         DOMAIN_DOCUMENTATION_OUTPUT => Ok(IdentityDomain::DocumentationOutput),
+        DOMAIN_DOCUMENTATION_FACTS => Ok(IdentityDomain::DocumentationFacts),
         DOMAIN_EVIDENCE_CHAIN => Ok(IdentityDomain::EvidenceChain),
         unknown => Err(CliError(format!("unknown identity domain: {unknown}"))),
+    }
+}
+
+fn run_docs(args: DocsArgs) -> CliResult<i32> {
+    let mut diagnostics = Vec::new();
+    if args
+        .config
+        .extension()
+        .and_then(|extension| extension.to_str())
+        != Some("ncl")
+    {
+        diagnostics.push("docs config must be a Nickel .ncl file".to_string());
+    }
+    let config_bytes = match read_path(&args.config) {
+        Ok(bytes) => Some(bytes),
+        Err(error) => {
+            diagnostics.push(error.to_string());
+            None
+        }
+    };
+    if matches!(args.action, DocsAction::RunCells)
+        && args.target.as_deref() == Some(DOCS_TARGET_WASM)
+    {
+        diagnostics.push(
+            "docs run-cells --target wasm is admitted but this shell does not execute by default"
+                .to_string(),
+        );
+    }
+    let mutation_admitted = matches!(args.action, DocsAction::Update);
+    if mutation_admitted {
+        diagnostics
+            .push("docs update is admitted but this shell does not mutate by default".to_string());
+    }
+    let execution_admitted = matches!(args.action, DocsAction::RunCells);
+    let config_identity = config_bytes.as_deref().map(docs_config_identity);
+    let passed = diagnostics.is_empty()
+        || diagnostics.iter().all(|diagnostic| {
+            diagnostic.contains("admitted")
+                || diagnostic.contains("does not execute")
+                || diagnostic.contains("does not mutate")
+        });
+    let report = DocsCommandReport {
+        passed,
+        action: args.action,
+        config_path: path_display(&args.config),
+        config_schema_version: DOCS_CONFIG_SCHEMA_VERSION,
+        config_identity,
+        format: args.format,
+        profile: args.profile,
+        target: args.target,
+        mutation_admitted,
+        mutated: false,
+        execution_admitted,
+        executed: false,
+        diagnostics,
+    };
+    print_json_report(&report, "docs command report")?;
+    if report.passed {
+        Ok(EXIT_SUCCESS)
+    } else {
+        Ok(EXIT_FAILURE)
     }
 }
 
@@ -2283,7 +2422,8 @@ fn print_help() {
          kamacite-validate hash-file --domain DOMAIN --path PATH\n\
          kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]\n\
          kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]\n\
-         kamacite-validate emit-function-address-receipt --report PATH --source KEY=PATH [--root PATH] [--out PATH] [--valence-out PATH]"
+         kamacite-validate emit-function-address-receipt --report PATH --source KEY=PATH [--root PATH] [--out PATH] [--valence-out PATH]\n\
+         kamacite-validate docs collect|check|render|run-cells|update [--config PATH] [--format FORMAT] [--profile PROFILE] [--target TARGET]"
     );
 }
 

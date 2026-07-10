@@ -7,6 +7,7 @@
 #![deny(clippy::unwrap_used)]
 
 mod diagnostic;
+mod docs_generation;
 mod evidence_chain;
 mod fixture;
 mod function_address;
@@ -16,6 +17,15 @@ mod receipt;
 mod valence_export;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
+pub use docs_generation::{
+    DOCS_CONFIG_SCHEMA_VERSION, DOCUMENTATION_IR_SCHEMA_VERSION, DocsAssemblyInput,
+    LANGUAGE_DOCUMENTATION_FACTS_SCHEMA_VERSION, LanguageDocumentationFactsArtifact,
+    LanguageDocumentationFactsInput, LanguageDocumentationItem, RunnableCellReference,
+    SourceByteSpan, WasmExecutionRecordInput, WasmRunnerProfileInput, WasmTargetBinding,
+    assemble_documentation_ir, docs_config_identity, language_documentation_facts_artifact,
+    validate_language_documentation_facts, validate_wasm_execution_record,
+    validate_wasm_runner_profile,
+};
 pub use evidence_chain::{
     EVIDENCE_CHAIN_CANONICAL_CODEC, EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION,
     EVIDENCE_CHAIN_JSON_PROJECTION, EvidenceChainEnvelope, EvidenceChainEnvelopeBody,
