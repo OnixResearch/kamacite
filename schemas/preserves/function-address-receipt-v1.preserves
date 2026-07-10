@@ -1,0 +1,59 @@
+; Kamacite function-address receipt schema v1.
+; Preserves bytes are the authoritative receipt identity input.
+; JSON projections are compatibility output only.
+
+FunctionAddressReceipt = <function-address-receipt-v1 {
+  producer: Producer,
+  source-envelopes: [SourceEnvelope ...],
+  functions: [FunctionRecord ...],
+  dependency-edges: [DependencyEdge ...],
+  caveats: [Caveat ...],
+  non-claims: [string ...]
+}>
+
+Producer = {
+  name: string,
+  canonicalizer: string,
+  tool-version: string
+}
+
+SourceEnvelope = {
+  key: string,
+  display-path: string,
+  language: string,
+  source-bytes: bytes,
+  source-identity: Identity
+}
+
+FunctionRecord = {
+  locator: string,
+  display-name: string,
+  source-key: string,
+  span: Span | false,
+  function-address: Identity,
+  dependency-closure: Identity | false,
+  caveats: [string ...]
+}
+
+Span = {
+  source-key: string,
+  start-byte: uint,
+  end-byte: uint
+}
+
+DependencyEdge = {
+  from-locator: string,
+  to-locator: string,
+  dependency-identity: Identity | false
+}
+
+Caveat = {
+  locator: string,
+  reason: string
+}
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}
