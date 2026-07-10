@@ -50,6 +50,7 @@ const DOMAIN_FSM_UNIVERSE: &str = "fsm-universe";
 const DOMAIN_FSM_COVERAGE: &str = "fsm-coverage";
 const DOMAIN_DOCUMENTATION_IR: &str = "documentation-ir";
 const DOMAIN_DOCUMENTATION_OUTPUT: &str = "documentation-output";
+const DOMAIN_EVIDENCE_CHAIN: &str = "evidence-chain";
 const PROJECTION_IDENTITY_FIELD: &str = "projection_identity_hex";
 const FIXTURE_ID_FIELD_PREFIX: &str = "id = \"";
 const DIAGNOSTIC_MISSING_PROJECTION_IDENTITY: &str = "manifest-source-missing-projection-identity";
@@ -901,6 +902,7 @@ fn parse_domain(value: &str) -> CliResult<IdentityDomain> {
         DOMAIN_FSM_COVERAGE => Ok(IdentityDomain::FsmCoverage),
         DOMAIN_DOCUMENTATION_IR => Ok(IdentityDomain::DocumentationIr),
         DOMAIN_DOCUMENTATION_OUTPUT => Ok(IdentityDomain::DocumentationOutput),
+        DOMAIN_EVIDENCE_CHAIN => Ok(IdentityDomain::EvidenceChain),
         unknown => Err(CliError(format!("unknown identity domain: {unknown}"))),
     }
 }

@@ -1,0 +1,42 @@
+; Kamacite evidence-chain envelope schema v1.
+; Canonical Preserves binary bytes are the authoritative envelope identity input.
+; JSON projections are compatibility/debug output only and must bind this identity.
+
+EvidenceChainEnvelope = <evidence-chain-envelope-v1 {
+  evidence-kind: EvidenceKind,
+  policy-hash: Identity,
+  profile-hash: Identity,
+  parent-links: [ParentLink ...],
+  profile-payload-roots: [ProfilePayloadRoot ...],
+  non-claim-boundary-hash: Identity,
+  projections: [ProjectionRecord ...],
+  non-claims: [string ...]
+}>
+
+EvidenceKind = "function-address" | "proof" | "lint" | "dependency" | "build" | "attestation" | "lifecycle"
+
+ParentLink = {
+  domain: ParentLinkDomain,
+  identity: Identity
+}
+
+ParentLinkDomain = "source-root" | "producer-handoff-root" | "receipt-root" | "validation-root" | "release-root" | "readiness-root"
+
+ProfilePayloadRoot = {
+  evidence-kind: EvidenceKind,
+  schema-version: string,
+  root-identity: Identity
+}
+
+ProjectionRecord = {
+  projection-kind: string,
+  projection-identity: Identity,
+  canonical-envelope-identity: Identity,
+  authority: "non-authoritative-projection"
+}
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}

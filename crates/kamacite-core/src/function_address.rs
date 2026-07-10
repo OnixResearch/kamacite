@@ -14,8 +14,6 @@ pub const FUNCTION_ADDRESS_VALENCE_PROJECTION_SCHEMA_VERSION: &str =
 const CANONICAL_BYTES_PREFIX: &[u8] =
     b"kamacite-preserves-canonical-binary:function-address-receipt:v1\n";
 const REQUIREMENT_CONTRACT: &str = "r[kamacite.function_address_receipts.contract]";
-const REQUIREMENT_CANONICAL_IDENTITY: &str =
-    "r[kamacite.function_address_receipts.canonical_identity]";
 const REQUIREMENT_VALIDATION: &str = "r[kamacite.function_address_receipts.validation]";
 const REQUIREMENT_OCTET_INTEROP: &str = "r[kamacite.function_address_receipts.octet_interop]";
 const REQUIREMENT_DEPENDENCY_KIND: &str =

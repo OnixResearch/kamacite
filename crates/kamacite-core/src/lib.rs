@@ -7,6 +7,7 @@
 #![deny(clippy::unwrap_used)]
 
 mod diagnostic;
+mod evidence_chain;
 mod fixture;
 mod function_address;
 mod identity;
@@ -14,6 +15,15 @@ mod receipt;
 mod valence_export;
 
 pub use diagnostic::{Diagnostic, DiagnosticCode};
+pub use evidence_chain::{
+    EVIDENCE_CHAIN_CANONICAL_CODEC, EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION,
+    EVIDENCE_CHAIN_JSON_PROJECTION, EvidenceChainEnvelope, EvidenceChainEnvelopeBody,
+    EvidenceChainEnvelopeInput, EvidenceChainJsonProjection, EvidenceChainParentLink,
+    EvidenceChainProfileRoot, EvidenceChainProjectionRecord, EvidenceKind, ParentLinkDomain,
+    build_evidence_chain_envelope, evidence_chain_canonical_bytes, evidence_chain_collection_root,
+    evidence_chain_json_projection, function_address_evidence_chain_input,
+    validate_evidence_chain_envelope_input, validate_evidence_chain_json_projection,
+};
 pub use fixture::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, CanonicalValueInput,
     CapabilityShellInput, DocumentationCellDescriptor, DocumentationCellInput,
