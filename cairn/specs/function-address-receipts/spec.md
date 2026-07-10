@@ -38,9 +38,39 @@ r[kamacite.function_address_receipts.canonical_identity.names_metadata]
 - WHEN Kamacite computes canonical receipt identity
 - THEN the identity MUST remain unchanged and the metadata differences MUST remain visible as metadata.
 
+### Requirement: Function-address receipts have a versioned Preserves schema
+
+r[kamacite.function_address_receipts.preserves_authority.schema] Kamacite MUST define a versioned Preserves schema for function-address receipts covering producer metadata, source envelope identity, repo-relative paths, byte spans, function addresses, dependency identity kind, digest domains, and non-claims.
+
+#### Scenario: Valid Octet handoff encodes as Preserves
+r[kamacite.function_address_receipts.preserves_authority.positive]
+- GIVEN Octet supplies a complete function-address handoff envelope
+- WHEN Kamacite validates and encodes it
+- THEN Kamacite MUST produce a schema-valid Preserves function-address receipt.
+
+### Requirement: Canonical Preserves binary bytes own receipt identity
+
+r[kamacite.function_address_receipts.preserves_authority.hash] Kamacite MUST compute function-address receipt identity as BLAKE3 over canonical Preserves binary bytes.
+
+#### Scenario: Canonical hash is stable across transfer syntax
+r[kamacite.function_address_receipts.preserves_authority.validation]
+- GIVEN the same typed function-address receipt is represented in Preserves text and binary transfer syntaxes
+- WHEN Kamacite canonicalizes the receipt
+- THEN the canonical binary bytes and BLAKE3 receipt identity MUST be stable.
+
+### Requirement: JSON projection is non-authoritative and bound
+
+r[kamacite.function_address_receipts.preserves_authority.json_projection] Kamacite MAY emit JSON compatibility projections, but each projection MUST identify the canonical Preserves receipt hash and MUST NOT be treated as the lossless authority.
+
+#### Scenario: Projection drift fails closed
+r[kamacite.function_address_receipts.preserves_authority.negative]
+- GIVEN a JSON projection disagrees with the canonical Preserves receipt or omits the canonical receipt hash
+- WHEN Kamacite or downstream validators compare the projection to the canonical receipt
+- THEN validation MUST fail with a deterministic projection-drift diagnostic.
+
 ### Requirement: Receipt validation fails closed
 
-r[kamacite.function_address_receipts.validation] Kamacite MUST fail closed when function-address receipts contain stale identities, malformed BLAKE3 digests, unknown identity domains, duplicate function locators, dependency edges pointing to absent functions, missing non-claims, or overclaim text.
+r[kamacite.function_address_receipts.validation] Kamacite MUST fail closed when function-address receipts contain stale identities, malformed BLAKE3 digests, unknown identity domains, duplicate function locators, dependency edges pointing to absent functions, missing non-claims, invalid source spans, projection drift, or overclaim text.
 
 #### Scenario: Stale source identity fails
 r[kamacite.function_address_receipts.validation.stale_source]

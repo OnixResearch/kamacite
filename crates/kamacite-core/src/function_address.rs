@@ -5,12 +5,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
 pub const FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str = "kamacite.function-address-receipt.v1";
-pub const FUNCTION_ADDRESS_CANONICAL_CODEC: &str = "kamacite-preserves-function-address-receipt-v1";
+pub const FUNCTION_ADDRESS_CANONICAL_CODEC: &str =
+    "kamacite-preserves-canonical-binary-function-address-receipt-v1";
 pub const FUNCTION_ADDRESS_JSON_PROJECTION: &str =
     "kamacite.function-address-receipt.v1.compat-json";
 pub const FUNCTION_ADDRESS_VALENCE_PROJECTION_SCHEMA_VERSION: &str =
     "kamacite.function-address-valence-projection.v1";
-const CANONICAL_BYTES_PREFIX: &[u8] = b"kamacite-preserves:function-address-receipt:v1\n";
+const CANONICAL_BYTES_PREFIX: &[u8] =
+    b"kamacite-preserves-canonical-binary:function-address-receipt:v1\n";
 const REQUIREMENT_CONTRACT: &str = "r[kamacite.function_address_receipts.contract]";
 const REQUIREMENT_CANONICAL_IDENTITY: &str =
     "r[kamacite.function_address_receipts.canonical_identity]";
@@ -22,6 +24,12 @@ const REQUIREMENT_DEPENDENCY_COMPAT: &str =
     "r[kamacite.function_address_receipts.dependency_vocabulary.compat]";
 const REQUIREMENT_DEPENDENCY_OVERCLAIM: &str =
     "r[kamacite.function_address_receipts.dependency_vocabulary.negative]";
+const REQUIREMENT_PRESERVES_SCHEMA: &str =
+    "r[kamacite.function_address_receipts.preserves_authority.schema]";
+const REQUIREMENT_PRESERVES_HASH: &str =
+    "r[kamacite.function_address_receipts.preserves_authority.hash]";
+const REQUIREMENT_JSON_PROJECTION: &str =
+    "r[kamacite.function_address_receipts.preserves_authority.json_projection]";
 const NON_CLAIM_HOST_LANGUAGE_SEMANTICS: &str = "not host-language semantic correctness";
 const NON_CLAIM_COMPILER_CORRECTNESS: &str = "not compiler correctness";
 const NON_CLAIM_RUNTIME_BEHAVIOR: &str = "not runtime behavior";
@@ -228,10 +236,12 @@ pub fn validate_function_address_receipt(
     validate_non_claims(&input.non_claims, &mut diagnostics);
     validate_semantic_claims(&input.semantic_claims, &mut diagnostics);
     let source_identities = validate_sources(&input.source_envelopes, &mut diagnostics);
+    let source_lengths = source_byte_lengths(&input.source_envelopes);
     let mut dependency_kinds = BTreeMap::new();
     let function_addresses = validate_functions(
         input,
         &source_identities,
+        &source_lengths,
         &mut dependency_kinds,
         &mut diagnostics,
     );
@@ -263,7 +273,7 @@ pub fn validate_function_address_receipt(
             passed: false,
             diagnostics: vec![Diagnostic::new(
                 DiagnosticCode::MalformedProjectionOutput,
-                REQUIREMENT_CANONICAL_IDENTITY,
+                REQUIREMENT_PRESERVES_HASH,
                 "receipt",
                 format!("function-address receipt canonicalization failed: {error}"),
             )],
@@ -300,6 +310,69 @@ pub fn function_address_projection_json(
     let projection = function_address_json_projection(receipt);
     serde_json::to_string_pretty(&projection)
         .map_err(|error| ReceiptError::Serialize(error.to_string()))
+}
+
+pub fn validate_function_address_json_projection(
+    projection: &FunctionAddressJsonProjection,
+) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    if projection.compatibility_projection != FUNCTION_ADDRESS_JSON_PROJECTION {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_JSON_PROJECTION,
+                "compatibility_projection",
+                "function-address JSON projection declares an unsupported projection kind",
+            )
+            .with_detail("actual", projection.compatibility_projection.clone())
+            .with_detail("expected", FUNCTION_ADDRESS_JSON_PROJECTION),
+        );
+    }
+    if projection.canonical_identity_owner != FUNCTION_ADDRESS_CANONICAL_CODEC {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_JSON_PROJECTION,
+                "canonical_identity_owner",
+                "function-address JSON projection must bind to canonical Preserves receipt identity",
+            )
+            .with_detail("actual", projection.canonical_identity_owner.clone())
+            .with_detail("expected", FUNCTION_ADDRESS_CANONICAL_CODEC),
+        );
+    }
+    let input = FunctionAddressReceiptInput {
+        producer: projection.receipt.producer.clone(),
+        source_envelopes: projection.receipt.source_envelopes.clone(),
+        functions: projection.receipt.functions.clone(),
+        dependency_edges: projection.receipt.dependency_edges.clone(),
+        caveats: projection.receipt.caveats.clone(),
+        semantic_claims: Vec::new(),
+        non_claims: projection.receipt.non_claims.clone(),
+    };
+    let result = validate_function_address_receipt(&input);
+    diagnostics.extend(result.diagnostics);
+    match result.receipt {
+        Some(receipt) if receipt.receipt_identity == projection.receipt_identity => {}
+        Some(receipt) => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_JSON_PROJECTION,
+                "receipt_identity",
+                "function-address JSON projection receipt identity does not match canonical Preserves bytes",
+            )
+            .with_detail("declared", projection.receipt_identity.hex.as_str())
+            .with_detail("computed", receipt.receipt_identity.hex.as_str()),
+        ),
+        None => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_JSON_PROJECTION,
+            "receipt",
+            "function-address JSON projection receipt body is not schema-valid",
+        )),
+    }
+    diagnostics.sort();
+    diagnostics.dedup();
+    diagnostics
 }
 
 pub fn export_function_address_valence_projection(
@@ -551,6 +624,7 @@ fn validate_sources(
 fn validate_functions(
     input: &FunctionAddressReceiptInput,
     source_identities: &BTreeMap<String, Identity>,
+    source_lengths: &BTreeMap<String, u64>,
     dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
 ) -> BTreeMap<String, Identity> {
@@ -580,6 +654,7 @@ fn validate_functions(
                 .with_detail("source_key", function.source_key.clone()),
             );
         }
+        validate_function_span(function, source_lengths, diagnostics);
         validate_identity_domain(
             &function.function_address,
             IdentityDomain::FunctionAddress,
@@ -605,6 +680,64 @@ fn validate_functions(
         ));
     }
     function_addresses
+}
+
+fn validate_function_span(
+    function: &FunctionAddressRecord,
+    source_lengths: &BTreeMap<String, u64>,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let Some(span) = function.span.as_ref() else {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_PRESERVES_SCHEMA,
+                "functions.span",
+                "canonical function-address Preserves receipts require byte spans from the Octet handoff",
+            )
+            .with_detail("locator", function.locator.clone()),
+        );
+        return;
+    };
+    if span.source_key != function.source_key {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_PRESERVES_SCHEMA,
+                "functions.span.source_key",
+                "function-address span source key must match the function record source key",
+            )
+            .with_detail("locator", function.locator.clone())
+            .with_detail("span_source_key", span.source_key.clone())
+            .with_detail("function_source_key", function.source_key.clone()),
+        );
+    }
+    if span.start_byte >= span.end_byte {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_PRESERVES_SCHEMA,
+                "functions.span",
+                "function-address span must be a non-empty increasing byte range",
+            )
+            .with_detail("locator", function.locator.clone()),
+        );
+    }
+    if let Some(source_len) = source_lengths.get(&span.source_key) {
+        if span.end_byte > *source_len {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MalformedProjectionOutput,
+                    REQUIREMENT_PRESERVES_SCHEMA,
+                    "functions.span.end_byte",
+                    "function-address span must fit within the preserved source envelope bytes",
+                )
+                .with_detail("locator", function.locator.clone())
+                .with_detail("source_len", source_len.to_string())
+                .with_detail("end_byte", span.end_byte.to_string()),
+            );
+        }
+    }
 }
 
 fn validate_dependency_edges(
@@ -782,6 +915,19 @@ fn source_identity_map(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<St
         .collect()
 }
 
+fn source_byte_lengths(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<String, u64> {
+    sources
+        .iter()
+        .map(|source| {
+            (
+                source.key.clone(),
+                u64::try_from(source.source_bytes.len())
+                    .expect("source envelope byte length should fit u64"),
+            )
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -803,6 +949,7 @@ mod tests {
     const INVALID_SHORT_HEX: &str = "abc";
     const SPAN_START: u64 = 0;
     const SPAN_END: u64 = 23;
+    const SPAN_PAST_SOURCE_INCREMENT: u64 = 1;
 
     fn valid_input() -> FunctionAddressReceiptInput {
         let source_identity = compute_identity(IdentityDomain::Source, SOURCE_BYTES.as_bytes());
@@ -843,7 +990,12 @@ mod tests {
                     locator: FUNCTION_G_LOCATOR.to_string(),
                     display_name: FUNCTION_G_NAME.to_string(),
                     source_key: SOURCE_KEY.to_string(),
-                    span: None,
+                    span: Some(FunctionAddressSpan {
+                        source_key: SOURCE_KEY.to_string(),
+                        start_byte: SPAN_END,
+                        end_byte: u64::try_from(SOURCE_BYTES.len())
+                            .expect("source bytes length should fit u64"),
+                    }),
                     function_address: function_g,
                     dependency_closure: Some(dependency.clone()),
                     dependency_identity_kind: Some(
@@ -900,6 +1052,75 @@ mod tests {
         assert_eq!(
             projection.compatibility_projection,
             FUNCTION_ADDRESS_JSON_PROJECTION
+        );
+    }
+
+    #[test]
+    fn canonical_preserves_bytes_own_receipt_identity_and_projection_round_trips() {
+        let input = valid_input();
+        let receipt = valid_receipt();
+        let canonical_bytes = function_address_canonical_bytes(&input).expect("canonical bytes");
+        let projection_json = function_address_projection_json(&receipt).expect("projection JSON");
+        let projection = serde_json::from_str::<FunctionAddressJsonProjection>(&projection_json)
+            .expect("projection round trip");
+
+        assert_eq!(
+            compute_identity(IdentityDomain::Receipt, &canonical_bytes),
+            receipt.receipt_identity
+        );
+        assert_eq!(projection.receipt_identity, receipt.receipt_identity);
+        assert!(validate_function_address_json_projection(&projection).is_empty());
+    }
+
+    #[test]
+    fn projection_drift_or_json_authority_is_rejected() {
+        let receipt = valid_receipt();
+        let mut projection = function_address_json_projection(&receipt);
+        projection.canonical_identity_owner = "json".to_string();
+        projection.receipt.functions[0].function_address =
+            compute_identity(IdentityDomain::FunctionAddress, b"drifted function");
+
+        let diagnostics = validate_function_address_json_projection(&projection);
+
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == DiagnosticCode::MalformedProjectionOutput
+                && diagnostic.field == "canonical_identity_owner"
+        }));
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == DiagnosticCode::StaleIdentity
+                && diagnostic.field == "receipt_identity"
+        }));
+    }
+
+    #[test]
+    fn missing_or_out_of_range_spans_are_rejected() {
+        let mut missing = valid_input();
+        missing.functions[0].span = None;
+        let mut out_of_range = valid_input();
+        let source_len =
+            u64::try_from(SOURCE_BYTES.len()).expect("source bytes length should fit u64");
+        out_of_range.functions[0].span = Some(FunctionAddressSpan {
+            source_key: SOURCE_KEY.to_string(),
+            start_byte: SPAN_START,
+            end_byte: source_len + SPAN_PAST_SOURCE_INCREMENT,
+        });
+
+        let missing_result = validate_function_address_receipt(&missing);
+        let out_of_range_result = validate_function_address_receipt(&out_of_range);
+
+        assert!(!missing_result.passed);
+        assert!(
+            missing_result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "functions.span")
+        );
+        assert!(!out_of_range_result.passed);
+        assert!(
+            out_of_range_result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "functions.span.end_byte")
         );
     }
 

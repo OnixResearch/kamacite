@@ -1,6 +1,18 @@
 ; Kamacite function-address receipt schema v1.
-; Preserves bytes are the authoritative receipt identity input.
-; JSON projections are compatibility output only.
+; Canonical Preserves binary bytes are the authoritative receipt identity input.
+; JSON projections are compatibility/debug output only and must bind this identity.
+
+FunctionAddressReceiptEnvelope = <function-address-receipt-envelope-v1 {
+  body: FunctionAddressReceipt,
+  receipt-identity: Identity,
+  projection-binding: JsonProjectionBinding | false
+}>
+
+JsonProjectionBinding = {
+  compatibility-projection: "kamacite.function-address-receipt.v1.compat-json",
+  canonical-identity-owner: "kamacite-preserves-canonical-binary-function-address-receipt-v1",
+  receipt-identity: Identity
+}
 
 FunctionAddressReceipt = <function-address-receipt-v1 {
   producer: Producer,

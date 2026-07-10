@@ -6,14 +6,14 @@ use kamacite_core::{
     DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
     FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
     FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
-    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressProducer,
-    FunctionAddressReceiptInput, FunctionAddressRecord, FunctionAddressSourceEnvelope,
-    FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
-    IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput, ReceiptEnvelope,
-    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
-    SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
-    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValidationVerdict, compute_identity,
+    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressDependencyIdentityKind,
+    FunctionAddressProducer, FunctionAddressReceiptInput, FunctionAddressRecord,
+    FunctionAddressSourceEnvelope, FunctionAddressSpan, FunctionAddressValenceProjection,
+    HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
+    NickelAdapterReceiptInput, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
+    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
+    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
+    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict, compute_identity,
     export_function_address_valence_projection, export_valence_receipt,
     function_address_projection_json, receipt_json, validate_fixture_suite,
     validate_function_address_receipt,
@@ -165,21 +165,56 @@ struct FunctionAddressReceiptArgs {
 
 #[derive(Clone, Debug, Deserialize)]
 struct OctetFunctionAddressReport {
-    producer: FunctionAddressProducer,
+    canonicalizer: String,
+    #[serde(default)]
+    tool: String,
+    producer: OctetFunctionAddressProducer,
     source_envelopes: Vec<OctetFunctionAddressSourceEnvelope>,
-    functions: Vec<FunctionAddressRecord>,
+    #[serde(default, alias = "functions")]
+    records: Vec<OctetFunctionAddressRecord>,
+    #[serde(default)]
     dependency_edges: Vec<FunctionAddressDependencyEdge>,
+    #[serde(default)]
     caveats: Vec<FunctionAddressCaveat>,
+    #[serde(default)]
     semantic_claims: Vec<String>,
     non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+struct OctetFunctionAddressProducer {
+    name: String,
+    #[serde(default)]
+    role: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 struct OctetFunctionAddressSourceEnvelope {
+    #[serde(default)]
     key: String,
-    display_path: String,
+    #[serde(default, alias = "display_path")]
+    path: String,
     language: String,
-    source_identity: Identity,
+    source_identity: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct OctetFunctionAddressRecord {
+    #[serde(default, alias = "locator")]
+    path: String,
+    #[serde(default, alias = "display_name")]
+    name: String,
+    #[serde(default)]
+    source_key: String,
+    start_byte: u64,
+    end_byte: u64,
+    function_address: String,
+    #[serde(default, alias = "dependency_closure")]
+    dependency_set_hash: Option<String>,
+    #[serde(default)]
+    dependency_identity_kind: Option<String>,
+    #[serde(default)]
+    caveats: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -1045,42 +1080,114 @@ fn build_function_address_receipt_input(
     report: OctetFunctionAddressReport,
     source_bytes: &BTreeMap<String, String>,
 ) -> CliResult<FunctionAddressReceiptInput> {
+    let mut normalized_sources = Vec::new();
+    for source in report.source_envelopes {
+        let key = octet_source_key(&source);
+        let Some(bytes) = source_bytes.get(&key) else {
+            return Err(CliError(format!(
+                "Octet function-address report source {key} has no matching --source KEY=PATH input"
+            )));
+        };
+        normalized_sources.push(FunctionAddressSourceEnvelope {
+            key,
+            display_path: source.path,
+            language: source.language,
+            source_bytes: bytes.clone(),
+            source_identity: octet_identity(IdentityDomain::Source, &source.source_identity)?,
+        });
+    }
     for key in source_bytes.keys() {
-        if !report
-            .source_envelopes
-            .iter()
-            .any(|source| source.key == *key)
-        {
+        if !normalized_sources.iter().any(|source| source.key == *key) {
             return Err(CliError(format!(
                 "--source key {key} is not declared by the Octet function-address report"
             )));
         }
     }
-    let mut source_envelopes = Vec::new();
-    for source in report.source_envelopes {
-        let Some(bytes) = source_bytes.get(&source.key) else {
-            return Err(CliError(format!(
-                "Octet function-address report source {} has no matching --source KEY=PATH input",
-                source.key
-            )));
-        };
-        source_envelopes.push(FunctionAddressSourceEnvelope {
-            key: source.key,
-            display_path: source.display_path,
-            language: source.language,
-            source_bytes: bytes.clone(),
-            source_identity: source.source_identity,
-        });
-    }
+    let functions = report
+        .records
+        .into_iter()
+        .map(octet_function_record)
+        .collect::<CliResult<Vec<_>>>()?;
+    let tool_version = if report.tool.is_empty() {
+        report.producer.role
+    } else {
+        report.tool
+    };
     Ok(FunctionAddressReceiptInput {
-        producer: report.producer,
-        source_envelopes,
-        functions: report.functions,
+        producer: FunctionAddressProducer {
+            name: report.producer.name,
+            canonicalizer: report.canonicalizer,
+            tool_version,
+        },
+        source_envelopes: normalized_sources,
+        functions,
         dependency_edges: report.dependency_edges,
         caveats: report.caveats,
         semantic_claims: report.semantic_claims,
         non_claims: report.non_claims,
     })
+}
+
+fn octet_source_key(source: &OctetFunctionAddressSourceEnvelope) -> String {
+    if source.key.is_empty() {
+        source.path.clone()
+    } else {
+        source.key.clone()
+    }
+}
+
+fn octet_function_record(record: OctetFunctionAddressRecord) -> CliResult<FunctionAddressRecord> {
+    let source_key = if record.source_key.is_empty() {
+        record.path.clone()
+    } else {
+        record.source_key
+    };
+    Ok(FunctionAddressRecord {
+        locator: format!("{}::{}", record.path, record.name),
+        display_name: record.name,
+        source_key: source_key.clone(),
+        span: Some(FunctionAddressSpan {
+            source_key,
+            start_byte: record.start_byte,
+            end_byte: record.end_byte,
+        }),
+        function_address: octet_identity(
+            IdentityDomain::FunctionAddress,
+            &record.function_address,
+        )?,
+        dependency_closure: record
+            .dependency_set_hash
+            .as_deref()
+            .map(|hash| octet_identity(IdentityDomain::DependencyClosure, hash))
+            .transpose()?,
+        dependency_identity_kind: record
+            .dependency_identity_kind
+            .as_deref()
+            .map(octet_dependency_kind)
+            .transpose()?,
+        caveats: record.caveats,
+    })
+}
+
+fn octet_identity(domain: IdentityDomain, value: &str) -> CliResult<Identity> {
+    let hex = value.strip_prefix("b3:").unwrap_or(value);
+    let parsed = Blake3Hex::parse(hex.to_owned())
+        .map_err(|error| CliError(format!("invalid Octet BLAKE3 identity `{value}`: {error}")))?;
+    Ok(Identity::new(domain, parsed))
+}
+
+fn octet_dependency_kind(value: &str) -> CliResult<FunctionAddressDependencyIdentityKind> {
+    match value {
+        "source-token-set" | "source-token-dependency-set" => {
+            Ok(FunctionAddressDependencyIdentityKind::SourceTokenDependencySet)
+        }
+        "source-shape-set" | "source-shape-dependency-set" => {
+            Ok(FunctionAddressDependencyIdentityKind::SourceShapeDependencySet)
+        }
+        other => Err(CliError(format!(
+            "unsupported Octet dependency_identity_kind `{other}`"
+        ))),
+    }
 }
 
 fn print_json_report<T: Serialize>(report: &T, label: &str) -> CliResult<()> {
@@ -2218,27 +2325,28 @@ mod tests {
         let function_address = compute_identity(IdentityDomain::FunctionAddress, b"function f");
         let dependency_identity = compute_identity(IdentityDomain::DependencyClosure, b"tokens f");
         OctetFunctionAddressReport {
-            producer: FunctionAddressProducer {
+            canonicalizer: TEST_CANONICALIZER.to_string(),
+            tool: TEST_OCTET_VERSION.to_string(),
+            producer: OctetFunctionAddressProducer {
                 name: "octet".to_string(),
-                canonicalizer: TEST_CANONICALIZER.to_string(),
-                tool_version: TEST_OCTET_VERSION.to_string(),
+                role: "rust-source-shape-producer".to_string(),
             },
             source_envelopes: vec![OctetFunctionAddressSourceEnvelope {
                 key: TEST_SOURCE_KEY.to_string(),
-                display_path: TEST_SOURCE_PATH.to_string(),
+                path: TEST_SOURCE_PATH.to_string(),
                 language: "rust".to_string(),
-                source_identity,
+                source_identity: format!("b3:{}", source_identity.hex.as_str()),
             }],
-            functions: vec![FunctionAddressRecord {
-                locator: TEST_FUNCTION_LOCATOR.to_string(),
-                display_name: TEST_FUNCTION_NAME.to_string(),
+            records: vec![OctetFunctionAddressRecord {
+                path: TEST_SOURCE_PATH.to_string(),
+                name: TEST_FUNCTION_NAME.to_string(),
                 source_key: TEST_SOURCE_KEY.to_string(),
-                span: None,
-                function_address,
-                dependency_closure: Some(dependency_identity.clone()),
-                dependency_identity_kind: Some(
-                    kamacite_core::FunctionAddressDependencyIdentityKind::SourceTokenDependencySet,
-                ),
+                start_byte: 0,
+                end_byte: u64::try_from(TEST_SOURCE_BYTES.len())
+                    .expect("test source length fits u64"),
+                function_address: format!("b3:{}", function_address.hex.as_str()),
+                dependency_set_hash: Some(format!("b3:{}", dependency_identity.hex.as_str())),
+                dependency_identity_kind: Some("source-token-set".to_string()),
                 caveats: Vec::new(),
             }],
             dependency_edges: vec![FunctionAddressDependencyEdge {

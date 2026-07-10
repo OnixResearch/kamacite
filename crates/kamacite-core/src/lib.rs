@@ -37,7 +37,7 @@ pub use function_address::{
     FunctionAddressValenceArtifact, FunctionAddressValenceProjection,
     export_function_address_valence_projection, function_address_canonical_bytes,
     function_address_json_projection, function_address_projection_json,
-    validate_function_address_receipt,
+    validate_function_address_json_projection, validate_function_address_receipt,
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,
