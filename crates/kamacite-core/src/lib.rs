@@ -11,6 +11,7 @@ mod evidence_chain;
 mod fixture;
 mod function_address;
 mod identity;
+mod proof_evidence;
 mod receipt;
 mod valence_export;
 
@@ -51,6 +52,15 @@ pub use function_address::{
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,
+};
+pub use proof_evidence::{
+    TRELLIS_PROOF_PROFILE_CANONICAL_CODEC, TRELLIS_PROOF_PROFILE_JSON_PROJECTION,
+    TRELLIS_PROOF_PROFILE_SCHEMA_VERSION, TrellisProofEvidenceEnvelope, TrellisProofEvidenceInput,
+    TrellisProofEvidenceJsonProjection, TrellisProofEvidenceProfile, TrellisProofEvidenceRole,
+    build_trellis_proof_evidence_envelope, trellis_proof_assumptions_root,
+    trellis_proof_dependency_root, trellis_proof_evidence_json_projection,
+    trellis_proof_profile_canonical_bytes, validate_trellis_proof_evidence_input,
+    validate_trellis_proof_evidence_json_projection,
 };
 pub use receipt::{ReceiptBody, ReceiptEnvelope, ReceiptError, canonical_json_bytes, receipt_json};
 pub use valence_export::{

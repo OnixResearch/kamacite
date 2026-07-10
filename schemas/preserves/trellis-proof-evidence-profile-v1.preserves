@@ -1,0 +1,26 @@
+; Kamacite Trellis proof evidence profile schema v1.
+; The profile is carried as a typed payload root inside EvidenceChainEnvelope.
+; Canonical Preserves binary bytes remain authoritative; JSON is projection only.
+
+TrellisProofEvidenceProfile = <trellis-proof-evidence-profile-v1 {
+  producer: string,
+  role: ProofEvidenceRole,
+  source-identity: Identity,
+  proof-ir-identity: Identity,
+  verifier-receipt-identity: Identity,
+  verifier-passed: bool,
+  assumptions-root: Identity,
+  dependency-root: Identity,
+  property-ids: [string ...],
+  requirement-ids: [string ...],
+  non-claim-boundary-hash: Identity,
+  non-claims: [string ...]
+}>
+
+ProofEvidenceRole = "recorded-only" | "formal-proof-candidate"
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}

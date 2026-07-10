@@ -74,6 +74,45 @@ r[kamacite.stack_integration.canonical_evidence_chain_envelope.validation] Kamac
 - WHEN validation compares projection and envelope
 - THEN validation MUST fail with deterministic projection-drift diagnostics.
 
+### Requirement: Trellis proof evidence has a canonical envelope profile
+
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.schema] Kamacite MUST define a Trellis proof evidence profile for canonical evidence-chain envelopes that preserves source, proof IR, verifier, assumptions, dependencies, property IDs, requirement IDs, role metadata, and non-claim roots without deciding downstream promotion.
+
+#### Scenario: Trellis handoff canonicalizes
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.positive]
+- GIVEN Trellis provides a valid proof evidence-chain handoff
+- WHEN Kamacite canonicalizes it
+- THEN Kamacite MUST emit a canonical Preserves evidence-chain envelope with the Trellis proof profile.
+
+### Requirement: Trellis proof links are bounded
+
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.links] Kamacite MUST bind source envelope identity, proof IR identity, verifier receipt identity, assumptions root, dependency root, property IDs, requirement IDs, and non-claim boundary hash in the Trellis proof profile.
+
+#### Scenario: Assumption drift changes validation
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.negative]
+- GIVEN a Trellis proof profile has stale or missing assumption roots, malformed property IDs, wrong identity domains, overclaims, or missing verifier receipt identity
+- WHEN Kamacite validates the profile
+- THEN validation MUST fail with deterministic profile diagnostics.
+
+### Requirement: Trellis proof role metadata is bounded
+
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.roles] Kamacite MUST preserve producer role metadata for recorded-only and formal-proof candidate evidence without deciding downstream proof promotion.
+
+#### Scenario: Formal-proof candidate remains a candidate
+- GIVEN Trellis proof evidence claims a passed verifier result
+- WHEN Kamacite encodes the canonical envelope
+- THEN the envelope MAY record a formal-proof candidate role but MUST NOT claim downstream Octet, Mantle, or Cairn proof acceptance.
+
+### Requirement: Trellis proof JSON projection is non-authoritative
+
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.projection] Kamacite MAY emit JSON projections for Trellis proof envelopes only when they bind to canonical Preserves envelope identity and preserve profile roots.
+
+#### Scenario: Projection drift fails closed
+r[kamacite.stack_integration.trellis_proof_evidence_envelope.validation]
+- GIVEN a JSON projection differs from canonical Preserves content, omits envelope identity, or weakens non-claims
+- WHEN Kamacite validates projection binding
+- THEN validation MUST fail with deterministic projection-drift diagnostics.
+
 ### Requirement: Valence receipt export profile
 
 r[kamacite.valence_receipt_export.profile] Kamacite MUST define a Valence-friendly receipt export profile as a derived evidence projection from validated Kamacite receipts. The profile MUST preserve the source Kamacite receipt identity, artifact identities, typed identity domains, roles, BLAKE3 hashes, adapter identities, conformance identities when present, checked laws, diagnostic summaries, source spans when present, and explicit non-claims. The export MUST NOT replace the Kamacite receipt, become canonical Kamacite IR, or broaden the source receipt's bounded claim.

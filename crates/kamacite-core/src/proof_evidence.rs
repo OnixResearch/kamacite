@@ -1,0 +1,700 @@
+use crate::diagnostic::{Diagnostic, DiagnosticCode};
+use crate::evidence_chain::{
+    EVIDENCE_CHAIN_CANONICAL_CODEC, EvidenceChainEnvelope, EvidenceChainEnvelopeInput,
+    EvidenceChainJsonProjection, EvidenceChainParentLink, EvidenceChainProfileRoot, EvidenceKind,
+    ParentLinkDomain, build_evidence_chain_envelope, evidence_chain_json_projection,
+    validate_evidence_chain_json_projection,
+};
+use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::receipt::{ReceiptError, canonical_json_bytes};
+use serde::{Deserialize, Serialize};
+
+pub const TRELLIS_PROOF_PROFILE_SCHEMA_VERSION: &str = "kamacite.trellis-proof-evidence-profile.v1";
+pub const TRELLIS_PROOF_PROFILE_CANONICAL_CODEC: &str =
+    "kamacite-preserves-canonical-binary-trellis-proof-evidence-profile-v1";
+pub const TRELLIS_PROOF_PROFILE_JSON_PROJECTION: &str =
+    "kamacite.trellis-proof-evidence-profile.v1.compat-json";
+const PROFILE_BYTES_PREFIX: &[u8] =
+    b"kamacite-preserves-canonical-binary:trellis-proof-evidence-profile:v1\n";
+const REQUIREMENT_SCHEMA: &str =
+    "r[kamacite.stack_integration.trellis_proof_evidence_envelope.schema]";
+const REQUIREMENT_LINKS: &str =
+    "r[kamacite.stack_integration.trellis_proof_evidence_envelope.links]";
+const REQUIREMENT_ROLES: &str =
+    "r[kamacite.stack_integration.trellis_proof_evidence_envelope.roles]";
+const REQUIREMENT_PROJECTION: &str =
+    "r[kamacite.stack_integration.trellis_proof_evidence_envelope.projection]";
+const REQUIREMENT_NEGATIVE: &str =
+    "r[kamacite.stack_integration.trellis_proof_evidence_envelope.negative]";
+const NON_CLAIM_RELEASE_ELIGIBILITY: &str = "not release eligibility";
+const NON_CLAIM_VERIFIER_SOUNDNESS: &str = "not verifier soundness";
+const NON_CLAIM_DOWNSTREAM_CORRECTNESS: &str = "not downstream correctness";
+const REQUIRED_NON_CLAIMS: &[&str] = &[
+    NON_CLAIM_RELEASE_ELIGIBILITY,
+    NON_CLAIM_VERIFIER_SOUNDNESS,
+    NON_CLAIM_DOWNSTREAM_CORRECTNESS,
+];
+const FORBIDDEN_CLAIM_FRAGMENTS: &[&str] = &[
+    "proves verifier soundness",
+    "proves release eligibility",
+    "proves downstream correctness",
+    "proves octet acceptance",
+    "proves mantle release",
+    "proves cairn readiness",
+];
+const VALID_PROPERTY_ID_CHARS: &str =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-/[]";
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum TrellisProofEvidenceRole {
+    RecordedOnly,
+    FormalProofCandidate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct TrellisProofEvidenceInput {
+    pub producer: String,
+    pub role: TrellisProofEvidenceRole,
+    pub source_identity: Identity,
+    pub proof_ir_identity: Identity,
+    pub verifier_receipt_identity: Identity,
+    pub verifier_passed: bool,
+    pub assumptions: Vec<String>,
+    pub declared_assumptions_root: Option<Identity>,
+    pub dependency_identities: Vec<Identity>,
+    pub declared_dependency_root: Option<Identity>,
+    pub property_ids: Vec<String>,
+    pub requirement_ids: Vec<String>,
+    pub non_claims: Vec<String>,
+    pub semantic_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct TrellisProofEvidenceProfile {
+    pub schema_version: String,
+    pub canonical_codec: String,
+    pub producer: String,
+    pub role: TrellisProofEvidenceRole,
+    pub source_identity: Identity,
+    pub proof_ir_identity: Identity,
+    pub verifier_receipt_identity: Identity,
+    pub verifier_passed: bool,
+    pub assumptions_root: Identity,
+    pub dependency_root: Identity,
+    pub property_ids: Vec<String>,
+    pub requirement_ids: Vec<String>,
+    pub non_claim_boundary_hash: Identity,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct TrellisProofEvidenceEnvelope {
+    pub profile: TrellisProofEvidenceProfile,
+    pub profile_identity: Identity,
+    pub evidence_chain: EvidenceChainEnvelope,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct TrellisProofEvidenceJsonProjection {
+    pub schema_version: String,
+    pub compatibility_projection: String,
+    pub canonical_identity_owner: String,
+    pub profile_identity: Identity,
+    pub evidence_chain_projection: EvidenceChainJsonProjection,
+    pub profile: TrellisProofEvidenceProfile,
+}
+
+#[must_use]
+pub fn validate_trellis_proof_evidence_input(input: &TrellisProofEvidenceInput) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    validate_required_text(&input.producer, "producer", &mut diagnostics);
+    validate_identity_domain(
+        &input.source_identity,
+        IdentityDomain::Source,
+        "source_identity",
+        &mut diagnostics,
+    );
+    validate_identity_domain(
+        &input.proof_ir_identity,
+        IdentityDomain::EvidenceChain,
+        "proof_ir_identity",
+        &mut diagnostics,
+    );
+    validate_identity_domain(
+        &input.verifier_receipt_identity,
+        IdentityDomain::Receipt,
+        "verifier_receipt_identity",
+        &mut diagnostics,
+    );
+    validate_role(input, &mut diagnostics);
+    validate_assumptions(input, &mut diagnostics);
+    validate_dependencies(input, &mut diagnostics);
+    validate_property_ids(&input.property_ids, "property_ids", &mut diagnostics);
+    validate_property_ids(&input.requirement_ids, "requirement_ids", &mut diagnostics);
+    validate_non_claims(input, &mut diagnostics);
+    diagnostics.sort();
+    diagnostics.dedup();
+    diagnostics
+}
+
+pub fn build_trellis_proof_evidence_envelope(
+    input: &TrellisProofEvidenceInput,
+    policy_hash: Identity,
+    profile_hash: Identity,
+) -> Result<TrellisProofEvidenceEnvelope, Vec<Diagnostic>> {
+    let mut diagnostics = validate_trellis_proof_evidence_input(input);
+    validate_identity_domain(
+        &policy_hash,
+        IdentityDomain::Receipt,
+        "policy_hash",
+        &mut diagnostics,
+    );
+    validate_identity_domain(
+        &profile_hash,
+        IdentityDomain::Receipt,
+        "profile_hash",
+        &mut diagnostics,
+    );
+    if !diagnostics.is_empty() {
+        diagnostics.sort();
+        diagnostics.dedup();
+        return Err(diagnostics);
+    }
+    let profile = trellis_proof_evidence_profile(input);
+    let profile_identity = trellis_proof_profile_identity(&profile).map_err(|error| {
+        vec![Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_SCHEMA,
+            "profile",
+            format!("Trellis proof evidence profile canonicalization failed: {error}"),
+        )]
+    })?;
+    let evidence_chain_input = EvidenceChainEnvelopeInput {
+        evidence_kind: EvidenceKind::Proof,
+        policy_hash,
+        profile_hash,
+        parent_links: vec![
+            EvidenceChainParentLink {
+                domain: ParentLinkDomain::SourceRoot,
+                identity: input.source_identity.clone(),
+            },
+            EvidenceChainParentLink {
+                domain: ParentLinkDomain::ReceiptRoot,
+                identity: input.verifier_receipt_identity.clone(),
+            },
+        ],
+        profile_payload_roots: vec![EvidenceChainProfileRoot {
+            evidence_kind: EvidenceKind::Proof,
+            schema_version: TRELLIS_PROOF_PROFILE_SCHEMA_VERSION.to_string(),
+            root_identity: profile_identity.clone(),
+        }],
+        projections: Vec::new(),
+        non_claims: input.non_claims.clone(),
+    };
+    let evidence_chain = build_evidence_chain_envelope(&evidence_chain_input)?;
+    Ok(TrellisProofEvidenceEnvelope {
+        profile,
+        profile_identity,
+        evidence_chain,
+    })
+}
+
+#[must_use]
+pub fn trellis_proof_evidence_json_projection(
+    envelope: &TrellisProofEvidenceEnvelope,
+) -> TrellisProofEvidenceJsonProjection {
+    TrellisProofEvidenceJsonProjection {
+        schema_version: TRELLIS_PROOF_PROFILE_SCHEMA_VERSION.to_string(),
+        compatibility_projection: TRELLIS_PROOF_PROFILE_JSON_PROJECTION.to_string(),
+        canonical_identity_owner: EVIDENCE_CHAIN_CANONICAL_CODEC.to_string(),
+        profile_identity: envelope.profile_identity.clone(),
+        evidence_chain_projection: evidence_chain_json_projection(&envelope.evidence_chain),
+        profile: envelope.profile.clone(),
+    }
+}
+
+#[must_use]
+pub fn validate_trellis_proof_evidence_json_projection(
+    projection: &TrellisProofEvidenceJsonProjection,
+) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    if projection.compatibility_projection != TRELLIS_PROOF_PROFILE_JSON_PROJECTION {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_PROJECTION,
+                "compatibility_projection",
+                "Trellis proof projection declares an unsupported projection kind",
+            )
+            .with_detail("actual", projection.compatibility_projection.clone())
+            .with_detail("expected", TRELLIS_PROOF_PROFILE_JSON_PROJECTION),
+        );
+    }
+    if projection.canonical_identity_owner != EVIDENCE_CHAIN_CANONICAL_CODEC {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_PROJECTION,
+                "canonical_identity_owner",
+                "Trellis proof projection must bind to canonical evidence-chain envelope identity",
+            )
+            .with_detail("actual", projection.canonical_identity_owner.clone())
+            .with_detail("expected", EVIDENCE_CHAIN_CANONICAL_CODEC),
+        );
+    }
+    match trellis_proof_profile_identity(&projection.profile) {
+        Ok(identity) if identity == projection.profile_identity => {}
+        Ok(identity) => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_PROJECTION,
+                "profile_identity",
+                "Trellis proof profile identity does not match canonical profile bytes",
+            )
+            .with_detail("declared", projection.profile_identity.hex.as_str())
+            .with_detail("computed", identity.hex.as_str()),
+        ),
+        Err(error) => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_PROJECTION,
+            "profile",
+            format!("Trellis proof profile canonicalization failed: {error}"),
+        )),
+    }
+    if !projection
+        .evidence_chain_projection
+        .envelope
+        .profile_payload_roots
+        .iter()
+        .any(|root| root.root_identity == projection.profile_identity)
+    {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_PROJECTION,
+            "evidence_chain_projection.envelope.profile_payload_roots",
+            "Trellis proof projection profile identity is not bound by the evidence-chain envelope",
+        ));
+    }
+    diagnostics.extend(validate_evidence_chain_json_projection(
+        &projection.evidence_chain_projection,
+    ));
+    diagnostics.sort();
+    diagnostics.dedup();
+    diagnostics
+}
+
+pub fn trellis_proof_profile_canonical_bytes(
+    profile: &TrellisProofEvidenceProfile,
+) -> Result<Vec<u8>, ReceiptError> {
+    let mut bytes = PROFILE_BYTES_PREFIX.to_vec();
+    bytes.extend(canonical_json_bytes(profile)?);
+    Ok(bytes)
+}
+
+#[must_use]
+pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Identity {
+    compute_identity(
+        IdentityDomain::EvidenceChain,
+        &canonical_vec_bytes(&sorted_strings(assumptions)),
+    )
+}
+
+#[must_use]
+pub fn trellis_proof_dependency_root(dependencies: &[Identity]) -> Identity {
+    let mut dependencies = dependencies.to_vec();
+    dependencies.sort();
+    compute_identity(
+        IdentityDomain::EvidenceChain,
+        &canonical_vec_bytes(&dependencies),
+    )
+}
+
+fn trellis_proof_evidence_profile(
+    input: &TrellisProofEvidenceInput,
+) -> TrellisProofEvidenceProfile {
+    TrellisProofEvidenceProfile {
+        schema_version: TRELLIS_PROOF_PROFILE_SCHEMA_VERSION.to_string(),
+        canonical_codec: TRELLIS_PROOF_PROFILE_CANONICAL_CODEC.to_string(),
+        producer: input.producer.clone(),
+        role: input.role.clone(),
+        source_identity: input.source_identity.clone(),
+        proof_ir_identity: input.proof_ir_identity.clone(),
+        verifier_receipt_identity: input.verifier_receipt_identity.clone(),
+        verifier_passed: input.verifier_passed,
+        assumptions_root: trellis_proof_assumptions_root(&input.assumptions),
+        dependency_root: trellis_proof_dependency_root(&input.dependency_identities),
+        property_ids: sorted_strings(&input.property_ids),
+        requirement_ids: sorted_strings(&input.requirement_ids),
+        non_claim_boundary_hash: trellis_proof_assumptions_root(&input.non_claims),
+        non_claims: sorted_strings(&input.non_claims),
+    }
+}
+
+fn trellis_proof_profile_identity(
+    profile: &TrellisProofEvidenceProfile,
+) -> Result<Identity, ReceiptError> {
+    Ok(compute_identity(
+        IdentityDomain::EvidenceChain,
+        &trellis_proof_profile_canonical_bytes(profile)?,
+    ))
+}
+
+fn validate_required_text(value: &str, field: &str, diagnostics: &mut Vec<Diagnostic>) {
+    if value.trim().is_empty() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_SCHEMA,
+            field,
+            "Trellis proof evidence profile requires a non-empty text field",
+        ));
+    }
+}
+
+fn validate_role(input: &TrellisProofEvidenceInput, diagnostics: &mut Vec<Diagnostic>) {
+    if input.role == TrellisProofEvidenceRole::FormalProofCandidate && !input.verifier_passed {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedClaim,
+            REQUIREMENT_ROLES,
+            "role",
+            "formal-proof-candidate role requires a passed verifier receipt but does not imply downstream promotion",
+        ));
+    }
+}
+
+fn validate_assumptions(input: &TrellisProofEvidenceInput, diagnostics: &mut Vec<Diagnostic>) {
+    if input.assumptions.is_empty() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_LINKS,
+            "assumptions",
+            "Trellis proof evidence must explicitly root assumptions, even when no assumptions are declared",
+        ));
+    }
+    validate_declared_root(
+        input.declared_assumptions_root.as_ref(),
+        trellis_proof_assumptions_root(&input.assumptions),
+        "declared_assumptions_root",
+        diagnostics,
+    );
+}
+
+fn validate_dependencies(input: &TrellisProofEvidenceInput, diagnostics: &mut Vec<Diagnostic>) {
+    for dependency in &input.dependency_identities {
+        validate_identity_domain(
+            dependency,
+            IdentityDomain::EvidenceChain,
+            "dependency_identities",
+            diagnostics,
+        );
+    }
+    validate_declared_root(
+        input.declared_dependency_root.as_ref(),
+        trellis_proof_dependency_root(&input.dependency_identities),
+        "declared_dependency_root",
+        diagnostics,
+    );
+}
+
+fn validate_declared_root(
+    declared: Option<&Identity>,
+    computed: Identity,
+    field: &str,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    match declared {
+        Some(identity) if identity == &computed => {}
+        Some(identity) => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_NEGATIVE,
+                field,
+                "declared Trellis proof evidence root does not match canonical profile content",
+            )
+            .with_detail("declared", identity.hex.as_str())
+            .with_detail("computed", computed.hex.as_str()),
+        ),
+        None => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_LINKS,
+            field,
+            "Trellis proof evidence must declare the root it binds for this profile section",
+        )),
+    }
+}
+
+fn validate_property_ids(ids: &[String], field: &str, diagnostics: &mut Vec<Diagnostic>) {
+    if ids.is_empty() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_LINKS,
+            field,
+            "Trellis proof evidence requires at least one property or requirement identifier",
+        ));
+    }
+    for id in ids {
+        if id.trim().is_empty()
+            || id.chars().any(char::is_whitespace)
+            || !id
+                .chars()
+                .all(|character| VALID_PROPERTY_ID_CHARS.contains(character))
+        {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MalformedProjectionOutput,
+                    REQUIREMENT_NEGATIVE,
+                    field,
+                    "Trellis proof evidence property identifiers must be stable non-whitespace tokens",
+                )
+                .with_detail("value", id.clone()),
+            );
+        }
+    }
+}
+
+fn validate_non_claims(input: &TrellisProofEvidenceInput, diagnostics: &mut Vec<Diagnostic>) {
+    for required in REQUIRED_NON_CLAIMS {
+        if !input
+            .non_claims
+            .iter()
+            .any(|non_claim| non_claim == required)
+        {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingNonClaim,
+                    REQUIREMENT_ROLES,
+                    "non_claims",
+                    "Trellis proof evidence must preserve bounded non-claim metadata",
+                )
+                .with_detail("missing", *required),
+            );
+        }
+    }
+    let claims = input.semantic_claims.join(" ").to_ascii_lowercase();
+    for forbidden in FORBIDDEN_CLAIM_FRAGMENTS {
+        if claims.contains(forbidden) {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::SemanticOverclaim,
+                    REQUIREMENT_ROLES,
+                    "semantic_claims",
+                    "Trellis proof evidence contains a downstream or verifier-soundness overclaim",
+                )
+                .with_detail("claim", *forbidden),
+            );
+        }
+    }
+}
+
+fn validate_identity_domain(
+    identity: &Identity,
+    expected: IdentityDomain,
+    field: &str,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    if identity.validate_domain(expected.clone()).is_err() {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::IdentityDomainMismatch,
+                REQUIREMENT_LINKS,
+                field,
+                "Trellis proof evidence identity uses the wrong domain or algorithm",
+            )
+            .with_detail("actual", identity.domain.to_string())
+            .with_detail("expected", expected.to_string()),
+        );
+    }
+}
+
+fn sorted_strings(values: &[String]) -> Vec<String> {
+    let mut values = values.to_vec();
+    values.sort();
+    values.dedup();
+    values
+}
+
+fn canonical_vec_bytes<T: Serialize>(value: &T) -> Vec<u8> {
+    serde_json::to_vec(value).expect("Trellis proof evidence canonical vector payload serializes")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const PRODUCER: &str = "trellis";
+    const NO_EXTRA_ASSUMPTIONS: &str = "no extra assumptions declared";
+    const PROPERTY_ID: &str = "trellis.proof::totality";
+    const REQUIREMENT_ID: &str = "r[trellis.proof_evidence.totality]";
+
+    fn valid_input(role: TrellisProofEvidenceRole) -> TrellisProofEvidenceInput {
+        let assumptions = vec![NO_EXTRA_ASSUMPTIONS.to_string()];
+        let dependencies = vec![compute_identity(
+            IdentityDomain::EvidenceChain,
+            b"dependency",
+        )];
+        TrellisProofEvidenceInput {
+            producer: PRODUCER.to_string(),
+            role,
+            source_identity: compute_identity(IdentityDomain::Source, b"source"),
+            proof_ir_identity: compute_identity(IdentityDomain::EvidenceChain, b"proof-ir"),
+            verifier_receipt_identity: compute_identity(IdentityDomain::Receipt, b"verifier"),
+            verifier_passed: true,
+            declared_assumptions_root: Some(trellis_proof_assumptions_root(&assumptions)),
+            declared_dependency_root: Some(trellis_proof_dependency_root(&dependencies)),
+            assumptions,
+            dependency_identities: dependencies,
+            property_ids: vec![PROPERTY_ID.to_string()],
+            requirement_ids: vec![REQUIREMENT_ID.to_string()],
+            non_claims: vec![
+                NON_CLAIM_RELEASE_ELIGIBILITY.to_string(),
+                NON_CLAIM_VERIFIER_SOUNDNESS.to_string(),
+                NON_CLAIM_DOWNSTREAM_CORRECTNESS.to_string(),
+            ],
+            semantic_claims: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn builds_verified_and_recorded_trellis_profiles() {
+        let verified = build_trellis_proof_evidence_envelope(
+            &valid_input(TrellisProofEvidenceRole::FormalProofCandidate),
+            compute_identity(IdentityDomain::Receipt, b"policy"),
+            compute_identity(IdentityDomain::Receipt, b"profile"),
+        )
+        .expect("verified profile");
+        let recorded = build_trellis_proof_evidence_envelope(
+            &valid_input(TrellisProofEvidenceRole::RecordedOnly),
+            compute_identity(IdentityDomain::Receipt, b"policy"),
+            compute_identity(IdentityDomain::Receipt, b"profile"),
+        )
+        .expect("recorded profile");
+
+        assert_eq!(
+            verified.evidence_chain.body.evidence_kind,
+            EvidenceKind::Proof
+        );
+        assert_eq!(
+            recorded.evidence_chain.body.evidence_kind,
+            EvidenceKind::Proof
+        );
+        assert_ne!(verified.profile.role, recorded.profile.role);
+    }
+
+    #[test]
+    fn projection_binds_profile_and_evidence_chain_identity() {
+        let envelope = build_trellis_proof_evidence_envelope(
+            &valid_input(TrellisProofEvidenceRole::FormalProofCandidate),
+            compute_identity(IdentityDomain::Receipt, b"policy"),
+            compute_identity(IdentityDomain::Receipt, b"profile"),
+        )
+        .expect("valid profile");
+        let projection = trellis_proof_evidence_json_projection(&envelope);
+
+        assert_eq!(projection.profile_identity, envelope.profile_identity);
+        assert_eq!(
+            projection.evidence_chain_projection.envelope_identity,
+            envelope.evidence_chain.envelope_identity
+        );
+        assert!(validate_trellis_proof_evidence_json_projection(&projection).is_empty());
+    }
+
+    #[test]
+    fn rejects_missing_links_drift_malformed_ids_and_overclaims() {
+        let mut input = valid_input(TrellisProofEvidenceRole::FormalProofCandidate);
+        input.source_identity = compute_identity(IdentityDomain::Receipt, b"wrong source");
+        input.verifier_receipt_identity =
+            compute_identity(IdentityDomain::Source, b"wrong verifier");
+        input.verifier_passed = false;
+        input.assumptions.clear();
+        input.declared_assumptions_root =
+            Some(compute_identity(IdentityDomain::EvidenceChain, b"stale"));
+        input.dependency_identities = vec![compute_identity(
+            IdentityDomain::Receipt,
+            b"wrong dependency",
+        )];
+        input.property_ids = vec!["bad property".to_string()];
+        input.non_claims = Vec::new();
+        input.semantic_claims = vec!["proves verifier soundness".to_string()];
+
+        let diagnostics = validate_trellis_proof_evidence_input(&input);
+
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "source_identity")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "verifier_receipt_identity")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "role")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "assumptions")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "declared_assumptions_root")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "dependency_identities")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "property_ids")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::MissingNonClaim)
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::SemanticOverclaim)
+        );
+    }
+
+    #[test]
+    fn rejects_projection_drift() {
+        let envelope = build_trellis_proof_evidence_envelope(
+            &valid_input(TrellisProofEvidenceRole::RecordedOnly),
+            compute_identity(IdentityDomain::Receipt, b"policy"),
+            compute_identity(IdentityDomain::Receipt, b"profile"),
+        )
+        .expect("valid profile");
+        let mut projection = trellis_proof_evidence_json_projection(&envelope);
+        projection.canonical_identity_owner = "json".to_string();
+        projection.profile.property_ids.push("drifted".to_string());
+        projection
+            .evidence_chain_projection
+            .envelope
+            .profile_payload_roots
+            .clear();
+
+        let diagnostics = validate_trellis_proof_evidence_json_projection(&projection);
+
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "canonical_identity_owner")
+        );
+        assert!(
+            diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.field == "profile_identity")
+        );
+        assert!(diagnostics.iter().any(|diagnostic| diagnostic.field
+            == "evidence_chain_projection.envelope.profile_payload_roots"));
+    }
+}
