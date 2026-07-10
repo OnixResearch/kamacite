@@ -155,24 +155,24 @@ Kamacite has a first walking-skeleton validation harness and Rust core profile i
 - `fixtures/` contains the Nickel source manifest, freshness-checked runtime JSON projection, positive and negative fixture materials, Nickel adapter export projections, bounded Steel adapter DTO/module/output fixtures, Valence export conformance/projection fixtures, FSM canonical bytes and checked receipts, documentation fixture materials, and checked golden receipts.
 - `docs/validation-harness.md`, `docs/rust-core-profile.md`, `docs/deferred-adapter-suites.md`, `docs/valence-receipt-export.md`, `docs/algebraic-effects-stack-roles.md`, `docs/fsm-spec-receipts.md`, and `docs/runnable-docs-pipeline.md` describe the current executable boundary, Valence export profile, Steel DTO admission slice, FSM fixture slice, documentation pipeline slice, and deferred integration suites.
 
-Run harness validation through the sibling Cairn dev shell until Kamacite grows its own package:
+Run normal validation through Kamacite's repo-owned package and development shell:
 
 ```bash
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo test --workspace'
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate --root . --manifest fixtures/manifest.json'
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate-nickel-adapter --root . --manifest fixtures/manifest.json'
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate-steel-adapter --root . --manifest fixtures/manifest.json'
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json'
+nix develop . -c cargo test --workspace
+nix run .#kamacite -- validate --root . --manifest fixtures/manifest.json
+nix run .#kamacite -- validate-nickel-adapter --root . --manifest fixtures/manifest.json
+nix run .#kamacite -- validate-steel-adapter --root . --manifest fixtures/manifest.json
+nix run .#kamacite -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
+nix flake check
 # The validate command checks fixtures/manifest.ncl against fixtures/manifest.json before trusting fixture receipts.
 # The validate-nickel-adapter command additionally runs explicitly declared Nickel reference-export fixtures in the shell.
 # The export-valence-receipt command validates deterministic Valence-friendly projections without invoking live Valence APIs.
 ```
 
-Run lifecycle validation with the sibling Cairn repo and its generated policy bundle:
+Run lifecycle validation through the packaged Cairn lifecycle tool input:
 
 ```bash
-POLICY=/home/brittonr/git/OnixResearch/cairn/cairn-policy/generated/cairn-policy.json
-nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root . --policy "$POLICY"
+nix run .#lifecycle-validate -- --root .
 ```
 
 ## Non-claims

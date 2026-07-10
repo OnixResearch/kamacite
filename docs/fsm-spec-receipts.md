@@ -16,7 +16,7 @@ Validated fixture coverage includes:
 Run the slice through the normal harness:
 
 ```bash
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- validate --root . --manifest fixtures/manifest.json'
+nix run .#kamacite -- validate --root . --manifest fixtures/manifest.json
 ```
 
 Schema artifacts live under `schemas/preserves/fsm-spec-v1.preserves`, `schemas/preserves/fsm-exhaustiveness-receipt-v1.preserves`, and `schemas/preserves/fsm-trace-receipt-v1.preserves`. Fixture canonical bytes live under `fixtures/core/fsm/`, while deterministic golden receipts live under `fixtures/golden/`.

@@ -26,7 +26,7 @@ The export body is hashed with BLAKE3 over deterministic JSON projection bytes w
 Run the command with explicit inputs:
 
 ```bash
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json'
+nix run .#kamacite -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
 ```
 
 Default mode is non-mutating. If the computed export differs from the supplied golden projection, the command reports the mismatch and exits nonzero without rewriting receipts, manifests, export projections, or golden evidence.
@@ -34,7 +34,7 @@ Default mode is non-mutating. If the computed export differs from the supplied g
 The only writer is the explicit update mode:
 
 ```bash
-nix develop path:/home/brittonr/git/OnixResearch/cairn -c sh -lc 'cd /home/brittonr/git/OnixResearch/kamacite && cargo run -q -p kamacite-cli -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json --update-golden --update-report target/kamacite-valence-export-update-receipt.json'
+nix run .#kamacite -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json --update-golden --update-report target/kamacite-valence-export-update-receipt.json
 ```
 
 The update report records the source receipt identity, old export identity when present, new export identity, checked laws, and non-claims.

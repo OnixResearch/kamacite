@@ -12,7 +12,7 @@
       "nickel-evaluator": {
         "domain": "evaluator",
         "algorithm": "blake3",
-        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+        "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
       },
       "nickel-export-projection": {
         "domain": "projection",
@@ -29,7 +29,7 @@
       "computed-nickel-evaluator": {
         "domain": "evaluator",
         "algorithm": "blake3",
-        "hex": "10b9f1149b15aa0f3f882541b9db8fd8d347983d6731188896f026d246642e7b"
+        "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
       },
       "computed-nickel-export-projection": {
         "domain": "projection",
@@ -61,6 +61,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "997066a0f2ab9fa9447c4af211edfac12ddb82ec585dab2f9425a133317d0f00"
+    "hex": "e5189f59d9cdf37a0b70dc128aabd7fb273045ca78bcc49ab1d22708512d6551"
   }
 }

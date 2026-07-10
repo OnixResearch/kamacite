@@ -18,14 +18,14 @@
       "valence-source-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "8069e7dc37bdef1e09a62187754993b891d8dc9295c4f0600dbe694d7cd83bc0"
+        "hex": "8e6b95c685b4d7b12a09d15cb03cd8171d45a9c50745141ad50d754d8e179c9f"
       }
     },
     "output_identities": {
       "valence-export-projection": {
         "domain": "projection",
         "algorithm": "blake3",
-        "hex": "93aceca6c05c2c9801949de9cca09d59e39b8a9ebe1649c7955e16269f3118b8"
+        "hex": "9b07c9bedae2ea46a69f38c9a3911365e8bf279e2db1fa52bdedf0cb20358799"
       }
     },
     "checked_laws": [
@@ -51,6 +51,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "bc43c8265249a8e09319180503a13d6e45fb3a75784fee4bbdcee33270c53764"
+    "hex": "61574dbaeb02d428ac4644b0083f3b65f28a5fffd9ecf7c9819fa0a6cf8ddee4"
   }
 }

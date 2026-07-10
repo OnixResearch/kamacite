@@ -2533,7 +2533,7 @@ fn validate_fsm_receipt_identities(
         .insert("fsm-adapter".to_string(), input.adapter_identity.clone());
     for dependency in &input.dependency_identities {
         accumulator.input_identities.insert(
-            format!("fsm-dependency:{}", dependency.domain.to_string()),
+            format!("fsm-dependency:{}", dependency.domain),
             dependency.clone(),
         );
     }
@@ -2693,7 +2693,9 @@ fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut Validat
     }
     let mut current_state = start_state.clone();
     for (event, step) in input.trace_events.iter().zip(input.trace_steps.iter()) {
-        if &step.from_state != &current_state || &step.event != event {
+        if step.from_state.as_str() != current_state.as_str()
+            || step.event.as_str() != event.as_str()
+        {
             accumulator.diagnostics.push(
                 Diagnostic::new(
                     DiagnosticCode::MissingInput,
@@ -2988,15 +2990,13 @@ fn validate_replay(input: &AlgebraicEffectInput, accumulator: &mut ValidationAcc
                 ));
             }
         }
-        "non-replayable" => {
-            if replay.effect_log_identity.is_some() {
-                accumulator.diagnostics.push(Diagnostic::new(
-                    DiagnosticCode::NonReplayableEvidenceMisuse,
-                    "r[kamacite.algebraic_effects.replay_profile.non_replayable]",
-                    "algebraic.replay.effect_log_identity",
-                    "non-replayable effects cannot be accepted as replay evidence",
-                ));
-            }
+        "non-replayable" if replay.effect_log_identity.is_some() => {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::NonReplayableEvidenceMisuse,
+                "r[kamacite.algebraic_effects.replay_profile.non_replayable]",
+                "algebraic.replay.effect_log_identity",
+                "non-replayable effects cannot be accepted as replay evidence",
+            ));
         }
         _ => {}
     }

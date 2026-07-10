@@ -12,10 +12,18 @@ Use native Cairn artifacts under `cairn/` for product decisions:
 - active changes: `cairn/changes/`
 - archived changes: `cairn/archive/`
 
-Run Cairn through the sibling repo unless this repo later grows its own package:
+Run normal Rust and harness validation through Kamacite's repo-owned package and development shell:
 
 ```bash
-nix run path:/home/brittonr/git/OnixResearch/cairn#cairn -- validate --root .
+nix develop . -c cargo test --workspace
+nix run .#kamacite -- validate --root . --manifest fixtures/manifest.json
+nix flake check
+```
+
+Run lifecycle validation through the packaged Cairn lifecycle tool input:
+
+```bash
+nix run .#lifecycle-validate -- --root .
 ```
 
 ## Format boundary
