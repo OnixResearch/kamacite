@@ -1,0 +1,10 @@
+## Tasks
+
+- [ ] [serial] Define the versioned WIT package/world, source-envelope records, byte-carrier ABI, result/error classes, and explicit Preserves authority/non-claims. r[kamacite.wasm_adapter.boundary] r[kamacite.wasm_adapter.wit_identity]
+- [ ] [depends:wasm-adapter-wit] Define adapter descriptor, runtime profile, capability/effect/resource declarations, target-artifact records, receipt schemas, and deterministic fixture manifest entries. r[kamacite.wasm_adapter.descriptor] r[kamacite.wasm_adapter.profile] r[kamacite.wasm_adapter.capabilities] r[kamacite.wasm_adapter.receipt]
+- [ ] [depends:wasm-adapter-descriptor] Implement pure descriptor/profile/identity/edge/capability/effect/resource/input/output/receipt validation and execution-plan construction. r[kamacite.wasm_adapter.functional_core] r[kamacite.wasm_adapter.preserves_io]
+- [ ] [depends:wasm-adapter-plan] Add a thin Wasmtime component shell consuming the admitted Molten-compatible profile and exposing only declared host functions/effects. r[kamacite.wasm_adapter.profile] r[kamacite.wasm_adapter.capabilities]
+- [ ] [depends:wasm-adapter-shell] Emit canonical execution/denial receipts binding WIT, descriptor, component, runtime, capability/effect/resource, Preserves input/output, result, and non-claims. r[kamacite.wasm_adapter.receipt]
+- [ ] [parallel] Add deterministic Valence-friendly projection/conformance fixtures retaining layer identities, roles, spans, parent edges, and non-claims. r[kamacite.wasm_adapter.valence_export]
+- [ ] [parallel] Add positive Rust component round-trip/hostcall fixtures and negative malformed/stale WIT, wrong-world, component-tamper, undeclared import/effect, missing authority, over-resource, invalid canonical input/output, stale receipt, and equivalence-overclaim fixtures. r[kamacite.wasm_adapter.fixtures]
+- [ ] [depends:wasm-adapter-fixtures] Run focused core/shell tests, manifest freshness, positive/negative adapter validation, Valence export conformance, Octet checks, lifecycle validation, Cairn proposal/design/tasks gates, and the relevant flake checks. r[kamacite.wasm_adapter.validation]
