@@ -20,7 +20,7 @@ The first suite should be deliberately narrow: a component consumes bounded cano
 
 ### 3. Descriptors bind the complete execution contract
 
-**Choice:** A Wasm adapter descriptor declares adapter id/version, WIT package/world, exact component ref, imports/exports, canonical input/output schema refs, capability/effect row, resource profile, deterministic runtime profile, toolchain cohort, optional build/provenance refs, and non-claims.
+**Choice:** A Wasm adapter descriptor declares adapter id/version, WIT package/world, exact component ref, imports/exports, canonical input/output schema refs, capability/effect row, resource profile, deterministic runtime profile, toolchain cohort, non-claims, and—before execution—a complete Mantle materialization-bundle ref. Static descriptor validation may report the bundle as an unresolved prerequisite but cannot produce an executable plan without it.
 
 **Rationale:** A component filename plus world cannot explain what effects or limits are expected.
 
@@ -52,21 +52,27 @@ The first suite should be deliberately narrow: a component consumes bounded cano
 
 **Choice:** Export adapter-stage identities, spans, roles, edges, and non-claims through a deterministic Valence-friendly projection after the Kamacite receipt validates. Valence owns Evidence IR linkage; the export does not transfer Kamacite round-trip semantics.
 
+### 9. Mantle materializes executable adapter artifacts
+
+**Choice:** WIT binding generation, guest compilation, WAC composition, and any deny-all WASI virtualization run through Mantle and arrive as one rehashable materialization bundle with exact component/WIT/cohort/profile/receipt identities. Kamacite remeasures and inspects those objects, then applies its own descriptor, Preserves, effect, resource, and runtime admission. It does not rebuild a missing or mismatched component.
+
+**Rationale:** Kamacite should own interchange semantics and adapter execution evidence, not duplicate a component package resolver and build pipeline.
+
 ## Functional core / imperative shell split
 
-- **Pure core**: descriptor/profile validation, identity and parent-edge checks, capability/effect/resource admission, WIT/component fact comparison, canonical Preserves input/output validation, execution-plan construction, receipt construction/validation, and Valence projection DTOs.
-- **Imperative shell**: read WIT/component/input bytes, inspect artifacts, invoke Wasmtime component APIs, supply admitted host functions, perform approved effects, measure resources, and persist outputs/receipts.
+- **Pure core**: descriptor/profile/Mantle-bundle validation, identity and parent-edge checks, capability/effect/resource admission, WIT/component fact comparison, canonical Preserves input/output validation, execution-plan construction, receipt construction/validation, and Valence projection DTOs.
+- **Imperative shell**: read and rehash materialized WIT/component/input bytes, inspect artifacts, invoke Wasmtime component APIs, supply admitted host functions, perform approved effects, measure resources, and persist outputs/receipts; it does not build production guest artifacts.
 
 ## Risks / Trade-offs
 
 - A byte-carrier ABI gives weaker generated domain typing but avoids duplicate canonical schemas.
-- Component tooling drift can invalidate bindings or world resolution. Pin one stack cohort and treat upgrades as explicit compatibility changes.
+- Component tooling drift can invalidate bindings or world resolution. Pin one stack cohort, bind the exact Mantle materialization profile, and treat upgrades as explicit compatibility changes.
 - Wasmtime isolation is not complete authority or sandbox proof. Keep host functions deny-by-default and authority external.
 - Direct sibling crate dependencies can couple release cadence. Begin with profile/receipt fixtures and add direct dependencies only when stable APIs are required.
 
 ## Non-Goals
 
 - No Wasm canonical IR, arbitrary source translation, or Nickel/Rust/Steel semantic-equivalence claim.
-- No general component package manager, composer, build system, remote RPC, or runtime service in Kamacite.
+- No general component package manager, composer, build system, remote RPC, or runtime service in Kamacite; direct loose-byte components remain test-only and cannot yield executable production plans.
 - No ambient WASI or authority derived from WIT/component validity.
 - No JavaScript, Python, WAMR, WASIp3, Wizer, or AOT optimization in the first adapter suite.

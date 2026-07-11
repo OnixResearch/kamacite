@@ -36,7 +36,7 @@ r[kamacite.wasm_adapter.wit_identity] Kamacite MUST preserve WIT source bytes as
 
 ### Requirement: Adapter descriptors bind complete execution facts
 
-r[kamacite.wasm_adapter.descriptor] A Wasm adapter descriptor MUST bind adapter id/version, WIT package/world, exact component ref, imports/exports, canonical input/output schema refs, capability/effect declarations, resource profile, deterministic runtime profile, toolchain cohort, parent artifacts, and non-claims.
+r[kamacite.wasm_adapter.descriptor] A Wasm adapter descriptor MUST bind adapter id/version, WIT package/world, exact component ref, imports/exports, canonical input/output schema refs, capability/effect declarations, resource profile, deterministic runtime profile, toolchain cohort, parent artifacts, non-claims, and a complete Mantle materialization-bundle ref before it can yield an executable plan.
 
 #### Scenario: Descriptor is complete
 - GIVEN every required field and parent identity is valid and role-correct
@@ -47,6 +47,20 @@ r[kamacite.wasm_adapter.descriptor] A Wasm adapter descriptor MUST bind adapter 
 - GIVEN an imported operation, canonical schema, resource profile, runtime cohort, or parent artifact is missing or role-confused
 - WHEN validation runs
 - THEN Kamacite MUST fail closed before execution.
+
+### Requirement: Executable adapters are Mantle-materialized
+
+r[kamacite.wasm_adapter.materialization] WIT bindings, guest compilation, component composition, and any WASI virtualization for executable adapters MUST be supplied through a versioned Mantle materialization bundle with exact WIT/component/cohort/profile/stage identities; Kamacite MUST remeasure and inspect the objects and MUST NOT rebuild missing or mismatched production artifacts.
+
+#### Scenario: Complete adapter bundle is available
+- GIVEN the descriptor, WIT, component, build cohort, expected runtime profile, Octet facts, and stage receipts match one verified Mantle bundle
+- WHEN execution planning runs
+- THEN Kamacite MAY continue to its independent Preserves, effect, authority, resource, and runtime admission.
+
+#### Scenario: Descriptor has no valid materialization bundle
+- GIVEN an otherwise valid descriptor has loose bytes, an incomplete bundle, or mismatched component/WIT/profile identities
+- WHEN execution planning runs
+- THEN Kamacite MUST return a deterministic unresolved or denied result and MUST NOT build or execute the production adapter.
 
 ### Requirement: Runtime profile is explicit and shared
 
@@ -106,7 +120,7 @@ r[kamacite.wasm_adapter.receipt] Kamacite MUST emit deterministic execution or d
 
 ### Requirement: Wasm adapter decisions have a functional core
 
-r[kamacite.wasm_adapter.functional_core] Descriptor/profile/identity/edge validation, capability/effect/resource admission, WIT/component fact comparison, canonical Preserves input/output checks, execution-plan construction, receipt construction/validation, and Valence projection MUST be pure deterministic logic.
+r[kamacite.wasm_adapter.functional_core] Descriptor/profile/Mantle-bundle/identity/edge validation, capability/effect/resource admission, WIT/component fact comparison, canonical Preserves input/output checks, execution-plan construction, receipt construction/validation, and Valence projection MUST be pure deterministic logic.
 
 #### Scenario: Identical adapter facts produce identical plan
 - GIVEN identical descriptor, WIT, component, profile, capability, resource, and input facts
@@ -124,7 +138,7 @@ r[kamacite.wasm_adapter.valence_export] Kamacite MUST export validated adapter i
 
 ### Requirement: Wasm adapter suite has positive and negative fixtures
 
-r[kamacite.wasm_adapter.fixtures] The suite MUST include positive component round-trip/hostcall fixtures and negative WIT, world, component, import/effect, authority, resource, canonical input/output, receipt, and overclaim fixtures.
+r[kamacite.wasm_adapter.fixtures] The suite MUST include positive Mantle-materialized component round-trip/hostcall fixtures and negative materialization-bundle, local-build, WIT, world, component, import/effect, authority, resource, canonical input/output, receipt, and overclaim fixtures.
 
 #### Scenario: Adapter suite runs
 - GIVEN all fixtures are materialized from their declared identities
@@ -138,4 +152,4 @@ r[kamacite.wasm_adapter.validation] Changes to Wasm adapter schemas, profiles, c
 #### Scenario: Adapter change is reviewed
 - GIVEN adapter behavior or evidence changes
 - WHEN validation evidence is assembled
-- THEN it MUST identify the exact WIT/component/runtime cohort and include both positive and negative results without claiming arbitrary semantic equivalence.
+- THEN it MUST identify the exact Mantle bundle and WIT/component/runtime cohort and include both positive and negative results without claiming arbitrary semantic equivalence.
