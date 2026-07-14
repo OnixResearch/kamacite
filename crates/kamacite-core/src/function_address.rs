@@ -234,7 +234,7 @@ pub fn validate_function_address_receipt(
     validate_non_claims(&input.non_claims, &mut diagnostics);
     validate_semantic_claims(&input.semantic_claims, &mut diagnostics);
     let source_identities = validate_sources(&input.source_envelopes, &mut diagnostics);
-    let source_lengths = source_byte_lengths(&input.source_envelopes);
+    let source_lengths = source_byte_lengths(&input.source_envelopes, &mut diagnostics);
     let mut dependency_kinds = BTreeMap::new();
     let function_addresses = validate_functions(
         input,
@@ -721,20 +721,20 @@ fn validate_function_span(
             .with_detail("locator", function.locator.clone()),
         );
     }
-    if let Some(source_len) = source_lengths.get(&span.source_key) {
-        if span.end_byte > *source_len {
-            diagnostics.push(
-                Diagnostic::new(
-                    DiagnosticCode::MalformedProjectionOutput,
-                    REQUIREMENT_PRESERVES_SCHEMA,
-                    "functions.span.end_byte",
-                    "function-address span must fit within the preserved source envelope bytes",
-                )
-                .with_detail("locator", function.locator.clone())
-                .with_detail("source_len", source_len.to_string())
-                .with_detail("end_byte", span.end_byte.to_string()),
-            );
-        }
+    if let Some(source_len) = source_lengths.get(&span.source_key)
+        && span.end_byte > *source_len
+    {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_PRESERVES_SCHEMA,
+                "functions.span.end_byte",
+                "function-address span must fit within the preserved source envelope bytes",
+            )
+            .with_detail("locator", function.locator.clone())
+            .with_detail("source_len", source_len.to_string())
+            .with_detail("end_byte", span.end_byte.to_string()),
+        );
     }
 }
 
@@ -913,17 +913,29 @@ fn source_identity_map(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<St
         .collect()
 }
 
-fn source_byte_lengths(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<String, u64> {
-    sources
-        .iter()
-        .map(|source| {
-            (
-                source.key.clone(),
-                u64::try_from(source.source_bytes.len())
-                    .expect("source envelope byte length should fit u64"),
-            )
-        })
-        .collect()
+fn source_byte_lengths(
+    sources: &[FunctionAddressSourceEnvelope],
+    diagnostics: &mut Vec<Diagnostic>,
+) -> BTreeMap<String, u64> {
+    let mut lengths = BTreeMap::new();
+    for source in sources {
+        match u64::try_from(source.source_bytes.len()) {
+            Ok(length) => {
+                lengths.insert(source.key.clone(), length);
+            }
+            Err(error) => diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MalformedProjectionOutput,
+                    REQUIREMENT_PRESERVES_SCHEMA,
+                    "source_envelopes.source_bytes",
+                    "source envelope byte length exceeds the supported receipt range",
+                )
+                .with_detail("source_key", source.key.clone())
+                .with_detail("error", error.to_string()),
+            ),
+        }
+    }
+    lengths
 }
 
 #[cfg(test)]
@@ -991,8 +1003,7 @@ mod tests {
                     span: Some(FunctionAddressSpan {
                         source_key: SOURCE_KEY.to_string(),
                         start_byte: SPAN_END,
-                        end_byte: u64::try_from(SOURCE_BYTES.len())
-                            .expect("source bytes length should fit u64"),
+                        end_byte: u64::try_from(SOURCE_BYTES.len()).unwrap_or(u64::MAX),
                     }),
                     function_address: function_g,
                     dependency_closure: Some(dependency.clone()),
@@ -1022,10 +1033,9 @@ mod tests {
         }
     }
 
-    fn valid_receipt() -> FunctionAddressReceiptEnvelope {
-        validate_function_address_receipt(&valid_input())
-            .receipt
-            .expect("valid receipt")
+    fn valid_receipt() -> Result<FunctionAddressReceiptEnvelope, Vec<Diagnostic>> {
+        let result = validate_function_address_receipt(&valid_input());
+        result.receipt.ok_or(result.diagnostics)
     }
 
     #[test]
@@ -1039,7 +1049,13 @@ mod tests {
             "unexpected diagnostics: {:?}",
             result.diagnostics
         );
-        let receipt = result.receipt.expect("receipt emitted");
+        assert!(
+            result.receipt.is_some(),
+            "passing function-address validation must emit a receipt"
+        );
+        let Some(receipt) = result.receipt else {
+            return;
+        };
         assert_eq!(
             receipt.body.schema_version,
             FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION
@@ -1056,11 +1072,39 @@ mod tests {
     #[test]
     fn canonical_preserves_bytes_own_receipt_identity_and_projection_round_trips() {
         let input = valid_input();
-        let receipt = valid_receipt();
-        let canonical_bytes = function_address_canonical_bytes(&input).expect("canonical bytes");
-        let projection_json = function_address_projection_json(&receipt).expect("projection JSON");
-        let projection = serde_json::from_str::<FunctionAddressJsonProjection>(&projection_json)
-            .expect("projection round trip");
+        let receipt_result = valid_receipt();
+        assert!(
+            receipt_result.is_ok(),
+            "valid receipt fixture must materialize"
+        );
+        let Ok(receipt) = receipt_result else {
+            return;
+        };
+        let bytes_result = function_address_canonical_bytes(&input);
+        assert!(
+            bytes_result.is_ok(),
+            "canonical function-address bytes must serialize"
+        );
+        let Ok(canonical_bytes) = bytes_result else {
+            return;
+        };
+        let projection_json_result = function_address_projection_json(&receipt);
+        assert!(
+            projection_json_result.is_ok(),
+            "function-address projection must serialize"
+        );
+        let Ok(projection_json) = projection_json_result else {
+            return;
+        };
+        let projection_result =
+            serde_json::from_str::<FunctionAddressJsonProjection>(&projection_json);
+        assert!(
+            projection_result.is_ok(),
+            "function-address projection must round trip"
+        );
+        let Ok(projection) = projection_result else {
+            return;
+        };
 
         assert_eq!(
             compute_identity(IdentityDomain::Receipt, &canonical_bytes),
@@ -1072,7 +1116,14 @@ mod tests {
 
     #[test]
     fn projection_drift_or_json_authority_is_rejected() {
-        let receipt = valid_receipt();
+        let receipt_result = valid_receipt();
+        assert!(
+            receipt_result.is_ok(),
+            "projection drift base receipt must materialize"
+        );
+        let Ok(receipt) = receipt_result else {
+            return;
+        };
         let mut projection = function_address_json_projection(&receipt);
         projection.canonical_identity_owner = "json".to_string();
         projection.receipt.functions[0].function_address =
@@ -1095,8 +1146,7 @@ mod tests {
         let mut missing = valid_input();
         missing.functions[0].span = None;
         let mut out_of_range = valid_input();
-        let source_len =
-            u64::try_from(SOURCE_BYTES.len()).expect("source bytes length should fit u64");
+        let source_len = u64::try_from(SOURCE_BYTES.len()).unwrap_or(u64::MAX);
         out_of_range.functions[0].span = Some(FunctionAddressSpan {
             source_key: SOURCE_KEY.to_string(),
             start_byte: SPAN_START,
@@ -1124,23 +1174,42 @@ mod tests {
 
     #[test]
     fn metadata_rename_and_path_churn_do_not_change_canonical_identity() {
-        let original = valid_receipt();
+        let original_result = valid_receipt();
+        assert!(
+            original_result.is_ok(),
+            "metadata stability base receipt must materialize"
+        );
+        let Ok(original) = original_result else {
+            return;
+        };
         let mut renamed = valid_input();
         renamed.source_envelopes[0].display_path = RENAMED_SOURCE_PATH.to_string();
         renamed.functions[0].locator = FUNCTION_F_RENAMED_LOCATOR.to_string();
         renamed.functions[0].display_name = RENAMED_FUNCTION_NAME.to_string();
         renamed.dependency_edges[0].to_locator = FUNCTION_F_RENAMED_LOCATOR.to_string();
 
-        let renamed_receipt = validate_function_address_receipt(&renamed)
-            .receipt
-            .expect("renamed receipt");
+        let renamed_result = validate_function_address_receipt(&renamed);
+        assert!(
+            renamed_result.receipt.is_some(),
+            "metadata-only rename must retain a valid receipt"
+        );
+        let Some(renamed_receipt) = renamed_result.receipt else {
+            return;
+        };
 
         assert_eq!(renamed_receipt.receipt_identity, original.receipt_identity);
     }
 
     #[test]
     fn valence_projection_preserves_dependencies_and_non_claims() {
-        let receipt = valid_receipt();
+        let receipt_result = valid_receipt();
+        assert!(
+            receipt_result.is_ok(),
+            "Valence projection base receipt must materialize"
+        );
+        let Ok(receipt) = receipt_result else {
+            return;
+        };
 
         let projection = export_function_address_valence_projection(&receipt);
 

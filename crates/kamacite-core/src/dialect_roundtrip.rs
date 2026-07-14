@@ -459,10 +459,19 @@ mod tests {
 
     #[test]
     fn known_and_unknown_dialect_payloads_roundtrip_with_preserves_identity() {
-        let known =
-            dialect_roundtrip_profile(&valid_input(KNOWN_NAMESPACE)).expect("known profile");
-        let unknown =
-            dialect_roundtrip_profile(&valid_input(UNKNOWN_NAMESPACE)).expect("unknown profile");
+        let known_result = dialect_roundtrip_profile(&valid_input(KNOWN_NAMESPACE));
+        assert!(known_result.is_ok(), "known dialect profile must validate");
+        let Ok(known) = known_result else {
+            return;
+        };
+        let unknown_result = dialect_roundtrip_profile(&valid_input(UNKNOWN_NAMESPACE));
+        assert!(
+            unknown_result.is_ok(),
+            "unknown dialect profile must validate as opaque"
+        );
+        let Ok(unknown) = unknown_result else {
+            return;
+        };
 
         assert!(!known.opaque_unknown_namespace);
         assert!(unknown.opaque_unknown_namespace);
@@ -478,7 +487,14 @@ mod tests {
 
     #[test]
     fn json_projection_binds_preserves_authority() {
-        let profile = dialect_roundtrip_profile(&valid_input(KNOWN_NAMESPACE)).expect("profile");
+        let profile_result = dialect_roundtrip_profile(&valid_input(KNOWN_NAMESPACE));
+        assert!(
+            profile_result.is_ok(),
+            "projection base profile must validate"
+        );
+        let Ok(profile) = profile_result else {
+            return;
+        };
         let projection = dialect_roundtrip_json_projection(&profile);
 
         assert!(validate_dialect_roundtrip_json_projection(&projection).is_empty());
@@ -547,7 +563,14 @@ mod tests {
 
     #[test]
     fn projection_drift_is_rejected() {
-        let profile = dialect_roundtrip_profile(&valid_input(KNOWN_NAMESPACE)).expect("profile");
+        let profile_result = dialect_roundtrip_profile(&valid_input(KNOWN_NAMESPACE));
+        assert!(
+            profile_result.is_ok(),
+            "projection drift base profile must validate"
+        );
+        let Ok(profile) = profile_result else {
+            return;
+        };
         let mut projection = dialect_roundtrip_json_projection(&profile);
         projection.canonical_identity_owner = "json-only".to_string();
         projection.payload_identity = compute_identity(IdentityDomain::DialectPayload, b"other");

@@ -1146,8 +1146,8 @@ fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliRes
             passed: false,
             diagnostics: result.diagnostics,
             receipt_identity,
-            receipt_path: args.out.as_ref().map(path_display),
-            valence_projection_path: args.valence_out.as_ref().map(path_display),
+            receipt_path: args.out.as_ref().map(|path| path_display(path)),
+            valence_projection_path: args.valence_out.as_ref().map(|path| path_display(path)),
             valence_projection: None,
         };
         print_json_report(&report, "function-address receipt report")?;
@@ -1340,7 +1340,7 @@ fn print_json_report<T: Serialize>(report: &T, label: &str) -> CliResult<()> {
     Ok(())
 }
 
-fn path_display(path: &PathBuf) -> String {
+fn path_display(path: &Path) -> String {
     path.display().to_string()
 }
 
@@ -2456,11 +2456,8 @@ mod tests {
         )
     }
 
-    fn parse_projection(json: &str) -> ManifestProjection {
-        match serde_json::from_str(json) {
-            Ok(parsed) => parsed,
-            Err(error) => panic!("test projection must parse: {error}"),
-        }
+    fn parse_projection(json: &str) -> Result<ManifestProjection, serde_json::Error> {
+        serde_json::from_str(json)
     }
 
     fn valid_octet_function_address_report() -> OctetFunctionAddressReport {
@@ -2486,8 +2483,7 @@ mod tests {
                 name: TEST_FUNCTION_NAME.to_string(),
                 source_key: TEST_SOURCE_KEY.to_string(),
                 start_byte: 0,
-                end_byte: u64::try_from(TEST_SOURCE_BYTES.len())
-                    .expect("test source length fits u64"),
+                end_byte: u64::try_from(TEST_SOURCE_BYTES.len()).unwrap_or(u64::MAX),
                 function_address: format!("b3:{}", function_address.hex.as_str()),
                 dependency_set_hash: Some(format!("b3:{}", dependency_identity.hex.as_str())),
                 dependency_identity_kind: Some("source-token-set".to_string()),
@@ -2525,7 +2521,14 @@ mod tests {
         let json = projection_json(TEST_FIXTURE_ID);
         let computed = compute_identity(IdentityDomain::Projection, json.as_bytes());
         let source = source_manifest(computed.hex.as_str(), TEST_FIXTURE_ID);
-        let projection = parse_projection(&json);
+        let projection_result = parse_projection(&json);
+        assert!(
+            projection_result.is_ok(),
+            "matching manifest projection fixture must parse"
+        );
+        let Ok(projection) = projection_result else {
+            return;
+        };
 
         let report = check_manifest_projection(&source, &projection, json.as_bytes());
 
@@ -2538,7 +2541,14 @@ mod tests {
     fn rejects_stale_manifest_projection_identity() {
         let json = projection_json(TEST_FIXTURE_ID);
         let source = source_manifest(TEST_ZERO_HEX, TEST_FIXTURE_ID);
-        let projection = parse_projection(&json);
+        let projection_result = parse_projection(&json);
+        assert!(
+            projection_result.is_ok(),
+            "stale manifest projection fixture must parse"
+        );
+        let Ok(projection) = projection_result else {
+            return;
+        };
 
         let report = check_manifest_projection(&source, &projection, json.as_bytes());
 
@@ -2556,7 +2566,14 @@ mod tests {
         let json = projection_json(TEST_FIXTURE_ID);
         let computed = compute_identity(IdentityDomain::Projection, json.as_bytes());
         let source = source_manifest(computed.hex.as_str(), TEST_OTHER_FIXTURE_ID);
-        let projection = parse_projection(&json);
+        let projection_result = parse_projection(&json);
+        assert!(
+            projection_result.is_ok(),
+            "fixture-ID drift projection fixture must parse"
+        );
+        let Ok(projection) = projection_result else {
+            return;
+        };
 
         let report = check_manifest_projection(&source, &projection, json.as_bytes());
 
@@ -2574,9 +2591,13 @@ mod tests {
         let report = valid_octet_function_address_report();
         let sources = valid_function_address_sources();
 
-        let input = match build_function_address_receipt_input(report, &sources) {
-            Ok(input) => input,
-            Err(error) => panic!("test input should materialize: {error}"),
+        let input_result = build_function_address_receipt_input(report, &sources);
+        assert!(
+            input_result.is_ok(),
+            "valid Octet function-address input must materialize"
+        );
+        let Ok(input) = input_result else {
+            return;
         };
         let result = validate_function_address_receipt(&input);
 

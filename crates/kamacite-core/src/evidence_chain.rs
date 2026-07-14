@@ -189,7 +189,7 @@ pub fn build_evidence_chain_envelope(
 pub fn evidence_chain_canonical_bytes(
     input: &EvidenceChainEnvelopeInput,
 ) -> Result<Vec<u8>, ReceiptError> {
-    let canonical = canonical_evidence_chain(input);
+    let canonical = canonical_evidence_chain(input)?;
     let mut bytes = CANONICAL_BYTES_PREFIX.to_vec();
     bytes.extend(crate::receipt::canonical_json_bytes(&canonical)?);
     Ok(bytes)
@@ -265,34 +265,30 @@ pub fn validate_evidence_chain_json_projection(
     diagnostics
 }
 
-#[must_use]
 pub fn evidence_chain_collection_root(
     evidence_kind: EvidenceKind,
     leaves: &[Identity],
-) -> Identity {
+) -> Result<Identity, ReceiptError> {
     let mut leaves = leaves.to_vec();
     leaves.sort();
-    compute_identity(
+    Ok(compute_identity(
         IdentityDomain::EvidenceChain,
-        serde_json::to_string(&(evidence_kind, leaves))
-            .expect("evidence-chain collection root payload serializes")
-            .as_bytes(),
-    )
+        &crate::receipt::canonical_json_bytes(&(evidence_kind, leaves))?,
+    ))
 }
 
-#[must_use]
 pub fn function_address_evidence_chain_input(
     receipt: &FunctionAddressReceiptEnvelope,
     policy_hash: Identity,
     profile_hash: Identity,
-) -> EvidenceChainEnvelopeInput {
+) -> Result<EvidenceChainEnvelopeInput, ReceiptError> {
     let leaves = receipt
         .body
         .functions
         .iter()
         .map(|function| function.function_address.clone())
         .collect::<Vec<_>>();
-    let profile_root = evidence_chain_collection_root(EvidenceKind::FunctionAddress, &leaves);
+    let profile_root = evidence_chain_collection_root(EvidenceKind::FunctionAddress, &leaves)?;
     let source_links = receipt
         .body
         .source_envelopes
@@ -302,7 +298,7 @@ pub fn function_address_evidence_chain_input(
             identity: source.source_identity.clone(),
         })
         .collect::<Vec<_>>();
-    EvidenceChainEnvelopeInput {
+    Ok(EvidenceChainEnvelopeInput {
         evidence_kind: EvidenceKind::FunctionAddress,
         policy_hash,
         profile_hash,
@@ -314,7 +310,7 @@ pub fn function_address_evidence_chain_input(
         }],
         projections: Vec::new(),
         non_claims: receipt.body.non_claims.clone(),
-    }
+    })
 }
 
 fn build_evidence_chain_envelope_unchecked(
@@ -328,7 +324,7 @@ fn build_evidence_chain_envelope_unchecked(
         profile_hash: input.profile_hash.clone(),
         parent_links: sorted_parent_links(&input.parent_links),
         profile_payload_roots: sorted_profile_roots(&input.profile_payload_roots),
-        non_claim_boundary_hash: non_claim_boundary_hash(&input.non_claims),
+        non_claim_boundary_hash: non_claim_boundary_hash(&input.non_claims)?,
         projections: sorted_projections(&input.projections),
         non_claims: sorted_non_claims(&input.non_claims),
     };
@@ -350,8 +346,8 @@ fn build_evidence_chain_envelope_unchecked(
 
 fn canonical_evidence_chain(
     input: &EvidenceChainEnvelopeInput,
-) -> CanonicalEvidenceChainEnvelope<'_> {
-    CanonicalEvidenceChainEnvelope {
+) -> Result<CanonicalEvidenceChainEnvelope<'_>, ReceiptError> {
+    Ok(CanonicalEvidenceChainEnvelope {
         schema_version: EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION,
         canonical_codec: EVIDENCE_CHAIN_CANONICAL_CODEC,
         evidence_kind: &input.evidence_kind,
@@ -359,9 +355,9 @@ fn canonical_evidence_chain(
         profile_hash: &input.profile_hash,
         parent_links: sorted_parent_links(&input.parent_links),
         profile_payload_roots: sorted_profile_roots(&input.profile_payload_roots),
-        non_claim_boundary_hash: non_claim_boundary_hash(&input.non_claims),
+        non_claim_boundary_hash: non_claim_boundary_hash(&input.non_claims)?,
         projections: sorted_projections(&input.projections),
-    }
+    })
 }
 
 fn sorted_parent_links(parent_links: &[EvidenceChainParentLink]) -> Vec<EvidenceChainParentLink> {
@@ -394,13 +390,11 @@ fn sorted_non_claims(non_claims: &[String]) -> Vec<String> {
     non_claims
 }
 
-fn non_claim_boundary_hash(non_claims: &[String]) -> Identity {
-    compute_identity(
+fn non_claim_boundary_hash(non_claims: &[String]) -> Result<Identity, ReceiptError> {
+    Ok(compute_identity(
         IdentityDomain::EvidenceChain,
-        serde_json::to_string(&sorted_non_claims(non_claims))
-            .expect("non-claim boundary payload serializes")
-            .as_bytes(),
-    )
+        &crate::receipt::canonical_json_bytes(&sorted_non_claims(non_claims))?,
+    ))
 }
 
 fn validate_parent_links(
@@ -533,10 +527,10 @@ mod tests {
     const FUNCTION_LOCATOR: &str = "src/lib.rs::f";
     const SPAN_START: u64 = 0;
 
-    fn valid_input() -> EvidenceChainEnvelopeInput {
+    fn valid_input() -> Result<EvidenceChainEnvelopeInput, ReceiptError> {
         let source = compute_identity(IdentityDomain::Source, b"source");
         let leaf = compute_identity(IdentityDomain::FunctionAddress, b"function");
-        EvidenceChainEnvelopeInput {
+        Ok(EvidenceChainEnvelopeInput {
             evidence_kind: EvidenceKind::FunctionAddress,
             policy_hash: compute_identity(IdentityDomain::Receipt, b"policy"),
             profile_hash: compute_identity(IdentityDomain::Receipt, b"profile"),
@@ -550,7 +544,7 @@ mod tests {
                 root_identity: evidence_chain_collection_root(
                     EvidenceKind::FunctionAddress,
                     &[leaf],
-                ),
+                )?,
             }],
             projections: Vec::new(),
             non_claims: vec![
@@ -558,14 +552,35 @@ mod tests {
                 NON_CLAIM_RELEASE_ELIGIBILITY.to_string(),
                 NON_CLAIM_VERIFIER_SOUNDNESS.to_string(),
             ],
-        }
+        })
     }
 
     #[test]
     fn valid_evidence_chain_envelope_has_stable_canonical_identity_and_projection() {
-        let input = valid_input();
-        let envelope = build_evidence_chain_envelope(&input).expect("valid envelope");
-        let canonical_bytes = evidence_chain_canonical_bytes(&input).expect("canonical bytes");
+        let input_result = valid_input();
+        assert!(
+            input_result.is_ok(),
+            "valid evidence-chain fixture must canonicalize"
+        );
+        let Ok(input) = input_result else {
+            return;
+        };
+        let envelope_result = build_evidence_chain_envelope(&input);
+        assert!(
+            envelope_result.is_ok(),
+            "valid evidence-chain fixture must build"
+        );
+        let Ok(envelope) = envelope_result else {
+            return;
+        };
+        let bytes_result = evidence_chain_canonical_bytes(&input);
+        assert!(
+            bytes_result.is_ok(),
+            "valid evidence-chain fixture bytes must canonicalize"
+        );
+        let Ok(canonical_bytes) = bytes_result else {
+            return;
+        };
         let projection = evidence_chain_json_projection(&envelope);
 
         assert_eq!(
@@ -587,19 +602,34 @@ mod tests {
         );
         let second = evidence_chain_collection_root(EvidenceKind::FunctionAddress, &[right, left]);
 
+        assert!(first.is_ok());
         assert_eq!(first, second);
     }
 
     #[test]
     fn function_address_receipt_is_first_generic_profile() {
         let receipt = function_address_receipt();
-        let input = function_address_evidence_chain_input(
+        let input_result = function_address_evidence_chain_input(
             &receipt,
             compute_identity(IdentityDomain::Receipt, b"policy"),
             compute_identity(IdentityDomain::Receipt, b"profile"),
         );
+        assert!(
+            input_result.is_ok(),
+            "function-address profile input must canonicalize"
+        );
+        let Ok(input) = input_result else {
+            return;
+        };
 
-        let envelope = build_evidence_chain_envelope(&input).expect("function-address envelope");
+        let envelope_result = build_evidence_chain_envelope(&input);
+        assert!(
+            envelope_result.is_ok(),
+            "function-address envelope must build"
+        );
+        let Ok(envelope) = envelope_result else {
+            return;
+        };
 
         assert_eq!(input.evidence_kind, EvidenceKind::FunctionAddress);
         assert_eq!(input.parent_links[0].domain, ParentLinkDomain::SourceRoot);
@@ -612,7 +642,14 @@ mod tests {
 
     #[test]
     fn invalid_evidence_chain_envelope_rejects_wrong_domains_and_weakened_non_claims() {
-        let mut input = valid_input();
+        let input_result = valid_input();
+        assert!(
+            input_result.is_ok(),
+            "invalid-case base fixture must canonicalize"
+        );
+        let Ok(mut input) = input_result else {
+            return;
+        };
         input.policy_hash = compute_identity(IdentityDomain::Source, b"wrong policy");
         input.parent_links[0].identity = compute_identity(IdentityDomain::Receipt, b"wrong parent");
         input.profile_payload_roots[0].evidence_kind = EvidenceKind::Proof;
@@ -656,8 +693,19 @@ mod tests {
 
     #[test]
     fn projection_drift_is_rejected() {
-        let input = valid_input();
-        let envelope = build_evidence_chain_envelope(&input).expect("valid envelope");
+        let input_result = valid_input();
+        assert!(input_result.is_ok(), "projection fixture must canonicalize");
+        let Ok(input) = input_result else {
+            return;
+        };
+        let envelope_result = build_evidence_chain_envelope(&input);
+        assert!(
+            envelope_result.is_ok(),
+            "projection fixture envelope must build"
+        );
+        let Ok(envelope) = envelope_result else {
+            return;
+        };
         let mut projection = evidence_chain_json_projection(&envelope);
         projection.canonical_identity_owner = "json".to_string();
         projection.envelope.non_claims.clear();
@@ -702,8 +750,7 @@ mod tests {
                     span: Some(FunctionAddressSpan {
                         source_key: SOURCE_KEY.to_string(),
                         start_byte: SPAN_START,
-                        end_byte: u64::try_from(SOURCE_BYTES.len())
-                            .expect("source bytes length fits u64"),
+                        end_byte: u64::try_from(SOURCE_BYTES.len()).unwrap_or(u64::MAX),
                     }),
                     function_address,
                     dependency_closure: None,

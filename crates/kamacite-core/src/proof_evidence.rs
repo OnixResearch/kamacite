@@ -161,15 +161,9 @@ pub fn build_trellis_proof_evidence_envelope(
         diagnostics.dedup();
         return Err(diagnostics);
     }
-    let profile = trellis_proof_evidence_profile(input);
-    let profile_identity = trellis_proof_profile_identity(&profile).map_err(|error| {
-        vec![Diagnostic::new(
-            DiagnosticCode::MalformedProjectionOutput,
-            REQUIREMENT_SCHEMA,
-            "profile",
-            format!("Trellis proof evidence profile canonicalization failed: {error}"),
-        )]
-    })?;
+    let profile = trellis_proof_evidence_profile(input).map_err(canonicalization_diagnostics)?;
+    let profile_identity =
+        trellis_proof_profile_identity(&profile).map_err(canonicalization_diagnostics)?;
     let evidence_chain_input = EvidenceChainEnvelopeInput {
         evidence_kind: EvidenceKind::Proof,
         policy_hash,
@@ -292,28 +286,26 @@ pub fn trellis_proof_profile_canonical_bytes(
     Ok(bytes)
 }
 
-#[must_use]
-pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Identity {
-    compute_identity(
+pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Result<Identity, ReceiptError> {
+    Ok(compute_identity(
         IdentityDomain::EvidenceChain,
-        &canonical_vec_bytes(&sorted_strings(assumptions)),
-    )
+        &canonical_vec_bytes(&sorted_strings(assumptions))?,
+    ))
 }
 
-#[must_use]
-pub fn trellis_proof_dependency_root(dependencies: &[Identity]) -> Identity {
+pub fn trellis_proof_dependency_root(dependencies: &[Identity]) -> Result<Identity, ReceiptError> {
     let mut dependencies = dependencies.to_vec();
     dependencies.sort();
-    compute_identity(
+    Ok(compute_identity(
         IdentityDomain::EvidenceChain,
-        &canonical_vec_bytes(&dependencies),
-    )
+        &canonical_vec_bytes(&dependencies)?,
+    ))
 }
 
 fn trellis_proof_evidence_profile(
     input: &TrellisProofEvidenceInput,
-) -> TrellisProofEvidenceProfile {
-    TrellisProofEvidenceProfile {
+) -> Result<TrellisProofEvidenceProfile, ReceiptError> {
+    Ok(TrellisProofEvidenceProfile {
         schema_version: TRELLIS_PROOF_PROFILE_SCHEMA_VERSION.to_string(),
         canonical_codec: TRELLIS_PROOF_PROFILE_CANONICAL_CODEC.to_string(),
         producer: input.producer.clone(),
@@ -322,13 +314,22 @@ fn trellis_proof_evidence_profile(
         proof_ir_identity: input.proof_ir_identity.clone(),
         verifier_receipt_identity: input.verifier_receipt_identity.clone(),
         verifier_passed: input.verifier_passed,
-        assumptions_root: trellis_proof_assumptions_root(&input.assumptions),
-        dependency_root: trellis_proof_dependency_root(&input.dependency_identities),
+        assumptions_root: trellis_proof_assumptions_root(&input.assumptions)?,
+        dependency_root: trellis_proof_dependency_root(&input.dependency_identities)?,
         property_ids: sorted_strings(&input.property_ids),
         requirement_ids: sorted_strings(&input.requirement_ids),
-        non_claim_boundary_hash: trellis_proof_assumptions_root(&input.non_claims),
+        non_claim_boundary_hash: trellis_proof_assumptions_root(&input.non_claims)?,
         non_claims: sorted_strings(&input.non_claims),
-    }
+    })
+}
+
+fn canonicalization_diagnostics(error: ReceiptError) -> Vec<Diagnostic> {
+    vec![Diagnostic::new(
+        DiagnosticCode::MalformedProjectionOutput,
+        REQUIREMENT_SCHEMA,
+        "profile",
+        format!("Trellis proof evidence profile canonicalization failed: {error}"),
+    )]
 }
 
 fn trellis_proof_profile_identity(
@@ -371,7 +372,7 @@ fn validate_assumptions(input: &TrellisProofEvidenceInput, diagnostics: &mut Vec
             "Trellis proof evidence must explicitly root assumptions, even when no assumptions are declared",
         ));
     }
-    validate_declared_root(
+    validate_declared_root_result(
         input.declared_assumptions_root.as_ref(),
         trellis_proof_assumptions_root(&input.assumptions),
         "declared_assumptions_root",
@@ -388,12 +389,29 @@ fn validate_dependencies(input: &TrellisProofEvidenceInput, diagnostics: &mut Ve
             diagnostics,
         );
     }
-    validate_declared_root(
+    validate_declared_root_result(
         input.declared_dependency_root.as_ref(),
         trellis_proof_dependency_root(&input.dependency_identities),
         "declared_dependency_root",
         diagnostics,
     );
+}
+
+fn validate_declared_root_result(
+    declared: Option<&Identity>,
+    computed: Result<Identity, ReceiptError>,
+    field: &str,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    match computed {
+        Ok(computed) => validate_declared_root(declared, computed, field, diagnostics),
+        Err(error) => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_SCHEMA,
+            field,
+            format!("Trellis proof evidence root canonicalization failed: {error}"),
+        )),
+    }
 }
 
 fn validate_declared_root(
@@ -513,8 +531,8 @@ fn sorted_strings(values: &[String]) -> Vec<String> {
     values
 }
 
-fn canonical_vec_bytes<T: Serialize>(value: &T) -> Vec<u8> {
-    serde_json::to_vec(value).expect("Trellis proof evidence canonical vector payload serializes")
+fn canonical_vec_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, ReceiptError> {
+    canonical_json_bytes(value)
 }
 
 #[cfg(test)]
@@ -539,8 +557,8 @@ mod tests {
             proof_ir_identity: compute_identity(IdentityDomain::EvidenceChain, b"proof-ir"),
             verifier_receipt_identity: compute_identity(IdentityDomain::Receipt, b"verifier"),
             verifier_passed: true,
-            declared_assumptions_root: Some(trellis_proof_assumptions_root(&assumptions)),
-            declared_dependency_root: Some(trellis_proof_dependency_root(&dependencies)),
+            declared_assumptions_root: trellis_proof_assumptions_root(&assumptions).ok(),
+            declared_dependency_root: trellis_proof_dependency_root(&dependencies).ok(),
             assumptions,
             dependency_identities: dependencies,
             property_ids: vec![PROPERTY_ID.to_string()],
@@ -556,18 +574,30 @@ mod tests {
 
     #[test]
     fn builds_verified_and_recorded_trellis_profiles() {
-        let verified = build_trellis_proof_evidence_envelope(
+        let verified_result = build_trellis_proof_evidence_envelope(
             &valid_input(TrellisProofEvidenceRole::FormalProofCandidate),
             compute_identity(IdentityDomain::Receipt, b"policy"),
             compute_identity(IdentityDomain::Receipt, b"profile"),
-        )
-        .expect("verified profile");
-        let recorded = build_trellis_proof_evidence_envelope(
+        );
+        assert!(
+            verified_result.is_ok(),
+            "verified Trellis profile must build"
+        );
+        let Ok(verified) = verified_result else {
+            return;
+        };
+        let recorded_result = build_trellis_proof_evidence_envelope(
             &valid_input(TrellisProofEvidenceRole::RecordedOnly),
             compute_identity(IdentityDomain::Receipt, b"policy"),
             compute_identity(IdentityDomain::Receipt, b"profile"),
-        )
-        .expect("recorded profile");
+        );
+        assert!(
+            recorded_result.is_ok(),
+            "recorded Trellis profile must build"
+        );
+        let Ok(recorded) = recorded_result else {
+            return;
+        };
 
         assert_eq!(
             verified.evidence_chain.body.evidence_kind,
@@ -582,12 +612,18 @@ mod tests {
 
     #[test]
     fn projection_binds_profile_and_evidence_chain_identity() {
-        let envelope = build_trellis_proof_evidence_envelope(
+        let envelope_result = build_trellis_proof_evidence_envelope(
             &valid_input(TrellisProofEvidenceRole::FormalProofCandidate),
             compute_identity(IdentityDomain::Receipt, b"policy"),
             compute_identity(IdentityDomain::Receipt, b"profile"),
-        )
-        .expect("valid profile");
+        );
+        assert!(
+            envelope_result.is_ok(),
+            "projection base Trellis profile must build"
+        );
+        let Ok(envelope) = envelope_result else {
+            return;
+        };
         let projection = trellis_proof_evidence_json_projection(&envelope);
 
         assert_eq!(projection.profile_identity, envelope.profile_identity);
@@ -667,12 +703,18 @@ mod tests {
 
     #[test]
     fn rejects_projection_drift() {
-        let envelope = build_trellis_proof_evidence_envelope(
+        let envelope_result = build_trellis_proof_evidence_envelope(
             &valid_input(TrellisProofEvidenceRole::RecordedOnly),
             compute_identity(IdentityDomain::Receipt, b"policy"),
             compute_identity(IdentityDomain::Receipt, b"profile"),
-        )
-        .expect("valid profile");
+        );
+        assert!(
+            envelope_result.is_ok(),
+            "projection drift base profile must build"
+        );
+        let Ok(envelope) = envelope_result else {
+            return;
+        };
         let mut projection = trellis_proof_evidence_json_projection(&envelope);
         projection.canonical_identity_owner = "json".to_string();
         projection.profile.property_ids.push("drifted".to_string());

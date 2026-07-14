@@ -150,6 +150,25 @@
             doCheck = false;
           };
 
+          clippy-rejects-forbidden-panic =
+            pkgs.runCommand "kamacite-clippy-rejects-forbidden-panic"
+              {
+                nativeBuildInputs = [
+                  pkgs.cargo
+                  pkgs.clippy
+                  pkgs.gnugrep
+                ];
+              }
+              ''
+                ${copySource}
+                if cargo clippy --manifest-path fixtures/clippy-negative/Cargo.toml -- -D warnings >clippy-negative.out 2>&1; then
+                  echo "expected forbidden hidden panic fixture to fail Clippy" >&2
+                  exit 1
+                fi
+                grep -q "expect_used" clippy-negative.out
+                touch $out
+              '';
+
           manifest-projection-fresh = pkgs.runCommand "kamacite-manifest-projection-fresh" { } ''
             ${copySource}
             ${kamacite} check-manifest-projection \

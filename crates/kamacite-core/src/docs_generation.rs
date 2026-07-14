@@ -4,6 +4,7 @@ use crate::fixture::{
     DocumentationSectionInput,
 };
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -215,18 +216,28 @@ pub fn validate_language_documentation_facts(
             "declared_facts_identity",
             &mut diagnostics,
         );
-        let computed = language_documentation_facts_identity(input);
-        if declared.domain == IdentityDomain::DocumentationFacts && declared.hex != computed.hex {
-            diagnostics.push(
-                Diagnostic::new(
-                    DiagnosticCode::StaleIdentity,
-                    REQUIREMENT_LANGUAGE_FACTS,
-                    "declared_facts_identity.hex",
-                    "declared language documentation facts identity is stale",
-                )
-                .with_detail("declared", declared.hex.as_str())
-                .with_detail("computed", computed.hex.as_str()),
-            );
+        match language_documentation_facts_identity(input) {
+            Ok(computed)
+                if declared.domain == IdentityDomain::DocumentationFacts
+                    && declared.hex != computed.hex =>
+            {
+                diagnostics.push(
+                    Diagnostic::new(
+                        DiagnosticCode::StaleIdentity,
+                        REQUIREMENT_LANGUAGE_FACTS,
+                        "declared_facts_identity.hex",
+                        "declared language documentation facts identity is stale",
+                    )
+                    .with_detail("declared", declared.hex.as_str())
+                    .with_detail("computed", computed.hex.as_str()),
+                );
+            }
+            Ok(_) => {}
+            Err(error) => diagnostics.push(canonicalization_diagnostic(
+                "declared_facts_identity",
+                "language documentation facts identity",
+                &error,
+            )),
         }
     }
     diagnostics.sort();
@@ -241,6 +252,13 @@ pub fn language_documentation_facts_artifact(
     if !diagnostics.is_empty() {
         return Err(diagnostics);
     }
+    let facts_identity = language_documentation_facts_identity(input).map_err(|error| {
+        vec![canonicalization_diagnostic(
+            "facts_identity",
+            "language documentation facts identity",
+            &error,
+        )]
+    })?;
     Ok(LanguageDocumentationFactsArtifact {
         schema_version: input.schema_version,
         language: input.language.clone(),
@@ -251,11 +269,10 @@ pub fn language_documentation_facts_artifact(
         diagnostics: sorted_strings(&input.diagnostics),
         checked_laws: sorted_strings(&input.checked_laws),
         non_claims: sorted_strings(&input.non_claims),
-        facts_identity: language_documentation_facts_identity(input),
+        facts_identity,
     })
 }
 
-#[must_use]
 pub fn assemble_documentation_ir(
     input: &DocsAssemblyInput,
 ) -> Result<DocumentationIrInput, Vec<Diagnostic>> {
@@ -320,9 +337,22 @@ pub fn assemble_documentation_ir(
     }
     let pages = documentation_pages(input);
     let canonical_bytes =
-        documentation_ir_canonical_bytes(&pages, &input.target_formats, &input.non_claims);
+        documentation_ir_canonical_bytes(&pages, &input.target_formats, &input.non_claims)
+            .map_err(|error| {
+                vec![canonicalization_diagnostic(
+                    "canonical_bytes",
+                    "documentation IR",
+                    &error,
+                )]
+            })?;
     let declared_identity = compute_identity(IdentityDomain::DocumentationIr, &canonical_bytes);
-    let collector_identity = docs_collector_identity(&input.facts);
+    let collector_identity = docs_collector_identity(&input.facts).map_err(|error| {
+        vec![canonicalization_diagnostic(
+            "collector_identity",
+            "documentation collector identity",
+            &error,
+        )]
+    })?;
     let dependency_identities = input
         .facts
         .iter()
@@ -492,7 +522,9 @@ pub fn docs_config_identity(config_bytes: &[u8]) -> Identity {
     compute_identity(IdentityDomain::DocumentationFacts, config_bytes)
 }
 
-fn language_documentation_facts_identity(input: &LanguageDocumentationFactsInput) -> Identity {
+fn language_documentation_facts_identity(
+    input: &LanguageDocumentationFactsInput,
+) -> Result<Identity, ReceiptError> {
     let payload = LanguageDocumentationFactsArtifact {
         schema_version: input.schema_version,
         language: input.language.clone(),
@@ -508,9 +540,18 @@ fn language_documentation_facts_identity(input: &LanguageDocumentationFactsInput
             b"language facts identity placeholder",
         ),
     };
-    compute_identity(
+    Ok(compute_identity(
         IdentityDomain::DocumentationFacts,
-        &serde_json::to_vec(&payload).expect("language documentation facts payload serializes"),
+        &canonical_json_bytes(&payload)?,
+    ))
+}
+
+fn canonicalization_diagnostic(field: &str, artifact: &str, error: &ReceiptError) -> Diagnostic {
+    Diagnostic::new(
+        DiagnosticCode::MalformedProjectionOutput,
+        REQUIREMENT_LANGUAGE_VALIDATION,
+        field,
+        format!("{artifact} canonicalization failed: {error}"),
     )
 }
 
@@ -855,26 +896,25 @@ fn documentation_ir_canonical_bytes(
     pages: &[DocumentationPageInput],
     target_formats: &[String],
     non_claims: &[String],
-) -> Vec<u8> {
-    serde_json::to_vec(&(
+) -> Result<Vec<u8>, ReceiptError> {
+    canonical_json_bytes(&(
         pages,
         sorted_or_default(target_formats),
         sorted_strings(non_claims),
     ))
-    .expect("documentation IR assembly payload serializes")
 }
 
-fn docs_collector_identity(facts: &[LanguageDocumentationFactsArtifact]) -> Identity {
-    compute_identity(
+fn docs_collector_identity(
+    facts: &[LanguageDocumentationFactsArtifact],
+) -> Result<Identity, ReceiptError> {
+    let collector_identities = facts
+        .iter()
+        .map(|fact| fact.collector_identity.clone())
+        .collect::<BTreeSet<_>>();
+    Ok(compute_identity(
         IdentityDomain::Adapter,
-        &serde_json::to_vec(
-            &facts
-                .iter()
-                .map(|fact| fact.collector_identity.clone())
-                .collect::<BTreeSet<_>>(),
-        )
-        .expect("collector identity set serializes"),
-    )
+        &canonical_json_bytes(&collector_identities)?,
+    ))
 }
 
 fn sorted_items(items: &[LanguageDocumentationItem]) -> Vec<LanguageDocumentationItem> {
@@ -991,14 +1031,24 @@ mod tests {
 
     #[test]
     fn language_facts_validate_and_assemble_into_documentation_ir() {
-        let facts = language_documentation_facts_artifact(&valid_facts_input()).expect("facts");
-        let ir = assemble_documentation_ir(&DocsAssemblyInput {
+        let facts_result = language_documentation_facts_artifact(&valid_facts_input());
+        assert!(
+            facts_result.is_ok(),
+            "valid documentation facts must materialize"
+        );
+        let Ok(facts) = facts_result else {
+            return;
+        };
+        let ir_result = assemble_documentation_ir(&DocsAssemblyInput {
             facts: vec![facts.clone()],
             target_formats: vec![DEFAULT_TARGET_FORMAT.to_string()],
             page_grouping: BTreeMap::new(),
             non_claims: fact_non_claims(),
-        })
-        .expect("documentation IR");
+        });
+        assert!(ir_result.is_ok(), "valid documentation IR must assemble");
+        let Ok(ir) = ir_result else {
+            return;
+        };
 
         assert_eq!(
             facts.facts_identity.domain,
@@ -1061,17 +1111,30 @@ mod tests {
 
     #[test]
     fn documentation_ir_assembly_rejects_duplicates_and_unknown_links() {
-        let mut facts = language_documentation_facts_artifact(&valid_facts_input()).expect("facts");
+        let facts_result = language_documentation_facts_artifact(&valid_facts_input());
+        assert!(
+            facts_result.is_ok(),
+            "invalid assembly base facts must materialize"
+        );
+        let Ok(mut facts) = facts_result else {
+            return;
+        };
         facts.items[0].links = vec!["missing".to_string()];
         facts.items.push(facts.items[0].clone());
 
-        let diagnostics = assemble_documentation_ir(&DocsAssemblyInput {
+        let assembly_result = assemble_documentation_ir(&DocsAssemblyInput {
             facts: vec![facts],
             target_formats: Vec::new(),
             page_grouping: BTreeMap::new(),
             non_claims: fact_non_claims(),
-        })
-        .expect_err("invalid assembly");
+        });
+        assert!(
+            assembly_result.is_err(),
+            "duplicate and unknown links must fail assembly"
+        );
+        let Err(diagnostics) = assembly_result else {
+            return;
+        };
 
         assert!(
             diagnostics

@@ -159,6 +159,7 @@ Run normal validation through Kamacite's repo-owned package and development shel
 
 ```bash
 nix develop . -c cargo test --workspace
+nix develop . -c cargo clippy --workspace --all-targets -- -D warnings
 nix run .#kamacite -- validate --root . --manifest fixtures/manifest.json
 nix run .#kamacite -- validate-nickel-adapter --root . --manifest fixtures/manifest.json
 nix run .#kamacite -- validate-steel-adapter --root . --manifest fixtures/manifest.json
