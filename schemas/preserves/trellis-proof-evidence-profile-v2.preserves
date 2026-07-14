@@ -1,0 +1,32 @@
+; Kamacite Trellis proof evidence canonical profile schema v2.
+; The profile and collection roots use canonical packed Preserves.
+
+TrellisProofEvidenceProfile = <kamacite-trellis-proof-evidence-profile-v2 {
+  schema-version: "kamacite.trellis-proof-evidence-profile.v2",
+  canonical-codec: "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+  producer: string,
+  role: ProofRole,
+  source-identity: Identity,
+  proof-ir-identity: Identity,
+  verifier-receipt-identity: Identity,
+  verifier-passed: bool,
+  assumptions-root: Identity,
+  dependency-root: Identity,
+  property-ids: [string ...],
+  requirement-ids: [string ...],
+  non-claim-boundary-hash: Identity,
+  non-claims: [string ...]
+}>
+
+ProofCollection = <kamacite-trellis-proof-collection-v2 {
+  kind: string,
+  values: [any ...]
+}>
+
+ProofRole = "recorded-only" | "formal-proof-candidate"
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}

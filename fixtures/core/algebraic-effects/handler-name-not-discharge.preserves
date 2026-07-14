@@ -1,0 +1,1 @@
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.read-config" "ReadConfig" <Some "unit"> <Some "string">>] ["op.read-config"] #f #f <Some <HandlerDescriptorInput "trusted-looking-handler" [] [] "no-continuation" #t []>> <None> <None> [] []>

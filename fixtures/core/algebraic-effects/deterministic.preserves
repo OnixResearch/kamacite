@@ -1,1 +1,1 @@
-<kamacite-effect-bundle-v1 {signature: "PureTrace", row: ["op.trace"], replay: "deterministic"}>
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.trace" "Trace" <Some "string"> <Some "unit">>] ["op.trace"] #f #f <None> <None> <Some <ReplayProfileInput "deterministic" [] <None>>> [] []>

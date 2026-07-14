@@ -13,7 +13,7 @@
       "declared-canonical": {
         "domain": "canonical-value",
         "algorithm": "blake3",
-        "hex": "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31"
+        "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
       },
       "projection": {
         "domain": "projection",
@@ -25,7 +25,7 @@
       "computed-canonical": {
         "domain": "canonical-value",
         "algorithm": "blake3",
-        "hex": "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31"
+        "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
       }
     },
     "checked_laws": [
@@ -40,6 +40,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "7d1de8752fd77c93ccbf79c901b956188e1aa3d43c5b31c8f1776cfde1d49ab7"
+    "hex": "7288b6acdd1fab4b5df5fee7ce766a0fccb9fbab6e23d9353c429c6b21adf49a"
   }
 }

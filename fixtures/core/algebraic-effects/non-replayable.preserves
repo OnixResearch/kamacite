@@ -1,1 +1,1 @@
-<kamacite-effect-bundle-v1 {replay: "non-replayable", operation: "op.random"}>
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.random" "Random" <Some "unit"> <Some "bytes">>] ["op.random"] #f #f <None> <None> <None> ["random"] []>

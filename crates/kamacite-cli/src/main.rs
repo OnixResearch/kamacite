@@ -10,17 +10,18 @@ use kamacite_core::{
     FunctionAddressDependencyIdentityKind, FunctionAddressProducer, FunctionAddressReceiptInput,
     FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
     FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
-    IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput, ReceiptEnvelope,
-    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
+    IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput, PRESERVES_CANONICAL_CODEC,
+    PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION,
+    ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
     SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
     UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
     ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance, compute_identity,
     docs_config_identity, export_function_address_valence_projection, export_valence_receipt,
-    function_address_projection_json, receipt_json, validate_fixture_suite,
-    validate_function_address_receipt,
+    fixture_expected_canonical_artifact, function_address_projection_json, receipt_json,
+    validate_fixture_suite, validate_function_address_receipt,
 };
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::{Display, Formatter};
 use std::path::{Component, Path, PathBuf};
 use std::process::{Command as ProcessCommand, Output};
@@ -31,6 +32,9 @@ const DEFAULT_MANIFEST_SOURCE: &str = "fixtures/manifest.ncl";
 const DEFAULT_UPDATE_REPORT: &str = "target/kamacite-golden-update-receipt.json";
 const DEFAULT_VALENCE_EXPORT_UPDATE_REPORT: &str =
     "target/kamacite-valence-export-update-receipt.json";
+const DEFAULT_PRESERVES_MIGRATION_REPORT: &str = "target/kamacite-preserves-migration-report.json";
+const PRESERVES_MIGRATION_SCHEMA_VERSION: &str = "kamacite.preserves-migration.v1";
+const PRESERVES_MIGRATION_MAX_PASSES: usize = 4;
 const DEFAULT_DOCS_CONFIG: &str = "docs/site.ncl";
 const DOCS_TARGET_WASM: &str = "wasm";
 const EXIT_SUCCESS: i32 = 0;
@@ -84,6 +88,9 @@ const FUNCTION_ADDRESS_PRODUCER_ROLE_OPTION: &str = "producer-role";
 const FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_CORRECTNESS: &str = "not producer correctness";
 const FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_SEMANTIC_CLOSURE: &str =
     "not semantic dependency closure";
+const STALE_FSM_CANONICAL_FIXTURE_ID: &str = "fsm-spec.negative.stale-identity";
+const STALE_ALGEBRAIC_CANONICAL_FIXTURE_ID: &str = "algebraic.negative.stale-canonical-identity";
+const AUTHORITATIVE_DOCUMENTATION_IR_FIXTURE_ID: &str = "docs-ir.positive.valid-page";
 
 #[derive(Debug)]
 struct CliError(String);
@@ -107,6 +114,7 @@ enum Command {
     CheckManifestProjection(ManifestProjectionArgs),
     ExportValenceReceipt(ValenceExportArgs),
     EmitFunctionAddressReceipt(FunctionAddressReceiptArgs),
+    MigratePreserves(MigratePreservesArgs),
     Docs(DocsArgs),
     Help,
 }
@@ -172,6 +180,15 @@ struct FunctionAddressReceiptArgs {
     sources: BTreeMap<String, PathBuf>,
     out: Option<PathBuf>,
     valence_out: Option<PathBuf>,
+}
+
+#[derive(Clone, Debug)]
+struct MigratePreservesArgs {
+    root: PathBuf,
+    manifest: PathBuf,
+    manifest_source: PathBuf,
+    update: bool,
+    report: PathBuf,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -520,6 +537,59 @@ struct ReplayProjection {
     effect_log_identity: Option<Identity>,
 }
 
+impl PayloadProjection {
+    fn canonical_path(&self) -> Option<&str> {
+        match self {
+            Self::CanonicalValue { canonical_path, .. }
+            | Self::FsmSpec { canonical_path, .. }
+            | Self::FsmReceipt { canonical_path, .. }
+            | Self::DocumentationIr { canonical_path, .. }
+            | Self::DocumentationReceipt { canonical_path, .. }
+            | Self::AlgebraicEffect { canonical_path, .. } => Some(canonical_path),
+            _ => None,
+        }
+    }
+
+    fn declared_canonical_identity(&self) -> Option<Identity> {
+        match self {
+            Self::CanonicalValue {
+                declared_identity, ..
+            }
+            | Self::FsmSpec {
+                declared_identity, ..
+            }
+            | Self::DocumentationIr {
+                declared_identity, ..
+            }
+            | Self::AlgebraicEffect {
+                declared_identity, ..
+            } => Some(declared_identity.clone()),
+            Self::FsmReceipt {
+                declared_receipt_identity,
+                ..
+            }
+            | Self::DocumentationReceipt {
+                declared_receipt_identity,
+                ..
+            } => declared_receipt_identity.as_ref().clone(),
+            _ => None,
+        }
+    }
+
+    fn canonical_identity_domain(&self) -> Option<IdentityDomain> {
+        match self {
+            Self::CanonicalValue { .. } => Some(IdentityDomain::CanonicalValue),
+            Self::FsmSpec { .. } => Some(IdentityDomain::FsmSpec),
+            Self::FsmReceipt { .. } | Self::DocumentationReceipt { .. } => {
+                Some(IdentityDomain::Receipt)
+            }
+            Self::DocumentationIr { .. } => Some(IdentityDomain::DocumentationIr),
+            Self::AlgebraicEffect { .. } => Some(IdentityDomain::AlgebraicEffect),
+            _ => None,
+        }
+    }
+}
+
 struct NickelAdapterProjectionParts<'a> {
     schema_version: u32,
     adapter_kind: &'a str,
@@ -640,6 +710,50 @@ struct ValenceExportUpdate {
     non_claims: Vec<String>,
 }
 
+#[derive(Debug, Serialize)]
+struct PreservesMigrationReport {
+    schema_version: String,
+    legacy_codec: String,
+    canonical_codec: String,
+    preserves_package_version: String,
+    preserves_spec_version: String,
+    dry_run: bool,
+    mutated: bool,
+    converged: bool,
+    migration_passes: usize,
+    artifacts: Vec<PreservesMigrationArtifact>,
+    non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct PreservesMigrationArtifact {
+    fixture_id: String,
+    path: String,
+    old_identity: Option<Identity>,
+    new_identity: Option<Identity>,
+    content_changed: bool,
+    canonical_packed_size: Option<usize>,
+    error: Option<String>,
+}
+
+struct PreservesMigrationWrite {
+    path: PathBuf,
+    bytes: Vec<u8>,
+}
+
+struct PreservesMigrationPlan {
+    manifest: ManifestProjection,
+    artifacts: Vec<PreservesMigrationArtifact>,
+    writes: Vec<PreservesMigrationWrite>,
+}
+
+struct PreservesMigrationExecution {
+    artifacts: Vec<PreservesMigrationArtifact>,
+    mutated: bool,
+    converged: bool,
+    migration_passes: usize,
+}
+
 fn main() {
     match run() {
         Ok(exit_code) => std::process::exit(exit_code),
@@ -660,6 +774,7 @@ fn run() -> CliResult<i32> {
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::ExportValenceReceipt(args) => run_export_valence_receipt(args),
         Command::EmitFunctionAddressReceipt(args) => run_emit_function_address_receipt(args),
+        Command::MigratePreserves(args) => run_migrate_preserves(args),
         Command::Docs(args) => run_docs(args),
         Command::Help => {
             print_help();
@@ -681,6 +796,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "export-valence-receipt" => parse_valence_export_args(args_iter.collect()),
         "emit-function-address-receipt" => parse_function_address_receipt_args(args_iter.collect()),
+        "migrate-preserves" => parse_migrate_preserves_args(args_iter.collect()),
         "docs" => parse_docs_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
         unknown => Err(CliError(format!("unknown command: {unknown}"))),
@@ -925,6 +1041,34 @@ fn parse_function_address_receipt_args(args: Vec<String>) -> CliResult<Command> 
             valence_out,
         },
     ))
+}
+
+fn parse_migrate_preserves_args(args: Vec<String>) -> CliResult<Command> {
+    let mut parsed = MigratePreservesArgs {
+        root: PathBuf::from(DEFAULT_ROOT),
+        manifest: PathBuf::from(DEFAULT_MANIFEST),
+        manifest_source: PathBuf::from(DEFAULT_MANIFEST_SOURCE),
+        update: false,
+        report: PathBuf::from(DEFAULT_PRESERVES_MIGRATION_REPORT),
+    };
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--root" => parsed.root = next_path(&mut index, "--root")?,
+            "--manifest" => parsed.manifest = next_path(&mut index, "--manifest")?,
+            "--manifest-source" => {
+                parsed.manifest_source = next_path(&mut index, "--manifest-source")?
+            }
+            "--update" => parsed.update = true,
+            "--report" => parsed.report = next_path(&mut index, "--report")?,
+            unknown => {
+                return Err(CliError(format!(
+                    "unknown migrate-preserves argument: {unknown}"
+                )));
+            }
+        }
+    }
+    Ok(Command::MigratePreserves(parsed))
 }
 
 fn parse_docs_args(args: Vec<String>) -> CliResult<Command> {
@@ -1543,6 +1687,440 @@ fn read_json<T: for<'de> Deserialize<'de>>(path: &Path, label: &str) -> CliResul
             path.display()
         ))
     })
+}
+
+fn run_migrate_preserves(args: MigratePreservesArgs) -> CliResult<i32> {
+    let execution = if args.update {
+        execute_preserves_migration(&args)?
+    } else {
+        let plan = plan_preserves_migration(&args)?;
+        PreservesMigrationExecution {
+            artifacts: plan.artifacts,
+            mutated: false,
+            converged: false,
+            migration_passes: 1,
+        }
+    };
+    let report = PreservesMigrationReport {
+        schema_version: PRESERVES_MIGRATION_SCHEMA_VERSION.to_string(),
+        legacy_codec: PRESERVES_LEGACY_PREFIXED_JSON_CODEC.to_string(),
+        canonical_codec: PRESERVES_CANONICAL_CODEC.to_string(),
+        preserves_package_version: PRESERVES_PACKAGE_VERSION.to_string(),
+        preserves_spec_version: PRESERVES_SPEC_VERSION.to_string(),
+        dry_run: !args.update,
+        mutated: execution.mutated,
+        converged: execution.converged,
+        migration_passes: execution.migration_passes,
+        artifacts: execution.artifacts,
+        non_claims: vec![
+            "legacy raw-text and labeled-JSON identities remain compatibility evidence only"
+                .to_string(),
+            "codec migration does not prove evaluator, compiler, or runtime correctness"
+                .to_string(),
+        ],
+    };
+    let json = serde_json::to_string_pretty(&report)
+        .map_err(|error| CliError(format!("Preserves migration report failed: {error}")))?;
+    if args.update {
+        let report_path = resolve_under_root(&args.root, &args.report)?;
+        write_path(&report_path, json.as_bytes())?;
+    }
+    println!("{json}");
+    Ok(EXIT_SUCCESS)
+}
+
+fn execute_preserves_migration(
+    args: &MigratePreservesArgs,
+) -> CliResult<PreservesMigrationExecution> {
+    let mut accumulated_artifacts: Option<Vec<PreservesMigrationArtifact>> = None;
+    let mut mutated = false;
+
+    for pass_index in 0..PRESERVES_MIGRATION_MAX_PASSES {
+        let plan = plan_preserves_migration(args)?;
+        let PreservesMigrationPlan {
+            manifest,
+            artifacts,
+            writes,
+        } = plan;
+        let content_changed = !writes.is_empty();
+        for write in &writes {
+            write_path(&write.path, &write.bytes)?;
+        }
+        let manifest_changed = update_preserves_manifest_identities(args, &manifest, &artifacts)?;
+        accumulated_artifacts = Some(match accumulated_artifacts {
+            Some(previous) => merge_migration_artifacts(previous, &artifacts)?,
+            None => artifacts,
+        });
+        mutated |= content_changed || manifest_changed;
+        if !content_changed && !manifest_changed {
+            return Ok(PreservesMigrationExecution {
+                artifacts: accumulated_artifacts.unwrap_or_default(),
+                mutated,
+                converged: true,
+                migration_passes: pass_index + 1,
+            });
+        }
+    }
+
+    Err(CliError(format!(
+        "Preserves migration did not converge within {PRESERVES_MIGRATION_MAX_PASSES} passes"
+    )))
+}
+
+fn plan_preserves_migration(args: &MigratePreservesArgs) -> CliResult<PreservesMigrationPlan> {
+    let manifest_path = resolve_under_root(&args.root, &args.manifest)?;
+    let manifest_bytes = read_path(&manifest_path)?;
+    let manifest: ManifestProjection = serde_json::from_slice(&manifest_bytes)
+        .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
+    let suite = materialize_suite(&args.root, &manifest, None, None)?;
+    if suite.fixtures.len() != manifest.fixtures.len() {
+        return Err(CliError(
+            "manifest and materialized fixture counts differ".to_string(),
+        ));
+    }
+
+    let mut artifacts = Vec::new();
+    let mut writes = Vec::new();
+    let mut planned_identities = BTreeMap::new();
+    for (projection, fixture) in manifest.fixtures.iter().zip(&suite.fixtures) {
+        let Some(canonical_path) = projection.payload.canonical_path() else {
+            continue;
+        };
+        let Some(domain) = projection.payload.canonical_identity_domain() else {
+            return Err(CliError(format!(
+                "canonical fixture {} has no identity domain",
+                projection.id
+            )));
+        };
+        let expected = match fixture_expected_canonical_artifact(&fixture.payload) {
+            Ok(Some(expected)) => expected,
+            Ok(None) => {
+                return Err(CliError(format!(
+                    "canonical fixture {} has no canonical artifact encoder",
+                    projection.id
+                )));
+            }
+            Err(error) if projection.expected_verdict == ValidationVerdict::Rejected => {
+                artifacts.push(PreservesMigrationArtifact {
+                    fixture_id: projection.id.clone(),
+                    path: canonical_path.to_string(),
+                    old_identity: projection.payload.declared_canonical_identity(),
+                    new_identity: None,
+                    content_changed: false,
+                    canonical_packed_size: None,
+                    error: Some(error.to_string()),
+                });
+                continue;
+            }
+            Err(error) => {
+                return Err(CliError(format!(
+                    "Preserves migration failed for {}: {error}",
+                    projection.id
+                )));
+            }
+        };
+        let resolved = resolve_under_root(&args.root, Path::new(canonical_path))?;
+        let current = read_path(&resolved)?;
+        let mut rendered = expected.text_projection.as_bytes().to_vec();
+        rendered.push(b'\n');
+        let content_changed = current != rendered;
+        let new_identity = compute_identity(domain, &expected.packed_bytes);
+        if let Some(existing) =
+            planned_identities.insert(canonical_path.to_string(), new_identity.clone())
+            && existing != new_identity
+        {
+            return Err(CliError(format!(
+                "canonical path {canonical_path} is shared by fixtures with different normative content"
+            )));
+        }
+        artifacts.push(PreservesMigrationArtifact {
+            fixture_id: projection.id.clone(),
+            path: canonical_path.to_string(),
+            old_identity: projection.payload.declared_canonical_identity(),
+            new_identity: Some(new_identity),
+            content_changed,
+            canonical_packed_size: Some(expected.packed_bytes.len()),
+            error: None,
+        });
+        if content_changed {
+            writes.push(PreservesMigrationWrite {
+                path: resolved,
+                bytes: rendered,
+            });
+        }
+    }
+
+    Ok(PreservesMigrationPlan {
+        manifest,
+        artifacts,
+        writes,
+    })
+}
+
+fn merge_migration_artifacts(
+    previous: Vec<PreservesMigrationArtifact>,
+    current: &[PreservesMigrationArtifact],
+) -> CliResult<Vec<PreservesMigrationArtifact>> {
+    if previous.len() != current.len() {
+        return Err(CliError(
+            "Preserves migration artifact count changed between passes".to_string(),
+        ));
+    }
+    previous
+        .into_iter()
+        .zip(current)
+        .map(|(previous, current)| {
+            if previous.fixture_id != current.fixture_id {
+                return Err(CliError(format!(
+                    "Preserves migration artifact ordering changed from {} to {}",
+                    previous.fixture_id, current.fixture_id
+                )));
+            }
+            Ok(PreservesMigrationArtifact {
+                fixture_id: current.fixture_id.clone(),
+                path: current.path.clone(),
+                old_identity: previous.old_identity,
+                new_identity: current.new_identity.clone(),
+                content_changed: previous.content_changed || current.content_changed,
+                canonical_packed_size: current.canonical_packed_size,
+                error: current.error.clone(),
+            })
+        })
+        .collect()
+}
+
+fn update_preserves_manifest_identities(
+    args: &MigratePreservesArgs,
+    manifest: &ManifestProjection,
+    artifacts: &[PreservesMigrationArtifact],
+) -> CliResult<bool> {
+    let manifest_path = resolve_under_root(&args.root, &args.manifest)?;
+    let source_path = resolve_under_root(&args.root, &args.manifest_source)?;
+    let mut projection = String::from_utf8(read_path(&manifest_path)?).map_err(|error| {
+        CliError(format!(
+            "manifest projection is not UTF-8 for {}: {error}",
+            manifest_path.display()
+        ))
+    })?;
+    let mut source = String::from_utf8(read_path(&source_path)?).map_err(|error| {
+        CliError(format!(
+            "manifest source is not UTF-8 for {}: {error}",
+            source_path.display()
+        ))
+    })?;
+    let original_projection = projection.clone();
+    let original_source = source.clone();
+
+    let mut artifact_by_id = BTreeMap::new();
+    let mut replacements: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    for artifact in artifacts {
+        artifact_by_id.insert(artifact.fixture_id.as_str(), artifact);
+        if preserves_fixture_retains_stale_identity(&artifact.fixture_id) {
+            continue;
+        }
+        if let (Some(old), Some(new)) = (&artifact.old_identity, &artifact.new_identity) {
+            replacements
+                .entry(old.hex.as_str().to_string())
+                .or_default()
+                .insert(new.hex.as_str().to_string());
+        }
+    }
+
+    for (old, new_values) in &replacements {
+        if new_values.len() != 1 {
+            continue;
+        }
+        let Some(new) = new_values.first() else {
+            continue;
+        };
+        projection = projection.replace(old, new);
+        source = source.replace(old, new);
+    }
+
+    if let Some(authoritative) = artifact_by_id.get(AUTHORITATIVE_DOCUMENTATION_IR_FIXTURE_ID)
+        && let (Some(old), Some(new)) = (&authoritative.old_identity, &authoritative.new_identity)
+    {
+        projection = projection.replace(old.hex.as_str(), new.hex.as_str());
+        source = source.replace(old.hex.as_str(), new.hex.as_str());
+    }
+
+    for fixture in &manifest.fixtures {
+        let Some(artifact) = artifact_by_id.get(fixture.id.as_str()) else {
+            continue;
+        };
+        if preserves_fixture_retains_stale_identity(&fixture.id) {
+            continue;
+        }
+        if artifact.old_identity.is_none() {
+            continue;
+        }
+        let Some(new_identity) = &artifact.new_identity else {
+            continue;
+        };
+        let Some(field) = fixture.payload.declared_identity_field() else {
+            continue;
+        };
+        replace_fixture_identity_hex(
+            &mut projection,
+            &fixture.id,
+            field,
+            new_identity.hex.as_str(),
+        )?;
+        replace_fixture_identity_hex_if_present(
+            &mut source,
+            &fixture.id,
+            field,
+            new_identity.hex.as_str(),
+        )?;
+    }
+
+    let projection_identity = compute_identity(IdentityDomain::Projection, projection.as_bytes());
+    replace_assignment_hex(
+        &mut source,
+        PROJECTION_IDENTITY_FIELD,
+        projection_identity.hex.as_str(),
+    )?;
+    let projection_changed = projection != original_projection;
+    let source_changed = source != original_source;
+    if projection_changed {
+        write_path(&manifest_path, projection.as_bytes())?;
+    }
+    if source_changed {
+        write_path(&source_path, source.as_bytes())?;
+    }
+    Ok(projection_changed || source_changed)
+}
+
+fn preserves_fixture_retains_stale_identity(fixture_id: &str) -> bool {
+    fixture_id == STALE_FSM_CANONICAL_FIXTURE_ID
+        || fixture_id == STALE_ALGEBRAIC_CANONICAL_FIXTURE_ID
+}
+
+impl PayloadProjection {
+    fn declared_identity_field(&self) -> Option<&'static str> {
+        match self {
+            Self::CanonicalValue { .. }
+            | Self::FsmSpec { .. }
+            | Self::DocumentationIr { .. }
+            | Self::AlgebraicEffect { .. } => Some("declared_identity"),
+            Self::FsmReceipt { .. } | Self::DocumentationReceipt { .. } => {
+                Some("declared_receipt_identity")
+            }
+            _ => None,
+        }
+    }
+}
+
+fn replace_fixture_identity_hex(
+    text: &mut String,
+    fixture_id: &str,
+    field: &str,
+    new_hex: &str,
+) -> CliResult<()> {
+    if replace_fixture_identity_hex_inner(text, fixture_id, field, new_hex)? {
+        Ok(())
+    } else {
+        Err(CliError(format!(
+            "fixture {fixture_id} is missing {field} identity bytes"
+        )))
+    }
+}
+
+fn replace_fixture_identity_hex_if_present(
+    text: &mut String,
+    fixture_id: &str,
+    field: &str,
+    new_hex: &str,
+) -> CliResult<()> {
+    let _ = replace_fixture_identity_hex_inner(text, fixture_id, field, new_hex)?;
+    Ok(())
+}
+
+fn replace_fixture_identity_hex_inner(
+    text: &mut String,
+    fixture_id: &str,
+    field: &str,
+    new_hex: &str,
+) -> CliResult<bool> {
+    let json_id = format!("\"id\": \"{fixture_id}\"");
+    let compact_json_id = format!("\"id\":\"{fixture_id}\"");
+    let nickel_id = format!("id = \"{fixture_id}\"");
+    let start = text
+        .find(&json_id)
+        .or_else(|| text.find(&compact_json_id))
+        .or_else(|| text.find(&nickel_id))
+        .ok_or_else(|| CliError(format!("fixture {fixture_id} not found during migration")))?;
+    let tail = &text[start..];
+    let fixture_end = next_fixture_offset(tail).unwrap_or(tail.len());
+    let fixture_text = &tail[..fixture_end];
+    let Some(field_offset) = fixture_text.find(field) else {
+        return Ok(false);
+    };
+    let field_tail = &fixture_text[field_offset + field.len()..];
+    let Some(open_brace_offset) = field_tail.find('{') else {
+        return Ok(false);
+    };
+    let identity_start = field_offset + field.len() + open_brace_offset;
+    let identity_tail = &fixture_text[identity_start..];
+    let Some(close_brace_offset) = identity_tail.find('}') else {
+        return Err(CliError(format!(
+            "fixture {fixture_id} has malformed {field} identity"
+        )));
+    };
+    let identity_text = &identity_tail[..close_brace_offset];
+    let Some(hex_offset) = identity_text.find("hex") else {
+        return Ok(false);
+    };
+    let after_hex_start = hex_offset + "hex".len();
+    let after_hex = &identity_text[after_hex_start..];
+    let assignment_offset = after_hex
+        .find(':')
+        .into_iter()
+        .chain(after_hex.find('='))
+        .min()
+        .ok_or_else(|| CliError(format!("fixture {fixture_id} has malformed {field} hex")))?;
+    let after_assignment_start = after_hex_start + assignment_offset + 1;
+    let after_assignment = &identity_text[after_assignment_start..];
+    let quote_offset = after_assignment
+        .find('"')
+        .ok_or_else(|| CliError(format!("fixture {fixture_id} has malformed {field} hex")))?;
+    let value_offset = after_assignment_start + quote_offset + 1;
+    let value_tail = &identity_text[value_offset..];
+    let end_quote_offset = value_tail
+        .find('"')
+        .ok_or_else(|| CliError(format!("fixture {fixture_id} has unterminated {field} hex")))?;
+    let value_start = start + identity_start + value_offset;
+    let value_end = value_start + end_quote_offset;
+    text.replace_range(value_start..value_end, new_hex);
+    Ok(true)
+}
+
+fn next_fixture_offset(text: &str) -> Option<usize> {
+    let markers = ["\n      \"id\":", "\n    {\"id\":", "\n      id = "];
+    let tail = text.get(1..)?;
+    markers
+        .iter()
+        .filter_map(|marker| tail.find(marker).map(|offset| offset + 1))
+        .min()
+}
+
+fn replace_assignment_hex(text: &mut String, field: &str, new_hex: &str) -> CliResult<()> {
+    let assignment = format!("{field} =");
+    let assignment_offset = text
+        .find(&assignment)
+        .ok_or_else(|| CliError(format!("manifest source is missing assignment for {field}")))?;
+    let tail = &text[assignment_offset + assignment.len()..];
+    let quote_offset = tail
+        .find('"')
+        .ok_or_else(|| CliError(format!("manifest source {field} is malformed")))?;
+    let value_tail = &tail[quote_offset + 1..];
+    let end_quote_offset = value_tail
+        .find('"')
+        .ok_or_else(|| CliError(format!("manifest source {field} is unterminated")))?;
+    let value_start = assignment_offset + assignment.len() + quote_offset + 1;
+    let value_end = value_start + end_quote_offset;
+    text.replace_range(value_start..value_end, new_hex);
+    Ok(())
 }
 
 fn run_validate(args: ValidateArgs) -> CliResult<i32> {
@@ -2510,6 +3088,7 @@ fn print_help() {
          kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]\n\
          kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]\n\
          kamacite-validate emit-function-address-receipt --report PATH --source KEY=PATH [--root PATH] [--out PATH] [--valence-out PATH]\n\
+         kamacite-validate migrate-preserves [--root PATH] [--manifest PATH] [--manifest-source PATH] [--update] [--report PATH]\n\
          kamacite-validate docs collect|check|render|run-cells|update [--config PATH] [--format FORMAT] [--profile PROFILE] [--target TARGET]"
     );
 }
@@ -2616,6 +3195,65 @@ mod tests {
         sources
     }
 
+    fn migration_artifact(
+        fixture_id: &str,
+        old_identity: Identity,
+        new_identity: Identity,
+        content_changed: bool,
+    ) -> PreservesMigrationArtifact {
+        PreservesMigrationArtifact {
+            fixture_id: fixture_id.to_string(),
+            path: format!("fixtures/{fixture_id}.preserves"),
+            old_identity: Some(old_identity),
+            new_identity: Some(new_identity),
+            content_changed,
+            canonical_packed_size: Some(1),
+            error: None,
+        }
+    }
+
+    #[test]
+    fn merges_migration_passes_without_reinterpreting_the_baseline_identity() {
+        let old_identity = compute_identity(IdentityDomain::CanonicalValue, b"legacy");
+        let intermediate_identity = compute_identity(IdentityDomain::CanonicalValue, b"first");
+        let final_identity = compute_identity(IdentityDomain::CanonicalValue, b"final");
+        let previous = migration_artifact(
+            TEST_FIXTURE_ID,
+            old_identity.clone(),
+            intermediate_identity.clone(),
+            true,
+        );
+        let current = migration_artifact(
+            TEST_FIXTURE_ID,
+            intermediate_identity,
+            final_identity.clone(),
+            false,
+        );
+
+        let result = merge_migration_artifacts(vec![previous], &[current]);
+
+        assert!(result.is_ok());
+        let Ok(artifacts) = result else {
+            return;
+        };
+        assert_eq!(artifacts.len(), 1);
+        assert_eq!(artifacts[0].old_identity.as_ref(), Some(&old_identity));
+        assert_eq!(artifacts[0].new_identity.as_ref(), Some(&final_identity));
+        assert!(artifacts[0].content_changed);
+    }
+
+    #[test]
+    fn rejects_migration_passes_with_different_artifact_ordering() {
+        let identity = compute_identity(IdentityDomain::CanonicalValue, b"value");
+        let previous =
+            migration_artifact(TEST_FIXTURE_ID, identity.clone(), identity.clone(), false);
+        let current = migration_artifact(TEST_OTHER_FIXTURE_ID, identity.clone(), identity, false);
+
+        let result = merge_migration_artifacts(vec![previous], &[current]);
+
+        assert!(result.is_err());
+    }
+
     #[test]
     fn accepts_matching_manifest_projection_identity() {
         let json = projection_json(TEST_FIXTURE_ID);
@@ -2687,6 +3325,92 @@ mod tests {
     }
 
     #[test]
+    fn replaces_json_and_nickel_fixture_identity_values_without_changing_syntax() {
+        const NEW_HEX: &str = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let mut json = format!(
+            "{{\n  \"id\": \"{TEST_FIXTURE_ID}\",\n  \"payload\": {{\"declared_identity\": {{\"domain\": \"canonical-value\", \"algorithm\": \"blake3\", \"hex\": \"{TEST_ZERO_HEX}\"}}}}\n}}"
+        );
+        let mut nickel = format!(
+            "{{\n  id = \"{TEST_FIXTURE_ID}\",\n  payload.declared_identity = {{ domain = \"canonical-value\", algorithm = \"blake3\", hex = \"{TEST_ZERO_HEX}\" }},\n}}"
+        );
+
+        let json_result =
+            replace_fixture_identity_hex(&mut json, TEST_FIXTURE_ID, "declared_identity", NEW_HEX);
+        let nickel_result = replace_fixture_identity_hex(
+            &mut nickel,
+            TEST_FIXTURE_ID,
+            "declared_identity",
+            NEW_HEX,
+        );
+
+        assert!(json_result.is_ok());
+        assert!(nickel_result.is_ok());
+        assert!(serde_json::from_str::<serde_json::Value>(&json).is_ok());
+        assert!(json.contains(&format!("\"hex\": \"{NEW_HEX}\"")));
+        assert!(nickel.contains(&format!("hex = \"{NEW_HEX}\"")));
+        assert!(!json.contains(TEST_ZERO_HEX));
+        assert!(!nickel.contains(TEST_ZERO_HEX));
+    }
+
+    #[test]
+    fn rejects_malformed_fixture_identity_assignment() {
+        let mut malformed = format!(
+            "{{\n  \"id\": \"{TEST_FIXTURE_ID}\",\n  \"declared_identity\": {{\"hex\" \"{TEST_ZERO_HEX}\"}}\n}}"
+        );
+
+        let result = replace_fixture_identity_hex(
+            &mut malformed,
+            TEST_FIXTURE_ID,
+            "declared_identity",
+            TEST_ZERO_HEX,
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn leaves_explicitly_missing_fixture_identity_unchanged() {
+        let mut missing = format!(
+            "{{\n  \"id\": \"{TEST_FIXTURE_ID}\",\n  \"declared_receipt_identity\": null\n}}"
+        );
+        let original = missing.clone();
+
+        let result = replace_fixture_identity_hex_if_present(
+            &mut missing,
+            TEST_FIXTURE_ID,
+            "declared_receipt_identity",
+            TEST_ZERO_HEX,
+        );
+
+        assert!(result.is_ok());
+        assert_eq!(missing, original);
+    }
+
+    #[test]
+    fn replaces_projection_assignment_without_touching_contract_or_neighbor_fields() {
+        const NEW_HEX: &str = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+        let mut source = format!(
+            "projection_identity_hex | String,\nruntime_projection = \"{TEST_ZERO_HEX}\",\nprojection_identity_hex = \"{TEST_ZERO_HEX}\",\n"
+        );
+
+        let result = replace_assignment_hex(&mut source, PROJECTION_IDENTITY_FIELD, NEW_HEX);
+
+        assert!(result.is_ok());
+        assert!(source.contains("projection_identity_hex | String"));
+        assert!(source.contains(&format!("runtime_projection = \"{TEST_ZERO_HEX}\"")));
+        assert!(source.contains(&format!("projection_identity_hex = \"{NEW_HEX}\"")));
+    }
+
+    #[test]
+    fn rejects_projection_contract_without_a_value_assignment() {
+        let mut source = "projection_identity_hex | String,\n".to_string();
+
+        let result = replace_assignment_hex(&mut source, PROJECTION_IDENTITY_FIELD, TEST_ZERO_HEX);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
     fn materializes_octet_function_address_report_with_source_bytes() {
         let report = valid_octet_function_address_report();
         let sources = valid_function_address_sources();
@@ -2741,7 +3465,7 @@ mod tests {
     }
 
     #[test]
-    fn migration_evidence_binds_reference_v1_and_v2_identities() {
+    fn migration_evidence_preserves_legacy_pseudo_and_current_identities() {
         const FIXTURE_SOURCE_KEY: &str = "fixtures/function-address/source.rs";
         let report_result = serde_json::from_str::<OctetFunctionAddressReport>(include_str!(
             "../../../fixtures/function-address/octet-valid-report.json"
@@ -2792,6 +3516,12 @@ mod tests {
         assert_ne!(
             migration
                 .pointer("/legacy/receipt_identity")
+                .and_then(serde_json::Value::as_str),
+            Some(receipt.receipt_identity.hex.as_str())
+        );
+        assert_ne!(
+            migration
+                .pointer("/previous/receipt_identity")
                 .and_then(serde_json::Value::as_str),
             Some(receipt.receipt_identity.hex.as_str())
         );

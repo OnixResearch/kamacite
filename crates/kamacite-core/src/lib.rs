@@ -13,6 +13,7 @@ mod evidence_chain;
 mod fixture;
 mod function_address;
 mod identity;
+mod preserves_codec;
 mod proof_evidence;
 mod receipt;
 mod valence_export;
@@ -55,7 +56,8 @@ pub use fixture::{
     HandlerReceiptInput, IdentityUseInput, NickelAdapterReceiptInput, ReplayProfileInput,
     SourceEnvelopeInput, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
     SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValidationVerdict,
-    render_documentation_projection, validate_fixture, validate_fixture_suite,
+    fixture_expected_canonical_artifact, render_documentation_projection, validate_fixture,
+    validate_fixture_suite,
 };
 pub use function_address::{
     FUNCTION_ADDRESS_CANONICAL_CODEC, FUNCTION_ADDRESS_JSON_PROJECTION,
@@ -67,7 +69,8 @@ pub use function_address::{
     FunctionAddressReceiptResult, FunctionAddressReceiptTrustClass, FunctionAddressRecord,
     FunctionAddressSourceEnvelope, FunctionAddressSpan, FunctionAddressValenceArtifact,
     FunctionAddressValenceProjection, LEGACY_FUNCTION_ADDRESS_CANONICAL_CODEC,
-    LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION, LEGACY_TOOL_VERSION_UNBOUND_CAVEAT,
+    LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION, LEGACY_PSEUDO_FUNCTION_ADDRESS_CANONICAL_CODEC,
+    LEGACY_PSEUDO_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION, LEGACY_TOOL_VERSION_UNBOUND_CAVEAT,
     classify_function_address_receipt, export_function_address_valence_projection,
     function_address_canonical_bytes, function_address_json_projection,
     function_address_producer_profile, function_address_projection_json,
@@ -76,6 +79,12 @@ pub use function_address::{
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,
+};
+pub use preserves_codec::{
+    CanonicalPreservesArtifact, PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC,
+    PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION, PreservesCodecError, PreservesLimits,
+    PreservesSchema, PreservesSyntax, canonicalize_preserves, decode_typed_preserves,
+    encode_typed_preserves, verify_typed_preserves,
 };
 pub use proof_evidence::{
     TRELLIS_PROOF_PROFILE_CANONICAL_CODEC, TRELLIS_PROOF_PROFILE_JSON_PROJECTION,

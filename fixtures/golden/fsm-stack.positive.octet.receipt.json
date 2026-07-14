@@ -12,7 +12,7 @@
       "octet-source-shape:fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+        "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
       }
     },
     "output_identities": {},
@@ -27,6 +27,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "a8e60ddcfe3c76bca457dc3029bcc8ea6961a54bb9087d0cb0fec6b412bf24eb"
+    "hex": "b9fc4ca238378d15a7346c62bdef0b6b0a279e3164aa0e6a8b1c41c8476b31f9"
   }
 }

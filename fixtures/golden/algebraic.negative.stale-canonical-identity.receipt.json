@@ -19,7 +19,7 @@
       "computed-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
+        "hex": "17cbbb11aae0911d00083b5710890df2216b5a7ea75b76a0d40b0ef0ec3afdd8"
       }
     },
     "checked_laws": [
@@ -30,7 +30,7 @@
         "code": "algebraic-effect-hash-mismatch",
         "requirement_id": "r[kamacite.algebraic_effects.fixture_corpus.negative_stale_identity]",
         "field": "algebraic.declared_identity.hex",
-        "message": "declared algebraic-effect identity does not match canonical bytes",
+        "message": "declared algebraic-effect identity does not match canonical Preserves packed bytes",
         "details": {}
       }
     ],
@@ -41,6 +41,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "39b00f4188e9ede67d879bfeead58071e9a7abcd795078fbd27e4a547ebe6f98"
+    "hex": "59f16323fb2d8ac6e95ea1f6d8ffc55b4877e2bdd7120748360746b37a8cad5c"
   }
 }

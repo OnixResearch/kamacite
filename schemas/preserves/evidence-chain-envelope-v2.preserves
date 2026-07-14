@@ -1,0 +1,47 @@
+; Kamacite evidence-chain canonical body schema v2.
+; Identity is BLAKE3 over canonical packed Preserves emitted by the reviewed codec profile.
+
+EvidenceChainEnvelope = <kamacite-evidence-chain-envelope-v2 {
+  schema-version: "kamacite.evidence-chain-envelope.v2",
+  canonical-codec: "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+  evidence-kind: EvidenceKind,
+  policy-hash: Identity,
+  profile-hash: Identity,
+  parent-links: [ParentLink ...],
+  profile-payload-roots: [ProfilePayloadRoot ...],
+  non-claim-boundary-hash: Identity,
+  projections: [ProjectionRecord ...]
+}>
+
+EvidenceCollection = <kamacite-evidence-chain-collection-v2 {
+  evidence-kind: EvidenceKind,
+  leaves: [Identity ...]
+}>
+
+EvidenceKind = "function-address" | "proof" | "lint" | "dependency" | "build" | "attestation" | "lifecycle"
+
+ParentLink = {
+  domain: ParentLinkDomain,
+  identity: Identity
+}
+
+ParentLinkDomain = "source-root" | "producer-handoff-root" | "receipt-root" | "validation-root" | "release-root" | "readiness-root"
+
+ProfilePayloadRoot = {
+  evidence-kind: EvidenceKind,
+  schema-version: string,
+  root-identity: Identity
+}
+
+ProjectionRecord = {
+  projection-kind: string,
+  projection-identity: Identity,
+  canonical-envelope-identity: Identity,
+  authority: "non-authoritative-projection"
+}
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}

@@ -1,15 +1,17 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::function_address::FunctionAddressReceiptEnvelope;
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::preserves_codec::{
+    PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
+};
 use crate::receipt::ReceiptError;
 use serde::{Deserialize, Serialize};
 
-pub const EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION: &str = "kamacite.evidence-chain-envelope.v1";
-pub const EVIDENCE_CHAIN_CANONICAL_CODEC: &str =
-    "kamacite-preserves-canonical-binary-evidence-chain-envelope-v1";
-pub const EVIDENCE_CHAIN_JSON_PROJECTION: &str = "kamacite.evidence-chain-envelope.v1.compat-json";
-const CANONICAL_BYTES_PREFIX: &[u8] =
-    b"kamacite-preserves-canonical-binary:evidence-chain-envelope:v1\n";
+pub const EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION: &str = "kamacite.evidence-chain-envelope.v2";
+pub const EVIDENCE_CHAIN_CANONICAL_CODEC: &str = PRESERVES_CANONICAL_CODEC;
+pub const EVIDENCE_CHAIN_JSON_PROJECTION: &str = "kamacite.evidence-chain-envelope.v2.compat-json";
+const EVIDENCE_CHAIN_ROOT_LABEL: &str = "kamacite-evidence-chain-envelope-v2";
+const EVIDENCE_CHAIN_COLLECTION_ROOT_LABEL: &str = "kamacite-evidence-chain-collection-v2";
 const REQUIREMENT_SCHEMA: &str =
     "r[kamacite.stack_integration.canonical_evidence_chain_envelope.schema]";
 const REQUIREMENT_HASH: &str =
@@ -128,6 +130,7 @@ pub struct EvidenceChainJsonProjection {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-evidence-chain-envelope-v2")]
 struct CanonicalEvidenceChainEnvelope<'a> {
     schema_version: &'a str,
     canonical_codec: &'a str,
@@ -190,9 +193,16 @@ pub fn evidence_chain_canonical_bytes(
     input: &EvidenceChainEnvelopeInput,
 ) -> Result<Vec<u8>, ReceiptError> {
     let canonical = canonical_evidence_chain(input)?;
-    let mut bytes = CANONICAL_BYTES_PREFIX.to_vec();
-    bytes.extend(crate::receipt::canonical_json_bytes(&canonical)?);
-    Ok(bytes)
+    encode_typed_preserves(
+        &canonical,
+        PreservesSchema {
+            schema_version: EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION,
+            root_label: EVIDENCE_CHAIN_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| ReceiptError::Serialize(error.to_string()))
 }
 
 #[must_use]
@@ -271,10 +281,28 @@ pub fn evidence_chain_collection_root(
 ) -> Result<Identity, ReceiptError> {
     let mut leaves = leaves.to_vec();
     leaves.sort();
-    Ok(compute_identity(
-        IdentityDomain::EvidenceChain,
-        &crate::receipt::canonical_json_bytes(&(evidence_kind, leaves))?,
-    ))
+    let collection = CanonicalEvidenceCollection {
+        evidence_kind,
+        leaves,
+    };
+    let bytes = encode_typed_preserves(
+        &collection,
+        PreservesSchema {
+            schema_version: EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION,
+            root_label: EVIDENCE_CHAIN_COLLECTION_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| ReceiptError::Serialize(error.to_string()))?;
+    Ok(compute_identity(IdentityDomain::EvidenceChain, &bytes))
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-evidence-chain-collection-v2")]
+struct CanonicalEvidenceCollection {
+    evidence_kind: EvidenceKind,
+    leaves: Vec<Identity>,
 }
 
 pub fn function_address_evidence_chain_input(

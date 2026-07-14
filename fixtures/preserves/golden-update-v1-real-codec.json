@@ -1,0 +1,1811 @@
+{
+  "changed_artifacts": [
+    {
+      "fixture_id": "canonical-value.positive.preserves-minimal",
+      "input_identities": {
+        "declared-canonical": {
+          "algorithm": "blake3",
+          "domain": "canonical-value",
+          "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
+        },
+        "projection": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "14bee85692f4dc3c01e513f9ec0a382b5dfffb6a9df3565d8477eb4900764528"
+      },
+      "non_claims": [
+        "JSON projection is compatibility only"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "7045ec502a78584388a7a764f2dc56c646c3eee06f01e90d0210081bb28a8dc8"
+      },
+      "output_identities": {
+        "computed-canonical": {
+          "algorithm": "blake3",
+          "domain": "canonical-value",
+          "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
+        }
+      },
+      "path": "fixtures/golden/canonical-value.positive.preserves-minimal.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.format_strategy.preserves_roundtrip]",
+        "r[kamacite.rust_determinism.canonical_identity.blake3]"
+      ]
+    },
+    {
+      "fixture_id": "canonical-value.negative.lossy-json-authority",
+      "input_identities": {
+        "declared-canonical": {
+          "algorithm": "blake3",
+          "domain": "canonical-value",
+          "hex": "2b9579ca093fb1ca47516d0cdac8fe5dccf015400f642230a4a14eed7e0cc3ae"
+        },
+        "projection": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "3b26d805a3552fb73822332996b47cc0813f5bf9e66d2a9fcfeb02561d019a02"
+      },
+      "non_claims": [
+        "JSON is not canonical identity"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "a3eb3a7551543aaf81392e386efcc06d11351d052168e3ceebacaf89f3ce98db"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/canonical-value.negative.lossy-json-authority.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.negative_fixtures.lossy_projection]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.positive.declared-discharge-recorded-replay",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "561617d253e0e0cf29bd8ab5b8758d848bda594cde178b2572d3939d19a6c21c"
+        },
+        "declared-effect-log": {
+          "algorithm": "blake3",
+          "domain": "effect-log",
+          "hex": "c5f566889bc03678adeb0bf686685fd3f2472aa106bdeca86ecab3b454ba8f28"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "324614d0f837a72ebe1efdc49926ecffdbb56119b79461181f522b4ee9c61ced"
+      },
+      "non_claims": [
+        "effect log is replay evidence only",
+        "not host authorization"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "09bc7b867725554127f39d221e11a4f9e2a31b35f4610acd0d8a0f7324322474"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "561617d253e0e0cf29bd8ab5b8758d848bda594cde178b2572d3939d19a6c21c"
+        },
+        "computed-effect-log": {
+          "algorithm": "blake3",
+          "domain": "effect-log",
+          "hex": "c5f566889bc03678adeb0bf686685fd3f2472aa106bdeca86ecab3b454ba8f28"
+        }
+      },
+      "path": "fixtures/golden/algebraic.positive.declared-discharge-recorded-replay.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.fixture_corpus.positive_discharge]",
+        "r[kamacite.algebraic_effects.replay_profile.recorded_log]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.positive.single-use-continuation-evidence",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "5e31708b44f1a241746fb8841195875679d775da70850558303db3985dc1669b"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "1f9ef91fa6b9f1a8164a5a798548942086d5c4e80d0d8c1f5fd68585227a7415"
+      },
+      "non_claims": [
+        "single-use evidence is bounded receipt data"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "962e87dac8ec206d79ffb8de1be41fec650041707a0267e3e1d48902b77a1199"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "5e31708b44f1a241746fb8841195875679d775da70850558303db3985dc1669b"
+        }
+      },
+      "path": "fixtures/golden/algebraic.positive.single-use-continuation-evidence.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.continuation_policy.single_use_evidence]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.unsupported-version",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "5dbe0a11c4da10b4a32360686ca828fa6714cdccb19ae719b4e7dcdfc1738772"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "38b9061146aa6cc81fcd1d2bf1cd6135887640871e14a300e87085254ee66557"
+      },
+      "non_claims": [
+        "not compatibility defaulting"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "5f9a5939c5e3b1798da99828645b7dd7dd729d91e77856dac125a481fec8dc50"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "5dbe0a11c4da10b4a32360686ca828fa6714cdccb19ae719b4e7dcdfc1738772"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.unsupported-version.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.ir_boundary.unsupported_version]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.missing-operation-schema",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "ea18dda5d0ec944b06f843e2f5aad0a5c2d88ad3dd22c5f8605b9226b5c78c37"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "9a3fc8349776fb9e55d5ac779f8da0e041bfd3bb9d4ba9268e06c3301e54012a"
+      },
+      "non_claims": [
+        "incomplete effect signature denied"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "4ee8f94fb8f2de8baa6b68eb330e9452e81fc03b1f73a46746ff8b35253f79b9"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "ea18dda5d0ec944b06f843e2f5aad0a5c2d88ad3dd22c5f8605b9226b5c78c37"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.missing-operation-schema.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.signature_vocabulary.missing_schema]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.undeclared-operation",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "1590cc9decb807a36a274e0b6c8acf06c8dda629aa70fda68fc66dae53e63ed7"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "d2c186dd970ef89ec400983bfbffb59bd767860c36a8041a01b8e4695679b2a7"
+      },
+      "non_claims": [
+        "undeclared operations fail closed"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "d2e11e54f81c971533e97d81ca4467461113e0d1d83a15279b1f909e7a592732"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "1590cc9decb807a36a274e0b6c8acf06c8dda629aa70fda68fc66dae53e63ed7"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.undeclared-operation.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.row_summary_vocabulary.undeclared_operation]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.open-row-not-pure",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a27004d78d76879ffa3f3ad7675ab6fd1706606604b389a87d0849adf52401b1"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "c83cf308b570351e884368a38143388b8a568b428ab5733c7874f9d8cf790126"
+      },
+      "non_claims": [
+        "open rows are not inferred pure"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "19038cb017b10dffadb13393c622d972718753e9a096239f159903183a98008a"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a27004d78d76879ffa3f3ad7675ab6fd1706606604b389a87d0849adf52401b1"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.open-row-not-pure.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.handler-name-not-discharge",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "f1b788477a3b51182b8d8f7615fba4fcb24a1a84666dd28a7f965787595ec751"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "048fe21276a6c4615941a4d7d58b0a75b72748330bcf1f0e230f2d7b941f1eba"
+      },
+      "non_claims": [
+        "handler names are metadata"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "98a8cfaf7ba69ce3db1a8da64f71fb1f7574a3db1f89ced51508f9619eec89cc"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "f1b788477a3b51182b8d8f7615fba4fcb24a1a84666dd28a7f965787595ec751"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.handler-name-not-discharge.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.handler_descriptor.name_not_discharge]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.unknown-effect-in-receipt",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "dad89096a96a7937c0b3b464e69ac86dd1e3717b29d3c52f6bea1bee600192ea"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "0cf55342e2f85d609d011e26aeca7ad6f95e7e92eec09b03b7a5c85c13280830"
+      },
+      "non_claims": [
+        "unknown effects denied"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "b9623fadd985504609cfb6a2531bf432c49cb3a8bc82fcc07e4a2dfa2ec226cf"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "dad89096a96a7937c0b3b464e69ac86dd1e3717b29d3c52f6bea1bee600192ea"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.unknown-effect-in-receipt.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.handler_receipts.unknown_effect_denied]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.continuation-policy-mismatch",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "370d58d8433dca0b34bd7fcb892d6c2edf825d606fb07e7f34be5cebb45ee94c"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "23c3255344301208265ab5ecea5cc31d1af5261b983d2b31f637fe2c083c2247"
+      },
+      "non_claims": [
+        "continuation use must match descriptor"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "92428362c88441e845deb66addc9326ac6e4744a584696369785a3ad997b67ff"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "370d58d8433dca0b34bd7fcb892d6c2edf825d606fb07e7f34be5cebb45ee94c"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.continuation-policy-mismatch.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.continuation_policy.mismatch]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.host-capability-confusion",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "122c85def5fdbae3b504a6b47102281db09f97088443d36f9be183279550aef0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "75bb00b103b7503255a30ef4c5c382afdaaefc8101464adeed997eeeab6c93c1"
+      },
+      "non_claims": [
+        "operation declarations do not grant host authority"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "68c396c679e818015aaed8073185cfbe9459eed8d88dd3c17c8c1c100f5315e7"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "122c85def5fdbae3b504a6b47102281db09f97088443d36f9be183279550aef0"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.host-capability-confusion.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.fixture_corpus.negative_host_confusion]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.stale-canonical-identity",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "3b4a3c466cb5ba550969d5ffece77f4cdf45a1505198961dd6e4b3a34529876d"
+      },
+      "non_claims": [
+        "stale algebraic-effect identity rejected"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "dcea04a4eccebccfe54f686784297382613dc65d75bb8cbe6934bac7381e63bd"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "17cbbb11aae0911d00083b5710890df2216b5a7ea75b76a0d40b0ef0ec3afdd8"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.stale-canonical-identity.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.fixture_corpus.negative_stale_identity]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.negative.non-replayable-evidence-misuse",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "5424cff66dc82cbe3ffa7d63caaf2ddf4e51ce3fc34fd75aa0945db8799945c6"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "ebc015c138cf6eab967256f9d3bcddbec0157f4e886c0df804a598f655b6f0ab"
+      },
+      "non_claims": [
+        "non-replayable effects are not replay evidence"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "5ea4d8f40c1063e35630505d3c236b80ae1162be82f4646aa56e669d7702ee4b"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "5424cff66dc82cbe3ffa7d63caaf2ddf4e51ce3fc34fd75aa0945db8799945c6"
+        }
+      },
+      "path": "fixtures/golden/algebraic.negative.non-replayable-evidence-misuse.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.replay_profile.non_replayable]"
+      ]
+    },
+    {
+      "fixture_id": "canonical-value.property.names-dependencies-durable-storage",
+      "input_identities": {
+        "declared-canonical": {
+          "algorithm": "blake3",
+          "domain": "canonical-value",
+          "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
+        },
+        "projection": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "556d719cf0ce8a906221762516b990457065a7b7af45b436fa83e4d90546e622"
+      },
+      "non_claims": [
+        "property fixture is enumerated deterministic evidence, not generated randomness"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "1e77d9172b1a24cf3ff96ba038e77d89ebf60a4b4e3e55913f0ebf7046fe5d6b"
+      },
+      "output_identities": {
+        "computed-canonical": {
+          "algorithm": "blake3",
+          "domain": "canonical-value",
+          "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
+        }
+      },
+      "path": "fixtures/golden/canonical-value.property.names-dependencies-durable-storage.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.content_addressed_identity.dependency_closure]",
+        "r[kamacite.lossless_ir.content_addressed_identity.durable_storage]",
+        "r[kamacite.lossless_ir.content_addressed_identity.names_metadata]",
+        "r[kamacite.lossless_ir.property_fixtures.replayable]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.positive.open-row-preserved-not-pure",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a16d622f2b7061dbbe8681b494fd86c2ebc4099454f206ed14caaaa70c4cf260"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "0188c775eeb6509724b6e8f24d484387fa17f84acd65c2b1a49df02f0f99bd20"
+      },
+      "non_claims": [
+        "open row is preserved and not classified pure"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "f8a03e01d25deed8dcef54ff4e90b61231f3fc2c89237b93dac6d777d32d9045"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a16d622f2b7061dbbe8681b494fd86c2ebc4099454f206ed14caaaa70c4cf260"
+        }
+      },
+      "path": "fixtures/golden/algebraic.positive.open-row-preserved-not-pure.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.row_summary_vocabulary.open_row_not_pure]"
+      ]
+    },
+    {
+      "fixture_id": "algebraic.positive.deterministic-effect-summary",
+      "input_identities": {
+        "declared-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "c46884c2df056e4c7143fc6e2761abe7867807a5fc29fe233e6ad1eec811fd84"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "448f65be42e5073f7317618ce3cdc72541fee2e85d7fedab9550ea83948b6a6b"
+      },
+      "non_claims": [
+        "deterministic replay class is receipt data only"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "1e6e177a20bf1251f4eb73948ebf9ceee503476512fa73ecf863290437416f31"
+      },
+      "output_identities": {
+        "computed-algebraic-effect": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "c46884c2df056e4c7143fc6e2761abe7867807a5fc29fe233e6ad1eec811fd84"
+        }
+      },
+      "path": "fixtures/golden/algebraic.positive.deterministic-effect-summary.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.algebraic_effects.replay_profile]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.positive.complete-denial-coverage",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "a6d60c76723eaac518de662d5ce4745dfb779d2bd2a1856c9b62d65660fca209"
+      },
+      "non_claims": [
+        "not runtime correctness",
+        "not protocol completeness",
+        "not liveness proof"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "24caf99ea5f9f293d25cf337949eed02853e049d850139c4d5a67ce125a981d5"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.positive.complete-denial-coverage.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.completeness_matrix.complete_table]",
+        "r[kamacite.fsms.completeness_matrix.explicit_denial]",
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]",
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.complete]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.missing-denial-coverage",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "60be2274325d9cd8b8b72e95a0be0acb645f25ef75c069e363695628a1b5a62e"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "815bb3d0c710289abbfc4dbb880e9c0ceb5cbd4dfcc6541406cb65c392ea15bb"
+      },
+      "non_claims": [
+        "missing FSM cells are not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "5ff980110eed4eb395adfa269f325f3275984709ae938487d2c37333120abfc4"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "60be2274325d9cd8b8b72e95a0be0acb645f25ef75c069e363695628a1b5a62e"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.missing-denial-coverage.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.fixture_corpus.negative_missing_cell]",
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.missing_denial]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.duplicate-transition",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "55853abcdecb5d45b63e948e3ebb52d825e1170c0d7687c44dc06ae3ee31ac3c"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "43c91a19cb3ba5a23233360dd8abee792073cac02ab4a1fd552faeff4c56ce4d"
+      },
+      "non_claims": [
+        "duplicate transition rows are not deterministic evidence"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "fb16a78c43897629993a4fb76e4ede1bc56a7aa2ead57feae96d0e57b466f91e"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "55853abcdecb5d45b63e948e3ebb52d825e1170c0d7687c44dc06ae3ee31ac3c"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.duplicate-transition.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.fixture_corpus.negative_conflict]",
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.coverage.duplicate]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.wildcard-row",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "388b4dcc34367b1b6b3e2eeeeca72c1b72f88d03e1931ab36c3bb60ee3af9257"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "f48e3891649f851417048eddcc5e95d4d6c3c44b4198217098ea45aa2a8cad74"
+      },
+      "non_claims": [
+        "wildcard FSM rows are not complete coverage"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "9bfa748c5b2b1ea3c46bf19b2aab753a3e4ce51f413940cab0f73a7bff410606"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "388b4dcc34367b1b6b3e2eeeeca72c1b72f88d03e1931ab36c3bb60ee3af9257"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.wildcard-row.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.no_wildcards.reject]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.undeclared-guard",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "14cec0ef687b7666d0a8878694c59b6bb2dd003ba734d3d8fa21f954e4dfae57"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "018f0927754445dc8f23da5a196e61f1a6aad5eb59b33d9626556724dcc51727"
+      },
+      "non_claims": [
+        "undeclared guards cannot partition coverage"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "03e9f03b550c08bea285eec0fc2081b16ac55385f4cccc3a55ac14c0fb311e3b"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "14cec0ef687b7666d0a8878694c59b6bb2dd003ba734d3d8fa21f954e4dfae57"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.undeclared-guard.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.guards_side_effects.undeclared_guard]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.unknown-endpoint",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "0a0922fcfa7df0903b79f901cb658ceb933ba6726dd48913bf4445db73d60551"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "f1c0aeb3f3edb0812cf785b97c1bba72b9c3ec2bb4c11fa149a930fa035838b4"
+      },
+      "non_claims": [
+        "unknown state or event references are not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "156c210111ecbe641120522ae0ff7646ab0df3453069ab80e71f4cdabc1875a3"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "0a0922fcfa7df0903b79f901cb658ceb933ba6726dd48913bf4445db73d60551"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.unknown-endpoint.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.closed_universes.references]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.stale-identity",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "a49066f19acc7a5864b8ea3a78c0e5b69b51611af885669bf3050c616c6bdfa1"
+      },
+      "non_claims": [
+        "stale FSM identities are not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "55e689ebf43950adecfabf9cb12d4f5ea41c94ca0b8a7b0e45154c4166d94905"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "1247d9272ed4043dbeea2759312b4d7c9551cdf5343d85b7951b0b4fdd1688ca"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.stale-identity.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.fixture_corpus.negative_stale_identity]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.wrong-identity-domain",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "canonical-value",
+          "hex": "41fef4fd656563b1ec9aa70a779350d700e59198adee8c5051d4a7c9e0878e03"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "3342f240fe2e0a94f7aa96ba58344f1e5b35d3cb232378b0722fdf2dd17eb66c"
+      },
+      "non_claims": [
+        "FSM identity domains are not interchangeable"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "13717d0961bf58d2032f055c95b1250b0ba277dfa159b671048b66ad334fbd16"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "41fef4fd656563b1ec9aa70a779350d700e59198adee8c5051d4a7c9e0878e03"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.wrong-identity-domain.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_receipt_vocabulary.identity_domain]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.missing-non-claims",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "a70af2fd927a5e4dc43982a4c1265bf47338790f24ed055c98e375e2bbf52833"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "fba9051f5256c8b54d40604ec1e0efed9e8df0d54c24c165b7f5a38d7d9d2b39"
+      },
+      "non_claims": [
+        "payload-level non-claims are required"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "92b3551a39441ad46b9a6bac5edb864fb124170b41ea052c799a2afc4dcbf54a"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "a70af2fd927a5e4dc43982a4c1265bf47338790f24ed055c98e375e2bbf52833"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.missing-non-claims.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.host-authority-confusion",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "d99b6defb9b58122294f2fb209d8b81f066b140cf4ea879377873f73713aede7"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "c1b435a667c839459a1ba361537e4b83917039fca99d55e28dcceeb4c6f73489"
+      },
+      "non_claims": [
+        "transition effects are symbolic data only"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "36f9e3e9c3972c6ea0e07774cad64e05aacc19a93407192f46e86758e890e7e1"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "d99b6defb9b58122294f2fb209d8b81f066b140cf4ea879377873f73713aede7"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.host-authority-confusion.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.fixture_corpus.negative_host_confusion]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.terminal-outgoing",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "a4670fc9a36f6233d726526fbb176c1782f6c3c83a006593526730f7c7198149"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "ed90f6f5854558dc0fa6042b65f9f1d1a515d71a2ec9c933741560fc14963909"
+      },
+      "non_claims": [
+        "terminal transitions need explicit accepted restart policy"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "28ce8ef0b36d7d03f09e7fb5eace90ec49f3959e7271251698c0af28e081f47c"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "a4670fc9a36f6233d726526fbb176c1782f6c3c83a006593526730f7c7198149"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.terminal-outgoing.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.reachability_terminal_policy.terminal_outgoing]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.negative.unreachable-unmarked",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "e3c5990137e705ffc9fd3882e584278817c77940463be94bbf8f3bc9a1ed79c3"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "7d8fbb97222665916519969782de17c0d72de54454b7cb333c9021024b562b14"
+      },
+      "non_claims": [
+        "unreachable states require reviewed metadata"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "732eec51c418281c53a861de6678f79d8b8bf6baea1daafaf5eb263a4847df49"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "e3c5990137e705ffc9fd3882e584278817c77940463be94bbf8f3bc9a1ed79c3"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.negative.unreachable-unmarked.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.reachability_terminal_policy.unreachable_unmarked]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-receipt.positive.exhaustiveness-octet-valence",
+      "input_identities": {
+        "declared-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c"
+        },
+        "fsm-adapter": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"
+        },
+        "fsm-denial-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+        },
+        "fsm-event-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+        },
+        "fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        },
+        "fsm-state-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+        },
+        "fsm-transition-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+        },
+        "octet-source-shape-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "c07707d770698c323a37eb79283fbb9ca2033aee7b0ada926cb368a0f34edba3"
+        },
+        "valence-fsm-export-projection": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "cd7e6ade061bf11ba4fb7be2dbce5a7106e5f9f5318a82b9198b93c8672af8a7"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "1c4f63d2d41ca1072ede104eb9f4b8bed504a5a75f35b181bb87e54525d56421"
+      },
+      "non_claims": [
+        "Octet evidence is source-shape only",
+        "Valence export is derived evidence",
+        "not runtime correctness"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "834175c1f1855fc3bacbd08ab14bd01117a36520eb487fa04b465164aa0c66bb"
+      },
+      "output_identities": {
+        "computed-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c"
+        }
+      },
+      "path": "fixtures/golden/fsm-receipt.positive.exhaustiveness-octet-valence.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.lossless_ir.fsm_receipt_vocabulary.checked_claim]",
+        "r[kamacite.stack_integration.fsm_octet_interop.source_shape]",
+        "r[kamacite.stack_integration.fsm_valence_export.projection]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-receipt.negative.semantic-overclaim",
+      "input_identities": {
+        "declared-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "34a5e3edb8bf2067bc477f02013b65bb7c13056df5c06e0814d299ac98f27eb9"
+        },
+        "fsm-adapter": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"
+        },
+        "fsm-denial-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+        },
+        "fsm-event-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+        },
+        "fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        },
+        "fsm-state-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+        },
+        "fsm-transition-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+        },
+        "octet-source-shape-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "c07707d770698c323a37eb79283fbb9ca2033aee7b0ada926cb368a0f34edba3"
+        },
+        "valence-fsm-export-projection": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "cd7e6ade061bf11ba4fb7be2dbce5a7106e5f9f5318a82b9198b93c8672af8a7"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "b8e9406e8a98cd72cbff0c5e06e296d80854a42e9d0770dabc3376d9f2e006ce"
+      },
+      "non_claims": [
+        "FSM receipts do not prove protocol completeness or liveness"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "0b691f4d6c3c1596c98380cb6df71b153ab088762a34f2e5852f931c03944a6d"
+      },
+      "output_identities": {
+        "computed-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "34a5e3edb8bf2067bc477f02013b65bb7c13056df5c06e0814d299ac98f27eb9"
+        }
+      },
+      "path": "fixtures/golden/fsm-receipt.negative.semantic-overclaim.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.stack_integration.fsm_octet_interop.overclaim]",
+        "r[kamacite.stack_integration.fsm_valence_export.non_claims]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-receipt.positive.trace-path",
+      "input_identities": {
+        "declared-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "f64300b603f1ccf898469bf8a823a24f1015dcdf847177752e86218481be6586"
+        },
+        "fsm-adapter": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"
+        },
+        "fsm-denial-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+        },
+        "fsm-event-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+        },
+        "fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        },
+        "fsm-state-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+        },
+        "fsm-transition-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "5898a780bdf9376f1d22ecb3d70b9ee73324d7bc3d84d6449c5cadf090ed2956"
+      },
+      "non_claims": [
+        "trace consistency is not runtime correctness"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "5baa7edbc43f3da5f87a25c47a5bc34eba6d9b842cd162a6dddefa6d4ee94f58"
+      },
+      "output_identities": {
+        "computed-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "f64300b603f1ccf898469bf8a823a24f1015dcdf847177752e86218481be6586"
+        }
+      },
+      "path": "fixtures/golden/fsm-receipt.positive.trace-path.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.trace_receipts.valid_path]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-receipt.negative.impossible-trace",
+      "input_identities": {
+        "declared-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
+        },
+        "fsm-adapter": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e"
+        },
+        "fsm-denial-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+        },
+        "fsm-event-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+        },
+        "fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        },
+        "fsm-state-universe": {
+          "algorithm": "blake3",
+          "domain": "fsm-universe",
+          "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+        },
+        "fsm-transition-coverage": {
+          "algorithm": "blake3",
+          "domain": "fsm-coverage",
+          "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "aea1f83c557f57e928503b8300f59329f1a592c218f43fca17feac44938f43e9"
+      },
+      "non_claims": [
+        "impossible trace paths are not trusted evidence"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "a3e5b66defdbcf62209f37742601e009fbf1cc07457d41757b13e7648d9f8ee4"
+      },
+      "output_identities": {
+        "computed-fsm-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
+        }
+      },
+      "path": "fixtures/golden/fsm-receipt.negative.impossible-trace.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.trace_receipts.impossible_transition]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.positive.validation-workflow",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "addd54ceaaf389a2d916bf0f9771689c8950feec3c6cb5fc46d76f9cd89a8485"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "8e395d70f29e71afed47cd9c83c0bc4a17c1998c85d42bd2a1080333e40dbdd2"
+      },
+      "non_claims": [
+        "validation workflow fixture is not CLI branch coverage proof"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "fe9bcf1a473bf6211de1ea6df293354977dfffd0aadb261a99f13274f274e1ba"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "addd54ceaaf389a2d916bf0f9771689c8950feec3c6cb5fc46d76f9cd89a8485"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.positive.validation-workflow.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.command_adapter_usage.validation_workflow]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-spec.positive.adapter-modes",
+      "input_identities": {
+        "declared-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f0c1a11e162e041db2161ad3b1048d9ff24b61e65c8ac524314c3efbb2f55d15"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "ab7874bc3a4920ee2d843c2bef53c89d2270f515010437f26f69fe0cc450af14"
+      },
+      "non_claims": [
+        "adapter-mode fixture does not grant evaluator or host authority"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "6573f32309c366a491274eaf9d2f58ade67b883a1a405f1b65c7d37a6a91aa96"
+      },
+      "output_identities": {
+        "computed-fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f0c1a11e162e041db2161ad3b1048d9ff24b61e65c8ac524314c3efbb2f55d15"
+        }
+      },
+      "path": "fixtures/golden/fsm-spec.positive.adapter-modes.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.command_adapter_usage.adapter_modes]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-stack.positive.trellis",
+      "input_identities": {
+        "trellis-proof-reference:fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "781cef3d03d2e2e7c43df5d8c1bdbdf754eae693967b3cc04b019896ac862aa3"
+      },
+      "non_claims": [
+        "Trellis proof reference is supporting evidence only"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "bd9f801631a27d046de060c5369b0095c734c99c8e78f08a1460963080255e36"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/fsm-stack.positive.trellis.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.stack_roles.trellis]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-stack.positive.valence",
+      "input_identities": {
+        "valence-evidence-export:fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "4931c374fa13128d87555da876ec63cd6d404c6993b2b06ea57b690eae31583c"
+      },
+      "non_claims": [
+        "Valence wraps FSM evidence without broadening claims"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "079b69a1dded694d7c21f09367f944e7ff7eed9125639bb90d9d18dd1efbbaec"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/fsm-stack.positive.valence.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.stack_roles.valence]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-stack.positive.aspen-molten",
+      "input_identities": {
+        "aspen-molten-runtime-trace:fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "3abdaf365eccaede9b30caa4c44f9c39911f2ecebe765933cb20906acd68f169"
+      },
+      "non_claims": [
+        "runtime traces do not own the FSM schema"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "56cf269d87bf91cabcacb79ecda36dadd181bf77a4fcf2a3ca4d27e7a281116f"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/fsm-stack.positive.aspen-molten.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.stack_roles.aspen_molten]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-stack.positive.octet",
+      "input_identities": {
+        "octet-source-shape:fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "5095abd2f09a7cfd381b8de56d2d9141ecbaa2c4c14196519c8182b13f7a2fe7"
+      },
+      "non_claims": [
+        "Octet checks remain source-shape evidence"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "0a22575293a6a26f8e68314bf4c445e90acc5cdc79394a8127ed49c52416220a"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/fsm-stack.positive.octet.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.stack_roles.octet]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-stack.positive.cairn",
+      "input_identities": {
+        "cairn-lifecycle-consumer:fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "95b369768de02e57148a9a05a2c26c25aeb352f060fa33558bb2997c6dec29a1"
+      },
+      "non_claims": [
+        "Cairn lifecycle gates do not override Kamacite FSM identity"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "3fbea9903969b1219c54786519fe40af5c4e3f42cc11f282c4d85b0d02e29489"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/fsm-stack.positive.cairn.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.stack_roles.cairn]"
+      ]
+    },
+    {
+      "fixture_id": "fsm-stack.positive.mantle",
+      "input_identities": {
+        "mantle-release-evidence:fsm-spec": {
+          "algorithm": "blake3",
+          "domain": "fsm-spec",
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "7d9c1e0b34f4fd4256b0fa71221346601bd94e78567de93b27905bdadc93b33a"
+      },
+      "non_claims": [
+        "Mantle release evidence does not imply source losslessness or evaluator soundness"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "3f370ecae7d1ea1f97a026c1434efb89eb416cf1fd763db9502b993f383b23d9"
+      },
+      "output_identities": {},
+      "path": "fixtures/golden/fsm-stack.positive.mantle.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.fsms.stack_roles.mantle]"
+      ]
+    },
+    {
+      "fixture_id": "docs-ir.positive.valid-page",
+      "input_identities": {
+        "declared-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "62cf3fc9b5839cd60c42e73bb15ada84d5de628d19b7986fe782abd7bea680eb"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "0706288ece68fa671114af3243dea2d8a3fb640609361629d46c2ae27c09e1ad"
+      },
+      "non_claims": [
+        "documentation IR is not rendered output authority",
+        "runnable cells are not executed by default"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "81fa339dfddb3cf2065681a3c01cc0eab296a7720138d7d7602865fe35b60eb7"
+      },
+      "output_identities": {
+        "computed-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "62cf3fc9b5839cd60c42e73bb15ada84d5de628d19b7986fe782abd7bea680eb"
+        }
+      },
+      "path": "fixtures/golden/docs-ir.positive.valid-page.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.fixture_admission.positive_ir]",
+        "r[kamacite.docs.ir_projection]",
+        "r[kamacite.docs.renderers.stable_anchors]",
+        "r[kamacite.docs.renderers.stable_links]"
+      ]
+    },
+    {
+      "fixture_id": "docs-receipt.positive.output-hashes",
+      "input_identities": {
+        "declared-documentation-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "e96bff580bdbaae7eb7482f05e1aad57470c1009b5b863f709e12afc6c598c8d"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "8aa8fc15d7606ccc054771351163bbb20b1447ad8fa90b0b4a0fa4a7678353b9"
+      },
+      "non_claims": [
+        "not canonical rendered output",
+        "not semantic equivalence"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "cc9d62432bc11cd595c886ce2690a48962054aa31483396dbee0ed71031f010c"
+      },
+      "output_identities": {
+        "computed-documentation-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "e96bff580bdbaae7eb7482f05e1aad57470c1009b5b863f709e12afc6c598c8d"
+        }
+      },
+      "path": "fixtures/golden/docs-receipt.positive.output-hashes.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.receipts.output_hashes]",
+        "r[kamacite.docs.stack_roles.valence]"
+      ]
+    },
+    {
+      "fixture_id": "docs-ir.negative.unsupported-version",
+      "input_identities": {
+        "declared-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "32bd5b6dea69ce4eb16e4269f9f62165e4dae6f169dfc269714d1f43f5c10bb2"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "ea93ce9a0879e4553cae3fd30321d710bf0979695603d5e1ac3fc3425281de31"
+      },
+      "non_claims": [
+        "not compatibility defaulting"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "2f15e1c3d93c1c1bc8c0699ddb86727ffc1e688117b920795eb117896e0932ed"
+      },
+      "output_identities": {
+        "computed-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "32bd5b6dea69ce4eb16e4269f9f62165e4dae6f169dfc269714d1f43f5c10bb2"
+        }
+      },
+      "path": "fixtures/golden/docs-ir.negative.unsupported-version.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.ir_projection.unsupported_version]"
+      ]
+    },
+    {
+      "fixture_id": "docs-ir.negative.duplicate-id",
+      "input_identities": {
+        "declared-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "716c45f94881f60de1541118978e357baeb8cd846ea75390b5d8af9072a55157"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "e064893f1ca836d874dcc76f40a391852f40857f00f0b215cf28a7215399e349"
+      },
+      "non_claims": [
+        "duplicate anchors not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "91e0d1d9a5e9dfebeb4c1ce410d75f77d5c7510877144c5ac539df62b805c82d"
+      },
+      "output_identities": {
+        "computed-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "716c45f94881f60de1541118978e357baeb8cd846ea75390b5d8af9072a55157"
+        }
+      },
+      "path": "fixtures/golden/docs-ir.negative.duplicate-id.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.ir_projection.duplicate_id]"
+      ]
+    },
+    {
+      "fixture_id": "docs-ir.negative.missing-source",
+      "input_identities": {
+        "declared-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "21084143e88aca242bd0cfe23c1e0a84ab3fd5a94141c00bd25f6b6e24f277a2"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "7ea3323167f1868bc33f8d93638d3500e5cabdcd14bf6717c9e80687adb08d26"
+      },
+      "non_claims": [
+        "not source preservation"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "c93dc9ee39466385bd0e2fbf7933f867058de8d24a56e9ad172fbbdc0ecc3a67"
+      },
+      "output_identities": {
+        "computed-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "21084143e88aca242bd0cfe23c1e0a84ab3fd5a94141c00bd25f6b6e24f277a2"
+        }
+      },
+      "path": "fixtures/golden/docs-ir.negative.missing-source.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.ir_projection.missing_source]"
+      ]
+    },
+    {
+      "fixture_id": "docs-ir.negative.unknown-link",
+      "input_identities": {
+        "declared-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "36252d442abc263c185f06fcb81604be8af19b029003a6df8868edd0b25ad94e"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "61734a6d28e6e531574762105f34724f291eb3d174ced4028e8f011d14ab642b"
+      },
+      "non_claims": [
+        "unknown links not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "93d82915d1be896f7e943e5d1c1f58da07aecb83256f0dc5d343248b6b17bed9"
+      },
+      "output_identities": {
+        "computed-documentation-ir": {
+          "algorithm": "blake3",
+          "domain": "documentation-ir",
+          "hex": "36252d442abc263c185f06fcb81604be8af19b029003a6df8868edd0b25ad94e"
+        }
+      },
+      "path": "fixtures/golden/docs-ir.negative.unknown-link.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.renderers.unknown_link]"
+      ]
+    },
+    {
+      "fixture_id": "docs-receipt.negative.malformed",
+      "input_identities": {},
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "6be044cd75b35dfc817c89608f88b93c80c2b8254d08a1122b02e9c0ec346180"
+      },
+      "non_claims": [
+        "malformed receipt not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "922126768d6b18602851133deead786663416536cd23b1c9c73f752298d2a35d"
+      },
+      "output_identities": {
+        "computed-documentation-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "46a440aabafec0c1147deaf4e6be2c21bec30db2f29a4478d4f53263721448ec"
+        }
+      },
+      "path": "fixtures/golden/docs-receipt.negative.malformed.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.receipts.malformed]"
+      ]
+    },
+    {
+      "fixture_id": "docs-receipt.negative.non-claim-violation",
+      "input_identities": {
+        "declared-documentation-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "52acb1e849e290e6656a562d2f8fb250a5e2b37ec6eacedbb80ea22cbf43ae7f"
+        }
+      },
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "89138aef0e68eb9d743e03e39817660706f11767a2f4bfa0577c011031cfa349"
+      },
+      "non_claims": [
+        "semantic equivalence not trusted"
+      ],
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "cd3ab41a95fcf3dcd2aadd731d8326311fa27f8e212a4d24c98b7d38e010ad97"
+      },
+      "output_identities": {
+        "computed-documentation-receipt": {
+          "algorithm": "blake3",
+          "domain": "receipt",
+          "hex": "52acb1e849e290e6656a562d2f8fb250a5e2b37ec6eacedbb80ea22cbf43ae7f"
+        }
+      },
+      "path": "fixtures/golden/docs-receipt.negative.non-claim-violation.receipt.json",
+      "requirement_ids": [
+        "r[kamacite.docs.receipts.non_claim_violation]"
+      ]
+    }
+  ]
+}

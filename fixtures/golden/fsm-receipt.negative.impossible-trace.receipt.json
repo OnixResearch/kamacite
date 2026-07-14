@@ -12,7 +12,7 @@
       "declared-fsm-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "ea50a9680a2b6d02481c52bc55ddcd46be4f85fa1c4c8b9c69d098e64b88eea4"
+        "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
       },
       "fsm-adapter": {
         "domain": "adapter",
@@ -32,7 +32,7 @@
       "fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+        "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
       },
       "fsm-state-universe": {
         "domain": "fsm-universe",
@@ -49,7 +49,7 @@
       "computed-fsm-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "ea50a9680a2b6d02481c52bc55ddcd46be4f85fa1c4c8b9c69d098e64b88eea4"
+        "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
       }
     },
     "checked_laws": [
@@ -74,6 +74,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "e10f7e7a6f8b8d820ac512c0d4187dffe860bf7ce6bc3910fdeab9478db8fe01"
+    "hex": "c9fb15df5f444094edb1bfefc1d9112c765ba489877b76d21f4627c05fa7f0bb"
   }
 }

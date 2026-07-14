@@ -1,0 +1,35 @@
+<kamacite-preserves-codec-profile-v2 {
+  schema-version: "kamacite.preserves-codec-profile.v2"
+  codec: "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7"
+  implementation: {
+    package: "preserves"
+    package-version: "5.0.0-rc.7"
+    preserves-spec-version: "0.996.3"
+  }
+  identity: {
+    algorithm: "blake3"
+    material: "canonical-packed-preserves-bytes"
+  }
+  transfer-syntaxes: [text packed]
+  canonicalization: {
+    packed-input-must-already-be-canonical: #t
+    reject-trailing-values: #t
+    reject-duplicate-set-elements: #t
+    reject-duplicate-dictionary-keys: #t
+    reject-annotations: #t
+    reject-embedded-values: #t
+  }
+  default-limits: {
+    max-input-bytes: 1048576
+    max-output-bytes: 2097152
+    max-depth: 64
+    max-collection-items: 4096
+    max-atom-bytes: 262144
+    max-values: 65536
+  }
+  legacy-codec: "kamacite-legacy-labeled-deterministic-json-v1"
+  non-claims: [
+    "legacy identities are not reinterpreted"
+    "canonical encoding does not prove evaluator compiler or runtime correctness"
+  ]
+}>

@@ -12,14 +12,14 @@
       "declared-fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "d96de5fef1cc205a32381e0446f5fadcdc45d6eef8720893854cb74d5585e349"
+        "hex": "e3c5990137e705ffc9fd3882e584278817c77940463be94bbf8f3bc9a1ed79c3"
       }
     },
     "output_identities": {
       "computed-fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "d96de5fef1cc205a32381e0446f5fadcdc45d6eef8720893854cb74d5585e349"
+        "hex": "e3c5990137e705ffc9fd3882e584278817c77940463be94bbf8f3bc9a1ed79c3"
       }
     },
     "checked_laws": [
@@ -43,6 +43,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "d0d6bf884b8cb31e8aa392556ca603d4694b88f146e9d1250d4b1c9e8389dd65"
+    "hex": "20ebc31ac989809a00961c37465a23fb57924441c1c88568741f276739f91073"
   }
 }

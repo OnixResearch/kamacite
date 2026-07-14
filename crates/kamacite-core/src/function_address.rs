@@ -1,25 +1,31 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::preserves_codec::{
+    PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
+};
 use crate::receipt::ReceiptError;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
-pub const FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str = "kamacite.function-address-receipt.v2";
-pub const FUNCTION_ADDRESS_CANONICAL_CODEC: &str =
-    "kamacite-preserves-canonical-binary-function-address-receipt-v2";
+pub const FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str = "kamacite.function-address-receipt.v3";
+pub const FUNCTION_ADDRESS_CANONICAL_CODEC: &str = PRESERVES_CANONICAL_CODEC;
 pub const FUNCTION_ADDRESS_JSON_PROJECTION: &str =
-    "kamacite.function-address-receipt.v2.compat-json";
+    "kamacite.function-address-receipt.v3.compat-json";
 pub const FUNCTION_ADDRESS_VALENCE_PROJECTION_SCHEMA_VERSION: &str =
-    "kamacite.function-address-valence-projection.v2";
+    "kamacite.function-address-valence-projection.v3";
 pub const FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION: &str =
-    "kamacite.function-address-producer-profile.v1";
+    "kamacite.function-address-producer-profile.v2";
+pub const LEGACY_PSEUDO_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str =
+    "kamacite.function-address-receipt.v2";
+pub const LEGACY_PSEUDO_FUNCTION_ADDRESS_CANONICAL_CODEC: &str =
+    "kamacite-preserves-canonical-binary-function-address-receipt-v2";
 pub const LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str =
     "kamacite.function-address-receipt.v1";
 pub const LEGACY_FUNCTION_ADDRESS_CANONICAL_CODEC: &str =
     "kamacite-preserves-canonical-binary-function-address-receipt-v1";
 pub const LEGACY_TOOL_VERSION_UNBOUND_CAVEAT: &str = "tool-version-unbound";
-const CANONICAL_BYTES_PREFIX: &[u8] =
-    b"kamacite-preserves-canonical-binary:function-address-receipt:v2\n";
+const FUNCTION_ADDRESS_ROOT_LABEL: &str = "kamacite-function-address-receipt-v3";
+const FUNCTION_ADDRESS_PRODUCER_ROOT_LABEL: &str = "kamacite-function-address-producer-v2";
 const REQUIREMENT_CONTRACT: &str = "r[kamacite.function_address_receipts.contract]";
 const REQUIREMENT_VALIDATION: &str = "r[kamacite.function_address_receipts.validation]";
 const REQUIREMENT_OCTET_INTEROP: &str = "r[kamacite.function_address_receipts.octet_interop]";
@@ -107,6 +113,7 @@ pub struct FunctionAddressProducerProfile {
 #[serde(rename_all = "kebab-case")]
 pub enum FunctionAddressReceiptTrustClass {
     CurrentProducerBound,
+    LegacyPseudoCodec,
     LegacyToolVersionUnbound,
     Unsupported,
 }
@@ -255,6 +262,7 @@ struct CanonicalFunctionRecord {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-function-address-receipt-v3")]
 struct CanonicalReceipt<'a> {
     schema_version: &'a str,
     canonical_codec: &'a str,
@@ -275,6 +283,7 @@ struct CanonicalDependencyEdge {
 }
 
 #[derive(Serialize)]
+#[serde(rename = "kamacite-function-address-producer-v2")]
 struct CanonicalProducerProfile<'a> {
     schema_version: &'a str,
     producer_kind: &'a str,
@@ -306,10 +315,12 @@ fn function_address_producer_profile_unchecked(
     producer: &FunctionAddressProducer,
 ) -> Result<FunctionAddressProducerProfile, ReceiptError> {
     let canonical = canonical_producer_profile(producer);
-    let profile_identity = compute_identity(
-        IdentityDomain::Adapter,
-        &crate::receipt::canonical_json_bytes(&canonical)?,
-    );
+    let profile_bytes = typed_function_address_bytes(
+        &canonical,
+        FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION,
+        FUNCTION_ADDRESS_PRODUCER_ROOT_LABEL,
+    )?;
+    let profile_identity = compute_identity(IdentityDomain::Adapter, &profile_bytes);
     Ok(FunctionAddressProducerProfile {
         schema_version: FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION.to_string(),
         producer_kind: producer.name.clone(),
@@ -330,6 +341,12 @@ pub fn classify_function_address_receipt(
         && body.producer_profile.is_some()
     {
         return FunctionAddressReceiptTrustClass::CurrentProducerBound;
+    }
+    if body.schema_version == LEGACY_PSEUDO_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION
+        && body.canonical_codec == LEGACY_PSEUDO_FUNCTION_ADDRESS_CANONICAL_CODEC
+        && body.producer_profile.is_some()
+    {
+        return FunctionAddressReceiptTrustClass::LegacyPseudoCodec;
     }
     if body.schema_version == LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION
         && body.canonical_codec == LEGACY_FUNCTION_ADDRESS_CANONICAL_CODEC
@@ -413,9 +430,28 @@ pub fn function_address_canonical_bytes(
 ) -> Result<Vec<u8>, ReceiptError> {
     let source_identities = source_identity_map(&input.source_envelopes);
     let canonical = canonical_receipt(input, &source_identities)?;
-    let mut bytes = CANONICAL_BYTES_PREFIX.to_vec();
-    bytes.extend(crate::receipt::canonical_json_bytes(&canonical)?);
-    Ok(bytes)
+    typed_function_address_bytes(
+        &canonical,
+        FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
+        FUNCTION_ADDRESS_ROOT_LABEL,
+    )
+}
+
+fn typed_function_address_bytes<T: Serialize>(
+    value: &T,
+    schema_version: &str,
+    root_label: &str,
+) -> Result<Vec<u8>, ReceiptError> {
+    encode_typed_preserves(
+        value,
+        PreservesSchema {
+            schema_version,
+            root_label,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| ReceiptError::Serialize(error.to_string()))
 }
 
 pub fn function_address_json_projection(
@@ -468,6 +504,16 @@ pub fn validate_function_address_json_projection(
     }
     match classify_function_address_receipt(&projection.receipt) {
         FunctionAddressReceiptTrustClass::CurrentProducerBound => {}
+        FunctionAddressReceiptTrustClass::LegacyPseudoCodec => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedSchemaVersion,
+                REQUIREMENT_PRODUCER_MIGRATION,
+                "receipt.canonical_codec",
+                "legacy function-address receipt used labeled deterministic JSON rather than canonical Preserves packed bytes",
+            )
+            .with_detail("legacy_codec", LEGACY_PSEUDO_FUNCTION_ADDRESS_CANONICAL_CODEC)
+            .with_detail("current_codec", FUNCTION_ADDRESS_CANONICAL_CODEC),
+        ),
         FunctionAddressReceiptTrustClass::LegacyToolVersionUnbound => diagnostics.push(
             Diagnostic::new(
                 DiagnosticCode::UnsupportedSchemaVersion,
@@ -602,8 +648,11 @@ fn build_receipt(
         non_claims: input.non_claims.clone(),
     };
     let canonical = canonical_receipt(input, source_identities)?;
-    let mut bytes = CANONICAL_BYTES_PREFIX.to_vec();
-    bytes.extend(crate::receipt::canonical_json_bytes(&canonical)?);
+    let bytes = typed_function_address_bytes(
+        &canonical,
+        FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
+        FUNCTION_ADDRESS_ROOT_LABEL,
+    )?;
     let receipt_identity = compute_identity(IdentityDomain::Receipt, &bytes);
     Ok(FunctionAddressReceiptEnvelope {
         body,
@@ -1489,6 +1538,30 @@ mod tests {
             classify_function_address_receipt(&legacy),
             FunctionAddressReceiptTrustClass::LegacyToolVersionUnbound
         );
+    }
+
+    #[test]
+    fn legacy_v2_pseudo_codec_is_compatibility_evidence_only() {
+        let receipt_result = valid_receipt();
+        assert!(receipt_result.is_ok());
+        let Ok(receipt) = receipt_result else {
+            return;
+        };
+        let mut projection = function_address_json_projection(&receipt);
+        projection.receipt.schema_version =
+            LEGACY_PSEUDO_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION.to_string();
+        projection.receipt.canonical_codec =
+            LEGACY_PSEUDO_FUNCTION_ADDRESS_CANONICAL_CODEC.to_string();
+
+        assert_eq!(
+            classify_function_address_receipt(&projection.receipt),
+            FunctionAddressReceiptTrustClass::LegacyPseudoCodec
+        );
+        let diagnostics = validate_function_address_json_projection(&projection);
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == DiagnosticCode::UnsupportedSchemaVersion
+                && diagnostic.field == "receipt.canonical_codec"
+        }));
     }
 
     #[test]

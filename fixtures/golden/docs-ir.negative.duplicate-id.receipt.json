@@ -12,14 +12,14 @@
       "declared-documentation-ir": {
         "domain": "documentation-ir",
         "algorithm": "blake3",
-        "hex": "da5c4f2905016212cdcb52eb1bb40b4451c508a360de1d24e1cf36814381c482"
+        "hex": "716c45f94881f60de1541118978e357baeb8cd846ea75390b5d8af9072a55157"
       }
     },
     "output_identities": {
       "computed-documentation-ir": {
         "domain": "documentation-ir",
         "algorithm": "blake3",
-        "hex": "da5c4f2905016212cdcb52eb1bb40b4451c508a360de1d24e1cf36814381c482"
+        "hex": "716c45f94881f60de1541118978e357baeb8cd846ea75390b5d8af9072a55157"
       }
     },
     "checked_laws": [
@@ -43,6 +43,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "e3b3266ed3834132cd3b624501719490013406cc32abef64114d8577fa75871d"
+    "hex": "a9bb82f231487116c0226c96151c2ecea66ebf037c509c56bd294e18cad27a3b"
   }
 }

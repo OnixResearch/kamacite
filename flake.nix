@@ -93,7 +93,7 @@
             chmod -R u+w source
             cd source
           '';
-          manifestProjectionIdentity = "f7b607f8f93749b4c4092b5e1b7db3fab2b9c245d29930a074156e945cc7a855";
+          manifestProjectionIdentity = "10694659591006cb20d19eb18ab24745f10fc84200edaa41f91d4826f749c162";
           valenceConformanceIdentity = "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830";
           staleProjectionIdentity = "0000000000000000000000000000000000000000000000000000000000000000";
         in
@@ -235,9 +235,9 @@
                   --out target/function-address-check/receipt.json \
                   --valence-out target/function-address-check/valence.json \
                   >target/function-address-check/report.json
-                cmp fixtures/function-address/octet-valid-receipt-v2.json \
+                cmp fixtures/function-address/octet-valid-receipt-v3.json \
                   target/function-address-check/receipt.json
-                cmp fixtures/function-address/octet-valid-valence-v2.json \
+                cmp fixtures/function-address/octet-valid-valence-v3.json \
                   target/function-address-check/valence.json
                 if ${kamacite} emit-function-address-receipt \
                   --root . \

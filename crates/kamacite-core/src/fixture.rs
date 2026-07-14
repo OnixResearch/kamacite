@@ -1,5 +1,9 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::preserves_codec::{
+    CanonicalPreservesArtifact, PreservesCodecError, PreservesLimits, PreservesSchema,
+    PreservesSyntax, canonicalize_preserves, encode_typed_preserves,
+};
 use crate::receipt::{ReceiptBody, ReceiptEnvelope};
 use crate::valence_export::{
     ValenceReceiptExportInput, export_identity_key, export_valence_receipt,
@@ -24,6 +28,12 @@ const REQUIREMENT_UNSUPPORTED_CLAIM: &str =
 const REQUIREMENT_FIXTURE_METADATA: &str =
     "r[kamacite.lossless_ir.fixture_corpus.requirement_coverage]";
 const REQUIREMENT_EXPECTED_VERDICT: &str = "r[kamacite.lossless_ir.negative_fixtures]";
+const REQUIREMENT_PRESERVES_REAL_CODEC: &str =
+    "r[kamacite.findings.preserves_authority.real_codec]";
+const REQUIREMENT_PRESERVES_TYPED_BINDING: &str =
+    "r[kamacite.findings.preserves_authority.typed_binding]";
+const REQUIREMENT_PRESERVES_VALIDATION: &str =
+    "r[kamacite.findings.preserves_authority.validation]";
 const REQUIREMENT_PATH_ESCAPE: &str =
     "r[kamacite.rust_determinism.capability_shells.escape_fixtures]";
 const REQUIREMENT_ALGEBRAIC_VERSION: &str =
@@ -192,6 +202,18 @@ const DOC_STORED_EVIDENCE_MODE: &str = "stored-evidence";
 const DOC_EXPLICIT_RUN_MODE: &str = "explicit-run";
 const DOC_EXPECTED_SUCCESS: &str = "success";
 const DOC_EXPECTED_FAILURE: &str = "failure";
+const CANONICAL_VALUE_SCHEMA_VERSION: &str = "kamacite.canonical-value.v1";
+const CANONICAL_VALUE_ROOT_LABEL: &str = "kamacite-canonical-value-v1";
+const ALGEBRAIC_EFFECT_SCHEMA_VERSION: &str = "kamacite.algebraic-effect.v2";
+const ALGEBRAIC_EFFECT_ROOT_LABEL: &str = "kamacite-algebraic-effect-v2";
+const FSM_SPEC_SCHEMA_VERSION: &str = "kamacite.fsm-spec.v2";
+const FSM_SPEC_ROOT_LABEL: &str = "kamacite-fsm-spec-v2";
+const FSM_RECEIPT_SCHEMA_VERSION: &str = "kamacite.fsm-receipt.v2";
+const FSM_RECEIPT_ROOT_LABEL: &str = "kamacite-fsm-receipt-v2";
+const DOCUMENTATION_IR_SCHEMA_VERSION: &str = "kamacite.documentation-ir.v2";
+const DOCUMENTATION_IR_ROOT_LABEL: &str = "kamacite-documentation-ir-v2";
+const DOCUMENTATION_RECEIPT_SCHEMA_VERSION: &str = "kamacite.documentation-receipt.v2";
+const DOCUMENTATION_RECEIPT_ROOT_LABEL: &str = "kamacite-documentation-receipt-v2";
 const DOC_FORBIDDEN_CLAIMS: &[&str] = &[
     "canonical authority",
     "canonical ir",
@@ -700,6 +722,256 @@ pub struct DocumentationReceiptInput {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-algebraic-effect-v2")]
+struct CanonicalAlgebraicEffect {
+    schema_version: u32,
+    signatures: Vec<EffectOperation>,
+    input_row: Vec<String>,
+    row_open: bool,
+    claimed_pure: bool,
+    handler: Option<HandlerDescriptorInput>,
+    receipt: Option<HandlerReceiptInput>,
+    replay: Option<ReplayProfileInput>,
+    claimed_host_authority: Vec<String>,
+    admitted_host_capabilities: Vec<String>,
+}
+
+impl From<&AlgebraicEffectInput> for CanonicalAlgebraicEffect {
+    fn from(input: &AlgebraicEffectInput) -> Self {
+        Self {
+            schema_version: input.schema_version,
+            signatures: input.signatures.clone(),
+            input_row: input.input_row.clone(),
+            row_open: input.row_open,
+            claimed_pure: input.claimed_pure,
+            handler: input.handler.clone(),
+            receipt: input.receipt.clone(),
+            replay: input.replay.clone(),
+            claimed_host_authority: input.claimed_host_authority.clone(),
+            admitted_host_capabilities: input.admitted_host_capabilities.clone(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-fsm-spec-v2")]
+struct CanonicalFsmSpec {
+    schema_version: u32,
+    fsm_id: String,
+    source_envelope_identity: Option<Identity>,
+    states: Vec<FsmStateInput>,
+    events: Vec<FsmEventInput>,
+    initial_state: String,
+    terminal_states: Vec<String>,
+    intentionally_unreachable_states: Vec<String>,
+    determinism_policy: String,
+    totality_policy: String,
+    guards: Vec<FsmGuardInput>,
+    side_effects: Vec<FsmSideEffectInput>,
+    transitions: Vec<FsmTransitionRowInput>,
+    denials: Vec<FsmDenialRowInput>,
+    checked_laws: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+impl From<&FsmSpecInput> for CanonicalFsmSpec {
+    fn from(input: &FsmSpecInput) -> Self {
+        Self {
+            schema_version: input.schema_version,
+            fsm_id: input.fsm_id.clone(),
+            source_envelope_identity: input.source_envelope_identity.clone(),
+            states: input.states.clone(),
+            events: input.events.clone(),
+            initial_state: input.initial_state.clone(),
+            terminal_states: input.terminal_states.clone(),
+            intentionally_unreachable_states: input.intentionally_unreachable_states.clone(),
+            determinism_policy: input.determinism_policy.clone(),
+            totality_policy: input.totality_policy.clone(),
+            guards: input.guards.clone(),
+            side_effects: input.side_effects.clone(),
+            transitions: input.transitions.clone(),
+            denials: input.denials.clone(),
+            checked_laws: input.checked_laws.clone(),
+            non_claims: input.non_claims.clone(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-fsm-receipt-v2")]
+struct CanonicalFsmReceipt {
+    schema_version: u32,
+    receipt_kind: String,
+    spec_identity: Identity,
+    state_universe_identity: Identity,
+    event_universe_identity: Identity,
+    transition_coverage_identity: Identity,
+    denial_coverage_identity: Identity,
+    adapter_identity: Identity,
+    dependency_identities: Vec<Identity>,
+    octet_receipt_identities: Vec<Identity>,
+    valence_export_identity: Option<Identity>,
+    checked_laws: Vec<String>,
+    diagnostics: Vec<String>,
+    non_claims: Vec<String>,
+    semantic_claims: Vec<String>,
+    trace_start_state: Option<String>,
+    trace_events: Vec<String>,
+    trace_steps: Vec<FsmTraceStepInput>,
+    trace_final_state: Option<String>,
+}
+
+impl From<&FsmReceiptInput> for CanonicalFsmReceipt {
+    fn from(input: &FsmReceiptInput) -> Self {
+        Self {
+            schema_version: input.schema_version,
+            receipt_kind: input.receipt_kind.clone(),
+            spec_identity: input.spec_identity.clone(),
+            state_universe_identity: input.state_universe_identity.clone(),
+            event_universe_identity: input.event_universe_identity.clone(),
+            transition_coverage_identity: input.transition_coverage_identity.clone(),
+            denial_coverage_identity: input.denial_coverage_identity.clone(),
+            adapter_identity: input.adapter_identity.clone(),
+            dependency_identities: input.dependency_identities.clone(),
+            octet_receipt_identities: input.octet_receipt_identities.clone(),
+            valence_export_identity: input.valence_export_identity.clone(),
+            checked_laws: input.checked_laws.clone(),
+            diagnostics: input.diagnostics.clone(),
+            non_claims: input.non_claims.clone(),
+            semantic_claims: input.semantic_claims.clone(),
+            trace_start_state: input.trace_start_state.clone(),
+            trace_events: input.trace_events.clone(),
+            trace_steps: input.trace_steps.clone(),
+            trace_final_state: input.trace_final_state.clone(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-documentation-ir-v2")]
+struct CanonicalDocumentationIr {
+    schema_version: u32,
+    collector_identity: Identity,
+    pages: Vec<DocumentationPageInput>,
+    target_formats: Vec<String>,
+    dependency_identities: Vec<Identity>,
+    checked_laws: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+impl From<&DocumentationIrInput> for CanonicalDocumentationIr {
+    fn from(input: &DocumentationIrInput) -> Self {
+        Self {
+            schema_version: input.schema_version,
+            collector_identity: input.collector_identity.clone(),
+            pages: input.pages.clone(),
+            target_formats: input.target_formats.clone(),
+            dependency_identities: input.dependency_identities.clone(),
+            checked_laws: input.checked_laws.clone(),
+            non_claims: input.non_claims.clone(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-documentation-receipt-v2")]
+struct CanonicalDocumentationReceipt {
+    schema_version: u32,
+    receipt_kind: String,
+    documentation_ir_identity: Identity,
+    renderer_identity: Option<Identity>,
+    output_identities: Vec<Identity>,
+    cell_receipt_identities: Vec<Identity>,
+    valence_export_identity: Option<Identity>,
+    diagnostics: Vec<String>,
+    semantic_claims: Vec<String>,
+    checked_laws: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+impl From<&DocumentationReceiptInput> for CanonicalDocumentationReceipt {
+    fn from(input: &DocumentationReceiptInput) -> Self {
+        Self {
+            schema_version: input.schema_version,
+            receipt_kind: input.receipt_kind.clone(),
+            documentation_ir_identity: input.documentation_ir_identity.clone(),
+            renderer_identity: input.renderer_identity.clone(),
+            output_identities: input.output_identities.clone(),
+            cell_receipt_identities: input.cell_receipt_identities.clone(),
+            valence_export_identity: input.valence_export_identity.clone(),
+            diagnostics: input.diagnostics.clone(),
+            semantic_claims: input.semantic_claims.clone(),
+            checked_laws: input.checked_laws.clone(),
+            non_claims: input.non_claims.clone(),
+        }
+    }
+}
+
+pub fn fixture_expected_canonical_artifact(
+    payload: &FixturePayload,
+) -> Result<Option<CanonicalPreservesArtifact>, PreservesCodecError> {
+    let limits = PreservesLimits::default();
+    match payload {
+        FixturePayload::CanonicalValue(input) => canonicalize_preserves(
+            &input.canonical_bytes,
+            PreservesSyntax::Text,
+            PreservesSchema {
+                schema_version: CANONICAL_VALUE_SCHEMA_VERSION,
+                root_label: CANONICAL_VALUE_ROOT_LABEL,
+            },
+            limits,
+        )
+        .map(Some),
+        FixturePayload::AlgebraicEffect(input) => encode_typed_preserves(
+            &CanonicalAlgebraicEffect::from(input.as_ref()),
+            PreservesSchema {
+                schema_version: ALGEBRAIC_EFFECT_SCHEMA_VERSION,
+                root_label: ALGEBRAIC_EFFECT_ROOT_LABEL,
+            },
+            limits,
+        )
+        .map(Some),
+        FixturePayload::FsmSpec(input) => encode_typed_preserves(
+            &CanonicalFsmSpec::from(input.as_ref()),
+            PreservesSchema {
+                schema_version: FSM_SPEC_SCHEMA_VERSION,
+                root_label: FSM_SPEC_ROOT_LABEL,
+            },
+            limits,
+        )
+        .map(Some),
+        FixturePayload::FsmReceipt(input) => encode_typed_preserves(
+            &CanonicalFsmReceipt::from(input.as_ref()),
+            PreservesSchema {
+                schema_version: FSM_RECEIPT_SCHEMA_VERSION,
+                root_label: FSM_RECEIPT_ROOT_LABEL,
+            },
+            limits,
+        )
+        .map(Some),
+        FixturePayload::DocumentationIr(input) => encode_typed_preserves(
+            &CanonicalDocumentationIr::from(input.as_ref()),
+            PreservesSchema {
+                schema_version: DOCUMENTATION_IR_SCHEMA_VERSION,
+                root_label: DOCUMENTATION_IR_ROOT_LABEL,
+            },
+            limits,
+        )
+        .map(Some),
+        FixturePayload::DocumentationReceipt(input) => encode_typed_preserves(
+            &CanonicalDocumentationReceipt::from(input.as_ref()),
+            PreservesSchema {
+                schema_version: DOCUMENTATION_RECEIPT_SCHEMA_VERSION,
+                root_label: DOCUMENTATION_RECEIPT_ROOT_LABEL,
+            },
+            limits,
+        )
+        .map(Some),
+        _ => Ok(None),
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FixtureSuite {
     pub fixtures: Vec<FixtureCase>,
 }
@@ -877,6 +1149,99 @@ fn validate_source_envelope(input: &SourceEnvelopeInput, accumulator: &mut Valid
     }
 }
 
+fn canonicalize_fixture_bytes(
+    input: &[u8],
+    schema: PreservesSchema<'_>,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) -> Option<Vec<u8>> {
+    match canonicalize_preserves(
+        input,
+        PreservesSyntax::Text,
+        schema,
+        PreservesLimits::default(),
+    ) {
+        Ok(artifact) => Some(artifact.packed_bytes),
+        Err(error) => {
+            push_preserves_diagnostic(error, field, accumulator);
+            None
+        }
+    }
+}
+
+fn verify_fixture_bytes(
+    input: &[u8],
+    expected: Result<CanonicalPreservesArtifact, PreservesCodecError>,
+    schema: PreservesSchema<'_>,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) -> Option<Vec<u8>> {
+    let expected = match expected {
+        Ok(expected) => expected,
+        Err(error) => {
+            push_preserves_diagnostic(error, field, accumulator);
+            return None;
+        }
+    };
+    let actual = canonicalize_fixture_bytes(input, schema, field, accumulator)?;
+    if actual != expected.packed_bytes {
+        push_preserves_diagnostic(
+            PreservesCodecError::TypedContentMismatch,
+            field,
+            accumulator,
+        );
+        return None;
+    }
+    Some(actual)
+}
+
+fn push_preserves_diagnostic(
+    error: PreservesCodecError,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let (code, requirement_id) = match &error {
+        PreservesCodecError::InputLimit { .. }
+        | PreservesCodecError::OutputLimit { .. }
+        | PreservesCodecError::DepthLimit { .. }
+        | PreservesCodecError::CollectionLimit { .. }
+        | PreservesCodecError::AtomLimit { .. }
+        | PreservesCodecError::ValueLimit { .. }
+        | PreservesCodecError::InvalidPolicy(_) => (
+            DiagnosticCode::ResourceLimitExceeded,
+            REQUIREMENT_PRESERVES_VALIDATION,
+        ),
+        PreservesCodecError::NonCanonicalPacked => (
+            DiagnosticCode::NonCanonicalInput,
+            REQUIREMENT_PRESERVES_VALIDATION,
+        ),
+        PreservesCodecError::UnsupportedSchema { .. } => (
+            DiagnosticCode::UnsupportedCanonicalCodec,
+            REQUIREMENT_PRESERVES_REAL_CODEC,
+        ),
+        PreservesCodecError::TypedContentMismatch => (
+            DiagnosticCode::CanonicalContentMismatch,
+            REQUIREMENT_PRESERVES_TYPED_BINDING,
+        ),
+        PreservesCodecError::Malformed(_)
+        | PreservesCodecError::UnsupportedAnnotation
+        | PreservesCodecError::UnsupportedEmbeddedValue
+        | PreservesCodecError::TypedDecode(_) => (
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_PRESERVES_VALIDATION,
+        ),
+    };
+    accumulator.diagnostics.push(
+        Diagnostic::new(
+            code,
+            requirement_id,
+            field,
+            "canonical Preserves validation failed",
+        )
+        .with_detail("error", error.to_string()),
+    );
+}
+
 fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut ValidationAccumulator) {
     validate_supported_schema(input.schema_version, accumulator);
     validate_identity_domain(
@@ -885,23 +1250,33 @@ fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut Valid
         "canonical.declared_identity",
         accumulator,
     );
-    let computed = compute_identity(IdentityDomain::CanonicalValue, &input.canonical_bytes);
     accumulator.input_identities.insert(
         "declared-canonical".to_string(),
         input.declared_identity.clone(),
     );
-    accumulator
-        .output_identities
-        .insert("computed-canonical".to_string(), computed.clone());
-    if input.declared_identity.domain == IdentityDomain::CanonicalValue
-        && input.declared_identity.hex != computed.hex
-    {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::StaleIdentity,
-            "r[kamacite.lossless_ir.canonical_value_vocabulary.stale_hash]",
-            "canonical.declared_identity.hex",
-            "declared canonical identity does not match canonical bytes",
-        ));
+    if let Some(canonical_bytes) = canonicalize_fixture_bytes(
+        &input.canonical_bytes,
+        PreservesSchema {
+            schema_version: CANONICAL_VALUE_SCHEMA_VERSION,
+            root_label: CANONICAL_VALUE_ROOT_LABEL,
+        },
+        "canonical.canonical_bytes",
+        accumulator,
+    ) {
+        let computed = compute_identity(IdentityDomain::CanonicalValue, &canonical_bytes);
+        accumulator
+            .output_identities
+            .insert("computed-canonical".to_string(), computed.clone());
+        if input.declared_identity.domain == IdentityDomain::CanonicalValue
+            && input.declared_identity.hex != computed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                "r[kamacite.lossless_ir.canonical_value_vocabulary.stale_hash]",
+                "canonical.declared_identity.hex",
+                "declared canonical identity does not match canonical Preserves packed bytes",
+            ));
+        }
     }
     if let Some(projection_identity) = &input.projection_identity {
         validate_identity_domain(
@@ -1811,23 +2186,41 @@ fn validate_fsm_spec(input: &FsmSpecInput, accumulator: &mut ValidationAccumulat
         "fsm.source_envelope_identity",
         accumulator,
     );
-    let computed = compute_identity(IdentityDomain::FsmSpec, &input.canonical_bytes);
     accumulator.input_identities.insert(
         "declared-fsm-spec".to_string(),
         input.declared_identity.clone(),
     );
-    accumulator
-        .output_identities
-        .insert("computed-fsm-spec".to_string(), computed.clone());
-    if input.declared_identity.domain == IdentityDomain::FsmSpec
-        && input.declared_identity.hex != computed.hex
-    {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::StaleIdentity,
-            REQUIREMENT_FSM_SPEC_IDENTITY,
-            "fsm.declared_identity.hex",
-            "declared FSM spec identity does not match canonical bytes",
-        ));
+    if let Some(canonical_bytes) = verify_fixture_bytes(
+        &input.canonical_bytes,
+        encode_typed_preserves(
+            &CanonicalFsmSpec::from(input),
+            PreservesSchema {
+                schema_version: FSM_SPEC_SCHEMA_VERSION,
+                root_label: FSM_SPEC_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        ),
+        PreservesSchema {
+            schema_version: FSM_SPEC_SCHEMA_VERSION,
+            root_label: FSM_SPEC_ROOT_LABEL,
+        },
+        "fsm.canonical_bytes",
+        accumulator,
+    ) {
+        let computed = compute_identity(IdentityDomain::FsmSpec, &canonical_bytes);
+        accumulator
+            .output_identities
+            .insert("computed-fsm-spec".to_string(), computed.clone());
+        if input.declared_identity.domain == IdentityDomain::FsmSpec
+            && input.declared_identity.hex != computed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_FSM_SPEC_IDENTITY,
+                "fsm.declared_identity.hex",
+                "declared FSM spec identity does not match canonical Preserves packed bytes",
+            ));
+        }
     }
     validate_fsm_metadata(input, accumulator);
     let states = collect_fsm_states(&input.states, accumulator);
@@ -2579,17 +2972,37 @@ fn validate_fsm_receipt_identities(
     accumulator
         .input_identities
         .insert("declared-fsm-receipt".to_string(), receipt_identity.clone());
-    let computed = compute_identity(IdentityDomain::Receipt, &input.canonical_bytes);
-    accumulator
-        .output_identities
-        .insert("computed-fsm-receipt".to_string(), computed.clone());
-    if receipt_identity.domain == IdentityDomain::Receipt && receipt_identity.hex != computed.hex {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::StaleIdentity,
-            REQUIREMENT_FSM_RECEIPT_IDENTITY,
-            "fsm_receipt.declared_receipt_identity.hex",
-            "declared FSM receipt identity does not match canonical receipt bytes",
-        ));
+    if let Some(canonical_bytes) = verify_fixture_bytes(
+        &input.canonical_bytes,
+        encode_typed_preserves(
+            &CanonicalFsmReceipt::from(input),
+            PreservesSchema {
+                schema_version: FSM_RECEIPT_SCHEMA_VERSION,
+                root_label: FSM_RECEIPT_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        ),
+        PreservesSchema {
+            schema_version: FSM_RECEIPT_SCHEMA_VERSION,
+            root_label: FSM_RECEIPT_ROOT_LABEL,
+        },
+        "fsm_receipt.canonical_bytes",
+        accumulator,
+    ) {
+        let computed = compute_identity(IdentityDomain::Receipt, &canonical_bytes);
+        accumulator
+            .output_identities
+            .insert("computed-fsm-receipt".to_string(), computed.clone());
+        if receipt_identity.domain == IdentityDomain::Receipt
+            && receipt_identity.hex != computed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_FSM_RECEIPT_IDENTITY,
+                "fsm_receipt.declared_receipt_identity.hex",
+                "declared FSM receipt identity does not match canonical Preserves packed bytes",
+            ));
+        }
     }
     if receipt_identity.hex == input.spec_identity.hex
         || receipt_identity.hex == input.adapter_identity.hex
@@ -2742,23 +3155,41 @@ fn validate_algebraic_effect(
         "algebraic.declared_identity",
         accumulator,
     );
-    let computed = compute_identity(IdentityDomain::AlgebraicEffect, &input.canonical_bytes);
     accumulator.input_identities.insert(
         "declared-algebraic-effect".to_string(),
         input.declared_identity.clone(),
     );
-    accumulator
-        .output_identities
-        .insert("computed-algebraic-effect".to_string(), computed.clone());
-    if input.declared_identity.domain == IdentityDomain::AlgebraicEffect
-        && input.declared_identity.hex != computed.hex
-    {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::AlgebraicEffectHashMismatch,
-            "r[kamacite.algebraic_effects.fixture_corpus.negative_stale_identity]",
-            "algebraic.declared_identity.hex",
-            "declared algebraic-effect identity does not match canonical bytes",
-        ));
+    if let Some(canonical_bytes) = verify_fixture_bytes(
+        &input.canonical_bytes,
+        encode_typed_preserves(
+            &CanonicalAlgebraicEffect::from(input),
+            PreservesSchema {
+                schema_version: ALGEBRAIC_EFFECT_SCHEMA_VERSION,
+                root_label: ALGEBRAIC_EFFECT_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        ),
+        PreservesSchema {
+            schema_version: ALGEBRAIC_EFFECT_SCHEMA_VERSION,
+            root_label: ALGEBRAIC_EFFECT_ROOT_LABEL,
+        },
+        "algebraic.canonical_bytes",
+        accumulator,
+    ) {
+        let computed = compute_identity(IdentityDomain::AlgebraicEffect, &canonical_bytes);
+        accumulator
+            .output_identities
+            .insert("computed-algebraic-effect".to_string(), computed.clone());
+        if input.declared_identity.domain == IdentityDomain::AlgebraicEffect
+            && input.declared_identity.hex != computed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::AlgebraicEffectHashMismatch,
+                "r[kamacite.algebraic_effects.fixture_corpus.negative_stale_identity]",
+                "algebraic.declared_identity.hex",
+                "declared algebraic-effect identity does not match canonical Preserves packed bytes",
+            ));
+        }
     }
 
     let declared_operations = validate_effect_operations(&input.signatures, accumulator);
@@ -3228,23 +3659,41 @@ fn validate_documentation_ir_identity(
         ));
         return;
     }
-    let computed = compute_identity(IdentityDomain::DocumentationIr, &input.canonical_bytes);
     accumulator.input_identities.insert(
         "declared-documentation-ir".to_string(),
         input.declared_identity.clone(),
     );
-    accumulator
-        .output_identities
-        .insert("computed-documentation-ir".to_string(), computed.clone());
-    if input.declared_identity.domain == IdentityDomain::DocumentationIr
-        && input.declared_identity.hex != computed.hex
-    {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::StaleIdentity,
-            REQUIREMENT_DOCS_RENDERER_DRIFT,
-            "documentation_ir.declared_identity.hex",
-            "declared documentation IR identity does not match canonical bytes",
-        ));
+    if let Some(canonical_bytes) = verify_fixture_bytes(
+        &input.canonical_bytes,
+        encode_typed_preserves(
+            &CanonicalDocumentationIr::from(input),
+            PreservesSchema {
+                schema_version: DOCUMENTATION_IR_SCHEMA_VERSION,
+                root_label: DOCUMENTATION_IR_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        ),
+        PreservesSchema {
+            schema_version: DOCUMENTATION_IR_SCHEMA_VERSION,
+            root_label: DOCUMENTATION_IR_ROOT_LABEL,
+        },
+        "documentation_ir.canonical_bytes",
+        accumulator,
+    ) {
+        let computed = compute_identity(IdentityDomain::DocumentationIr, &canonical_bytes);
+        accumulator
+            .output_identities
+            .insert("computed-documentation-ir".to_string(), computed.clone());
+        if input.declared_identity.domain == IdentityDomain::DocumentationIr
+            && input.declared_identity.hex != computed.hex
+        {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_DOCS_RENDERER_DRIFT,
+                "documentation_ir.declared_identity.hex",
+                "declared documentation IR identity does not match canonical Preserves packed bytes",
+            ));
+        }
     }
 }
 
@@ -3863,11 +4312,30 @@ fn validate_documentation_receipt_identity(
         ));
         return;
     }
-    let computed = compute_identity(IdentityDomain::Receipt, &input.canonical_bytes);
-    accumulator.output_identities.insert(
-        "computed-documentation-receipt".to_string(),
-        computed.clone(),
-    );
+    let computed = verify_fixture_bytes(
+        &input.canonical_bytes,
+        encode_typed_preserves(
+            &CanonicalDocumentationReceipt::from(input),
+            PreservesSchema {
+                schema_version: DOCUMENTATION_RECEIPT_SCHEMA_VERSION,
+                root_label: DOCUMENTATION_RECEIPT_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        ),
+        PreservesSchema {
+            schema_version: DOCUMENTATION_RECEIPT_SCHEMA_VERSION,
+            root_label: DOCUMENTATION_RECEIPT_ROOT_LABEL,
+        },
+        "documentation_receipt.canonical_bytes",
+        accumulator,
+    )
+    .map(|canonical_bytes| compute_identity(IdentityDomain::Receipt, &canonical_bytes));
+    if let Some(computed) = &computed {
+        accumulator.output_identities.insert(
+            "computed-documentation-receipt".to_string(),
+            computed.clone(),
+        );
+    }
     let Some(declared) = &input.declared_receipt_identity else {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
@@ -3887,12 +4355,15 @@ fn validate_documentation_receipt_identity(
         "declared-documentation-receipt".to_string(),
         declared.clone(),
     );
-    if declared.domain == IdentityDomain::Receipt && declared.hex != computed.hex {
+    if let Some(computed) = computed
+        && declared.domain == IdentityDomain::Receipt
+        && declared.hex != computed.hex
+    {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_DOCS_RECEIPT,
             "documentation_receipt.declared_receipt_identity.hex",
-            "declared documentation receipt identity does not match canonical bytes",
+            "declared documentation receipt identity does not match canonical Preserves packed bytes",
         ));
     }
 }
@@ -4428,11 +4899,29 @@ mod tests {
         );
     }
 
+    fn bind_algebraic_effect_canonical(input: &mut AlgebraicEffectInput) {
+        let encoded = encode_typed_preserves(
+            &CanonicalAlgebraicEffect::from(&*input),
+            PreservesSchema {
+                schema_version: ALGEBRAIC_EFFECT_SCHEMA_VERSION,
+                root_label: ALGEBRAIC_EFFECT_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        );
+        assert!(encoded.is_ok(), "test algebraic effect must encode");
+        let Ok(encoded) = encoded else {
+            return;
+        };
+        input.canonical_bytes = encoded.text_projection.into_bytes();
+        input.declared_identity =
+            compute_identity(IdentityDomain::AlgebraicEffect, &encoded.packed_bytes);
+    }
+
     #[test]
     fn accepts_algebraic_exact_discharge() {
         let bytes = b"<effect positive>".to_vec();
         let identity = compute_identity(IdentityDomain::AlgebraicEffect, &bytes);
-        let fixture = FixtureCase {
+        let mut fixture = FixtureCase {
             id: "unit.effect.discharge".to_string(),
             fixture_class: FixtureClass::Positive,
             artifact_class: ArtifactClass::AlgebraicEffect,
@@ -4476,6 +4965,9 @@ mod tests {
                 admitted_host_capabilities: Vec::new(),
             })),
         };
+        if let FixturePayload::AlgebraicEffect(input) = &mut fixture.payload {
+            bind_algebraic_effect_canonical(input);
+        }
         let result = validate_fixture(&fixture);
         assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
         assert!(result.expectation_met);
@@ -4485,7 +4977,7 @@ mod tests {
     fn rejects_host_capability_confusion() {
         let bytes = b"<effect host confusion>".to_vec();
         let identity = compute_identity(IdentityDomain::AlgebraicEffect, &bytes);
-        let fixture = FixtureCase {
+        let mut fixture = FixtureCase {
             id: "unit.effect.host-confusion".to_string(),
             fixture_class: FixtureClass::Negative,
             artifact_class: ArtifactClass::AlgebraicEffect,
@@ -4515,6 +5007,9 @@ mod tests {
                 admitted_host_capabilities: Vec::new(),
             })),
         };
+        if let FixturePayload::AlgebraicEffect(input) = &mut fixture.payload {
+            bind_algebraic_effect_canonical(input);
+        }
         let result = validate_fixture(&fixture);
         assert!(result.expectation_met);
         assert!(
@@ -4529,8 +5024,45 @@ mod tests {
     const FSM_RECEIPT_BYTES: &[u8] = b"(fsm-receipt unit.lifecycle exhaustiveness v1)\n";
     const FSM_TRACE_BYTES: &[u8] = b"(fsm-trace unit.lifecycle start-stop v1)\n";
 
+    fn bind_fsm_spec_canonical(input: &mut FsmSpecInput) {
+        let encoded = encode_typed_preserves(
+            &CanonicalFsmSpec::from(&*input),
+            PreservesSchema {
+                schema_version: FSM_SPEC_SCHEMA_VERSION,
+                root_label: FSM_SPEC_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        );
+        assert!(encoded.is_ok(), "test FSM spec must encode");
+        let Ok(encoded) = encoded else {
+            return;
+        };
+        input.canonical_bytes = encoded.text_projection.into_bytes();
+        input.declared_identity = compute_identity(IdentityDomain::FsmSpec, &encoded.packed_bytes);
+    }
+
+    fn bind_fsm_receipt_canonical(input: &mut FsmReceiptInput) {
+        let encoded = encode_typed_preserves(
+            &CanonicalFsmReceipt::from(&*input),
+            PreservesSchema {
+                schema_version: FSM_RECEIPT_SCHEMA_VERSION,
+                root_label: FSM_RECEIPT_ROOT_LABEL,
+            },
+            PreservesLimits::default(),
+        );
+        assert!(encoded.is_ok(), "test FSM receipt must encode");
+        let Ok(encoded) = encoded else {
+            return;
+        };
+        input.canonical_bytes = encoded.text_projection.into_bytes();
+        input.declared_receipt_identity = Some(compute_identity(
+            IdentityDomain::Receipt,
+            &encoded.packed_bytes,
+        ));
+    }
+
     fn valid_fsm_spec_input() -> FsmSpecInput {
-        FsmSpecInput {
+        let mut input = FsmSpecInput {
             schema_version: SUPPORTED_SCHEMA_VERSION,
             fsm_id: "unit.lifecycle".to_string(),
             canonical_bytes: FSM_SPEC_BYTES.to_vec(),
@@ -4612,7 +5144,9 @@ mod tests {
             ],
             checked_laws: vec!["total-pair-coverage".to_string()],
             non_claims: vec!["not runtime correctness".to_string()],
-        }
+        };
+        bind_fsm_spec_canonical(&mut input);
+        input
     }
 
     fn fsm_fixture(input: FsmSpecInput, expected_verdict: ValidationVerdict) -> FixtureCase {
@@ -4649,6 +5183,7 @@ mod tests {
             guards: Vec::new(),
             side_effect: "admit".to_string(),
         });
+        bind_fsm_spec_canonical(&mut input);
         let mut fixture = fsm_fixture(input, ValidationVerdict::Rejected);
         fixture.fixture_class = FixtureClass::Negative;
         let result = validate_fixture(&fixture);
@@ -4669,7 +5204,7 @@ mod tests {
 
     fn valid_fsm_receipt_input() -> FsmReceiptInput {
         let spec = valid_fsm_spec_input();
-        FsmReceiptInput {
+        let mut input = FsmReceiptInput {
             schema_version: SUPPORTED_SCHEMA_VERSION,
             receipt_kind: FSM_EXHAUSTIVENESS_RECEIPT_KIND.to_string(),
             canonical_bytes: FSM_RECEIPT_BYTES.to_vec(),
@@ -4703,7 +5238,9 @@ mod tests {
             trace_events: Vec::new(),
             trace_steps: Vec::new(),
             trace_final_state: None,
-        }
+        };
+        bind_fsm_receipt_canonical(&mut input);
+        input
     }
 
     fn fsm_receipt_fixture(
@@ -4738,6 +5275,7 @@ mod tests {
         input
             .semantic_claims
             .push("proves protocol completeness and liveness".to_string());
+        bind_fsm_receipt_canonical(&mut input);
         let mut fixture = fsm_receipt_fixture(input, ValidationVerdict::Rejected);
         fixture.fixture_class = FixtureClass::Negative;
         let result = validate_fixture(&fixture);
@@ -4772,6 +5310,7 @@ mod tests {
             },
         ];
         input.trace_final_state = Some("idle".to_string());
+        bind_fsm_receipt_canonical(&mut input);
         let result = validate_fixture(&fsm_receipt_fixture(input, ValidationVerdict::Accepted));
         assert!(result.expectation_met);
         assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
@@ -4792,6 +5331,7 @@ mod tests {
             to_state: "idle".to_string(),
         }];
         input.trace_final_state = Some("idle".to_string());
+        bind_fsm_receipt_canonical(&mut input);
         let mut fixture = fsm_receipt_fixture(input, ValidationVerdict::Rejected);
         fixture.fixture_class = FixtureClass::Negative;
         let result = validate_fixture(&fixture);

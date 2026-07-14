@@ -1,0 +1,1 @@
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.known" "Known" <Some "unit"> <Some "unit">>] ["op.known"] #f #f <Some <HandlerDescriptorInput "known-handler" ["op.known"] [] "no-continuation" #t []>> <Some <HandlerReceiptInput ["op.known"] [] "no-continuation" <None> ["op.unknown"] ["receipt-effects-declared"]>> <None> [] []>

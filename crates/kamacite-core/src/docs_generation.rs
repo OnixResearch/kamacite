@@ -4,6 +4,7 @@ use crate::fixture::{
     DocumentationSectionInput,
 };
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -51,6 +52,8 @@ const DEFAULT_TARGET_FORMAT: &str = "markdown";
 const CHECKED_LAW_SOURCE_BOUND: &str =
     "language documentation facts remain source-bound projections";
 const CHECKED_LAW_STABLE_ANCHORS: &str = "documentation anchors are deterministic";
+const DOCUMENTATION_IR_PRESERVES_SCHEMA_VERSION: &str = "kamacite.documentation-ir.v2";
+const DOCUMENTATION_IR_ROOT_LABEL: &str = "kamacite-documentation-ir-v2";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SourceByteSpan {
@@ -892,16 +895,34 @@ fn stable_anchor(language: &str, item_id: &str) -> String {
         .collect()
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-documentation-ir-v2")]
+struct CanonicalDocumentationIr {
+    pages: Vec<DocumentationPageInput>,
+    target_formats: Vec<String>,
+    non_claims: Vec<String>,
+}
+
 fn documentation_ir_canonical_bytes(
     pages: &[DocumentationPageInput],
     target_formats: &[String],
     non_claims: &[String],
 ) -> Result<Vec<u8>, ReceiptError> {
-    canonical_json_bytes(&(
-        pages,
-        sorted_or_default(target_formats),
-        sorted_strings(non_claims),
-    ))
+    let body = CanonicalDocumentationIr {
+        pages: pages.to_vec(),
+        target_formats: sorted_or_default(target_formats),
+        non_claims: sorted_strings(non_claims),
+    };
+    encode_typed_preserves(
+        &body,
+        PreservesSchema {
+            schema_version: DOCUMENTATION_IR_PRESERVES_SCHEMA_VERSION,
+            root_label: DOCUMENTATION_IR_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| ReceiptError::Serialize(error.to_string()))
 }
 
 fn docs_collector_identity(

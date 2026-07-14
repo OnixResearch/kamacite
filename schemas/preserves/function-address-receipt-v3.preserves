@@ -1,0 +1,51 @@
+; Kamacite function-address receipt canonical body schema v3.
+; Identity is BLAKE3 over canonical packed Preserves emitted by preserves-rs 5.0.0-rc.7.
+; v1 and pseudo-codec v2 identities remain compatibility evidence and are not reinterpreted.
+
+FunctionAddressReceipt = <kamacite-function-address-receipt-v3 {
+  schema-version: "kamacite.function-address-receipt.v3",
+  canonical-codec: "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+  producer-profile-identity: Identity,
+  source-envelopes: [CanonicalSourceEnvelope ...],
+  functions: [CanonicalFunctionRecord ...],
+  dependency-edges: [CanonicalDependencyEdge ...],
+  caveats: [string ...],
+  non-claims: [string ...]
+}>
+
+ProducerProfile = <kamacite-function-address-producer-v2 {
+  schema-version: "kamacite.function-address-producer-profile.v2",
+  producer-kind: string,
+  tool-version: string,
+  build-identity: Identity | false,
+  canonicalizer-profile: string,
+  normative-options: {string: string ...},
+  non-claims: [string ...]
+}>
+
+CanonicalSourceEnvelope = {
+  source-identity: Identity
+}
+
+CanonicalFunctionRecord = {
+  source-identity: Identity,
+  function-address: Identity,
+  dependency-closure: Identity | false,
+  dependency-identity-kind: DependencyIdentityKind | false,
+  caveats: [string ...]
+}
+
+CanonicalDependencyEdge = {
+  from-address: Identity,
+  to-address: Identity,
+  dependency-identity: Identity | false,
+  dependency-identity-kind: DependencyIdentityKind | false
+}
+
+DependencyIdentityKind = "source-token-dependency-set" | "source-shape-dependency-set"
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}

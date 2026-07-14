@@ -13,7 +13,7 @@
       "computed-documentation-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "e4065a3945853f97ff2441bdb1b08197ce62a051a2dc2804ed154b6db0944646"
+        "hex": "46a440aabafec0c1147deaf4e6be2c21bec30db2f29a4478d4f53263721448ec"
       }
     },
     "checked_laws": [
@@ -42,6 +42,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "51d37f41f7e528376f9e3dd5d08c3ae56a037b1b94646019238765fe1e7de8a8"
+    "hex": "63eba043f5b4fbc9e4d4b912d795e5936f100bbaa166a4efce0fb45bd2cdbcfa"
   }
 }

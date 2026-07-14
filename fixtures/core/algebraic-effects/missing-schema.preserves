@@ -1,1 +1,1 @@
-<kamacite-effect-bundle-v1 {signature: "Broken", operation: "op.broken"}>
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.broken" "Broken" <None> <Some "unit">>] ["op.broken"] #f #f <None> <None> <None> [] []>

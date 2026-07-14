@@ -1,1 +1,1 @@
-<documentation-receipt-v1 { receipt-kind: malformed documentation-ir: missing outputs: [] non-claims: [] }>
+<kamacite-documentation-receipt-v2 1 "malformed" <Identity <documentation-ir> "blake3" <Blake3Hex "62cf3fc9b5839cd60c42e73bb15ada84d5de628d19b7986fe782abd7bea680eb">> <None> [] [] <None> [] [] ["malformed-fails"] []>

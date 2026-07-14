@@ -48,6 +48,15 @@ nix run .#kamacite -- validate --root . --manifest fixtures/manifest.json --upda
 
 That mode writes checked golden receipt projections and emits `target/kamacite-golden-update-receipt.json` with old/new receipt identities, input/output identities, covered requirement IDs, and non-claims. It is the only harness mode that rewrites golden fixture evidence; manifest projection changes remain reviewed source/projection file changes and are not rewritten implicitly by validation.
 
+The Preserves migration workflow is dry-run-first:
+
+```bash
+nix run .#kamacite -- migrate-preserves --root . --manifest fixtures/manifest.json --manifest-source fixtures/manifest.ncl
+nix run .#kamacite -- migrate-preserves --root . --manifest fixtures/manifest.json --manifest-source fixtures/manifest.ncl --update --report target/kamacite-preserves-migration-report.json
+```
+
+The pure core plans canonical packed bytes and typed identity bindings. The update shell performs at most four named convergence passes so receipts that depend on migrated canonical identities are regenerated before the report is accepted. It updates only canonical fixture projections and their explicit manifest identity fields, preserves intentionally stale negative identities, refreshes the manifest projection identity, and records whether convergence occurred. Legacy labeled-JSON identities are retained as compatibility evidence rather than rewritten as Preserves identities.
+
 ## Boundary
 
 - `crates/kamacite-core` is the pure deterministic core. It receives in-memory DTOs and bytes, returns deterministic diagnostics and receipts, and does not read files, inspect environment, spawn processes, print, access clocks, access randomness, or mutate state.

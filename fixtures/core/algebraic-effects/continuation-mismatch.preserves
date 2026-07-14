@@ -1,1 +1,1 @@
-<kamacite-effect-bundle-v1 {handler: "no-cont", receipt: "continued"}>
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.resume" "Resume" <Some "unit"> <Some "unit">>] ["op.resume"] #f #f <Some <HandlerDescriptorInput "no-cont-handler" ["op.resume"] [] "no-continuation" #t []>> <Some <HandlerReceiptInput ["op.resume"] [] "single-use-continuation" <Some "used-once"> ["op.resume"] ["continuation-policy-fail-closed"]>> <None> [] []>

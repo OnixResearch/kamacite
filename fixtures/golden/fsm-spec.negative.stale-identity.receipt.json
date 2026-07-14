@@ -19,7 +19,7 @@
       "computed-fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "f1cfce6a3db3a0a88601af1ab7d54283198197417ac61b53a98f06a438839f9e"
+        "hex": "1247d9272ed4043dbeea2759312b4d7c9551cdf5343d85b7951b0b4fdd1688ca"
       }
     },
     "checked_laws": [
@@ -30,7 +30,7 @@
         "code": "stale-identity",
         "requirement_id": "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]",
         "field": "fsm.declared_identity.hex",
-        "message": "declared FSM spec identity does not match canonical bytes",
+        "message": "declared FSM spec identity does not match canonical Preserves packed bytes",
         "details": {}
       }
     ],
@@ -41,6 +41,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "47f4e4ec9ed0e198cdbb4c0ca1dfd1d58be56e30c11ad9ac1a45c9d7b65940dc"
+    "hex": "81faba6adf2b2a1cdd20b1a4daead54e91b2585592f7726790ce9358a063a9e4"
   }
 }

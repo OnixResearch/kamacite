@@ -1,0 +1,740 @@
+{
+  "artifacts": [
+    {
+      "canonical_packed_size": 74,
+      "content_changed": false,
+      "error": null,
+      "fixture_id": "canonical-value.positive.preserves-minimal",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "canonical-value",
+        "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "canonical-value",
+        "hex": "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31"
+      },
+      "path": "fixtures/core/canonical-values/minimal.preserves"
+    },
+    {
+      "canonical_packed_size": null,
+      "content_changed": false,
+      "error": "malformed Preserves input: position 69: Message(\"Invalid #x syntax\")",
+      "fixture_id": "canonical-value.negative.lossy-json-authority",
+      "new_identity": null,
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "canonical-value",
+        "hex": "2b9579ca093fb1ca47516d0cdac8fe5dccf015400f642230a4a14eed7e0cc3ae"
+      },
+      "path": "fixtures/core/canonical-values/lossy-json.preserves"
+    },
+    {
+      "canonical_packed_size": 713,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.positive.declared-discharge-recorded-replay",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "561617d253e0e0cf29bd8ab5b8758d848bda594cde178b2572d3939d19a6c21c"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
+      },
+      "path": "fixtures/core/algebraic-effects/declared-discharge.preserves"
+    },
+    {
+      "canonical_packed_size": 395,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.positive.single-use-continuation-evidence",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "5e31708b44f1a241746fb8841195875679d775da70850558303db3985dc1669b"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
+      },
+      "path": "fixtures/core/algebraic-effects/single-use-continuation-evidence.preserves"
+    },
+    {
+      "canonical_packed_size": 162,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.unsupported-version",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "5dbe0a11c4da10b4a32360686ca828fa6714cdccb19ae719b4e7dcdfc1738772"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
+      },
+      "path": "fixtures/core/algebraic-effects/unsupported-version.preserves"
+    },
+    {
+      "canonical_packed_size": 140,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.missing-operation-schema",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "ea18dda5d0ec944b06f843e2f5aad0a5c2d88ad3dd22c5f8605b9226b5c78c37"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "6564e0b1bcb778d7a2c654afaf1bcf11b402fe43df7c573e40fb829e5748848c"
+      },
+      "path": "fixtures/core/algebraic-effects/missing-schema.preserves"
+    },
+    {
+      "canonical_packed_size": 145,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.undeclared-operation",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "1590cc9decb807a36a274e0b6c8acf06c8dda629aa70fda68fc66dae53e63ed7"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60"
+      },
+      "path": "fixtures/core/algebraic-effects/unknown-effect.preserves"
+    },
+    {
+      "canonical_packed_size": 145,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.open-row-not-pure",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "a27004d78d76879ffa3f3ad7675ab6fd1706606604b389a87d0849adf52401b1"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e"
+      },
+      "path": "fixtures/core/algebraic-effects/open-row.preserves"
+    },
+    {
+      "canonical_packed_size": 237,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.handler-name-not-discharge",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "f1b788477a3b51182b8d8f7615fba4fcb24a1a84666dd28a7f965787595ec751"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8"
+      },
+      "path": "fixtures/core/algebraic-effects/handler-name-not-discharge.preserves"
+    },
+    {
+      "canonical_packed_size": 322,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.unknown-effect-in-receipt",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "dad89096a96a7937c0b3b464e69ac86dd1e3717b29d3c52f6bea1bee600192ea"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60"
+      },
+      "path": "fixtures/core/algebraic-effects/unknown-effect-in-receipt.preserves"
+    },
+    {
+      "canonical_packed_size": 354,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.continuation-policy-mismatch",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "370d58d8433dca0b34bd7fcb892d6c2edf825d606fb07e7f34be5cebb45ee94c"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "292370f394d446681a738d228e31432c67f9d4aa71107889a58384d76c1b14a2"
+      },
+      "path": "fixtures/core/algebraic-effects/continuation-mismatch.preserves"
+    },
+    {
+      "canonical_packed_size": 155,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.host-capability-confusion",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "122c85def5fdbae3b504a6b47102281db09f97088443d36f9be183279550aef0"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f"
+      },
+      "path": "fixtures/core/algebraic-effects/non-replayable.preserves"
+    },
+    {
+      "canonical_packed_size": 162,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.stale-canonical-identity",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "17cbbb11aae0911d00083b5710890df2216b5a7ea75b76a0d40b0ef0ec3afdd8"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e"
+      },
+      "path": "fixtures/core/algebraic-effects/stale-canonical-identity.preserves"
+    },
+    {
+      "canonical_packed_size": 503,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.negative.non-replayable-evidence-misuse",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "5424cff66dc82cbe3ffa7d63caaf2ddf4e51ce3fc34fd75aa0945db8799945c6"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f"
+      },
+      "path": "fixtures/core/algebraic-effects/non-replayable-evidence-misuse.preserves"
+    },
+    {
+      "canonical_packed_size": 74,
+      "content_changed": false,
+      "error": null,
+      "fixture_id": "canonical-value.property.names-dependencies-durable-storage",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "canonical-value",
+        "hex": "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "canonical-value",
+        "hex": "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31"
+      },
+      "path": "fixtures/core/canonical-values/minimal.preserves"
+    },
+    {
+      "canonical_packed_size": 145,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.positive.open-row-preserved-not-pure",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "a16d622f2b7061dbbe8681b494fd86c2ebc4099454f206ed14caaaa70c4cf260"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e"
+      },
+      "path": "fixtures/core/algebraic-effects/open-row-preserved.preserves"
+    },
+    {
+      "canonical_packed_size": 192,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "algebraic.positive.deterministic-effect-summary",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "c46884c2df056e4c7143fc6e2761abe7867807a5fc29fe233e6ad1eec811fd84"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "algebraic-effect",
+        "hex": "fccf2894cfcd54dd75833c1b32bb6a8423d58f057476e1ef048c6f4f5f2efef0"
+      },
+      "path": "fixtures/core/algebraic-effects/deterministic.preserves"
+    },
+    {
+      "canonical_packed_size": 799,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.positive.complete-denial-coverage",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+      },
+      "path": "fixtures/core/fsm/complete-spec.preserves"
+    },
+    {
+      "canonical_packed_size": 680,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.missing-denial-coverage",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "60be2274325d9cd8b8b72e95a0be0acb645f25ef75c069e363695628a1b5a62e"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "f14a6b4b684b70e6b7b59f9b73e2cc1914e429f63c30bc2c06b31725f386a03e"
+      },
+      "path": "fixtures/core/fsm/missing-coverage.preserves"
+    },
+    {
+      "canonical_packed_size": 714,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.duplicate-transition",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "55853abcdecb5d45b63e948e3ebb52d825e1170c0d7687c44dc06ae3ee31ac3c"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "28a40ffe2060fbc8c01371d9b64f96093dc0ac66e6e1c3a87772a3a8326f3f01"
+      },
+      "path": "fixtures/core/fsm/duplicate-transition.preserves"
+    },
+    {
+      "canonical_packed_size": 628,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.wildcard-row",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "388b4dcc34367b1b6b3e2eeeeca72c1b72f88d03e1931ab36c3bb60ee3af9257"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "a806d0a6dc2d2e2ecc93fcf90a158c02a50c33a999d7ba008f15cf1864d128e7"
+      },
+      "path": "fixtures/core/fsm/wildcard-row.preserves"
+    },
+    {
+      "canonical_packed_size": 744,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.undeclared-guard",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "14cec0ef687b7666d0a8878694c59b6bb2dd003ba734d3d8fa21f954e4dfae57"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "80a68c3368cfe18bb123df9b40d2996293e72bb370ded49ff5578f0105f194a6"
+      },
+      "path": "fixtures/core/fsm/undeclared-guard.preserves"
+    },
+    {
+      "canonical_packed_size": 655,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.unknown-endpoint",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "0a0922fcfa7df0903b79f901cb658ceb933ba6726dd48913bf4445db73d60551"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "a3d95f3392af9a81455aa4ea9d1a9e4df7b19d786bd75a44c5ae28d7ab863e28"
+      },
+      "path": "fixtures/core/fsm/unknown-endpoint.preserves"
+    },
+    {
+      "canonical_packed_size": 640,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.stale-identity",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "1247d9272ed4043dbeea2759312b4d7c9551cdf5343d85b7951b0b4fdd1688ca"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "path": "fixtures/core/fsm/stale-identity.preserves"
+    },
+    {
+      "canonical_packed_size": 644,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.wrong-identity-domain",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "41fef4fd656563b1ec9aa70a779350d700e59198adee8c5051d4a7c9e0878e03"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "canonical-value",
+        "hex": "feb392a76af0b611b84bfe572ebd9fe66d90523723e1cb3d0a71cd8522a282b7"
+      },
+      "path": "fixtures/core/fsm/wrong-domain.preserves"
+    },
+    {
+      "canonical_packed_size": 602,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.missing-non-claims",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "a70af2fd927a5e4dc43982a4c1265bf47338790f24ed055c98e375e2bbf52833"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "686fc68583ede916b4262ee0cecb749811e7e24fa4e6aa9beef0350a1916597e"
+      },
+      "path": "fixtures/core/fsm/missing-non-claims.preserves"
+    },
+    {
+      "canonical_packed_size": 686,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.host-authority-confusion",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "d99b6defb9b58122294f2fb209d8b81f066b140cf4ea879377873f73713aede7"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "f04f42082b66b582574abf0e560497d492bc9589668338bbbd59b059f8dded4c"
+      },
+      "path": "fixtures/core/fsm/host-confusion.preserves"
+    },
+    {
+      "canonical_packed_size": 666,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.terminal-outgoing",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "a4670fc9a36f6233d726526fbb176c1782f6c3c83a006593526730f7c7198149"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "8e0093d68ab4a894a9f0b4f0afbed31c1c98e2142b276c0971d80bbd7e482411"
+      },
+      "path": "fixtures/core/fsm/terminal-outgoing.preserves"
+    },
+    {
+      "canonical_packed_size": 796,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.negative.unreachable-unmarked",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "e3c5990137e705ffc9fd3882e584278817c77940463be94bbf8f3bc9a1ed79c3"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "d96de5fef1cc205a32381e0446f5fadcdc45d6eef8720893854cb74d5585e349"
+      },
+      "path": "fixtures/core/fsm/unreachable-unmarked.preserves"
+    },
+    {
+      "canonical_packed_size": 1133,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-receipt.positive.exhaustiveness-octet-valence",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "4c74f74e7580c6ad40e0ddd45dfb0454797b70c889ebf47d0f020a74bad924a6"
+      },
+      "path": "fixtures/core/fsm/receipt-exhaustiveness.preserves"
+    },
+    {
+      "canonical_packed_size": 1123,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-receipt.negative.semantic-overclaim",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "34a5e3edb8bf2067bc477f02013b65bb7c13056df5c06e0814d299ac98f27eb9"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "006992127873a0c5af5d0d440cc7e1e15d3955348c3226a040a31fe2e449a4ea"
+      },
+      "path": "fixtures/core/fsm/receipt-overclaim.preserves"
+    },
+    {
+      "canonical_packed_size": 936,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-receipt.positive.trace-path",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "f64300b603f1ccf898469bf8a823a24f1015dcdf847177752e86218481be6586"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "d1e2cdce1eb175680915d7a5b9cab1a0995d29345df7ee0c335912a69adc05a3"
+      },
+      "path": "fixtures/core/fsm/trace-valid.preserves"
+    },
+    {
+      "canonical_packed_size": 893,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-receipt.negative.impossible-trace",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "ea50a9680a2b6d02481c52bc55ddcd46be4f85fa1c4c8b9c69d098e64b88eea4"
+      },
+      "path": "fixtures/core/fsm/trace-impossible.preserves"
+    },
+    {
+      "canonical_packed_size": 1005,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.positive.validation-workflow",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "addd54ceaaf389a2d916bf0f9771689c8950feec3c6cb5fc46d76f9cd89a8485"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "83bd2ee93af8cb966956fb4387282e7843b6d62c1bdc9bf3c2431c87c26a86b3"
+      },
+      "path": "fixtures/core/fsm/validation-workflow.preserves"
+    },
+    {
+      "canonical_packed_size": 1420,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "fsm-spec.positive.adapter-modes",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "f0c1a11e162e041db2161ad3b1048d9ff24b61e65c8ac524314c3efbb2f55d15"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "fsm-spec",
+        "hex": "7d05548c393acd3334249d8d3ea03964cae83c7063445ace78fcfa20ffe1d92a"
+      },
+      "path": "fixtures/core/fsm/adapter-modes.preserves"
+    },
+    {
+      "canonical_packed_size": 1554,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-ir.positive.valid-page",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "62cf3fc9b5839cd60c42e73bb15ada84d5de628d19b7986fe782abd7bea680eb"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      },
+      "path": "fixtures/core/docs/valid-ir.preserves"
+    },
+    {
+      "canonical_packed_size": 926,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-receipt.positive.output-hashes",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "e96bff580bdbaae7eb7482f05e1aad57470c1009b5b863f709e12afc6c598c8d"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "9bc92f71ece8543631e927dc3785916545cd76ccbb4bc079d81eafad6bcc613e"
+      },
+      "path": "fixtures/core/docs/render-receipt.preserves"
+    },
+    {
+      "canonical_packed_size": 212,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-ir.negative.unsupported-version",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "32bd5b6dea69ce4eb16e4269f9f62165e4dae6f169dfc269714d1f43f5c10bb2"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      },
+      "path": "fixtures/core/docs/unsupported-version.preserves"
+    },
+    {
+      "canonical_packed_size": 498,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-ir.negative.duplicate-id",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "716c45f94881f60de1541118978e357baeb8cd846ea75390b5d8af9072a55157"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "da5c4f2905016212cdcb52eb1bb40b4451c508a360de1d24e1cf36814381c482"
+      },
+      "path": "fixtures/core/docs/duplicate-anchor.preserves"
+    },
+    {
+      "canonical_packed_size": 271,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-ir.negative.missing-source",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "21084143e88aca242bd0cfe23c1e0a84ab3fd5a94141c00bd25f6b6e24f277a2"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "033e55565b9e2b4271314e69e145797055403c585e63b61b150443e70b75d82d"
+      },
+      "path": "fixtures/core/docs/missing-source.preserves"
+    },
+    {
+      "canonical_packed_size": 450,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-ir.negative.unknown-link",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "36252d442abc263c185f06fcb81604be8af19b029003a6df8868edd0b25ad94e"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "documentation-ir",
+        "hex": "ac9f88457d2f3e3fef83ad016986ac744de5de92de08ed08d866b8843624bdae"
+      },
+      "path": "fixtures/core/docs/unknown-link.preserves"
+    },
+    {
+      "canonical_packed_size": 215,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-receipt.negative.malformed",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "46a440aabafec0c1147deaf4e6be2c21bec30db2f29a4478d4f53263721448ec"
+      },
+      "old_identity": null,
+      "path": "fixtures/core/docs/bad-receipt.preserves"
+    },
+    {
+      "canonical_packed_size": 395,
+      "content_changed": true,
+      "error": null,
+      "fixture_id": "docs-receipt.negative.non-claim-violation",
+      "new_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "52acb1e849e290e6656a562d2f8fb250a5e2b37ec6eacedbb80ea22cbf43ae7f"
+      },
+      "old_identity": {
+        "algorithm": "blake3",
+        "domain": "receipt",
+        "hex": "9bc92f71ece8543631e927dc3785916545cd76ccbb4bc079d81eafad6bcc613e"
+      },
+      "path": "fixtures/core/docs/non-claim-violation.preserves"
+    }
+  ],
+  "canonical_codec": "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+  "converged": true,
+  "dry_run": false,
+  "legacy_codec": "kamacite-legacy-labeled-deterministic-json-v1",
+  "migration_passes": 3,
+  "mutated": true,
+  "non_claims": [
+    "legacy raw-text and labeled-JSON identities remain compatibility evidence only",
+    "codec migration does not prove evaluator, compiler, or runtime correctness"
+  ],
+  "preserves_package_version": "5.0.0-rc.7",
+  "preserves_spec_version": "0.996.3",
+  "schema_version": "kamacite.preserves-migration.v1"
+}

@@ -6,16 +6,20 @@ use crate::evidence_chain::{
     validate_evidence_chain_json_projection,
 };
 use crate::identity::{Identity, IdentityDomain, compute_identity};
-use crate::receipt::{ReceiptError, canonical_json_bytes};
+use crate::preserves_codec::{
+    PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
+};
+use crate::receipt::ReceiptError;
 use serde::{Deserialize, Serialize};
 
-pub const TRELLIS_PROOF_PROFILE_SCHEMA_VERSION: &str = "kamacite.trellis-proof-evidence-profile.v1";
-pub const TRELLIS_PROOF_PROFILE_CANONICAL_CODEC: &str =
-    "kamacite-preserves-canonical-binary-trellis-proof-evidence-profile-v1";
+pub const TRELLIS_PROOF_PROFILE_SCHEMA_VERSION: &str = "kamacite.trellis-proof-evidence-profile.v2";
+pub const TRELLIS_PROOF_PROFILE_CANONICAL_CODEC: &str = PRESERVES_CANONICAL_CODEC;
 pub const TRELLIS_PROOF_PROFILE_JSON_PROJECTION: &str =
-    "kamacite.trellis-proof-evidence-profile.v1.compat-json";
-const PROFILE_BYTES_PREFIX: &[u8] =
-    b"kamacite-preserves-canonical-binary:trellis-proof-evidence-profile:v1\n";
+    "kamacite.trellis-proof-evidence-profile.v2.compat-json";
+const TRELLIS_PROOF_PROFILE_ROOT_LABEL: &str = "kamacite-trellis-proof-evidence-profile-v2";
+const TRELLIS_PROOF_COLLECTION_ROOT_LABEL: &str = "kamacite-trellis-proof-collection-v2";
+const ASSUMPTIONS_ROOT_KIND: &str = "assumptions";
+const DEPENDENCIES_ROOT_KIND: &str = "dependencies";
 const REQUIREMENT_SCHEMA: &str =
     "r[kamacite.stack_integration.trellis_proof_evidence_envelope.schema]";
 const REQUIREMENT_LINKS: &str =
@@ -71,6 +75,7 @@ pub struct TrellisProofEvidenceInput {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-trellis-proof-evidence-profile-v2")]
 pub struct TrellisProofEvidenceProfile {
     pub schema_version: String,
     pub canonical_codec: String,
@@ -281,25 +286,50 @@ pub fn validate_trellis_proof_evidence_json_projection(
 pub fn trellis_proof_profile_canonical_bytes(
     profile: &TrellisProofEvidenceProfile,
 ) -> Result<Vec<u8>, ReceiptError> {
-    let mut bytes = PROFILE_BYTES_PREFIX.to_vec();
-    bytes.extend(canonical_json_bytes(profile)?);
-    Ok(bytes)
+    typed_proof_bytes(
+        profile,
+        TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
+        TRELLIS_PROOF_PROFILE_ROOT_LABEL,
+    )
 }
 
 pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Result<Identity, ReceiptError> {
+    let root = CanonicalProofCollection {
+        kind: ASSUMPTIONS_ROOT_KIND,
+        values: sorted_strings(assumptions),
+    };
     Ok(compute_identity(
         IdentityDomain::EvidenceChain,
-        &canonical_vec_bytes(&sorted_strings(assumptions))?,
+        &typed_proof_bytes(
+            &root,
+            TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
+            TRELLIS_PROOF_COLLECTION_ROOT_LABEL,
+        )?,
     ))
 }
 
 pub fn trellis_proof_dependency_root(dependencies: &[Identity]) -> Result<Identity, ReceiptError> {
     let mut dependencies = dependencies.to_vec();
     dependencies.sort();
+    let root = CanonicalProofCollection {
+        kind: DEPENDENCIES_ROOT_KIND,
+        values: dependencies,
+    };
     Ok(compute_identity(
         IdentityDomain::EvidenceChain,
-        &canonical_vec_bytes(&dependencies)?,
+        &typed_proof_bytes(
+            &root,
+            TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
+            TRELLIS_PROOF_COLLECTION_ROOT_LABEL,
+        )?,
     ))
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename = "kamacite-trellis-proof-collection-v2")]
+struct CanonicalProofCollection<T> {
+    kind: &'static str,
+    values: Vec<T>,
 }
 
 fn trellis_proof_evidence_profile(
@@ -531,8 +561,21 @@ fn sorted_strings(values: &[String]) -> Vec<String> {
     values
 }
 
-fn canonical_vec_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, ReceiptError> {
-    canonical_json_bytes(value)
+fn typed_proof_bytes<T: Serialize>(
+    value: &T,
+    schema_version: &str,
+    root_label: &str,
+) -> Result<Vec<u8>, ReceiptError> {
+    encode_typed_preserves(
+        value,
+        PreservesSchema {
+            schema_version,
+            root_label,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| ReceiptError::Serialize(error.to_string()))
 }
 
 #[cfg(test)]

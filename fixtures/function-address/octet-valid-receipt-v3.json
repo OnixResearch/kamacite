@@ -1,0 +1,97 @@
+{
+  "schema_version": "kamacite.function-address-receipt.v3",
+  "compatibility_projection": "kamacite.function-address-receipt.v3.compat-json",
+  "canonical_identity_owner": "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "eaef7ca83b1b1e394ee16470e9abc26d5ffd67807c32f9ccfb688c778e371dd0"
+  },
+  "receipt": {
+    "schema_version": "kamacite.function-address-receipt.v3",
+    "canonical_codec": "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+    "producer": {
+      "name": "octet",
+      "canonicalizer": "octet-source-token-function-address-v1",
+      "tool_version": "octet-fixture",
+      "non_claims": [
+        "not producer correctness",
+        "not semantic dependency closure"
+      ]
+    },
+    "producer_profile": {
+      "schema_version": "kamacite.function-address-producer-profile.v2",
+      "producer_kind": "octet",
+      "tool_version": "octet-fixture",
+      "canonicalizer_profile": "octet-source-token-function-address-v1",
+      "normative_options": {},
+      "non_claims": [
+        "not producer correctness",
+        "not semantic dependency closure"
+      ],
+      "profile_identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "aa5836f2e75a9d2811586106863f08b1e818934c14e16e870109cc34b4d72eb1"
+      }
+    },
+    "source_envelopes": [
+      {
+        "key": "fixtures/function-address/source.rs",
+        "display_path": "fixtures/function-address/source.rs",
+        "language": "rust",
+        "source_bytes": "pub fn f() -> u32 { 1 }\npub fn g() -> u32 { f() }\n",
+        "source_identity": {
+          "domain": "source",
+          "algorithm": "blake3",
+          "hex": "2c9045e6f614e37c42e7d6f1823994d17444b21dc4d8f1b037d08bfbd21e5570"
+        }
+      }
+    ],
+    "functions": [
+      {
+        "locator": "fixtures/function-address/source.rs::f",
+        "display_name": "f",
+        "source_key": "fixtures/function-address/source.rs",
+        "span": {
+          "source_key": "fixtures/function-address/source.rs",
+          "start_byte": 0,
+          "end_byte": 23
+        },
+        "function_address": {
+          "domain": "function-address",
+          "algorithm": "blake3",
+          "hex": "680af701c517bd7cad2f6e6f0b218a45d463afd40a84ba53eeb36f65bfd45a79"
+        },
+        "dependency_closure": {
+          "domain": "dependency-closure",
+          "algorithm": "blake3",
+          "hex": "ed1de155a2a993ebf754c7b2045a1d1be5abbbdfad0f64cde535719871587498"
+        },
+        "dependency_identity_kind": "source-token-dependency-set",
+        "caveats": []
+      }
+    ],
+    "dependency_edges": [
+      {
+        "from_locator": "fixtures/function-address/source.rs::f",
+        "to_locator": "fixtures/function-address/source.rs::f",
+        "dependency_identity": {
+          "domain": "dependency-closure",
+          "algorithm": "blake3",
+          "hex": "ed1de155a2a993ebf754c7b2045a1d1be5abbbdfad0f64cde535719871587498"
+        },
+        "dependency_identity_kind": "source-token-dependency-set"
+      }
+    ],
+    "caveats": [],
+    "non_claims": [
+      "not host-language semantic correctness",
+      "not compiler correctness",
+      "not runtime behavior",
+      "not whole-program safety",
+      "not verifier soundness",
+      "not release eligibility"
+    ]
+  }
+}

@@ -40,6 +40,14 @@ Keep the roles explicit:
 
 Kamacite should use that layered pattern directly rather than borrowing another language's IR. Human-authored sources stay source envelopes; canonical machine identity is Preserves; transformations are receipt-producing adapter steps; backend/compiler outputs are target artifacts with non-claims.
 
+## Canonical Preserves authority
+
+Rust-owned canonical values, function-address receipts, evidence-chain envelopes, Trellis proof profiles, FSM artifacts, algebraic-effect artifacts, and documentation artifacts use the official `preserves` crate rather than labeled JSON. The canonical codec is `kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7`: supported text and packed transfer syntaxes decode through a bounded explicit-frame core, then identity is computed from canonical packed bytes.
+
+Typed validation and canonical identity share one value. Fixture validators reject malformed input, unsupported root schemas, non-canonical packed input, hostile depth/collection/atom/value limits, and canonical bytes that disagree with the supplied typed artifact. Legacy prefixed-JSON identities are never reinterpreted as Preserves; they remain caveated compatibility evidence only.
+
+The reviewed migration evidence is in `fixtures/preserves/migration-v1-real-codec.json`, with golden receipt changes in `fixtures/preserves/golden-update-v1-real-codec.json`. `migrate-preserves` is dry-run by default; `--update` performs bounded convergence passes so dependent receipt identities are regenerated after their canonical dependencies change.
+
 ## Haskell-inspired discipline
 
 Kamacite should adapt Haskell's design discipline, not Haskell as a runtime or IR.
@@ -163,10 +171,12 @@ nix develop . -c cargo clippy --workspace --all-targets -- -D warnings
 nix run .#kamacite -- validate --root . --manifest fixtures/manifest.json
 nix run .#kamacite -- validate-nickel-adapter --root . --manifest fixtures/manifest.json
 nix run .#kamacite -- validate-steel-adapter --root . --manifest fixtures/manifest.json
+nix run .#kamacite -- migrate-preserves --root . --manifest fixtures/manifest.json --manifest-source fixtures/manifest.ncl
 nix run .#kamacite -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
 nix flake check
 # The validate command checks fixtures/manifest.ncl against fixtures/manifest.json before trusting fixture receipts.
 # The validate-nickel-adapter command additionally runs explicitly declared Nickel reference-export fixtures in the shell.
+# The migrate-preserves command is dry-run-only unless --update is passed; update reports default under target/.
 # The export-valence-receipt command validates deterministic Valence-friendly projections without invoking live Valence APIs.
 ```
 

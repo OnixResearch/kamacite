@@ -29,8 +29,8 @@ let Manifest = {
 
 {
   schema_version = 1,
-  runtime_projection = "fixtures/manifest.json",
-  projection_identity_hex = "f7b607f8f93749b4c4092b5e1b7db3fab2b9c245d29930a074156e945cc7a855",
+  runtime_projection = "10694659591006cb20d19eb18ab24745f10fc84200edaa41f91d4826f749c162",
+  projection_identity_hex = "10694659591006cb20d19eb18ab24745f10fc84200edaa41f91d4826f749c162",
   authority_non_claims = [
     "manifest source is review authority",
     "json projection is runtime compatibility input only",
@@ -225,7 +225,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "canonical-value",
-          hex = "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31",
+          hex = "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846",
         },
         kind = "canonical-value",
         projection_claims_authority = false,
@@ -1349,7 +1349,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+          hex = "561617d253e0e0cf29bd8ab5b8758d848bda594cde178b2572d3939d19a6c21c",
         },
         handler = {
           claims_discharge = true,
@@ -1418,13 +1418,13 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/single-use-continuation-evidence.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+          hex = "5e31708b44f1a241746fb8841195875679d775da70850558303db3985dc1669b",
         },
         handler = {
           claims_discharge = true,
@@ -1484,13 +1484,13 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/unsupported-version.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+          hex = "5dbe0a11c4da10b4a32360686ca828fa6714cdccb19ae719b4e7dcdfc1738772",
         },
         handler = null,
         input_row = [
@@ -1534,7 +1534,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "6564e0b1bcb778d7a2c654afaf1bcf11b402fe43df7c573e40fb829e5748848c",
+          hex = "ea18dda5d0ec944b06f843e2f5aad0a5c2d88ad3dd22c5f8605b9226b5c78c37",
         },
         handler = null,
         input_row = [
@@ -1578,7 +1578,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60",
+          hex = "1590cc9decb807a36a274e0b6c8acf06c8dda629aa70fda68fc66dae53e63ed7",
         },
         handler = null,
         input_row = [
@@ -1622,7 +1622,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e",
+          hex = "a27004d78d76879ffa3f3ad7675ab6fd1706606604b389a87d0849adf52401b1",
         },
         handler = null,
         input_row = [
@@ -1660,13 +1660,13 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/handler-name-not-discharge.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "283821c5e3b7364cc163169d83890da6ce852be02316aa836f9bdda7ff0750f8",
+          hex = "f1b788477a3b51182b8d8f7615fba4fcb24a1a84666dd28a7f965787595ec751",
         },
         handler = {
           claims_discharge = true,
@@ -1711,13 +1711,13 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/unknown-effect.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/unknown-effect-in-receipt.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "231c186f49da7c428026f7d113ed82c48af725cba617936c9a39cda9d116cc60",
+          hex = "dad89096a96a7937c0b3b464e69ac86dd1e3717b29d3c52f6bea1bee600192ea",
         },
         handler = {
           claims_discharge = true,
@@ -1783,7 +1783,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "292370f394d446681a738d228e31432c67f9d4aa71107889a58384d76c1b14a2",
+          hex = "370d58d8433dca0b34bd7fcb892d6c2edf825d606fb07e7f34be5cebb45ee94c",
         },
         handler = {
           claims_discharge = true,
@@ -1851,7 +1851,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f",
+          hex = "122c85def5fdbae3b504a6b47102281db09f97088443d36f9be183279550aef0",
         },
         handler = null,
         input_row = [
@@ -1889,7 +1889,7 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/declared-discharge.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/stale-canonical-identity.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
@@ -1933,13 +1933,13 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/non-replayable.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/non-replayable-evidence-misuse.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "5c362799ae2ec69817f310cce5643df5ad9fb955a8447d1b0ce8c32ea48ded2f",
+          hex = "5424cff66dc82cbe3ffa7d63caaf2ddf4e51ce3fc34fd75aa0945db8799945c6",
         },
         handler = null,
         input_row = [
@@ -2140,7 +2140,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "canonical-value",
-          hex = "838c1915c4dbf35b83dac8674c04f00d5cc4f2f80c64f3a0cc4d4faecb01db31",
+          hex = "4aae45a48df037e16bd2a160ba815b264b5dfd40725957561f9f75300681f846",
         },
         kind = "canonical-value",
         projection_claims_authority = false,
@@ -2172,13 +2172,13 @@ let Manifest = {
       ],
       payload = {
         admitted_host_capabilities = [],
-        canonical_path = "fixtures/core/algebraic-effects/open-row.preserves",
+        canonical_path = "fixtures/core/algebraic-effects/open-row-preserved.preserves",
         claimed_host_authority = [],
         claimed_pure = false,
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e",
+          hex = "a16d622f2b7061dbbe8681b494fd86c2ebc4099454f206ed14caaaa70c4cf260",
         },
         handler = null,
         input_row = [
@@ -2222,7 +2222,7 @@ let Manifest = {
         declared_identity = {
           algorithm = "blake3",
           domain = "algebraic-effect",
-          hex = "fccf2894cfcd54dd75833c1b32bb6a8423d58f057476e1ef048c6f4f5f2efef0",
+          hex = "c46884c2df056e4c7143fc6e2761abe7867807a5fc29fe233e6ad1eec811fd84",
         },
         handler = null,
         input_row = [
@@ -2723,9 +2723,9 @@ let Manifest = {
     { artifact_class = "documentation-cell", checked_laws = ["canonical-bytes-bound"], expected_verdict = "accepted", fixture_class = "positive", golden_receipt = "fixtures/golden/docs-cell.positive.preserves.receipt.json", id = "docs-cell.positive.preserves", non_claims = ["not source-language semantics"], payload = { kind = "documentation-cell", source_path = "fixtures/core/docs/cell-preserves.preserves" }, requirement_ids = ["r[kamacite.docs.runnable_cells.preserves]"] },
     { artifact_class = "documentation-receipt", checked_laws = ["output-hashes-bound"], expected_verdict = "accepted", fixture_class = "positive", golden_receipt = "fixtures/golden/docs-receipt.positive.output-hashes.receipt.json", id = "docs-receipt.positive.output-hashes", non_claims = ["not canonical rendered output"], payload = { kind = "documentation-receipt", canonical_path = "fixtures/core/docs/render-receipt.preserves" }, requirement_ids = ["r[kamacite.docs.receipts.output_hashes]"] },
     { artifact_class = "stack-evidence", checked_laws = ["stack-role-boundary"], expected_verdict = "accepted", fixture_class = "positive", golden_receipt = "fixtures/golden/docs-stack.positive.valence.receipt.json", id = "docs-stack.positive.valence", non_claims = ["Valence evidence does not broaden documentation claims"], payload = { kind = "stack-evidence", role = "valence-documentation-export" }, requirement_ids = ["r[kamacite.docs.stack_roles.valence]"] },
-    { artifact_class = "documentation-ir", checked_laws = ["fail-closed-version"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-ir.negative.unsupported-version.receipt.json", id = "docs-ir.negative.unsupported-version", non_claims = ["not compatibility defaulting"], payload = { kind = "documentation-ir", canonical_path = "fixtures/core/docs/valid-ir.preserves" }, requirement_ids = ["r[kamacite.docs.ir_projection.unsupported_version]"] },
+    { artifact_class = "documentation-ir", checked_laws = ["fail-closed-version"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-ir.negative.unsupported-version.receipt.json", id = "docs-ir.negative.unsupported-version", non_claims = ["not compatibility defaulting"], payload = { kind = "documentation-ir", canonical_path = "fixtures/core/docs/unsupported-version.preserves" }, requirement_ids = ["r[kamacite.docs.ir_projection.unsupported_version]"] },
     { artifact_class = "documentation-ir", checked_laws = ["fail-closed-duplicate"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-ir.negative.duplicate-id.receipt.json", id = "docs-ir.negative.duplicate-id", non_claims = ["duplicate anchors not trusted"], payload = { kind = "documentation-ir", canonical_path = "fixtures/core/docs/duplicate-anchor.preserves" }, requirement_ids = ["r[kamacite.docs.ir_projection.duplicate_id]"] },
-    { artifact_class = "documentation-ir", checked_laws = ["missing-source-fails"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-ir.negative.missing-source.receipt.json", id = "docs-ir.negative.missing-source", non_claims = ["not source preservation"], payload = { kind = "documentation-ir", canonical_path = "fixtures/core/docs/valid-ir.preserves" }, requirement_ids = ["r[kamacite.docs.ir_projection.missing_source]"] },
+    { artifact_class = "documentation-ir", checked_laws = ["missing-source-fails"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-ir.negative.missing-source.receipt.json", id = "docs-ir.negative.missing-source", non_claims = ["not source preservation"], payload = { kind = "documentation-ir", canonical_path = "fixtures/core/docs/missing-source.preserves" }, requirement_ids = ["r[kamacite.docs.ir_projection.missing_source]"] },
     { artifact_class = "documentation-ir", checked_laws = ["fail-closed-link"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-ir.negative.unknown-link.receipt.json", id = "docs-ir.negative.unknown-link", non_claims = ["unknown links not trusted"], payload = { kind = "documentation-ir", canonical_path = "fixtures/core/docs/unknown-link.preserves" }, requirement_ids = ["r[kamacite.docs.renderers.unknown_link]"] },
     { artifact_class = "documentation-cell", checked_laws = ["stale-source-fails"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-cell.negative.stale-source-hash.receipt.json", id = "docs-cell.negative.stale-source-hash", non_claims = ["stale source not trusted"], payload = { kind = "documentation-cell", source_path = "fixtures/core/docs/cell-success.nickel" }, requirement_ids = ["r[kamacite.docs.ir_projection.stale_source_hash]"] },
     { artifact_class = "documentation-output", checked_laws = ["fail-closed-format"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-output.negative.unsupported-format.receipt.json", id = "docs-output.negative.unsupported-format", non_claims = ["unsupported format not trusted"], payload = { kind = "documentation-output", output_path = "fixtures/core/docs/rendered.html" }, requirement_ids = ["r[kamacite.docs.renderers.unsupported_format]"] },
@@ -2736,6 +2736,6 @@ let Manifest = {
     { artifact_class = "documentation-cell", checked_laws = ["expected-output-bound"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-cell.negative.mismatched-output.receipt.json", id = "docs-cell.negative.mismatched-output", non_claims = ["mismatched output not trusted"], payload = { kind = "documentation-cell", source_path = "fixtures/core/docs/cell-success.nickel" }, requirement_ids = ["r[kamacite.docs.runnable_cells.mismatched_output]"] },
     { artifact_class = "documentation-cell", checked_laws = ["expected-failure-bound"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-cell.negative.unexpected-success.receipt.json", id = "docs-cell.negative.unexpected-success", non_claims = ["unexpected success not trusted"], payload = { kind = "documentation-cell", source_path = "fixtures/core/docs/cell-failure.nickel" }, requirement_ids = ["r[kamacite.docs.runnable_cells.unexpected_success]"] },
     { artifact_class = "documentation-receipt", checked_laws = ["malformed-fails"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-receipt.negative.malformed.receipt.json", id = "docs-receipt.negative.malformed", non_claims = ["malformed receipt not trusted"], payload = { kind = "documentation-receipt", canonical_path = "fixtures/core/docs/bad-receipt.preserves" }, requirement_ids = ["r[kamacite.docs.receipts.malformed]"] },
-    { artifact_class = "documentation-receipt", checked_laws = ["overclaim-fails"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-receipt.negative.non-claim-violation.receipt.json", id = "docs-receipt.negative.non-claim-violation", non_claims = ["semantic equivalence not trusted"], payload = { kind = "documentation-receipt", canonical_path = "fixtures/core/docs/render-receipt.preserves" }, requirement_ids = ["r[kamacite.docs.receipts.non_claim_violation]"] },
+    { artifact_class = "documentation-receipt", checked_laws = ["overclaim-fails"], expected_verdict = "rejected", fixture_class = "negative", golden_receipt = "fixtures/golden/docs-receipt.negative.non-claim-violation.receipt.json", id = "docs-receipt.negative.non-claim-violation", non_claims = ["semantic equivalence not trusted"], payload = { kind = "documentation-receipt", canonical_path = "fixtures/core/docs/non-claim-violation.preserves" }, requirement_ids = ["r[kamacite.docs.receipts.non_claim_violation]"] },
   ],
 } | Manifest

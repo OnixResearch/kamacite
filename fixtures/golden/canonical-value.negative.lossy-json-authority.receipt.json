@@ -20,13 +20,7 @@
         "hex": "b02c13f93f2ede1a565750121130cd146c0fa162824868e65f038d3250536f87"
       }
     },
-    "output_identities": {
-      "computed-canonical": {
-        "domain": "canonical-value",
-        "algorithm": "blake3",
-        "hex": "2b9579ca093fb1ca47516d0cdac8fe5dccf015400f642230a4a14eed7e0cc3ae"
-      }
-    },
+    "output_identities": {},
     "checked_laws": [
       "projection-not-authority"
     ],
@@ -37,6 +31,15 @@
         "field": "canonical.projection_claims_authority",
         "message": "compatibility projection cannot replace canonical Preserves bytes",
         "details": {}
+      },
+      {
+        "code": "malformed-projection-output",
+        "requirement_id": "r[kamacite.findings.preserves_authority.validation]",
+        "field": "canonical.canonical_bytes",
+        "message": "canonical Preserves validation failed",
+        "details": {
+          "error": "malformed Preserves input: position 69: Message(\"Invalid #x syntax\")"
+        }
       }
     ],
     "non_claims": [
@@ -46,6 +49,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "6f4cb3041925d2401fb2123fed46eb7728dadf63fea08760000326ff97c78c1a"
+    "hex": "35503f118e2b59ee17c0a117dbc01ab044a32c459d0573f8c57e4446f0b0bec3"
   }
 }

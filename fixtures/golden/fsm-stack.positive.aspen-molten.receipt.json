@@ -12,7 +12,7 @@
       "aspen-molten-runtime-trace:fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+        "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
       }
     },
     "output_identities": {},
@@ -27,6 +27,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "5cc4fdcfa70918511278e5f4b3ee1479dbdaeccd6f12b561f930ffe127c97111"
+    "hex": "a4bfc006fa944d8c7bf1cc45788a98ba436b0d67d653c62dce086103fa122a18"
   }
 }

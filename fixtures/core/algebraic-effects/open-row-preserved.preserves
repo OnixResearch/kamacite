@@ -1,0 +1,1 @@
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.trace" "Trace" <Some "string"> <Some "unit">>] ["op.trace"] #t #f <None> <None> <None> [] []>

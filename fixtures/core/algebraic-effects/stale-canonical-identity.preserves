@@ -1,0 +1,1 @@
+<kamacite-algebraic-effect-v2 1 [<EffectOperation "op.read-config" "ReadConfig" <Some "unit"> <Some "string">>] ["op.read-config"] #f #f <None> <None> <None> [] []>

@@ -12,14 +12,14 @@
       "declared-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e"
+        "hex": "a27004d78d76879ffa3f3ad7675ab6fd1706606604b389a87d0849adf52401b1"
       }
     },
     "output_identities": {
       "computed-algebraic-effect": {
         "domain": "algebraic-effect",
         "algorithm": "blake3",
-        "hex": "c8de810059cdb58853ae386d5266e77b3d9efab3dc1d03cc78de149c9b0cd25e"
+        "hex": "a27004d78d76879ffa3f3ad7675ab6fd1706606604b389a87d0849adf52401b1"
       }
     },
     "checked_laws": [
@@ -41,6 +41,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "f4de3accad775ef4ff9fe563c190cebc2fc423cd5f15c4c3ba59edf8f296f0a9"
+    "hex": "36043f6649c208e78ec41de717aa1ecdce969974474c943c2c976c41a4b38db2"
   }
 }

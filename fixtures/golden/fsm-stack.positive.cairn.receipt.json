@@ -12,7 +12,7 @@
       "cairn-lifecycle-consumer:fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+        "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
       }
     },
     "output_identities": {},
@@ -27,6 +27,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "4a8e8a3ae5e3f7a91af076726c6e3bdd23426155450adbd048e6ba92506b8003"
+    "hex": "fc265c00bf44b4e8b491cda09d59c007c04a2080b0e8a83f1e2f52dcd3b7a467"
   }
 }

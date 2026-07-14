@@ -12,7 +12,7 @@
       "mantle-release-evidence:fsm-spec": {
         "domain": "fsm-spec",
         "algorithm": "blake3",
-        "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+        "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
       }
     },
     "output_identities": {},
@@ -27,6 +27,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "0a1ac2d7b3ae5559c50f9b0c2a7eb113be973ce31cc931b9d2281edc1f00c217"
+    "hex": "1f653a25a6a0667a432f3c9e92cb7ab43e4ebd6242a832d73b714fd4be23338e"
   }
 }

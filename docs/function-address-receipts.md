@@ -2,9 +2,9 @@
 
 Kamacite owns the portable `function-address-receipt` interchange layer for Octet-produced function inventories.
 
-The current canonical identity input is Kamacite-owned canonical Preserves binary bytes (`function-address-receipt-v2.preserves`). Version 2 binds a content-addressed producer profile covering producer kind, tool version or build identity, canonicalizer profile/version, normative options, and producer non-claims. JSON is a deterministic compatibility/debug projection that binds back to both producer-profile and receipt identities; projection drift or JSON-only authority fails validation.
+The current canonical identity input is canonical packed Preserves produced by the official `preserves` codec (`function-address-receipt-v3.preserves`). Version 3 binds a content-addressed producer profile covering producer kind, tool version or build identity, canonicalizer profile/version, normative options, and producer non-claims. JSON is a deterministic compatibility/debug projection that binds back to both producer-profile and receipt identities; projection drift or JSON-only authority fails validation.
 
-Version 1 remains documented by `function-address-receipt-v1.preserves`, but its identities did not bind `tool_version`. A v1 receipt is therefore recorded-only legacy evidence and requires the explicit `tool-version-unbound` caveat; Kamacite does not reinterpret its identity as version-bound. `fixtures/function-address/migration-v1-to-v2.json` records the reviewed old/new identities for the reference fixture.
+Version 1 remains documented by `function-address-receipt-v1.preserves`, but its identities did not bind `tool_version`. Version 2 bound the producer profile while still using the former labeled deterministic-JSON pseudo-codec. Both identity generations remain recorded compatibility evidence and are never reinterpreted as v3 canonical Preserves. `fixtures/function-address/migration-v1-to-v2.json` retains the compatibility path name while recording the v1, v2, and current v3 identities for the reference fixture.
 
 ## Boundaries
 
