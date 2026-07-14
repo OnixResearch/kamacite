@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
+mod root_io;
+
 use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
     CapabilityShellInput, DOCS_CONFIG_SCHEMA_VERSION, DocumentationCellInput, DocumentationIrInput,
@@ -20,10 +22,13 @@ use kamacite_core::{
     fixture_expected_canonical_artifact, function_address_projection_json, receipt_json,
     validate_fixture_suite, validate_function_address_receipt,
 };
+use root_io::{RootCapability, RootIoError};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::{Display, Formatter};
-use std::path::{Component, Path, PathBuf};
+#[cfg(target_os = "linux")]
+use std::os::fd::AsRawFd;
+use std::path::{Path, PathBuf};
 use std::process::{Command as ProcessCommand, Output};
 
 const DEFAULT_ROOT: &str = ".";
@@ -102,6 +107,12 @@ impl Display for CliError {
 }
 
 impl std::error::Error for CliError {}
+
+impl From<RootIoError> for CliError {
+    fn from(error: RootIoError) -> Self {
+        Self(error.to_string())
+    }
+}
 
 type CliResult<T> = Result<T, CliError>;
 
@@ -1167,7 +1178,7 @@ fn run_docs(args: DocsArgs) -> CliResult<i32> {
     {
         diagnostics.push("docs config must be a Nickel .ncl file".to_string());
     }
-    let config_bytes = match read_path(&args.config) {
+    let config_bytes = match read_ambient_path(&args.config) {
         Ok(bytes) => Some(bytes),
         Err(error) => {
             diagnostics.push(error.to_string());
@@ -1219,7 +1230,7 @@ fn run_docs(args: DocsArgs) -> CliResult<i32> {
 }
 
 fn run_hash_file(args: HashArgs) -> CliResult<i32> {
-    let bytes = read_path(&args.path)?;
+    let bytes = read_ambient_path(&args.path)?;
     let identity = compute_identity(args.domain, &bytes);
     let json = serde_json::to_string_pretty(&identity)
         .map_err(|error| CliError(format!("hash serialization failed: {error}")))?;
@@ -1228,8 +1239,8 @@ fn run_hash_file(args: HashArgs) -> CliResult<i32> {
 }
 
 fn run_check_manifest_projection(args: ManifestProjectionArgs) -> CliResult<i32> {
-    let source_bytes = read_path(&args.source)?;
-    let projection_bytes = read_path(&args.projection)?;
+    let source_bytes = read_ambient_path(&args.source)?;
+    let projection_bytes = read_ambient_path(&args.projection)?;
     let source = String::from_utf8(source_bytes).map_err(|error| {
         CliError(format!(
             "manifest source is not UTF-8 for {}: {error}",
@@ -1250,12 +1261,11 @@ fn run_check_manifest_projection(args: ManifestProjectionArgs) -> CliResult<i32>
 }
 
 fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
-    let root = args.root.clone();
-    let receipt_path = resolve_under_root(&root, &args.receipt)?;
-    let conformance_path = resolve_under_root(&root, &args.conformance)?;
-    let source_receipt: ReceiptEnvelope = read_json(&receipt_path, "Valence source receipt")?;
+    let root = RootCapability::open(&args.root)?;
+    let source_receipt: ReceiptEnvelope =
+        read_root_json(&root, &args.receipt, "Valence source receipt")?;
     let conformance_projection: ValenceExportConformance =
-        read_json(&conformance_path, "Valence export conformance")?;
+        read_root_json(&root, &args.conformance, "Valence export conformance")?;
     let validated_conformance =
         admit_valence_conformance(conformance_projection).map_err(|diagnostics| {
             CliError(format!(
@@ -1264,10 +1274,7 @@ fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
         })?;
     let conformance = validated_conformance.projection().clone();
     let source_spans = match &args.source_spans {
-        Some(path) => read_json(
-            &resolve_under_root(&root, path)?,
-            "Valence export source spans",
-        )?,
+        Some(path) => read_root_json(&root, path, "Valence export source spans")?,
         None => SourceSpanSet::default(),
     };
     let input = ValenceReceiptExportInput {
@@ -1307,10 +1314,9 @@ fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
 }
 
 fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliResult<i32> {
-    let root = args.root.clone();
-    let report_path = resolve_under_root(&root, &args.report)?;
+    let root = RootCapability::open(&args.root)?;
     let report: OctetFunctionAddressReport =
-        read_json(&report_path, "Octet function-address report")?;
+        read_root_json(&root, &args.report, "Octet function-address report")?;
     let source_bytes = read_function_address_sources(&root, &args.sources)?;
     let input = build_function_address_receipt_input(report, &source_bytes)?;
     let result = validate_function_address_receipt(&input);
@@ -1338,8 +1344,7 @@ fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliRes
     })?;
     let receipt_path = match &args.out {
         Some(path) => {
-            let resolved = resolve_under_root(&root, path)?;
-            write_path(&resolved, receipt_json.as_bytes())?;
+            root.write(path, receipt_json.as_bytes())?;
             Some(path_display(path))
         }
         None => None,
@@ -1358,8 +1363,7 @@ fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliRes
                     "function-address Valence projection serialization failed: {error}"
                 ))
             })?;
-            let resolved = resolve_under_root(&root, path)?;
-            write_path(&resolved, rendered.as_bytes())?;
+            root.write(path, rendered.as_bytes())?;
             (Some(projection), Some(path_display(path)))
         }
         None => (None, None),
@@ -1383,13 +1387,12 @@ fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliRes
 }
 
 fn read_function_address_sources(
-    root: &Path,
+    root: &RootCapability,
     sources: &BTreeMap<String, PathBuf>,
 ) -> CliResult<BTreeMap<String, String>> {
     let mut source_bytes = BTreeMap::new();
     for (key, path) in sources {
-        let resolved = resolve_under_root(root, path)?;
-        let bytes = read_path(&resolved)?;
+        let bytes = root.read(path)?;
         let source = String::from_utf8(bytes).map_err(|error| {
             CliError(format!(
                 "function-address source is not UTF-8 for {}: {error}",
@@ -1574,7 +1577,7 @@ fn path_display(path: &Path) -> String {
 }
 
 fn check_or_update_valence_export_golden(
-    root: &Path,
+    root: &RootCapability,
     args: &ValenceExportArgs,
     export: Option<&ValenceReceiptExportEnvelope>,
 ) -> CliResult<(Option<ValenceExportGoldenResult>, bool)> {
@@ -1594,10 +1597,9 @@ fn check_or_update_valence_export_golden(
     };
     let rendered = serde_json::to_string_pretty(export)
         .map_err(|error| CliError(format!("Valence export serialization failed: {error}")))?;
-    let resolved = resolve_under_root(root, golden_path)?;
     if args.update_golden {
-        let old_export_identity = read_existing_valence_export_identity(&resolved)?;
-        write_path(&resolved, rendered.as_bytes())?;
+        let old_export_identity = read_existing_valence_export_identity(root, golden_path)?;
+        root.write(golden_path, rendered.as_bytes())?;
         write_valence_export_update_report(root, args, export, old_export_identity.clone())?;
         return Ok((
             Some(ValenceExportGoldenResult {
@@ -1609,7 +1611,7 @@ fn check_or_update_valence_export_golden(
             true,
         ));
     }
-    if !resolved.exists() {
+    let Some(existing) = root.read_optional(golden_path)? else {
         return Ok((
             Some(ValenceExportGoldenResult {
                 path: golden_path.display().to_string(),
@@ -1619,9 +1621,9 @@ fn check_or_update_valence_export_golden(
             }),
             false,
         ));
-    }
-    let existing = read_path(&resolved)?;
+    };
     let matched = existing == rendered.as_bytes();
+    let old_export_identity = parse_valence_export_identity(&existing);
     Ok((
         Some(ValenceExportGoldenResult {
             path: golden_path.display().to_string(),
@@ -1630,7 +1632,7 @@ fn check_or_update_valence_export_golden(
             } else {
                 GOLDEN_STATUS_MISMATCHED.to_string()
             },
-            old_export_identity: read_existing_valence_export_identity(&resolved)?,
+            old_export_identity,
             new_export_identity: Some(export.export_identity.clone()),
         }),
         matched,
@@ -1638,7 +1640,7 @@ fn check_or_update_valence_export_golden(
 }
 
 fn write_valence_export_update_report(
-    root: &Path,
+    root: &RootCapability,
     args: &ValenceExportArgs,
     export: &ValenceReceiptExportEnvelope,
     old_export_identity: Option<Identity>,
@@ -1662,25 +1664,32 @@ fn write_valence_export_update_report(
             "Valence export update report serialization failed: {error}"
         ))
     })?;
-    let path = resolve_under_root(root, &args.update_report)?;
-    write_path(&path, rendered.as_bytes())
+    root.write(&args.update_report, rendered.as_bytes())?;
+    Ok(())
 }
 
-fn read_existing_valence_export_identity(path: &Path) -> CliResult<Option<Identity>> {
-    if !path.exists() {
+fn read_existing_valence_export_identity(
+    root: &RootCapability,
+    path: &Path,
+) -> CliResult<Option<Identity>> {
+    let Some(bytes) = root.read_optional(path)? else {
         return Ok(None);
-    }
-    let bytes = read_path(path)?;
-    let parsed: Result<ValenceReceiptExportEnvelope, serde_json::Error> =
-        serde_json::from_slice(&bytes);
-    match parsed {
-        Ok(export) => Ok(Some(export.export_identity)),
-        Err(_) => Ok(None),
-    }
+    };
+    Ok(parse_valence_export_identity(&bytes))
 }
 
-fn read_json<T: for<'de> Deserialize<'de>>(path: &Path, label: &str) -> CliResult<T> {
-    let bytes = read_path(path)?;
+fn parse_valence_export_identity(bytes: &[u8]) -> Option<Identity> {
+    let parsed: Result<ValenceReceiptExportEnvelope, serde_json::Error> =
+        serde_json::from_slice(bytes);
+    parsed.ok().map(|export| export.export_identity)
+}
+
+fn read_root_json<T: for<'de> Deserialize<'de>>(
+    root: &RootCapability,
+    path: &Path,
+    label: &str,
+) -> CliResult<T> {
+    let bytes = root.read(path)?;
     serde_json::from_slice(&bytes).map_err(|error| {
         CliError(format!(
             "{label} parse failed for {}: {error}",
@@ -1690,10 +1699,11 @@ fn read_json<T: for<'de> Deserialize<'de>>(path: &Path, label: &str) -> CliResul
 }
 
 fn run_migrate_preserves(args: MigratePreservesArgs) -> CliResult<i32> {
+    let root = RootCapability::open(&args.root)?;
     let execution = if args.update {
-        execute_preserves_migration(&args)?
+        execute_preserves_migration(&root, &args)?
     } else {
-        let plan = plan_preserves_migration(&args)?;
+        let plan = plan_preserves_migration(&root, &args)?;
         PreservesMigrationExecution {
             artifacts: plan.artifacts,
             mutated: false,
@@ -1722,21 +1732,21 @@ fn run_migrate_preserves(args: MigratePreservesArgs) -> CliResult<i32> {
     let json = serde_json::to_string_pretty(&report)
         .map_err(|error| CliError(format!("Preserves migration report failed: {error}")))?;
     if args.update {
-        let report_path = resolve_under_root(&args.root, &args.report)?;
-        write_path(&report_path, json.as_bytes())?;
+        root.write(&args.report, json.as_bytes())?;
     }
     println!("{json}");
     Ok(EXIT_SUCCESS)
 }
 
 fn execute_preserves_migration(
+    root: &RootCapability,
     args: &MigratePreservesArgs,
 ) -> CliResult<PreservesMigrationExecution> {
     let mut accumulated_artifacts: Option<Vec<PreservesMigrationArtifact>> = None;
     let mut mutated = false;
 
     for pass_index in 0..PRESERVES_MIGRATION_MAX_PASSES {
-        let plan = plan_preserves_migration(args)?;
+        let plan = plan_preserves_migration(root, args)?;
         let PreservesMigrationPlan {
             manifest,
             artifacts,
@@ -1744,9 +1754,10 @@ fn execute_preserves_migration(
         } = plan;
         let content_changed = !writes.is_empty();
         for write in &writes {
-            write_path(&write.path, &write.bytes)?;
+            root.write(&write.path, &write.bytes)?;
         }
-        let manifest_changed = update_preserves_manifest_identities(args, &manifest, &artifacts)?;
+        let manifest_changed =
+            update_preserves_manifest_identities(root, args, &manifest, &artifacts)?;
         accumulated_artifacts = Some(match accumulated_artifacts {
             Some(previous) => merge_migration_artifacts(previous, &artifacts)?,
             None => artifacts,
@@ -1767,12 +1778,14 @@ fn execute_preserves_migration(
     )))
 }
 
-fn plan_preserves_migration(args: &MigratePreservesArgs) -> CliResult<PreservesMigrationPlan> {
-    let manifest_path = resolve_under_root(&args.root, &args.manifest)?;
-    let manifest_bytes = read_path(&manifest_path)?;
+fn plan_preserves_migration(
+    root: &RootCapability,
+    args: &MigratePreservesArgs,
+) -> CliResult<PreservesMigrationPlan> {
+    let manifest_bytes = root.read(&args.manifest)?;
     let manifest: ManifestProjection = serde_json::from_slice(&manifest_bytes)
         .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
-    let suite = materialize_suite(&args.root, &manifest, None, None)?;
+    let suite = materialize_suite(root, &manifest, None, None)?;
     if suite.fixtures.len() != manifest.fixtures.len() {
         return Err(CliError(
             "manifest and materialized fixture counts differ".to_string(),
@@ -1819,8 +1832,8 @@ fn plan_preserves_migration(args: &MigratePreservesArgs) -> CliResult<PreservesM
                 )));
             }
         };
-        let resolved = resolve_under_root(&args.root, Path::new(canonical_path))?;
-        let current = read_path(&resolved)?;
+        let relative_path = PathBuf::from(canonical_path);
+        let current = root.read(&relative_path)?;
         let mut rendered = expected.text_projection.as_bytes().to_vec();
         rendered.push(b'\n');
         let content_changed = current != rendered;
@@ -1844,7 +1857,7 @@ fn plan_preserves_migration(args: &MigratePreservesArgs) -> CliResult<PreservesM
         });
         if content_changed {
             writes.push(PreservesMigrationWrite {
-                path: resolved,
+                path: relative_path,
                 bytes: rendered,
             });
         }
@@ -1890,22 +1903,21 @@ fn merge_migration_artifacts(
 }
 
 fn update_preserves_manifest_identities(
+    root: &RootCapability,
     args: &MigratePreservesArgs,
     manifest: &ManifestProjection,
     artifacts: &[PreservesMigrationArtifact],
 ) -> CliResult<bool> {
-    let manifest_path = resolve_under_root(&args.root, &args.manifest)?;
-    let source_path = resolve_under_root(&args.root, &args.manifest_source)?;
-    let mut projection = String::from_utf8(read_path(&manifest_path)?).map_err(|error| {
+    let mut projection = String::from_utf8(root.read(&args.manifest)?).map_err(|error| {
         CliError(format!(
             "manifest projection is not UTF-8 for {}: {error}",
-            manifest_path.display()
+            args.manifest.display()
         ))
     })?;
-    let mut source = String::from_utf8(read_path(&source_path)?).map_err(|error| {
+    let mut source = String::from_utf8(root.read(&args.manifest_source)?).map_err(|error| {
         CliError(format!(
             "manifest source is not UTF-8 for {}: {error}",
-            source_path.display()
+            args.manifest_source.display()
         ))
     })?;
     let original_projection = projection.clone();
@@ -1983,10 +1995,10 @@ fn update_preserves_manifest_identities(
     let projection_changed = projection != original_projection;
     let source_changed = source != original_source;
     if projection_changed {
-        write_path(&manifest_path, projection.as_bytes())?;
+        root.write(&args.manifest, projection.as_bytes())?;
     }
     if source_changed {
-        write_path(&source_path, source.as_bytes())?;
+        root.write(&args.manifest_source, source.as_bytes())?;
     }
     Ok(projection_changed || source_changed)
 }
@@ -2146,9 +2158,8 @@ fn run_validate_with_shells(
     nickel_shell: Option<&NickelExecutionShell>,
     steel_shell: Option<&SteelExecutionShell>,
 ) -> CliResult<i32> {
-    let root = args.root.clone();
-    let manifest_path = resolve_under_root(&root, &args.manifest)?;
-    let manifest_bytes = read_path(&manifest_path)?;
+    let root = RootCapability::open(&args.root)?;
+    let manifest_bytes = root.read(&args.manifest)?;
     let manifest: ManifestProjection = serde_json::from_slice(&manifest_bytes)
         .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
     let manifest_projection =
@@ -2182,7 +2193,7 @@ fn run_validate_with_shells(
 }
 
 fn check_manifest_projection_if_configured(
-    root: &Path,
+    root: &RootCapability,
     args: &ValidateArgs,
     manifest: &ManifestProjection,
     manifest_bytes: &[u8],
@@ -2190,12 +2201,11 @@ fn check_manifest_projection_if_configured(
     let Some(source_path) = &args.manifest_source else {
         return Ok(None);
     };
-    let resolved = resolve_under_root(root, source_path)?;
-    let source_bytes = read_path(&resolved)?;
+    let source_bytes = root.read(source_path)?;
     let source = String::from_utf8(source_bytes).map_err(|error| {
         CliError(format!(
             "manifest source is not UTF-8 for {}: {error}",
-            resolved.display()
+            source_path.display()
         ))
     })?;
     Ok(Some(check_manifest_projection(
@@ -2305,7 +2315,7 @@ fn extract_quoted_string(text: &str) -> Option<&str> {
 }
 
 fn materialize_suite(
-    root: &Path,
+    root: &RootCapability,
     manifest: &ManifestProjection,
     nickel_shell: Option<&NickelExecutionShell>,
     steel_shell: Option<&SteelExecutionShell>,
@@ -2323,7 +2333,7 @@ fn materialize_suite(
 }
 
 fn materialize_fixture(
-    root: &Path,
+    root: &RootCapability,
     projection: &FixtureProjection,
     nickel_shell: Option<&NickelExecutionShell>,
     steel_shell: Option<&SteelExecutionShell>,
@@ -2731,7 +2741,7 @@ fn materialize_fixture(
 }
 
 fn materialize_nickel_adapter_receipt(
-    root: &Path,
+    root: &RootCapability,
     nickel_shell: Option<&NickelExecutionShell>,
     parts: NickelAdapterProjectionParts<'_>,
 ) -> CliResult<NickelAdapterReceiptInput> {
@@ -2759,8 +2769,12 @@ fn materialize_nickel_adapter_receipt(
                     IdentityDomain::Evaluator,
                     evaluator_descriptor.as_bytes(),
                 ));
-                let resolved_source = resolve_under_root(root, Path::new(source_path))?;
-                run_nickel_export(&shell.evaluator_command, &resolved_source)?
+                let source_file = root.open_inheritable(Path::new(source_path))?;
+                run_nickel_export(
+                    &shell.evaluator_command,
+                    source_file,
+                    Path::new(source_path),
+                )?
             }
             None => stored_export_bytes,
         }
@@ -2791,7 +2805,7 @@ fn materialize_nickel_adapter_receipt(
 }
 
 fn materialize_steel_adapter_receipt(
-    root: &Path,
+    root: &RootCapability,
     steel_shell: Option<&SteelExecutionShell>,
     parts: SteelAdapterProjectionParts<'_>,
 ) -> CliResult<SteelAdapterReceiptInput> {
@@ -2861,18 +2875,34 @@ fn run_nickel_version(command: &Path) -> CliResult<Vec<u8>> {
     command_stdout(output, "Nickel version")
 }
 
-fn run_nickel_export(command: &Path, source: &Path) -> CliResult<Vec<u8>> {
-    let output = ProcessCommand::new(command)
-        .arg(NICKEL_COMMAND_EXPORT)
-        .arg(source)
-        .output()
-        .map_err(|error| {
-            CliError(format!(
-                "Nickel export command failed for {}: {error}",
-                source.display()
-            ))
-        })?;
-    command_stdout(output, "Nickel export")
+fn run_nickel_export(
+    command: &Path,
+    source_file: std::fs::File,
+    source_path: &Path,
+) -> CliResult<Vec<u8>> {
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = (command, source_file, source_path);
+        return Err(CliError(
+            "Nickel export requires Linux descriptor-path confinement".to_string(),
+        ));
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let descriptor_path = PathBuf::from(format!("/proc/self/fd/{}", source_file.as_raw_fd()));
+        let output = ProcessCommand::new(command)
+            .arg(NICKEL_COMMAND_EXPORT)
+            .arg(descriptor_path)
+            .output()
+            .map_err(|error| {
+                CliError(format!(
+                    "Nickel export command failed for {}: {error}",
+                    source_path.display()
+                ))
+            })?;
+        command_stdout(output, "Nickel export")
+    }
 }
 
 fn command_stdout(output: Output, label: &str) -> CliResult<Vec<u8>> {
@@ -2896,7 +2926,7 @@ fn nickel_evaluator_descriptor(version_stdout: &[u8]) -> CliResult<String> {
 }
 
 fn materialize_replay(
-    root: &Path,
+    root: &RootCapability,
     replay: &Option<ReplayProjection>,
 ) -> CliResult<Option<ReplayProfileInput>> {
     let Some(replay) = replay else {
@@ -2914,7 +2944,7 @@ fn materialize_replay(
 }
 
 fn check_golden_receipts(
-    root: &Path,
+    root: &RootCapability,
     projections: &[FixtureProjection],
     results: &[kamacite_core::FixtureResult],
     args: &ValidateArgs,
@@ -2957,14 +2987,11 @@ fn check_golden_receipts(
                 projection.id
             ))
         })?;
-        let path = root.join(golden_path);
+        let golden_path_ref = Path::new(golden_path);
+        let existing_bytes = root.read_optional(golden_path_ref)?;
         if args.update_golden {
-            let old_bytes = if path.exists() {
-                Some(read_path(&path)?)
-            } else {
-                None
-            };
-            write_path(&path, rendered.as_bytes())?;
+            let old_bytes = existing_bytes;
+            root.write(golden_path_ref, rendered.as_bytes())?;
             let old_identity = old_bytes
                 .as_deref()
                 .map(|bytes| compute_identity(IdentityDomain::Receipt, bytes));
@@ -2984,26 +3011,25 @@ fn check_golden_receipts(
                 path: golden_path.clone(),
                 status: GOLDEN_STATUS_UPDATED.to_string(),
             });
-        } else if !path.exists() {
-            golden_results.push(GoldenResult {
-                fixture_id: projection.id.clone(),
-                path: golden_path.clone(),
-                status: GOLDEN_STATUS_MISSING_GOLDEN.to_string(),
-            });
         } else {
-            let existing = read_path(&path)?;
-            if existing == rendered.as_bytes() {
-                golden_results.push(GoldenResult {
+            match existing_bytes {
+                None => golden_results.push(GoldenResult {
                     fixture_id: projection.id.clone(),
                     path: golden_path.clone(),
-                    status: GOLDEN_STATUS_MATCHED.to_string(),
-                });
-            } else {
-                golden_results.push(GoldenResult {
+                    status: GOLDEN_STATUS_MISSING_GOLDEN.to_string(),
+                }),
+                Some(existing) if existing == rendered.as_bytes() => {
+                    golden_results.push(GoldenResult {
+                        fixture_id: projection.id.clone(),
+                        path: golden_path.clone(),
+                        status: GOLDEN_STATUS_MATCHED.to_string(),
+                    });
+                }
+                Some(_) => golden_results.push(GoldenResult {
                     fixture_id: projection.id.clone(),
                     path: golden_path.clone(),
                     status: GOLDEN_STATUS_MISMATCHED.to_string(),
-                });
+                }),
             }
         }
     }
@@ -3014,19 +3040,20 @@ fn check_golden_receipts(
         };
         let rendered = serde_json::to_string_pretty(&update_report)
             .map_err(|error| CliError(format!("update report serialization failed: {error}")))?;
-        let path = root.join(&args.update_report);
-        write_path(&path, rendered.as_bytes())?;
+        root.write(&args.update_report, rendered.as_bytes())?;
     }
 
     Ok(golden_results)
 }
 
-fn read_manifest_bytes(root: &Path, path: &str) -> CliResult<Vec<u8>> {
-    let resolved = resolve_under_root(root, Path::new(path))?;
-    read_path(&resolved)
+fn read_manifest_bytes(root: &RootCapability, path: &str) -> CliResult<Vec<u8>> {
+    Ok(root.read(Path::new(path))?)
 }
 
-fn read_optional_manifest_bytes(root: &Path, path: &Option<String>) -> CliResult<Vec<u8>> {
+fn read_optional_manifest_bytes(
+    root: &RootCapability,
+    path: &Option<String>,
+) -> CliResult<Vec<u8>> {
     match path {
         Some(path) => read_manifest_bytes(root, path),
         None => Ok(Vec::new()),
@@ -3034,49 +3061,16 @@ fn read_optional_manifest_bytes(root: &Path, path: &Option<String>) -> CliResult
 }
 
 fn read_manifest_json<T: for<'de> Deserialize<'de>>(
-    root: &Path,
+    root: &RootCapability,
     path: &str,
     label: &str,
 ) -> CliResult<T> {
-    let resolved = resolve_under_root(root, Path::new(path))?;
-    read_json(&resolved, label)
+    read_root_json(root, Path::new(path), label)
 }
 
-fn resolve_under_root(root: &Path, path: &Path) -> CliResult<PathBuf> {
-    if path.is_absolute() {
-        return Err(CliError(format!(
-            "manifest path must be relative: {}",
-            path.display()
-        )));
-    }
-    if path
-        .components()
-        .any(|component| matches!(component, Component::ParentDir))
-    {
-        return Err(CliError(format!(
-            "manifest path cannot escape root: {}",
-            path.display()
-        )));
-    }
-    Ok(root.join(path))
-}
-
-fn read_path(path: &Path) -> CliResult<Vec<u8>> {
+fn read_ambient_path(path: &Path) -> CliResult<Vec<u8>> {
     std::fs::read(path)
         .map_err(|error| CliError(format!("read failed for {}: {error}", path.display())))
-}
-
-fn write_path(path: &Path, bytes: &[u8]) -> CliResult<()> {
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent).map_err(|error| {
-            CliError(format!(
-                "create dir failed for {}: {error}",
-                parent.display()
-            ))
-        })?;
-    }
-    std::fs::write(path, bytes)
-        .map_err(|error| CliError(format!("write failed for {}: {error}", path.display())))
 }
 
 fn print_help() {

@@ -57,6 +57,14 @@ nix run .#kamacite -- migrate-preserves --root . --manifest fixtures/manifest.js
 
 The pure core plans canonical packed bytes and typed identity bindings. The update shell performs at most four named convergence passes so receipts that depend on migrated canonical identities are regenerated before the report is accepted. It updates only canonical fixture projections and their explicit manifest identity fields, preserves intentionally stale negative identities, refreshes the manifest projection identity, and records whether convergence occurred. Legacy labeled-JSON identities are retained as compatibility evidence rather than rewritten as Preserves identities.
 
+## Root-relative filesystem confinement
+
+Every command accepting `--root` opens that root once as a directory capability. All manifest, fixture, source, evaluator-input, golden, receipt, Valence, migration, and update-report operations then use the same gateway. Its pure policy rejects empty, absolute, current-directory, platform-prefix, and parent-traversal paths. On supported Linux systems, the shell uses `openat2` with `RESOLVE_BENEATH`, `RESOLVE_NO_SYMLINKS`, and `RESOLVE_NO_MAGICLINKS`; unsupported kernels or platforms fail closed instead of weakening confinement.
+
+Mutation creates a collision-resistant temporary file through the admitted destination-directory handle, flushes it, rechecks that the destination is not a symlink, renames it through that same handle, and flushes the directory. If an attacker replaces the parent pathname after admission, the operation either fails or stays on the already admitted directory object. Explicit Nickel execution receives an inherited descriptor path for the exact admitted source object rather than reopening a joined ambient path.
+
+`crates/kamacite-cli/src/root_io.rs` owns the audited gateway. Its unit tests cover normal reads, creates, replacements, absolute and parent rejection, source/destination/parent symlinks, destination replacement, and parent replacement. `crates/kamacite-cli/tests/root_io_cli.rs` exercises the validation, adapter, migration, function-address, and Valence command families and verifies outward files remain unchanged.
+
 ## Boundary
 
 - `crates/kamacite-core` is the pure deterministic core. It receives in-memory DTOs and bytes, returns deterministic diagnostics and receipts, and does not read files, inspect environment, spawn processes, print, access clocks, access randomness, or mutate state.
