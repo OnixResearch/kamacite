@@ -1,0 +1,9 @@
+# kind	path	expected value or marker
+workspace-package-set	Cargo.toml	strict
+package	crates/kamacite-core/Cargo.toml	MIT OR Apache-2.0
+package	crates/kamacite-cli/Cargo.toml	AGPL-3.0-or-later
+artifact	LICENSES/MIT.txt	MIT License
+artifact	LICENSES/Apache-2.0.txt	Apache License
+artifact	LICENSES/AGPL-3.0-or-later.txt	GNU AFFERO GENERAL PUBLIC LICENSE
+contains	docs/licensing.md	Package licensing is outside canonical envelope
+forbid	crates/kamacite-core/Cargo.toml	kamacite-cli

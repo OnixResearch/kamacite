@@ -179,6 +179,12 @@ nix run .#lifecycle-validate -- --root .
 
 Kamacite validation does not prove compiler correctness, evaluator soundness, verifier soundness, runtime behavior, authorization, or semantic equivalence of arbitrary programs. It proves only the bounded claim named by the artifact class and receipt.
 
+## License
+
+`kamacite-core` is `MIT OR Apache-2.0`; the `kamacite-cli` executable shell is `AGPL-3.0-or-later`. Complete texts are in [LICENSES](LICENSES), and the package map is [docs/licensing.md](docs/licensing.md).
+
+The split does not relicense third-party dependencies or generated artifacts, revoke prior grants, or change canonical envelope/value/receipt identity. A core receipt does not grant execution, evaluator, filesystem, or network authority.
+
 ## References
 
 - [`../valence/`](../valence/) — sibling evidence identity layer that should consume or wrap Kamacite receipts without owning Kamacite's source/value interchange semantics.
