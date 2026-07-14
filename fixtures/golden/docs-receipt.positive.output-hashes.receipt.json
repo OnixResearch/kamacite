@@ -13,14 +13,14 @@
       "declared-documentation-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "e96bff580bdbaae7eb7482f05e1aad57470c1009b5b863f709e12afc6c598c8d"
+        "hex": "6cb5b41a2be6ce942b509f2408a569135090d1a6a75cb6a4003df4034c956e33"
       }
     },
     "output_identities": {
       "computed-documentation-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "e96bff580bdbaae7eb7482f05e1aad57470c1009b5b863f709e12afc6c598c8d"
+        "hex": "6cb5b41a2be6ce942b509f2408a569135090d1a6a75cb6a4003df4034c956e33"
       }
     },
     "checked_laws": [
@@ -36,6 +36,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "4483d5da09be0a268356174dbc7dc5a17146f119ea30334a567be4e49ce7102b"
+    "hex": "69bee046220351c854d4421dec7988e35c551c79925dc06dfa330d839cbcec6d"
   }
 }

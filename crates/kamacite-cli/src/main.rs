@@ -4,7 +4,8 @@ mod root_io;
 
 use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
-    CapabilityShellInput, DOCS_CONFIG_SCHEMA_VERSION, DocumentationCellInput, DocumentationIrInput,
+    CapabilityShellInput, DocsActionEvidenceInput, DocsActionKind, DocsActionOutcome,
+    DocsCompletionState, DocsConfigProjection, DocumentationCellInput, DocumentationIrInput,
     DocumentationOutputInput, DocumentationPageInput, DocumentationReceiptInput, EffectOperation,
     FixtureCase, FixtureClass, FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput,
     FsmGuardInput, FsmReceiptInput, FsmSideEffectInput, FsmSpecInput, FsmStateInput,
@@ -15,14 +16,16 @@ use kamacite_core::{
     IdentityDomain, IdentityUseInput, MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE,
     ManifestGenerationInput, ManifestGenerationReceipt, ManifestGenerationValidation,
     NickelAdapterReceiptInput, PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC,
-    PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION, ReceiptEnvelope, ReplayProfileInput,
-    SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput,
-    SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput,
-    ValenceExportConformance, ValenceReceiptExportEnvelope, ValenceReceiptExportInput,
-    ValidationVerdict, admit_valence_conformance, build_manifest_generation_receipt,
-    compute_identity, docs_config_identity, export_function_address_valence_projection,
-    export_valence_receipt, fixture_expected_canonical_artifact, function_address_projection_json,
-    receipt_json, validate_fixture_suite, validate_function_address_receipt,
+    PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope,
+    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
+    SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
+    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
+    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance,
+    build_manifest_generation_receipt, compute_identity, docs_config_identity,
+    evaluate_docs_action, export_function_address_valence_projection, export_valence_receipt,
+    fixture_expected_canonical_artifact, function_address_projection_json, receipt_json,
+    render_documentation_projection, validate_docs_config, validate_documentation_render_output,
+    validate_fixture_suite, validate_function_address_receipt,
     validate_manifest_generation_receipt,
 };
 use root_io::{RootCapability, RootIoError};
@@ -48,7 +51,21 @@ const DEFAULT_PRESERVES_MIGRATION_REPORT: &str = "target/kamacite-preserves-migr
 const PRESERVES_MIGRATION_SCHEMA_VERSION: &str = "kamacite.preserves-migration.v1";
 const PRESERVES_MIGRATION_MAX_PASSES: usize = 4;
 const DEFAULT_DOCS_CONFIG: &str = "docs/site.ncl";
-const DOCS_TARGET_WASM: &str = "wasm";
+const DEFAULT_DOCS_CONTRACT: &str = "docs/docs-config-contract.ncl";
+const DOCS_CONFIG_IMPORT_PREAMBLE: &str =
+    "let DocsConfig = import \"docs-config-contract.ncl\" in\n";
+const DOCS_MEMFD_NAME: &str = "kamacite-docs-config";
+const DOCS_ACTION_ARTIFACT_CLASS: &str = "documentation-action";
+const DOCS_ACTION_CHECKED_LAW: &str =
+    "successful documentation actions complete their named checked work";
+const DOCS_ACTION_NON_CLAIMS: &[&str] = &[
+    "not rendered-output authority",
+    "not source-language semantic equivalence",
+];
+const REQUIREMENT_DOCS_CONFIG: &str = "r[kamacite.findings.docs_commands.config_validation]";
+const REQUIREMENT_DOCS_COMPLETION: &str = "r[kamacite.findings.docs_commands.action_completion]";
+const REQUIREMENT_DOCS_NO_OP: &str = "r[kamacite.findings.docs_commands.no_op_rejection]";
+const REQUIREMENT_DOCS_RECEIPTS: &str = "r[kamacite.findings.docs_commands.receipts]";
 const EXIT_SUCCESS: i32 = 0;
 const EXIT_FAILURE: i32 = 1;
 const DOMAIN_SOURCE: &str = "source";
@@ -222,40 +239,42 @@ struct MigratePreservesArgs {
     report: PathBuf,
 }
 
-#[derive(Clone, Debug, Serialize)]
-#[serde(rename_all = "kebab-case")]
-enum DocsAction {
-    Collect,
-    Check,
-    Render,
-    RunCells,
-    Update,
-}
-
 #[derive(Clone, Debug)]
 struct DocsArgs {
-    action: DocsAction,
+    action: DocsActionKind,
+    root: PathBuf,
     config: PathBuf,
+    contract: PathBuf,
+    manifest: PathBuf,
+    evaluator_command: PathBuf,
     format: Option<String>,
     profile: Option<String>,
     target: Option<String>,
+    dry_run: bool,
 }
 
 #[derive(Debug, Serialize)]
 struct DocsCommandReport {
     passed: bool,
-    action: DocsAction,
+    state: DocsCompletionState,
+    action: DocsActionKind,
     config_path: String,
     config_schema_version: u32,
-    config_identity: Option<Identity>,
+    config_source_identity: Identity,
+    config_contract_identity: Identity,
+    evaluator_identity: Identity,
+    projection_identity: Identity,
     format: Option<String>,
     profile: Option<String>,
     target: Option<String>,
-    mutation_admitted: bool,
+    dry_run: bool,
+    completed_work_items: usize,
+    documentation_ir_identity: Option<Identity>,
+    output_identity: Option<Identity>,
     mutated: bool,
-    execution_admitted: bool,
     executed: bool,
     diagnostics: Vec<String>,
+    receipt: Option<ReceiptEnvelope>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1166,26 +1185,38 @@ fn parse_docs_args(args: Vec<String>) -> CliResult<Command> {
         ));
     };
     let action = match action.as_str() {
-        "collect" => DocsAction::Collect,
-        "check" => DocsAction::Check,
-        "render" => DocsAction::Render,
-        "run-cells" => DocsAction::RunCells,
-        "update" => DocsAction::Update,
+        "collect" => DocsActionKind::Collect,
+        "check" => DocsActionKind::Check,
+        "render" => DocsActionKind::Render,
+        "run-cells" => DocsActionKind::RunCells,
+        "update" => DocsActionKind::Update,
         unknown => return Err(CliError(format!("unknown docs action: {unknown}"))),
     };
     let mut parsed = DocsArgs {
         action,
+        root: PathBuf::from(DEFAULT_ROOT),
         config: PathBuf::from(DEFAULT_DOCS_CONFIG),
+        contract: PathBuf::from(DEFAULT_DOCS_CONTRACT),
+        manifest: PathBuf::from(DEFAULT_MANIFEST),
+        evaluator_command: PathBuf::from(DEFAULT_NICKEL_EVALUATOR_COMMAND),
         format: None,
         profile: None,
         target: None,
+        dry_run: false,
     };
     while let Some(flag) = index.next() {
         match flag.as_str() {
+            "--root" => parsed.root = next_path(&mut index, "--root")?,
             "--config" => parsed.config = next_path(&mut index, "--config")?,
+            "--contract" => parsed.contract = next_path(&mut index, "--contract")?,
+            "--manifest" => parsed.manifest = next_path(&mut index, "--manifest")?,
+            "--evaluator-command" => {
+                parsed.evaluator_command = next_path(&mut index, "--evaluator-command")?;
+            }
             "--format" => parsed.format = Some(next_value(&mut index, "--format")?),
             "--profile" => parsed.profile = Some(next_value(&mut index, "--profile")?),
             "--target" => parsed.target = Some(next_value(&mut index, "--target")?),
+            "--dry-run" => parsed.dry_run = true,
             unknown => return Err(CliError(format!("unknown docs argument: {unknown}"))),
         }
     }
@@ -1244,58 +1275,101 @@ fn parse_domain(value: &str) -> CliResult<IdentityDomain> {
     }
 }
 
+// r[impl kamacite.findings.docs_commands.config_validation]
+// r[impl kamacite.findings.docs_commands.action_completion]
+// r[impl kamacite.findings.docs_commands.no_op_rejection]
+// r[impl kamacite.findings.docs_commands.receipts]
 fn run_docs(args: DocsArgs) -> CliResult<i32> {
-    let mut diagnostics = Vec::new();
     if args
         .config
         .extension()
         .and_then(|extension| extension.to_str())
         != Some("ncl")
     {
-        diagnostics.push("docs config must be a Nickel .ncl file".to_string());
+        return Err(CliError(
+            "docs config must be a Nickel .ncl file".to_string(),
+        ));
     }
-    let config_bytes = match read_ambient_path(&args.config) {
-        Ok(bytes) => Some(bytes),
-        Err(error) => {
-            diagnostics.push(error.to_string());
-            None
-        }
-    };
-    if matches!(args.action, DocsAction::RunCells)
-        && args.target.as_deref() == Some(DOCS_TARGET_WASM)
-    {
-        diagnostics.push(
-            "docs run-cells --target wasm is admitted but this shell does not execute by default"
-                .to_string(),
-        );
+    let root = RootCapability::open(&args.root)?;
+    let config_bytes = root.read(&args.config)?;
+    let contract_bytes = root.read(&args.contract)?;
+    let evaluator_descriptor =
+        nickel_evaluator_descriptor(&run_nickel_version(&args.evaluator_command)?)?;
+    let evaluator_identity =
+        compute_identity(IdentityDomain::Evaluator, evaluator_descriptor.as_bytes());
+    let projection_bytes =
+        run_nickel_docs_export(&args.evaluator_command, &config_bytes, &contract_bytes)?;
+    let config: DocsConfigProjection =
+        serde_json::from_slice(&projection_bytes).map_err(|error| {
+            CliError(format!(
+                "docs config projection is malformed or contract-invalid: {error}"
+            ))
+        })?;
+    let config_diagnostics = validate_docs_config(&config);
+    if !config_diagnostics.is_empty() {
+        let messages = config_diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.message.as_str())
+            .collect::<Vec<_>>()
+            .join("; ");
+        return Err(CliError(format!(
+            "docs config validation failed: {messages}"
+        )));
     }
-    let mutation_admitted = matches!(args.action, DocsAction::Update);
-    if mutation_admitted {
-        diagnostics
-            .push("docs update is admitted but this shell does not mutate by default".to_string());
-    }
-    let execution_admitted = matches!(args.action, DocsAction::RunCells);
-    let config_identity = config_bytes.as_deref().map(docs_config_identity);
-    let passed = diagnostics.is_empty()
-        || diagnostics.iter().all(|diagnostic| {
-            diagnostic.contains("admitted")
-                || diagnostic.contains("does not execute")
-                || diagnostic.contains("does not mutate")
-        });
+
+    let config_source_identity = docs_config_identity(&config_bytes);
+    let config_contract_identity = compute_identity(IdentityDomain::Source, &contract_bytes);
+    let projection_identity = compute_identity(IdentityDomain::Projection, &projection_bytes);
+    let work = docs_action_work(&root, &args)?;
+    let outcome = evaluate_docs_action(
+        &config,
+        DocsActionEvidenceInput {
+            action: args.action.clone(),
+            format: args.format.clone(),
+            profile: args.profile.clone(),
+            target: args.target.clone(),
+            dry_run: args.dry_run,
+            completed_work_items: work.completed_work_items,
+            documentation_ir_identity: work.documentation_ir_identity.clone(),
+            output_identity: work.output_identity.clone(),
+            executed: false,
+            mutated: false,
+            diagnostics: work.diagnostics,
+        },
+    );
+    let receipt = docs_action_receipt(
+        &outcome,
+        DocsReceiptContext {
+            config_source_identity: &config_source_identity,
+            config_contract_identity: &config_contract_identity,
+            evaluator_identity: &evaluator_identity,
+            projection_identity: &projection_identity,
+            format: args.format.as_deref(),
+            profile: args.profile.as_deref(),
+            target: args.target.as_deref(),
+        },
+    )?;
     let report = DocsCommandReport {
-        passed,
-        action: args.action,
+        passed: outcome.passed,
+        state: outcome.state,
+        action: outcome.action,
         config_path: path_display(&args.config),
-        config_schema_version: DOCS_CONFIG_SCHEMA_VERSION,
-        config_identity,
+        config_schema_version: config.schema_version,
+        config_source_identity,
+        config_contract_identity,
+        evaluator_identity,
+        projection_identity,
         format: args.format,
         profile: args.profile,
         target: args.target,
-        mutation_admitted,
-        mutated: false,
-        execution_admitted,
-        executed: false,
-        diagnostics,
+        dry_run: args.dry_run,
+        completed_work_items: outcome.completed_work_items,
+        documentation_ir_identity: outcome.documentation_ir_identity,
+        output_identity: outcome.output_identity,
+        mutated: outcome.mutated,
+        executed: outcome.executed,
+        diagnostics: outcome.diagnostics,
+        receipt,
     };
     print_json_report(&report, "docs command report")?;
     if report.passed {
@@ -1303,6 +1377,269 @@ fn run_docs(args: DocsArgs) -> CliResult<i32> {
     } else {
         Ok(EXIT_FAILURE)
     }
+}
+
+#[derive(Debug)]
+struct DocsActionWork {
+    completed_work_items: usize,
+    documentation_ir_identity: Option<Identity>,
+    output_identity: Option<Identity>,
+    diagnostics: Vec<String>,
+}
+
+fn docs_action_work(root: &RootCapability, args: &DocsArgs) -> CliResult<DocsActionWork> {
+    if matches!(args.action, DocsActionKind::RunCells) {
+        return Ok(DocsActionWork {
+            completed_work_items: 0,
+            documentation_ir_identity: None,
+            output_identity: None,
+            diagnostics: Vec::new(),
+        });
+    }
+    let suite = load_docs_fixture_suite(root, args)?;
+    let authoritative = suite
+        .fixtures
+        .iter()
+        .find(|fixture| fixture.id == AUTHORITATIVE_DOCUMENTATION_IR_FIXTURE_ID)
+        .ok_or_else(|| CliError("authoritative documentation IR fixture is missing".to_string()))?;
+    let FixturePayload::DocumentationIr(documentation_ir) = &authoritative.payload else {
+        return Err(CliError(
+            "authoritative documentation fixture does not contain documentation IR".to_string(),
+        ));
+    };
+    let documentation_ir_identity = Some(documentation_ir.declared_identity.clone());
+    let validation_suite = if matches!(args.action, DocsActionKind::Check) {
+        FixtureSuite {
+            fixtures: suite
+                .fixtures
+                .iter()
+                .filter(|fixture| is_documentation_fixture(fixture))
+                .cloned()
+                .collect(),
+        }
+    } else {
+        FixtureSuite {
+            fixtures: vec![authoritative.clone()],
+        }
+    };
+    let validation = validate_fixture_suite(&validation_suite);
+    let mut diagnostics = Vec::new();
+    if !validation.passed {
+        diagnostics.extend(
+            validation
+                .results
+                .iter()
+                .filter(|result| !result.expectation_met)
+                .flat_map(|result| result.diagnostics.iter())
+                .map(|diagnostic| diagnostic.message.clone()),
+        );
+    }
+    let mut completed_work_items = validation.results.len();
+    let mut output_identity = None;
+    if matches!(args.action, DocsActionKind::Render) {
+        let format = args.format.as_deref().unwrap_or("markdown");
+        match render_documentation_projection(documentation_ir, format) {
+            Ok(rendered_bytes) => {
+                let declared_output = suite.fixtures.iter().find_map(|fixture| {
+                    let FixturePayload::DocumentationOutput(output) = &fixture.payload else {
+                        return None;
+                    };
+                    (output.documentation_ir_identity == documentation_ir.declared_identity
+                        && output.target_format == format)
+                        .then_some(output.as_ref())
+                });
+                match declared_output {
+                    Some(output) => match validate_documentation_render_output(
+                        &rendered_bytes,
+                        &output.output_bytes,
+                    ) {
+                        Ok(identity) => {
+                            output_identity = Some(identity);
+                            completed_work_items += 1;
+                        }
+                        Err(diagnostic) => diagnostics.push(diagnostic.message),
+                    },
+                    None => diagnostics
+                        .push("documentation render has no declared output projection".to_string()),
+                }
+            }
+            Err(diagnostic) => diagnostics.push(diagnostic.message),
+        }
+    }
+    Ok(DocsActionWork {
+        completed_work_items,
+        documentation_ir_identity,
+        output_identity,
+        diagnostics,
+    })
+}
+
+fn load_docs_fixture_suite(root: &RootCapability, args: &DocsArgs) -> CliResult<FixtureSuite> {
+    let manifest_bytes = root.read(&args.manifest)?;
+    let validate_args = ValidateArgs {
+        root: args.root.clone(),
+        manifest: args.manifest.clone(),
+        manifest_source: PathBuf::from(DEFAULT_MANIFEST_SOURCE),
+        manifest_contract: PathBuf::from(DEFAULT_MANIFEST_CONTRACT),
+        manifest_generation_receipt: PathBuf::from(DEFAULT_MANIFEST_GENERATION_RECEIPT),
+        update_golden: false,
+        update_report: PathBuf::from(DEFAULT_UPDATE_REPORT),
+    };
+    validate_checked_manifest_generation(root, &validate_args, &manifest_bytes)?;
+    let manifest: ManifestProjection = serde_json::from_slice(&manifest_bytes)
+        .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
+    materialize_suite(root, &manifest, None, None)
+}
+
+fn is_documentation_fixture(fixture: &FixtureCase) -> bool {
+    fixture.id.starts_with("docs-")
+        || matches!(
+            fixture.artifact_class,
+            ArtifactClass::DocumentationIr
+                | ArtifactClass::DocumentationOutput
+                | ArtifactClass::DocumentationCell
+                | ArtifactClass::DocumentationReceipt
+        )
+}
+
+struct DocsReceiptContext<'a> {
+    config_source_identity: &'a Identity,
+    config_contract_identity: &'a Identity,
+    evaluator_identity: &'a Identity,
+    projection_identity: &'a Identity,
+    format: Option<&'a str>,
+    profile: Option<&'a str>,
+    target: Option<&'a str>,
+}
+
+fn docs_action_receipt(
+    outcome: &DocsActionOutcome,
+    context: DocsReceiptContext<'_>,
+) -> CliResult<Option<ReceiptEnvelope>> {
+    if outcome.state != DocsCompletionState::Completed {
+        return Ok(None);
+    }
+    let action_name = docs_action_name(&outcome.action);
+    let action_descriptor = serde_json::to_vec(&(
+        action_name,
+        context.format,
+        context.profile,
+        context.target,
+        outcome.completed_work_items,
+    ))
+    .map_err(|error| {
+        CliError(format!(
+            "docs action descriptor serialization failed: {error}"
+        ))
+    })?;
+    let mut body = ReceiptBody::new(
+        format!("docs-action.{action_name}"),
+        DOCS_ACTION_ARTIFACT_CLASS,
+        "accepted",
+        vec![
+            REQUIREMENT_DOCS_CONFIG.to_string(),
+            REQUIREMENT_DOCS_COMPLETION.to_string(),
+            REQUIREMENT_DOCS_NO_OP.to_string(),
+            REQUIREMENT_DOCS_RECEIPTS.to_string(),
+        ],
+        DOCS_ACTION_NON_CLAIMS
+            .iter()
+            .map(|non_claim| (*non_claim).to_string())
+            .collect(),
+    );
+    body.input_identities.insert(
+        "config-source".to_string(),
+        context.config_source_identity.clone(),
+    );
+    body.input_identities.insert(
+        "config-contract".to_string(),
+        context.config_contract_identity.clone(),
+    );
+    body.input_identities
+        .insert("evaluator".to_string(), context.evaluator_identity.clone());
+    body.input_identities.insert(
+        "config-projection".to_string(),
+        context.projection_identity.clone(),
+    );
+    body.input_identities.insert(
+        "action-profile".to_string(),
+        compute_identity(IdentityDomain::Projection, &action_descriptor),
+    );
+    if let Some(identity) = &outcome.documentation_ir_identity {
+        body.input_identities
+            .insert("documentation-ir".to_string(), identity.clone());
+    }
+    if let Some(identity) = &outcome.output_identity {
+        body.output_identities
+            .insert("documentation-output".to_string(), identity.clone());
+    }
+    body.checked_laws = vec![DOCS_ACTION_CHECKED_LAW.to_string()];
+    ReceiptEnvelope::finalize(body)
+        .map(Some)
+        .map_err(|error| CliError(format!("docs action receipt construction failed: {error}")))
+}
+
+fn docs_action_name(action: &DocsActionKind) -> &'static str {
+    match action {
+        DocsActionKind::Collect => "collect",
+        DocsActionKind::Check => "check",
+        DocsActionKind::Render => "render",
+        DocsActionKind::RunCells => "run-cells",
+        DocsActionKind::Update => "update",
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn run_nickel_docs_export(
+    evaluator_command: &Path,
+    source_bytes: &[u8],
+    contract_bytes: &[u8],
+) -> CliResult<Vec<u8>> {
+    use rustix::fs::{MemfdFlags, memfd_create};
+
+    let source = std::str::from_utf8(source_bytes)
+        .map_err(|error| CliError(format!("docs config source is not UTF-8: {error}")))?;
+    let contract = std::str::from_utf8(contract_bytes)
+        .map_err(|error| CliError(format!("docs config contract is not UTF-8: {error}")))?;
+    let body = source
+        .strip_prefix(DOCS_CONFIG_IMPORT_PREAMBLE)
+        .ok_or_else(|| {
+            CliError(
+                "docs config must import the checked sibling docs-config-contract.ncl contract"
+                    .to_string(),
+            )
+        })?;
+    let combined = format!("let DocsConfig = ({contract}) in\n{body}");
+    let mut descriptor = std::fs::File::from(
+        memfd_create(DOCS_MEMFD_NAME, MemfdFlags::empty())
+            .map_err(|error| CliError(format!("docs config memfd creation failed: {error}")))?,
+    );
+    descriptor
+        .write_all(combined.as_bytes())
+        .map_err(|error| CliError(format!("docs config memfd write failed: {error}")))?;
+    descriptor
+        .seek(SeekFrom::Start(0))
+        .map_err(|error| CliError(format!("docs config memfd seek failed: {error}")))?;
+    let descriptor_path = format!("{PROC_SELF_FD_PREFIX}{}", descriptor.as_raw_fd());
+    let output = ProcessCommand::new(evaluator_command)
+        .arg(NICKEL_COMMAND_EXPORT)
+        .arg(descriptor_path)
+        .arg(NICKEL_OPTION_FORMAT)
+        .arg(NICKEL_FORMAT_JSON)
+        .output()
+        .map_err(|error| CliError(format!("docs Nickel export launch failed: {error}")))?;
+    command_stdout(output, "docs Nickel export")
+}
+
+#[cfg(not(target_os = "linux"))]
+fn run_nickel_docs_export(
+    _evaluator_command: &Path,
+    _source_bytes: &[u8],
+    _contract_bytes: &[u8],
+) -> CliResult<Vec<u8>> {
+    Err(CliError(
+        "docs Nickel evaluation requires Linux descriptor-backed evaluator input".to_string(),
+    ))
 }
 
 fn run_hash_file(args: HashArgs) -> CliResult<i32> {
@@ -3270,7 +3607,7 @@ fn print_help() {
          kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]\n\
          kamacite-validate emit-function-address-receipt --report PATH --source KEY=PATH [--root PATH] [--out PATH] [--valence-out PATH]\n\
          kamacite-validate migrate-preserves [--root PATH] [--manifest PATH] [--manifest-source PATH] [--update] [--report PATH]\n\
-         kamacite-validate docs collect|check|render|run-cells|update [--config PATH] [--format FORMAT] [--profile PROFILE] [--target TARGET]"
+         kamacite-validate docs collect|check|render|run-cells|update [--root PATH] [--config PATH] [--contract PATH] [--manifest PATH] [--evaluator-command PATH] [--format FORMAT] [--profile PROFILE] [--target TARGET] [--dry-run]"
     );
 }
 

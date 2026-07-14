@@ -23,6 +23,7 @@ const REQUIREMENT_WASM_SCHEMA: &str = "r[kamacite.docs.wasm_runner.schema]";
 const REQUIREMENT_WASM_VALIDATION: &str = "r[kamacite.docs.wasm_runner.validation]";
 const REQUIREMENT_WASM_EFFECTS: &str = "r[kamacite.docs.wasm_runner.effects]";
 const REQUIREMENT_WASM_LIMITS: &str = "r[kamacite.docs.wasm_runner.resource_limits]";
+const REQUIREMENT_DOCS_CONFIG: &str = "r[kamacite.findings.docs_commands.config_validation]";
 const LANGUAGE_RUST: &str = "rust";
 const LANGUAGE_NICKEL: &str = "nickel";
 const LANGUAGE_STEEL: &str = "steel";
@@ -54,6 +55,10 @@ const CHECKED_LAW_SOURCE_BOUND: &str =
 const CHECKED_LAW_STABLE_ANCHORS: &str = "documentation anchors are deterministic";
 const DOCUMENTATION_IR_PRESERVES_SCHEMA_VERSION: &str = "kamacite.documentation-ir.v2";
 const DOCUMENTATION_IR_ROOT_LABEL: &str = "kamacite-documentation-ir-v2";
+const DOCS_LINK_POLICY: &str = "identity-only";
+const DOCS_UPDATE_POLICY: &str = "explicit-docs-update-only";
+const DOCS_CHECK_PROFILE: &str = "check-only";
+const DOCS_RENDER_FORMATS: &[&str] = &["asciidoc", "html", "markdown"];
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SourceByteSpan {
@@ -163,6 +168,100 @@ pub struct WasmExecutionRecordInput {
     pub diagnostics: Vec<String>,
     pub non_claims: Vec<String>,
     pub semantic_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocsSourceRootConfig {
+    pub path: String,
+    pub language: String,
+    pub collector_profile: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocsOutputConfig {
+    pub format: String,
+    pub path: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocsPageGroupingConfig {
+    pub pattern: String,
+    pub page: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocsWasmRunnerConfig {
+    pub profile: String,
+    pub engine_identity_policy: String,
+    pub imports: Vec<String>,
+    pub capabilities: Vec<String>,
+    pub fuel_limit: u64,
+    pub memory_limit_bytes: u64,
+    pub output_limit_bytes: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocsConfigProjection {
+    pub schema_version: u32,
+    pub source_roots: Vec<DocsSourceRootConfig>,
+    pub output_formats: Vec<DocsOutputConfig>,
+    pub page_grouping: Vec<DocsPageGroupingConfig>,
+    pub link_policy: String,
+    pub run_profiles: Vec<String>,
+    pub wasm_runner_profiles: Vec<DocsWasmRunnerConfig>,
+    pub update_policy: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum DocsActionKind {
+    Collect,
+    Check,
+    Render,
+    RunCells,
+    Update,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum DocsCompletionState {
+    Planned,
+    Completed,
+    Unsupported,
+    Failed,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DocsActionEvidenceInput {
+    pub action: DocsActionKind,
+    pub format: Option<String>,
+    pub profile: Option<String>,
+    pub target: Option<String>,
+    pub dry_run: bool,
+    pub completed_work_items: usize,
+    pub documentation_ir_identity: Option<Identity>,
+    pub output_identity: Option<Identity>,
+    pub executed: bool,
+    pub mutated: bool,
+    pub diagnostics: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct DocsActionOutcome {
+    pub passed: bool,
+    pub state: DocsCompletionState,
+    pub action: DocsActionKind,
+    pub completed_work_items: usize,
+    pub documentation_ir_identity: Option<Identity>,
+    pub output_identity: Option<Identity>,
+    pub executed: bool,
+    pub mutated: bool,
+    pub diagnostics: Vec<String>,
 }
 
 #[must_use]
@@ -518,6 +617,301 @@ pub fn validate_wasm_execution_record(
     diagnostics.sort();
     diagnostics.dedup();
     diagnostics
+}
+
+#[must_use]
+pub fn validate_docs_config(config: &DocsConfigProjection) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    if config.schema_version != DOCS_CONFIG_SCHEMA_VERSION {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedSchemaVersion,
+            REQUIREMENT_DOCS_CONFIG,
+            "docs_config.schema_version",
+            "documentation configuration schema version is unsupported",
+        ));
+    }
+    if config.source_roots.is_empty() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_CONFIG,
+            "docs_config.source_roots",
+            "documentation configuration requires at least one source root",
+        ));
+    }
+    let mut source_paths = BTreeSet::new();
+    for source in &config.source_roots {
+        validate_required_text(
+            &source.path,
+            "docs_config.source_roots.path",
+            &mut diagnostics,
+        );
+        validate_language(
+            &source.language,
+            "docs_config.source_roots.language",
+            &mut diagnostics,
+        );
+        validate_required_text(
+            &source.collector_profile,
+            "docs_config.source_roots.collector_profile",
+            &mut diagnostics,
+        );
+        if !source_paths.insert(source.path.clone()) {
+            diagnostics.push(Diagnostic::new(
+                DiagnosticCode::DuplicateArtifactIdentity,
+                REQUIREMENT_DOCS_CONFIG,
+                "docs_config.source_roots.path",
+                "documentation source-root paths must be unique",
+            ));
+        }
+    }
+    if config.output_formats.is_empty() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_DOCS_CONFIG,
+            "docs_config.output_formats",
+            "documentation configuration requires at least one output format",
+        ));
+    }
+    let mut output_formats = BTreeSet::new();
+    for output in &config.output_formats {
+        validate_required_text(
+            &output.path,
+            "docs_config.output_formats.path",
+            &mut diagnostics,
+        );
+        if !DOCS_RENDER_FORMATS.contains(&output.format.as_str()) {
+            diagnostics.push(Diagnostic::new(
+                DiagnosticCode::UnsupportedArtifactClass,
+                REQUIREMENT_DOCS_CONFIG,
+                "docs_config.output_formats.format",
+                "documentation output format is unsupported",
+            ));
+        }
+        if !output_formats.insert(output.format.clone()) {
+            diagnostics.push(Diagnostic::new(
+                DiagnosticCode::DuplicateArtifactIdentity,
+                REQUIREMENT_DOCS_CONFIG,
+                "docs_config.output_formats.format",
+                "documentation output formats must be unique",
+            ));
+        }
+    }
+    if config.link_policy != DOCS_LINK_POLICY {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_CONFIG,
+            "docs_config.link_policy",
+            "documentation link policy is unsupported",
+        ));
+    }
+    if config.run_profiles.is_empty()
+        || config
+            .run_profiles
+            .iter()
+            .any(|profile| profile != DOCS_CHECK_PROFILE)
+    {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_CONFIG,
+            "docs_config.run_profiles",
+            "documentation run profile is unsupported",
+        ));
+    }
+    if config.update_policy != DOCS_UPDATE_POLICY {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedArtifactClass,
+            REQUIREMENT_DOCS_CONFIG,
+            "docs_config.update_policy",
+            "documentation update policy is unsupported",
+        ));
+    }
+    for profile in &config.wasm_runner_profiles {
+        validate_required_text(
+            &profile.profile,
+            "docs_config.wasm_runner_profiles.profile",
+            &mut diagnostics,
+        );
+        validate_required_text(
+            &profile.engine_identity_policy,
+            "docs_config.wasm_runner_profiles.engine_identity_policy",
+            &mut diagnostics,
+        );
+        validate_limit(
+            profile.fuel_limit,
+            "docs_config.wasm_runner_profiles.fuel_limit",
+            &mut diagnostics,
+        );
+        validate_limit(
+            profile.memory_limit_bytes,
+            "docs_config.wasm_runner_profiles.memory_limit_bytes",
+            &mut diagnostics,
+        );
+        validate_limit(
+            profile.output_limit_bytes,
+            "docs_config.wasm_runner_profiles.output_limit_bytes",
+            &mut diagnostics,
+        );
+    }
+    diagnostics.sort();
+    diagnostics.dedup();
+    diagnostics
+}
+
+#[must_use]
+pub fn evaluate_docs_action(
+    config: &DocsConfigProjection,
+    mut input: DocsActionEvidenceInput,
+) -> DocsActionOutcome {
+    let mut diagnostics = std::mem::take(&mut input.diagnostics);
+    diagnostics.extend(
+        validate_docs_config(config)
+            .into_iter()
+            .map(|diagnostic| diagnostic.message),
+    );
+    validate_docs_request(config, &input, &mut diagnostics);
+    diagnostics.sort();
+    diagnostics.dedup();
+
+    let (passed, state) = docs_completion_state(&input, diagnostics.is_empty());
+    DocsActionOutcome {
+        passed,
+        state,
+        action: input.action,
+        completed_work_items: input.completed_work_items,
+        documentation_ir_identity: input.documentation_ir_identity,
+        output_identity: input.output_identity,
+        executed: input.executed,
+        mutated: input.mutated,
+        diagnostics,
+    }
+}
+
+fn validate_docs_request(
+    config: &DocsConfigProjection,
+    input: &DocsActionEvidenceInput,
+    diagnostics: &mut Vec<String>,
+) {
+    if input
+        .profile
+        .as_ref()
+        .is_some_and(|profile| !config.run_profiles.contains(profile))
+    {
+        diagnostics.push("requested documentation profile is unsupported".to_string());
+    }
+    match input.action {
+        DocsActionKind::Collect | DocsActionKind::Check => {
+            if input.format.is_some() || input.target.is_some() {
+                diagnostics.push(
+                    "collect and check do not admit render formats or execution targets"
+                        .to_string(),
+                );
+            }
+            require_documentation_ir(input, diagnostics);
+        }
+        DocsActionKind::Render => {
+            let format = input.format.as_deref().unwrap_or(DEFAULT_TARGET_FORMAT);
+            if !config
+                .output_formats
+                .iter()
+                .any(|output| output.format == format)
+            {
+                diagnostics
+                    .push("requested documentation render format is unsupported".to_string());
+            }
+            if input.target.is_some() {
+                diagnostics
+                    .push("documentation render does not admit an execution target".to_string());
+            }
+            require_documentation_ir(input, diagnostics);
+            if input.output_identity.is_none() {
+                diagnostics.push("documentation render produced no output identity".to_string());
+            }
+        }
+        DocsActionKind::RunCells => {
+            if input.format.is_some() {
+                diagnostics.push(
+                    "documentation cell execution does not admit a render format".to_string(),
+                );
+            }
+            if input.target.as_deref() != Some("wasm") {
+                diagnostics.push("documentation cell execution target is unsupported".to_string());
+            }
+            if !input.executed {
+                diagnostics.push(
+                    "documentation cell execution was requested but no bounded runner executed"
+                        .to_string(),
+                );
+            }
+        }
+        DocsActionKind::Update => {
+            require_documentation_ir(input, diagnostics);
+            if input.target.is_some() {
+                diagnostics
+                    .push("documentation update does not admit an execution target".to_string());
+            }
+            if input.format.as_ref().is_some_and(|format| {
+                !config
+                    .output_formats
+                    .iter()
+                    .any(|output| &output.format == format)
+            }) {
+                diagnostics
+                    .push("requested documentation update format is unsupported".to_string());
+            }
+            if !input.dry_run && !input.mutated {
+                diagnostics.push(
+                    "documentation update was requested but no receipt-producing mutation occurred"
+                        .to_string(),
+                );
+            }
+        }
+    }
+}
+
+fn require_documentation_ir(input: &DocsActionEvidenceInput, diagnostics: &mut Vec<String>) {
+    if input.completed_work_items == 0 {
+        diagnostics.push("documentation action completed no required work".to_string());
+    }
+    if input.documentation_ir_identity.is_none() {
+        diagnostics.push("documentation action produced no checked IR identity".to_string());
+    }
+}
+
+fn docs_completion_state(
+    input: &DocsActionEvidenceInput,
+    diagnostics_empty: bool,
+) -> (bool, DocsCompletionState) {
+    if !diagnostics_empty {
+        if matches!(input.action, DocsActionKind::RunCells) && !input.executed {
+            return (false, DocsCompletionState::Unsupported);
+        }
+        if matches!(input.action, DocsActionKind::Update) && !input.mutated {
+            return (false, DocsCompletionState::Unsupported);
+        }
+        return (false, DocsCompletionState::Failed);
+    }
+    if matches!(input.action, DocsActionKind::Update) && input.dry_run {
+        return (true, DocsCompletionState::Planned);
+    }
+    (true, DocsCompletionState::Completed)
+}
+
+pub fn validate_documentation_render_output(
+    generated_bytes: &[u8],
+    declared_bytes: &[u8],
+) -> Result<Identity, Diagnostic> {
+    if generated_bytes != declared_bytes {
+        return Err(Diagnostic::new(
+            DiagnosticCode::GoldenReceiptMismatch,
+            REQUIREMENT_DOCS_CONFIG,
+            "documentation_output.bytes",
+            "generated documentation output differs from the checked output projection",
+        ));
+    }
+    Ok(compute_identity(
+        IdentityDomain::DocumentationOutput,
+        generated_bytes,
+    ))
 }
 
 #[must_use]
@@ -1193,6 +1587,120 @@ mod tests {
         };
 
         assert!(validate_wasm_execution_record(&profile, &record).is_empty());
+    }
+
+    fn valid_docs_config() -> DocsConfigProjection {
+        DocsConfigProjection {
+            schema_version: DOCS_CONFIG_SCHEMA_VERSION,
+            source_roots: vec![DocsSourceRootConfig {
+                path: "crates/kamacite-core/src".to_string(),
+                language: LANGUAGE_RUST.to_string(),
+                collector_profile: "rust-bounded-docs-v1".to_string(),
+            }],
+            output_formats: vec![DocsOutputConfig {
+                format: DEFAULT_TARGET_FORMAT.to_string(),
+                path: "target/generated-docs".to_string(),
+            }],
+            page_grouping: Vec::new(),
+            link_policy: DOCS_LINK_POLICY.to_string(),
+            run_profiles: vec![DOCS_CHECK_PROFILE.to_string()],
+            wasm_runner_profiles: Vec::new(),
+            update_policy: DOCS_UPDATE_POLICY.to_string(),
+        }
+    }
+
+    fn valid_docs_action(action: DocsActionKind) -> DocsActionEvidenceInput {
+        DocsActionEvidenceInput {
+            action,
+            format: None,
+            profile: Some(DOCS_CHECK_PROFILE.to_string()),
+            target: None,
+            dry_run: false,
+            completed_work_items: 1,
+            documentation_ir_identity: Some(compute_identity(
+                IdentityDomain::DocumentationIr,
+                b"checked docs IR",
+            )),
+            output_identity: None,
+            executed: false,
+            mutated: false,
+            diagnostics: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn docs_config_and_completed_actions_are_accepted() {
+        let config = valid_docs_config();
+        assert!(validate_docs_config(&config).is_empty());
+
+        let collect = evaluate_docs_action(&config, valid_docs_action(DocsActionKind::Collect));
+        assert!(collect.passed);
+        assert_eq!(collect.state, DocsCompletionState::Completed);
+
+        let mut render_input = valid_docs_action(DocsActionKind::Render);
+        render_input.format = Some(DEFAULT_TARGET_FORMAT.to_string());
+        render_input.output_identity = Some(compute_identity(
+            IdentityDomain::DocumentationOutput,
+            b"rendered docs",
+        ));
+        let render = evaluate_docs_action(&config, render_input);
+        assert!(render.passed);
+        assert_eq!(render.state, DocsCompletionState::Completed);
+    }
+
+    #[test]
+    fn docs_render_comparison_rejects_stale_output() {
+        let generated = b"checked rendered output";
+        let accepted = validate_documentation_render_output(generated, generated);
+        assert!(accepted.is_ok());
+        assert_eq!(
+            accepted.map(|identity| identity.domain),
+            Ok(IdentityDomain::DocumentationOutput)
+        );
+
+        let stale = validate_documentation_render_output(generated, b"stale rendered output");
+        assert!(stale.is_err());
+        assert_eq!(
+            stale.map_err(|diagnostic| diagnostic.code),
+            Err(DiagnosticCode::GoldenReceiptMismatch)
+        );
+    }
+
+    #[test]
+    fn docs_actions_reject_invalid_config_no_ops_and_unsupported_values() {
+        let mut config = valid_docs_config();
+        config.schema_version = DOCS_CONFIG_SCHEMA_VERSION + 1;
+        config.source_roots[0].language = "python".to_string();
+        assert!(!validate_docs_config(&config).is_empty());
+
+        let config = valid_docs_config();
+        let mut render_input = valid_docs_action(DocsActionKind::Render);
+        render_input.format = Some("pdf".to_string());
+        let render = evaluate_docs_action(&config, render_input);
+        assert!(!render.passed);
+        assert_eq!(render.state, DocsCompletionState::Failed);
+
+        let run_cells = evaluate_docs_action(&config, valid_docs_action(DocsActionKind::RunCells));
+        assert!(!run_cells.passed);
+        assert_eq!(run_cells.state, DocsCompletionState::Unsupported);
+
+        let mut failed_cell_input = valid_docs_action(DocsActionKind::RunCells);
+        failed_cell_input.executed = true;
+        failed_cell_input.target = Some("wasm".to_string());
+        failed_cell_input.diagnostics = vec!["documentation cell failed".to_string()];
+        let failed_cell = evaluate_docs_action(&config, failed_cell_input);
+        assert!(!failed_cell.passed);
+        assert_eq!(failed_cell.state, DocsCompletionState::Failed);
+
+        let update = evaluate_docs_action(&config, valid_docs_action(DocsActionKind::Update));
+        assert!(!update.passed);
+        assert_eq!(update.state, DocsCompletionState::Unsupported);
+
+        let mut dry_run_input = valid_docs_action(DocsActionKind::Update);
+        dry_run_input.dry_run = true;
+        let dry_run = evaluate_docs_action(&config, dry_run_input);
+        assert!(dry_run.passed);
+        assert_eq!(dry_run.state, DocsCompletionState::Planned);
     }
 
     #[test]

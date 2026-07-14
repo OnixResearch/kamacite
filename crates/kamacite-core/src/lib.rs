@@ -29,13 +29,16 @@ pub use dialect_roundtrip::{
     validate_dialect_roundtrip_input, validate_dialect_roundtrip_json_projection,
 };
 pub use docs_generation::{
-    DOCS_CONFIG_SCHEMA_VERSION, DOCUMENTATION_IR_SCHEMA_VERSION, DocsAssemblyInput,
-    LANGUAGE_DOCUMENTATION_FACTS_SCHEMA_VERSION, LanguageDocumentationFactsArtifact,
-    LanguageDocumentationFactsInput, LanguageDocumentationItem, RunnableCellReference,
-    SourceByteSpan, WasmExecutionRecordInput, WasmRunnerProfileInput, WasmTargetBinding,
-    assemble_documentation_ir, docs_config_identity, language_documentation_facts_artifact,
-    validate_language_documentation_facts, validate_wasm_execution_record,
-    validate_wasm_runner_profile,
+    DOCS_CONFIG_SCHEMA_VERSION, DOCUMENTATION_IR_SCHEMA_VERSION, DocsActionEvidenceInput,
+    DocsActionKind, DocsActionOutcome, DocsAssemblyInput, DocsCompletionState,
+    DocsConfigProjection, DocsOutputConfig, DocsPageGroupingConfig, DocsSourceRootConfig,
+    DocsWasmRunnerConfig, LANGUAGE_DOCUMENTATION_FACTS_SCHEMA_VERSION,
+    LanguageDocumentationFactsArtifact, LanguageDocumentationFactsInput, LanguageDocumentationItem,
+    RunnableCellReference, SourceByteSpan, WasmExecutionRecordInput, WasmRunnerProfileInput,
+    WasmTargetBinding, assemble_documentation_ir, docs_config_identity, evaluate_docs_action,
+    language_documentation_facts_artifact, validate_docs_config,
+    validate_documentation_render_output, validate_language_documentation_facts,
+    validate_wasm_execution_record, validate_wasm_runner_profile,
 };
 pub use evidence_chain::{
     EVIDENCE_CHAIN_CANONICAL_CODEC, EVIDENCE_CHAIN_ENVELOPE_SCHEMA_VERSION,

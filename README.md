@@ -175,12 +175,15 @@ nix run .#kamacite -- validate-nickel-adapter --root . --manifest fixtures/manif
 nix run .#kamacite -- validate-steel-adapter --root . --manifest fixtures/manifest.json
 nix run .#kamacite -- migrate-preserves --root . --manifest fixtures/manifest.json --manifest-source fixtures/manifest.ncl
 nix run .#kamacite -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
+nix run .#kamacite -- docs check --root .
+nix run .#kamacite -- docs render --root . --format markdown
 nix flake check
 # Default validation is receipt-only: it binds the exact source, closed contract, evaluator profile, and complete projection bytes before fixture IO or golden trust.
 # generate-manifest is the explicit live Nickel check; only --update rewrites the JSON projection and its checked generation receipt.
 # The validate-nickel-adapter command additionally runs explicitly declared Nickel reference-export fixtures in the shell.
 # The migrate-preserves command is dry-run-only unless --update is passed; update reports default under target/.
 # The export-valence-receipt command validates deterministic Valence-friendly projections without invoking live Valence APIs.
+# Documentation actions evaluate their checked Nickel config and emit completion receipts; run-cells and non-dry-run update fail until actual execution or mutation evidence exists.
 # Every --root child path rejects absolute, parent, and symlink traversal; mutation uses confined temporary-file replacement.
 ```
 

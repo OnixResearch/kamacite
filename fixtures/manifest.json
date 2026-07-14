@@ -5684,7 +5684,7 @@
         "declared_output_identity": {
           "algorithm": "blake3",
           "domain": "documentation-output",
-          "hex": "58bc5932298da9ad06e7d169d9e81415d6c70aa56d6103d9cbfc162a179f61b7"
+          "hex": "f780600a9f46fd254d00f192129716290ea0490860a3458c2aa14b8787593407"
         },
         "documentation_ir_identity": {
           "algorithm": "blake3",
@@ -5729,7 +5729,7 @@
         "declared_output_identity": {
           "algorithm": "blake3",
           "domain": "documentation-output",
-          "hex": "a5a8439e49ee4a0d07ae4ccfcfb1158554b8a0f0e4c5f329765b1c73b8477996"
+          "hex": "47631b18255ce8007bf4983884627d42847fd37e495db6b167ad6c81a9207a68"
         },
         "documentation_ir_identity": {
           "algorithm": "blake3",
@@ -5774,7 +5774,7 @@
         "declared_output_identity": {
           "algorithm": "blake3",
           "domain": "documentation-output",
-          "hex": "56a056ccfde1af5f791b7ba0281ede30ee5bff6fd86a45c04f4b0bb53fa59d28"
+          "hex": "76da1c4846bf4ca25cf6dc3d11e4ee749206e57cfe89aa33ebcae1ddc90e23e6"
         },
         "documentation_ir_identity": {
           "algorithm": "blake3",
@@ -6106,7 +6106,7 @@
         "declared_receipt_identity": {
           "algorithm": "blake3",
           "domain": "receipt",
-          "hex": "e96bff580bdbaae7eb7482f05e1aad57470c1009b5b863f709e12afc6c598c8d"
+          "hex": "6cb5b41a2be6ce942b509f2408a569135090d1a6a75cb6a4003df4034c956e33"
         },
         "diagnostics": [],
         "documentation_ir_identity": {
@@ -6123,17 +6123,17 @@
           {
             "algorithm": "blake3",
             "domain": "documentation-output",
-            "hex": "58bc5932298da9ad06e7d169d9e81415d6c70aa56d6103d9cbfc162a179f61b7"
+            "hex": "f780600a9f46fd254d00f192129716290ea0490860a3458c2aa14b8787593407"
           },
           {
             "algorithm": "blake3",
             "domain": "documentation-output",
-            "hex": "a5a8439e49ee4a0d07ae4ccfcfb1158554b8a0f0e4c5f329765b1c73b8477996"
+            "hex": "47631b18255ce8007bf4983884627d42847fd37e495db6b167ad6c81a9207a68"
           },
           {
             "algorithm": "blake3",
             "domain": "documentation-output",
-            "hex": "56a056ccfde1af5f791b7ba0281ede30ee5bff6fd86a45c04f4b0bb53fa59d28"
+            "hex": "76da1c4846bf4ca25cf6dc3d11e4ee749206e57cfe89aa33ebcae1ddc90e23e6"
           }
         ],
         "receipt_kind": "render",
@@ -6484,7 +6484,7 @@
         "declared_output_identity": {
           "algorithm": "blake3",
           "domain": "documentation-output",
-          "hex": "58bc5932298da9ad06e7d169d9e81415d6c70aa56d6103d9cbfc162a179f61b7"
+          "hex": "f780600a9f46fd254d00f192129716290ea0490860a3458c2aa14b8787593407"
         },
         "documentation_ir_identity": {
           "algorithm": "blake3",
@@ -6528,7 +6528,7 @@
         "declared_output_identity": {
           "algorithm": "blake3",
           "domain": "documentation-output",
-          "hex": "a5a8439e49ee4a0d07ae4ccfcfb1158554b8a0f0e4c5f329765b1c73b8477996"
+          "hex": "47631b18255ce8007bf4983884627d42847fd37e495db6b167ad6c81a9207a68"
         },
         "documentation_ir_identity": {
           "algorithm": "blake3",
