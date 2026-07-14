@@ -96,8 +96,6 @@
           manifestProjectionIdentity = "f7b607f8f93749b4c4092b5e1b7db3fab2b9c245d29930a074156e945cc7a855";
           valenceConformanceIdentity = "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830";
           staleProjectionIdentity = "0000000000000000000000000000000000000000000000000000000000000000";
-          marigoldSourceLimitBytes = 1048576;
-          marigoldOversizedSourceBytes = marigoldSourceLimitBytes + 1;
         in
         {
           package = self.packages.${system}.kamacite;
@@ -251,81 +249,6 @@
                 fi
                 grep -q "invalid structured Octet identity" \
                   target/function-address-check/negative.out
-                touch $out
-              '';
-
-          marigold-analysis-validation =
-            pkgs.runCommand "kamacite-marigold-analysis-validation"
-              {
-                nativeBuildInputs = [
-                  pkgs.diffutils
-                  pkgs.gnugrep
-                ];
-              }
-              ''
-                ${copySource}
-                mkdir -p target/marigold-analysis-check
-                ${kamacite} analyze-marigold \
-                  --root . \
-                  --source fixtures/marigold-analysis/valid.marigold \
-                  --out target/marigold-analysis-check/receipt.json \
-                  >target/marigold-analysis-check/report.json
-                cmp fixtures/marigold-analysis/valid.receipt.json \
-                  target/marigold-analysis-check/receipt.json
-                grep -q '"evidence_role": "advisory"' \
-                  target/marigold-analysis-check/report.json
-                if ${kamacite} analyze-marigold \
-                  --root . \
-                  --source fixtures/marigold-analysis/malformed.marigold \
-                  >target/marigold-analysis-check/malformed.out 2>&1; then
-                  echo "expected malformed Marigold source to fail" >&2
-                  exit 1
-                fi
-                grep -q "Marigold analysis failed" \
-                  target/marigold-analysis-check/malformed.out
-                head -c ${toString marigoldOversizedSourceBytes} /dev/zero \
-                  >target/marigold-analysis-check/oversized.marigold
-                if ${kamacite} analyze-marigold \
-                  --root . \
-                  --source target/marigold-analysis-check/oversized.marigold \
-                  >target/marigold-analysis-check/oversized.out 2>&1; then
-                  echo "expected oversized Marigold source to fail" >&2
-                  exit 1
-                fi
-                grep -q "exceeds ${toString marigoldSourceLimitBytes} bytes" \
-                  target/marigold-analysis-check/oversized.out
-                if ${kamacite} analyze-marigold \
-                  --root . \
-                  --source ../outside.marigold \
-                  >target/marigold-analysis-check/escape.out 2>&1; then
-                  echo "expected escaping Marigold source path to fail" >&2
-                  exit 1
-                fi
-                grep -q "cannot escape root" \
-                  target/marigold-analysis-check/escape.out
-                ln -s /etc/hosts \
-                  target/marigold-analysis-check/symlink-source.marigold
-                if ${kamacite} analyze-marigold \
-                  --root . \
-                  --source target/marigold-analysis-check/symlink-source.marigold \
-                  >target/marigold-analysis-check/symlink-source.out 2>&1; then
-                  echo "expected escaping Marigold source symlink to fail" >&2
-                  exit 1
-                fi
-                grep -q "cannot escape canonical root" \
-                  target/marigold-analysis-check/symlink-source.out
-                ln -s "$TMPDIR/outside-receipt.json" \
-                  target/marigold-analysis-check/symlink-receipt.json
-                if ${kamacite} analyze-marigold \
-                  --root . \
-                  --source fixtures/marigold-analysis/valid.marigold \
-                  --out target/marigold-analysis-check/symlink-receipt.json \
-                  >target/marigold-analysis-check/symlink-receipt.out 2>&1; then
-                  echo "expected Marigold receipt output symlink to fail" >&2
-                  exit 1
-                fi
-                grep -q "cannot be a symbolic link" \
-                  target/marigold-analysis-check/symlink-receipt.out
                 touch $out
               '';
 

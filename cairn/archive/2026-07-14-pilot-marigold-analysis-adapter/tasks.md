@@ -1,8 +1,0 @@
-## Tasks
-
-- [x] [serial] Define the advisory Marigold analyzer profile, exact evaluator cohort, owned report DTOs, finite bounds, typed identities, checked laws, required non-claims, and receipt shape. r[kamacite.marigold_analysis.profile] r[kamacite.marigold_analysis.identity] r[kamacite.marigold_analysis.nonclaims]
-- [x] [depends:marigold-analysis-profile] Implement pure deterministic report validation, projection hashing, stale/domain/shape/overclaim diagnostics, and receipt construction in `kamacite-core`. r[kamacite.marigold_analysis.functional_core] r[kamacite.marigold_analysis.receipt]
-- [x] [depends:marigold-analysis-core] Add the root-confined `analyze-marigold` CLI shell using exact `marigold-grammar` `0.1.17`, with no program execution or async runtime features. r[kamacite.marigold_analysis.shell] r[kamacite.marigold_analysis.no_execution]
-- [x] [parallel] Add positive valid-pipeline fixtures and negative malformed source, unsupported version, stale/wrong-domain identity, malformed report, missing-law/non-claim, and semantic-overclaim tests. r[kamacite.marigold_analysis.fixtures]
-- [x] [parallel] Add a focused Nix command check and document source/projection/receipt roles, analyzer limitations, removal/promotion criteria, and downstream non-claims; append Marigold to README references. r[kamacite.marigold_analysis.validation] r[kamacite.marigold_analysis.nonclaims]
-- [x] [depends:marigold-analysis-validation] Run focused core/CLI tests, workspace tests, formatting, Clippy, the valid/negative CLI fixture rail, manifest validation, lifecycle validation, Cairn proposal/design/tasks gates, and relevant Nix checks; record exact blockers for any unavailable broad rail. r[kamacite.marigold_analysis.validation]
