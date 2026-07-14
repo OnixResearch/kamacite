@@ -10,18 +10,23 @@ use kamacite_core::{
     FunctionAddressDependencyIdentityKind, FunctionAddressProducer, FunctionAddressReceiptInput,
     FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
     FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
-    IdentityDomain, IdentityUseInput, NickelAdapterReceiptInput, ReceiptEnvelope,
-    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
+    IdentityDomain, IdentityUseInput, MARIGOLD_MAX_SOURCE_BYTES, MARIGOLD_REQUIRED_CHECKED_LAWS,
+    MARIGOLD_REQUIRED_NON_CLAIMS, MarigoldAnalysisInput, MarigoldAnalysisReceiptEnvelope,
+    MarigoldAnalyzerDescriptor, MarigoldProgramAnalysis, NickelAdapterReceiptInput,
+    ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
     SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
     UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance, compute_identity,
-    docs_config_identity, export_function_address_valence_projection, export_valence_receipt,
-    function_address_projection_json, receipt_json, validate_fixture_suite,
+    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance,
+    build_marigold_analysis_receipt, compute_identity, docs_config_identity,
+    export_function_address_valence_projection, export_valence_receipt,
+    function_address_projection_json, marigold_analysis_projection_identity,
+    marigold_evaluator_identity, receipt_json, validate_fixture_suite,
     validate_function_address_receipt,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
+use std::io::Read;
 use std::path::{Component, Path, PathBuf};
 use std::process::{Command as ProcessCommand, Output};
 
@@ -84,6 +89,7 @@ const FUNCTION_ADDRESS_PRODUCER_ROLE_OPTION: &str = "producer-role";
 const FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_CORRECTNESS: &str = "not producer correctness";
 const FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_SEMANTIC_CLOSURE: &str =
     "not semantic dependency closure";
+const MARIGOLD_SOURCE_EXTENSION: &str = "marigold";
 
 #[derive(Debug)]
 struct CliError(String);
@@ -107,6 +113,7 @@ enum Command {
     CheckManifestProjection(ManifestProjectionArgs),
     ExportValenceReceipt(ValenceExportArgs),
     EmitFunctionAddressReceipt(FunctionAddressReceiptArgs),
+    AnalyzeMarigold(MarigoldAnalysisArgs),
     Docs(DocsArgs),
     Help,
 }
@@ -172,6 +179,13 @@ struct FunctionAddressReceiptArgs {
     sources: BTreeMap<String, PathBuf>,
     out: Option<PathBuf>,
     valence_out: Option<PathBuf>,
+}
+
+#[derive(Clone, Debug)]
+struct MarigoldAnalysisArgs {
+    root: PathBuf,
+    source: PathBuf,
+    out: Option<PathBuf>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -294,6 +308,19 @@ struct FunctionAddressReceiptCommandReport {
     receipt_path: Option<String>,
     valence_projection_path: Option<String>,
     valence_projection: Option<FunctionAddressValenceProjection>,
+}
+
+#[derive(Debug, Serialize)]
+struct MarigoldAnalysisCommandReport {
+    passed: bool,
+    diagnostics: Vec<kamacite_core::Diagnostic>,
+    source_path: String,
+    source_identity: Identity,
+    evaluator_identity: Identity,
+    analysis_projection_identity: Identity,
+    receipt_identity: Option<Identity>,
+    receipt_path: Option<String>,
+    receipt: Option<MarigoldAnalysisReceiptEnvelope>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -660,6 +687,7 @@ fn run() -> CliResult<i32> {
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::ExportValenceReceipt(args) => run_export_valence_receipt(args),
         Command::EmitFunctionAddressReceipt(args) => run_emit_function_address_receipt(args),
+        Command::AnalyzeMarigold(args) => run_analyze_marigold(args),
         Command::Docs(args) => run_docs(args),
         Command::Help => {
             print_help();
@@ -681,6 +709,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "export-valence-receipt" => parse_valence_export_args(args_iter.collect()),
         "emit-function-address-receipt" => parse_function_address_receipt_args(args_iter.collect()),
+        "analyze-marigold" => parse_marigold_analysis_args(args_iter.collect()),
         "docs" => parse_docs_args(args_iter.collect()),
         "help" | "--help" | "-h" => Ok(Command::Help),
         unknown => Err(CliError(format!("unknown command: {unknown}"))),
@@ -925,6 +954,33 @@ fn parse_function_address_receipt_args(args: Vec<String>) -> CliResult<Command> 
             valence_out,
         },
     ))
+}
+
+fn parse_marigold_analysis_args(args: Vec<String>) -> CliResult<Command> {
+    let mut root = PathBuf::from(DEFAULT_ROOT);
+    let mut source = None;
+    let mut out = None;
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--root" => root = next_path(&mut index, "--root")?,
+            "--source" => source = Some(next_path(&mut index, "--source")?),
+            "--out" => out = Some(next_path(&mut index, "--out")?),
+            unknown => {
+                return Err(CliError(format!(
+                    "unknown analyze-marigold argument: {unknown}"
+                )));
+            }
+        }
+    }
+    let Some(source) = source else {
+        return Err(CliError("analyze-marigold requires --source".to_string()));
+    };
+    Ok(Command::AnalyzeMarigold(MarigoldAnalysisArgs {
+        root,
+        source,
+        out,
+    }))
 }
 
 fn parse_docs_args(args: Vec<String>) -> CliResult<Command> {
@@ -1236,6 +1292,121 @@ fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliRes
     };
     print_json_report(&report, "function-address receipt report")?;
     Ok(EXIT_SUCCESS)
+}
+
+fn run_analyze_marigold(args: MarigoldAnalysisArgs) -> CliResult<i32> {
+    if args
+        .source
+        .extension()
+        .and_then(|extension| extension.to_str())
+        != Some(MARIGOLD_SOURCE_EXTENSION)
+    {
+        return Err(CliError(format!(
+            "Marigold analysis source must use .{MARIGOLD_SOURCE_EXTENSION}: {}",
+            args.source.display()
+        )));
+    }
+    let source_path =
+        resolve_existing_under_root(&args.root, &args.source, "Marigold analysis source")?;
+    let source_bytes = read_bounded_path(
+        &source_path,
+        MARIGOLD_MAX_SOURCE_BYTES,
+        "Marigold analysis source",
+    )?;
+    let source = std::str::from_utf8(&source_bytes).map_err(|error| {
+        CliError(format!(
+            "Marigold analysis source is not UTF-8 for {}: {error}",
+            args.source.display()
+        ))
+    })?;
+    let analysis = analyze_marigold_source(source)?;
+    let input = build_marigold_analysis_input(&source_bytes, analysis)?;
+    let source_identity = input.source_identity.clone();
+    let evaluator_identity = input.evaluator_identity.clone();
+    let analysis_projection_identity = input
+        .declared_analysis_projection_identity
+        .clone()
+        .ok_or_else(|| CliError("Marigold analysis projection identity is missing".to_string()))?;
+    let result = build_marigold_analysis_receipt(&input).map_err(|error| {
+        CliError(format!(
+            "Marigold analysis receipt construction failed: {error}"
+        ))
+    })?;
+    let receipt_identity = result
+        .receipt
+        .as_ref()
+        .map(|receipt| receipt.receipt_identity.clone());
+    let receipt_path = match (&args.out, result.receipt.as_ref()) {
+        (Some(path), Some(receipt)) => {
+            let rendered = serde_json::to_string_pretty(receipt).map_err(|error| {
+                CliError(format!(
+                    "Marigold analysis receipt serialization failed: {error}"
+                ))
+            })?;
+            let resolved =
+                resolve_output_under_root(&args.root, path, "Marigold analysis receipt output")?;
+            write_path(&resolved, rendered.as_bytes())?;
+            Some(path_display(path))
+        }
+        _ => None,
+    };
+    let report = MarigoldAnalysisCommandReport {
+        passed: result.passed,
+        diagnostics: result.diagnostics,
+        source_path: path_display(&args.source),
+        source_identity,
+        evaluator_identity,
+        analysis_projection_identity,
+        receipt_identity,
+        receipt_path,
+        receipt: result.receipt,
+    };
+    print_json_report(&report, "Marigold analysis report")?;
+    if report.passed {
+        Ok(EXIT_SUCCESS)
+    } else {
+        Ok(EXIT_FAILURE)
+    }
+}
+
+fn analyze_marigold_source(source: &str) -> CliResult<MarigoldProgramAnalysis> {
+    let upstream = marigold_grammar::marigold_analyze(source)
+        .map_err(|error| CliError(format!("Marigold analysis failed: {error}")))?;
+    let projection = serde_json::to_value(upstream)
+        .map_err(|error| CliError(format!("Marigold analysis projection failed: {error}")))?;
+    serde_json::from_value(projection).map_err(|error| {
+        CliError(format!(
+            "Marigold analysis normalization into Kamacite DTOs failed: {error}"
+        ))
+    })
+}
+
+fn build_marigold_analysis_input(
+    source_bytes: &[u8],
+    analysis: MarigoldProgramAnalysis,
+) -> CliResult<MarigoldAnalysisInput> {
+    let analyzer = MarigoldAnalyzerDescriptor::default();
+    let evaluator_identity = marigold_evaluator_identity(&analyzer)
+        .map_err(|error| CliError(format!("Marigold evaluator identity failed: {error}")))?;
+    let analysis_projection_identity = marigold_analysis_projection_identity(&analysis)
+        .map_err(|error| CliError(format!("Marigold projection identity failed: {error}")))?;
+    Ok(MarigoldAnalysisInput {
+        analyzer,
+        source_bytes: source_bytes.to_vec(),
+        source_identity: compute_identity(IdentityDomain::Source, source_bytes),
+        evaluator_identity,
+        analysis,
+        declared_analysis_projection_identity: Some(analysis_projection_identity),
+        checked_laws: MARIGOLD_REQUIRED_CHECKED_LAWS
+            .iter()
+            .map(|value| (*value).to_string())
+            .collect(),
+        non_claims: MARIGOLD_REQUIRED_NON_CLAIMS
+            .iter()
+            .map(|value| (*value).to_string())
+            .collect(),
+        semantic_claims: Vec::new(),
+    })
 }
 
 fn read_function_address_sources(
@@ -2467,7 +2638,7 @@ fn read_manifest_json<T: for<'de> Deserialize<'de>>(
 fn resolve_under_root(root: &Path, path: &Path) -> CliResult<PathBuf> {
     if path.is_absolute() {
         return Err(CliError(format!(
-            "manifest path must be relative: {}",
+            "path must be relative: {}",
             path.display()
         )));
     }
@@ -2476,16 +2647,105 @@ fn resolve_under_root(root: &Path, path: &Path) -> CliResult<PathBuf> {
         .any(|component| matches!(component, Component::ParentDir))
     {
         return Err(CliError(format!(
-            "manifest path cannot escape root: {}",
+            "path cannot escape root: {}",
             path.display()
         )));
     }
     Ok(root.join(path))
 }
 
+fn resolve_existing_under_root(root: &Path, path: &Path, label: &str) -> CliResult<PathBuf> {
+    let resolved = resolve_under_root(root, path)?;
+    let canonical_root = std::fs::canonicalize(root).map_err(|error| {
+        CliError(format!(
+            "canonicalize failed for root {}: {error}",
+            root.display()
+        ))
+    })?;
+    let canonical_resolved = std::fs::canonicalize(&resolved).map_err(|error| {
+        CliError(format!(
+            "canonicalize failed for {label} {}: {error}",
+            resolved.display()
+        ))
+    })?;
+    if !canonical_resolved.starts_with(&canonical_root) {
+        return Err(CliError(format!(
+            "{label} cannot escape canonical root {}: {}",
+            canonical_root.display(),
+            path.display()
+        )));
+    }
+    Ok(canonical_resolved)
+}
+
+fn resolve_output_under_root(root: &Path, path: &Path, label: &str) -> CliResult<PathBuf> {
+    let resolved = resolve_under_root(root, path)?;
+    let Some(parent) = resolved.parent() else {
+        return Err(CliError(format!(
+            "{label} has no parent directory: {}",
+            resolved.display()
+        )));
+    };
+    std::fs::create_dir_all(parent).map_err(|error| {
+        CliError(format!(
+            "create dir failed for {}: {error}",
+            parent.display()
+        ))
+    })?;
+    let canonical_root = std::fs::canonicalize(root).map_err(|error| {
+        CliError(format!(
+            "canonicalize failed for root {}: {error}",
+            root.display()
+        ))
+    })?;
+    let canonical_parent = std::fs::canonicalize(parent).map_err(|error| {
+        CliError(format!(
+            "canonicalize failed for {label} parent {}: {error}",
+            parent.display()
+        ))
+    })?;
+    if !canonical_parent.starts_with(&canonical_root) {
+        return Err(CliError(format!(
+            "{label} cannot escape canonical root {}: {}",
+            canonical_root.display(),
+            path.display()
+        )));
+    }
+    if let Ok(metadata) = std::fs::symlink_metadata(&resolved)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(CliError(format!(
+            "{label} cannot be a symbolic link: {}",
+            path.display()
+        )));
+    }
+    Ok(resolved)
+}
+
 fn read_path(path: &Path) -> CliResult<Vec<u8>> {
     std::fs::read(path)
         .map_err(|error| CliError(format!("read failed for {}: {error}", path.display())))
+}
+
+fn read_bounded_path(path: &Path, maximum_bytes: usize, label: &str) -> CliResult<Vec<u8>> {
+    let read_limit = u64::try_from(maximum_bytes)
+        .ok()
+        .and_then(|value| value.checked_add(1))
+        .ok_or_else(|| CliError(format!("{label} byte bound is not representable")))?;
+    let file = std::fs::File::open(path)
+        .map_err(|error| CliError(format!("read failed for {}: {error}", path.display())))?;
+    let mut reader = file.take(read_limit);
+    let mut bytes = Vec::with_capacity(maximum_bytes);
+    reader
+        .read_to_end(&mut bytes)
+        .map_err(|error| CliError(format!("read failed for {}: {error}", path.display())))?;
+    if bytes.len() > maximum_bytes {
+        return Err(CliError(format!(
+            "{label} exceeds {maximum_bytes} bytes: {}",
+            path.display()
+        )));
+    }
+    Ok(bytes)
 }
 
 fn write_path(path: &Path, bytes: &[u8]) -> CliResult<()> {
@@ -2510,6 +2770,7 @@ fn print_help() {
          kamacite-validate check-manifest-projection [--source PATH] [--projection PATH]\n\
          kamacite-validate export-valence-receipt --receipt PATH --conformance PATH [--root PATH] [--source-spans PATH] [--golden PATH] [--update-golden] [--update-report PATH]\n\
          kamacite-validate emit-function-address-receipt --report PATH --source KEY=PATH [--root PATH] [--out PATH] [--valence-out PATH]\n\
+         kamacite-validate analyze-marigold --source PATH [--root PATH] [--out PATH]\n\
          kamacite-validate docs collect|check|render|run-cells|update [--config PATH] [--format FORMAT] [--profile PROFILE] [--target TARGET]"
     );
 }
@@ -2528,6 +2789,9 @@ mod tests {
     const TEST_FUNCTION_NAME: &str = "f";
     const TEST_CANONICALIZER: &str = "octet-source-token-function-address-v1";
     const TEST_OCTET_VERSION: &str = "octet-test";
+    const TEST_MARIGOLD_SOURCE: &str = "range(0, 100).map(double).filter(is_odd).return";
+    const TEST_MALFORMED_MARIGOLD_SOURCE: &str = "range(0, 100).map(";
+    const TEST_MARIGOLD_SOURCE_PATH: &str = "fixtures/marigold-analysis/valid.marigold";
 
     fn projection_json(fixture_id: &str) -> String {
         format!(
@@ -2842,6 +3106,62 @@ mod tests {
     #[test]
     fn rejects_malformed_function_address_source_flag() {
         let result = parse_source_assignment("missing-separator");
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn parses_bounded_marigold_analysis_command() {
+        let result = parse_command(vec![
+            "analyze-marigold".to_string(),
+            "--source".to_string(),
+            TEST_MARIGOLD_SOURCE_PATH.to_string(),
+        ]);
+
+        assert!(matches!(
+            result,
+            Ok(Command::AnalyzeMarigold(MarigoldAnalysisArgs {
+                source,
+                out: None,
+                ..
+            })) if source.as_path() == Path::new(TEST_MARIGOLD_SOURCE_PATH)
+        ));
+    }
+
+    #[test]
+    fn rejects_marigold_analysis_without_source() {
+        let result = parse_command(vec!["analyze-marigold".to_string()]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn valid_marigold_source_maps_into_an_advisory_receipt() {
+        let analysis_result = analyze_marigold_source(TEST_MARIGOLD_SOURCE);
+        assert!(analysis_result.is_ok());
+        let Ok(analysis) = analysis_result else {
+            return;
+        };
+        assert!(!analysis.streams.is_empty());
+        let input_result = build_marigold_analysis_input(TEST_MARIGOLD_SOURCE.as_bytes(), analysis);
+        assert!(input_result.is_ok());
+        let Ok(input) = input_result else {
+            return;
+        };
+        let receipt_result = build_marigold_analysis_receipt(&input);
+        assert!(receipt_result.is_ok());
+        let Ok(receipt_result) = receipt_result else {
+            return;
+        };
+
+        assert!(receipt_result.passed);
+        assert!(receipt_result.diagnostics.is_empty());
+        assert!(receipt_result.receipt.is_some());
+    }
+
+    #[test]
+    fn malformed_marigold_source_is_rejected_before_receipt_construction() {
+        let result = analyze_marigold_source(TEST_MALFORMED_MARIGOLD_SOURCE);
 
         assert!(result.is_err());
     }

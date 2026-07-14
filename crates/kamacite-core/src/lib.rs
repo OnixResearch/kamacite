@@ -13,6 +13,7 @@ mod evidence_chain;
 mod fixture;
 mod function_address;
 mod identity;
+mod marigold_analysis;
 mod proof_evidence;
 mod receipt;
 mod valence_export;
@@ -76,6 +77,16 @@ pub use function_address::{
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,
+};
+pub use marigold_analysis::{
+    MARIGOLD_ANALYSIS_CANONICAL_CODEC, MARIGOLD_ANALYSIS_EVIDENCE_ROLE,
+    MARIGOLD_ANALYSIS_JSON_PROJECTION, MARIGOLD_ANALYSIS_PROFILE, MARIGOLD_ANALYSIS_SCHEMA_VERSION,
+    MARIGOLD_ANALYZER_TOOL, MARIGOLD_ANALYZER_VERSION, MARIGOLD_MAX_SOURCE_BYTES,
+    MARIGOLD_REQUIRED_CHECKED_LAWS, MARIGOLD_REQUIRED_NON_CLAIMS, MarigoldAnalysisInput,
+    MarigoldAnalysisReceiptBody, MarigoldAnalysisReceiptEnvelope, MarigoldAnalysisReceiptResult,
+    MarigoldAnalyzerDescriptor, MarigoldProgramAnalysis, MarigoldStreamAnalysis,
+    build_marigold_analysis_receipt, marigold_analysis_projection_identity,
+    marigold_evaluator_identity, validate_marigold_analysis,
 };
 pub use proof_evidence::{
     TRELLIS_PROOF_PROFILE_CANONICAL_CODEC, TRELLIS_PROOF_PROFILE_JSON_PROJECTION,
