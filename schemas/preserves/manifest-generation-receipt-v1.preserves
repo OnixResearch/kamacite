@@ -1,0 +1,29 @@
+; Kamacite manifest-generation receipt canonical body schema v1.
+; The receipt identity is BLAKE3 over canonical packed Preserves emitted by
+; preserves-rs 5.0.0-rc.7 for ManifestGenerationReceiptBody.
+
+ManifestGenerationReceiptBody = <ManifestGenerationReceiptBody {
+  schema: "kamacite.manifest-generation-receipt.v1",
+  source_identity: Identity,
+  contract_identity: Identity,
+  evaluator_profile: "nickel-reference-cli-1.17.0",
+  evaluator_descriptor: "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+  evaluator_identity: Identity,
+  projection_identity: Identity,
+  checked_laws: [
+    "complete-nickel-projection-bound",
+    "closed-manifest-contract-bound",
+    "evaluator-profile-bound"
+  ],
+  non_claims: [
+    "not Nickel evaluator correctness",
+    "not proof of future deterministic evaluation",
+    "not Nickel source semantic correctness"
+  ]
+}>
+
+Identity = <Identity {
+  domain: symbol,
+  algorithm: "blake3",
+  hex: string
+}>

@@ -88,39 +88,39 @@ r[kamacite.validation_harness.fixture_manifest.full_corpus_authority.complete_so
 
 ### Requirement: Fixture manifest projection identity
 
-r[kamacite.validation_harness.fixture_manifest.projection_identity] The Nickel fixture manifest MUST bind the runtime projection with a BLAKE3 projection identity. The projection identity MUST be computed over the exact runtime projection bytes that the shell consumes, and normal validation MUST NOT rewrite that projection identity implicitly.
+r[kamacite.validation_harness.fixture_manifest.projection_identity] Kamacite MUST bind the runtime projection with a BLAKE3 projection identity in checked generation evidence. The projection identity MUST be computed over the exact runtime projection bytes that the shell consumes, and normal validation MUST NOT rewrite the source, projection, or generation receipt implicitly.
 
-#### Scenario: Source declares projection identity
+#### Scenario: Generation receipt binds projection identity
 
 r[kamacite.validation_harness.fixture_manifest.projection_identity.source_declared]
 
-- GIVEN the CLI is configured with a source manifest and runtime projection
+- GIVEN the CLI is configured with a Nickel source manifest, closed contract, generation receipt, and runtime projection
 - WHEN it loads the projection for validation
-- THEN it MUST compute the projection BLAKE3 identity and compare it with the identity declared by the source manifest before trusting fixture results.
+- THEN it MUST compute the projection BLAKE3 identity and compare it with the identity bound by the generation receipt before trusting fixture results.
 
 ### Requirement: Fixture manifest projection freshness
 
-r[kamacite.validation_harness.fixture_manifest.projection_freshness] Default harness validation MUST fail closed when the runtime JSON projection is stale relative to the source-declared projection identity. The failure MUST be deterministic and MUST NOT mutate the Nickel source, runtime projection, or golden receipts.
+r[kamacite.validation_harness.fixture_manifest.projection_freshness] Default harness validation MUST fail closed when the runtime JSON projection is stale relative to checked generation evidence binding the exact source, contract, evaluator profile, and projection bytes. The failure MUST be deterministic and MUST NOT mutate the Nickel source, runtime projection, generation receipt, or golden receipts.
 
 #### Scenario: Matching projection is accepted
 
 r[kamacite.validation_harness.fixture_manifest.projection_freshness.matching_projection]
 
-- GIVEN the Nickel source declares the BLAKE3 identity of the current runtime JSON projection
+- GIVEN checked generation evidence binds the current source, contract, evaluator profile, and runtime JSON projection
 - WHEN default validation loads the manifest
-- THEN validation MUST continue to fixture execution and receipt comparison.
+- THEN validation MUST continue to fixture execution and receipt comparison without executing Nickel.
 
 #### Scenario: Stale projection is rejected
 
 r[kamacite.validation_harness.fixture_manifest.projection_freshness.stale_projection]
 
-- GIVEN the runtime JSON projection bytes differ from the identity declared by the Nickel source
+- GIVEN the runtime JSON projection bytes differ from the identity bound by checked generation evidence
 - WHEN default validation loads the manifest
-- THEN validation MUST fail closed with a deterministic projection-stale diagnostic and MUST NOT rewrite evidence.
+- THEN validation MUST fail closed with deterministic manifest-generation mismatch evidence and MUST NOT rewrite evidence.
 
 ### Requirement: Fixture manifest ID alignment
 
-r[kamacite.validation_harness.fixture_manifest.fixture_id_alignment] The validation shell MUST compare source-declared fixture IDs with runtime projection fixture IDs before trusting the projection. A missing, duplicate, reordered, or extra projection fixture ID MUST be reported deterministically before fixture receipts are trusted.
+r[kamacite.validation_harness.fixture_manifest.fixture_id_alignment] The validation shell MUST bind the complete ordered fixture projection before trusting it. Missing, duplicate, reordered, or extra fixtures MUST change the checked projection identity or fail structural validation before fixture receipts are trusted.
 
 #### Scenario: Fixture ID drift is rejected
 
@@ -128,7 +128,47 @@ r[kamacite.validation_harness.fixture_manifest.fixture_id_alignment.drift]
 
 - GIVEN the Nickel source manifest and runtime JSON projection name different fixture IDs or the same fixture IDs in different order
 - WHEN default validation loads the projection
-- THEN validation MUST fail closed with deterministic fixture-ID drift evidence.
+- THEN validation MUST fail closed with deterministic manifest-generation mismatch evidence.
+
+### Requirement: Freshness covers the complete manifest projection
+
+r[kamacite.findings.manifest_semantic_freshness.complete_projection] Before fixture materialization, Kamacite MUST compare the complete checked Nickel manifest projection with the exact runtime projection bytes. Fixture metadata, payload descriptors, verdicts, classes, requirements, non-claims, laws, golden paths, and identities MUST all participate.
+
+#### Scenario: Verdict changes while IDs remain stable
+
+- GIVEN the Nickel source changes one or more fixture verdicts without changing fixture IDs or the old embedded projection hash
+- WHEN default validation checks freshness
+- THEN validation MUST fail before fixture execution with deterministic source/projection drift evidence.
+
+### Requirement: Manifest payloads use a closed typed contract
+
+r[kamacite.findings.manifest_semantic_freshness.typed_contract] The Nickel manifest contract MUST define closed payload alternatives for every admitted fixture kind and MUST reject missing required fields, unsupported kinds, and invalid field types before projection trust.
+
+#### Scenario: Dynamic payload omits required identity
+
+- GIVEN a fixture payload kind requires a declared identity but the Nickel source omits it
+- WHEN the manifest contract is evaluated
+- THEN export MUST fail and no runtime projection or generation receipt MUST be accepted.
+
+### Requirement: Default trust uses checked generation evidence
+
+r[kamacite.findings.manifest_semantic_freshness.generation_receipt] Default validation MUST either obtain a checked Nickel export or verify a generation receipt binding exact Nickel source identity, contract identity, evaluator/profile identity, and runtime projection identity. Lexical assignment or fixture-ID extraction MUST NOT establish freshness.
+
+#### Scenario: Source changed after projection generation
+
+- GIVEN a generation receipt binds an earlier Nickel source identity and unchanged runtime JSON
+- WHEN the source bytes change
+- THEN default validation MUST reject the stale generation receipt without rewriting source or projection files.
+
+### Requirement: Textual spoofing fails closed
+
+r[kamacite.findings.manifest_semantic_freshness.negative_cases] Manifest freshness tests MUST cover malformed Nickel, comments or strings containing assignment-like text, duplicate fixture IDs, reordered or extra fixtures, metadata-only drift, and stale evaluator or contract identity.
+
+#### Scenario: Comment contains a matching hash
+
+- GIVEN malformed or divergent Nickel text contains a comment or string that resembles the expected projection assignment and fixture IDs
+- WHEN freshness validation runs
+- THEN the text MUST NOT satisfy projection trust and validation MUST fail deterministically.
 
 ### Requirement: Harness core and runner boundary
 

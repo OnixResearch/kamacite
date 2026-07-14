@@ -17,6 +17,7 @@ pub enum DiagnosticCode {
     IncompleteEffectSignature,
     IncompleteMetadata,
     LossyProjectionOverclaim,
+    ManifestGenerationMismatch,
     MissingCheckedLaw,
     MissingConformanceEntry,
     MissingInput,

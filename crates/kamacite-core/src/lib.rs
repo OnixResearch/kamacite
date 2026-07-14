@@ -13,6 +13,7 @@ mod evidence_chain;
 mod fixture;
 mod function_address;
 mod identity;
+mod manifest_freshness;
 mod preserves_codec;
 mod proof_evidence;
 mod receipt;
@@ -79,6 +80,13 @@ pub use function_address::{
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,
+};
+pub use manifest_freshness::{
+    MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE,
+    MANIFEST_GENERATION_PRESERVES_ROOT_LABEL, MANIFEST_GENERATION_PRESERVES_VERSION,
+    MANIFEST_GENERATION_RECEIPT_SCHEMA, ManifestGenerationInput, ManifestGenerationReceipt,
+    ManifestGenerationReceiptBody, ManifestGenerationValidation, build_manifest_generation_receipt,
+    validate_manifest_generation_receipt,
 };
 pub use preserves_codec::{
     CanonicalPreservesArtifact, PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC,

@@ -93,7 +93,6 @@
             chmod -R u+w source
             cd source
           '';
-          manifestProjectionIdentity = "10694659591006cb20d19eb18ab24745f10fc84200edaa41f91d4826f749c162";
           valenceConformanceIdentity = "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830";
           staleProjectionIdentity = "0000000000000000000000000000000000000000000000000000000000000000";
         in
@@ -124,6 +123,7 @@
               "--all-targets"
             ];
             cargoTestFlags = [ "--workspace" ];
+            nativeBuildInputs = [ pkgs.nickel ];
           };
 
           clippy = pkgs.rustPlatform.buildRustPackage {
@@ -168,7 +168,9 @@
             ${copySource}
             ${kamacite} check-manifest-projection \
               --source fixtures/manifest.ncl \
+              --contract fixtures/manifest-contract.ncl \
               --projection fixtures/manifest.json >manifest-projection.json
+            ${kamacite} generate-manifest --root . >manifest-generation.json
             touch $out
           '';
 
@@ -259,13 +261,12 @@
               }
               ''
                 ${copySource}
-                substituteInPlace fixtures/manifest.ncl \
-                  --replace-fail '${manifestProjectionIdentity}' '${staleProjectionIdentity}'
+                printf '\n' >> fixtures/manifest.json
                 if ${kamacite} validate --root . --manifest fixtures/manifest.json >stale-manifest.out 2>stale-manifest.err; then
-                  echo "expected stale manifest projection validation to fail" >&2
+                  echo "expected stale manifest generation evidence to fail" >&2
                   exit 1
                 fi
-                grep -q "manifest-projection-stale" stale-manifest.out stale-manifest.err
+                grep -q "projection_identity" stale-manifest.out stale-manifest.err
                 touch $out
               '';
 
