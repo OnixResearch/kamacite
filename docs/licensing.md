@@ -10,6 +10,6 @@
 
 The core must not depend on `kamacite-cli`. The CLI may depend on the core. Core consumers receive no implicit filesystem, evaluator, process, or network authority.
 
-Complete texts are in `LICENSES/MIT.txt`, `LICENSES/Apache-2.0.txt`, and `LICENSES/AGPL-3.0-or-later.txt`.
+Complete texts are in `LICENSES/MIT.txt`, `LICENSES/Apache-2.0.txt`, and `LICENSES/AGPL-3.0-or-later.txt`. Each Cargo package directory carries the applicable text so package archives are self-contained.
 
 Prior grants remain valid. Package licensing is outside canonical envelope, Preserves-value, adapter, target-artifact, and receipt identity unless a versioned schema explicitly includes it. This map does not establish legal compliance or behavioral correctness.
