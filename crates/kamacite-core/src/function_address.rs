@@ -4,15 +4,22 @@ use crate::receipt::ReceiptError;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
-pub const FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str = "kamacite.function-address-receipt.v1";
+pub const FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str = "kamacite.function-address-receipt.v2";
 pub const FUNCTION_ADDRESS_CANONICAL_CODEC: &str =
-    "kamacite-preserves-canonical-binary-function-address-receipt-v1";
+    "kamacite-preserves-canonical-binary-function-address-receipt-v2";
 pub const FUNCTION_ADDRESS_JSON_PROJECTION: &str =
-    "kamacite.function-address-receipt.v1.compat-json";
+    "kamacite.function-address-receipt.v2.compat-json";
 pub const FUNCTION_ADDRESS_VALENCE_PROJECTION_SCHEMA_VERSION: &str =
-    "kamacite.function-address-valence-projection.v1";
+    "kamacite.function-address-valence-projection.v2";
+pub const FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION: &str =
+    "kamacite.function-address-producer-profile.v1";
+pub const LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION: &str =
+    "kamacite.function-address-receipt.v1";
+pub const LEGACY_FUNCTION_ADDRESS_CANONICAL_CODEC: &str =
+    "kamacite-preserves-canonical-binary-function-address-receipt-v1";
+pub const LEGACY_TOOL_VERSION_UNBOUND_CAVEAT: &str = "tool-version-unbound";
 const CANONICAL_BYTES_PREFIX: &[u8] =
-    b"kamacite-preserves-canonical-binary:function-address-receipt:v1\n";
+    b"kamacite-preserves-canonical-binary:function-address-receipt:v2\n";
 const REQUIREMENT_CONTRACT: &str = "r[kamacite.function_address_receipts.contract]";
 const REQUIREMENT_VALIDATION: &str = "r[kamacite.function_address_receipts.validation]";
 const REQUIREMENT_OCTET_INTEROP: &str = "r[kamacite.function_address_receipts.octet_interop]";
@@ -28,12 +35,24 @@ const REQUIREMENT_PRESERVES_HASH: &str =
     "r[kamacite.function_address_receipts.preserves_authority.hash]";
 const REQUIREMENT_JSON_PROJECTION: &str =
     "r[kamacite.function_address_receipts.preserves_authority.json_projection]";
+const REQUIREMENT_PRODUCER_PROFILE: &str =
+    "r[kamacite.findings.function_address_producer.profile_identity]";
+const REQUIREMENT_PRODUCER_BINDING: &str =
+    "r[kamacite.findings.function_address_producer.receipt_binding]";
+const REQUIREMENT_PRODUCER_MIGRATION: &str =
+    "r[kamacite.findings.function_address_producer.migration]";
 const NON_CLAIM_HOST_LANGUAGE_SEMANTICS: &str = "not host-language semantic correctness";
 const NON_CLAIM_COMPILER_CORRECTNESS: &str = "not compiler correctness";
 const NON_CLAIM_RUNTIME_BEHAVIOR: &str = "not runtime behavior";
 const NON_CLAIM_WHOLE_PROGRAM_SAFETY: &str = "not whole-program safety";
 const NON_CLAIM_VERIFIER_SOUNDNESS: &str = "not verifier soundness";
 const NON_CLAIM_RELEASE_ELIGIBILITY: &str = "not release eligibility";
+const NON_CLAIM_PRODUCER_CORRECTNESS: &str = "not producer correctness";
+const NON_CLAIM_SEMANTIC_DEPENDENCY_CLOSURE: &str = "not semantic dependency closure";
+const REQUIRED_PRODUCER_NON_CLAIMS: &[&str] = &[
+    NON_CLAIM_PRODUCER_CORRECTNESS,
+    NON_CLAIM_SEMANTIC_DEPENDENCY_CLOSURE,
+];
 const REQUIRED_NON_CLAIMS: &[&str] = &[
     NON_CLAIM_HOST_LANGUAGE_SEMANTICS,
     NON_CLAIM_COMPILER_CORRECTNESS,
@@ -63,6 +82,33 @@ pub struct FunctionAddressProducer {
     pub name: String,
     pub canonicalizer: String,
     pub tool_version: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build_identity: Option<Identity>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub normative_options: BTreeMap<String, String>,
+    #[serde(default)]
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FunctionAddressProducerProfile {
+    pub schema_version: String,
+    pub producer_kind: String,
+    pub tool_version: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build_identity: Option<Identity>,
+    pub canonicalizer_profile: String,
+    pub normative_options: BTreeMap<String, String>,
+    pub non_claims: Vec<String>,
+    pub profile_identity: Identity,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum FunctionAddressReceiptTrustClass {
+    CurrentProducerBound,
+    LegacyToolVersionUnbound,
+    Unsupported,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -145,6 +191,8 @@ pub struct FunctionAddressReceiptBody {
     pub schema_version: String,
     pub canonical_codec: String,
     pub producer: FunctionAddressProducer,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub producer_profile: Option<FunctionAddressProducerProfile>,
     pub source_envelopes: Vec<FunctionAddressSourceEnvelope>,
     pub functions: Vec<FunctionAddressRecord>,
     pub dependency_edges: Vec<FunctionAddressDependencyEdge>,
@@ -179,6 +227,7 @@ pub struct FunctionAddressValenceProjection {
     pub schema_version: String,
     pub source_receipt_identity: Identity,
     pub producer: String,
+    pub producer_profile_identity: Identity,
     pub artifact_identities: Vec<FunctionAddressValenceArtifact>,
     pub dependency_edges: Vec<FunctionAddressDependencyEdge>,
     pub non_claims: Vec<String>,
@@ -209,8 +258,7 @@ struct CanonicalFunctionRecord {
 struct CanonicalReceipt<'a> {
     schema_version: &'a str,
     canonical_codec: &'a str,
-    producer_name: &'a str,
-    canonicalizer: &'a str,
+    producer_profile_identity: Identity,
     source_envelopes: Vec<CanonicalSourceEnvelope>,
     functions: Vec<CanonicalFunctionRecord>,
     dependency_edges: Vec<CanonicalDependencyEdge>,
@@ -226,11 +274,91 @@ struct CanonicalDependencyEdge {
     dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
 }
 
+#[derive(Serialize)]
+struct CanonicalProducerProfile<'a> {
+    schema_version: &'a str,
+    producer_kind: &'a str,
+    tool_version: &'a str,
+    build_identity: &'a Option<Identity>,
+    canonicalizer_profile: &'a str,
+    normative_options: &'a BTreeMap<String, String>,
+    non_claims: Vec<String>,
+}
+
+pub fn function_address_producer_profile(
+    producer: &FunctionAddressProducer,
+) -> Result<FunctionAddressProducerProfile, Vec<Diagnostic>> {
+    let diagnostics = validate_function_address_producer(producer);
+    if !diagnostics.is_empty() {
+        return Err(diagnostics);
+    }
+    function_address_producer_profile_unchecked(producer).map_err(|error| {
+        vec![Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_PRODUCER_PROFILE,
+            "producer",
+            format!("producer profile canonicalization failed: {error}"),
+        )]
+    })
+}
+
+fn function_address_producer_profile_unchecked(
+    producer: &FunctionAddressProducer,
+) -> Result<FunctionAddressProducerProfile, ReceiptError> {
+    let canonical = canonical_producer_profile(producer);
+    let profile_identity = compute_identity(
+        IdentityDomain::Adapter,
+        &crate::receipt::canonical_json_bytes(&canonical)?,
+    );
+    Ok(FunctionAddressProducerProfile {
+        schema_version: FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION.to_string(),
+        producer_kind: producer.name.clone(),
+        tool_version: producer.tool_version.clone(),
+        build_identity: producer.build_identity.clone(),
+        canonicalizer_profile: producer.canonicalizer.clone(),
+        normative_options: producer.normative_options.clone(),
+        non_claims: sorted_strings(&producer.non_claims),
+        profile_identity,
+    })
+}
+
+pub fn classify_function_address_receipt(
+    body: &FunctionAddressReceiptBody,
+) -> FunctionAddressReceiptTrustClass {
+    if body.schema_version == FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION
+        && body.canonical_codec == FUNCTION_ADDRESS_CANONICAL_CODEC
+        && body.producer_profile.is_some()
+    {
+        return FunctionAddressReceiptTrustClass::CurrentProducerBound;
+    }
+    if body.schema_version == LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION
+        && body.canonical_codec == LEGACY_FUNCTION_ADDRESS_CANONICAL_CODEC
+        && body
+            .caveats
+            .iter()
+            .any(|caveat| caveat.reason == LEGACY_TOOL_VERSION_UNBOUND_CAVEAT)
+    {
+        return FunctionAddressReceiptTrustClass::LegacyToolVersionUnbound;
+    }
+    FunctionAddressReceiptTrustClass::Unsupported
+}
+
+fn canonical_producer_profile(producer: &FunctionAddressProducer) -> CanonicalProducerProfile<'_> {
+    CanonicalProducerProfile {
+        schema_version: FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION,
+        producer_kind: &producer.name,
+        tool_version: &producer.tool_version,
+        build_identity: &producer.build_identity,
+        canonicalizer_profile: &producer.canonicalizer,
+        normative_options: &producer.normative_options,
+        non_claims: sorted_strings(&producer.non_claims),
+    }
+}
+
 pub fn validate_function_address_receipt(
     input: &FunctionAddressReceiptInput,
 ) -> FunctionAddressReceiptResult {
-    let mut diagnostics = Vec::new();
-    validate_producer(&input.producer, &mut diagnostics);
+    let mut diagnostics = validate_function_address_producer(&input.producer);
     validate_non_claims(&input.non_claims, &mut diagnostics);
     validate_semantic_claims(&input.semantic_claims, &mut diagnostics);
     let source_identities = validate_sources(&input.source_envelopes, &mut diagnostics);
@@ -284,7 +412,7 @@ pub fn function_address_canonical_bytes(
     input: &FunctionAddressReceiptInput,
 ) -> Result<Vec<u8>, ReceiptError> {
     let source_identities = source_identity_map(&input.source_envelopes);
-    let canonical = canonical_receipt(input, &source_identities);
+    let canonical = canonical_receipt(input, &source_identities)?;
     let mut bytes = CANONICAL_BYTES_PREFIX.to_vec();
     bytes.extend(crate::receipt::canonical_json_bytes(&canonical)?);
     Ok(bytes)
@@ -338,6 +466,47 @@ pub fn validate_function_address_json_projection(
             .with_detail("expected", FUNCTION_ADDRESS_CANONICAL_CODEC),
         );
     }
+    match classify_function_address_receipt(&projection.receipt) {
+        FunctionAddressReceiptTrustClass::CurrentProducerBound => {}
+        FunctionAddressReceiptTrustClass::LegacyToolVersionUnbound => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedSchemaVersion,
+                REQUIREMENT_PRODUCER_MIGRATION,
+                "receipt.schema_version",
+                "legacy function-address receipt is recorded-only because tool version was not bound",
+            )
+            .with_detail("caveat", LEGACY_TOOL_VERSION_UNBOUND_CAVEAT),
+        ),
+        FunctionAddressReceiptTrustClass::Unsupported => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedSchemaVersion,
+            REQUIREMENT_PRODUCER_MIGRATION,
+            "receipt.schema_version",
+            "function-address receipt does not satisfy the current producer-bound profile",
+        )),
+    }
+    match (
+        function_address_producer_profile(&projection.receipt.producer),
+        projection.receipt.producer_profile.as_ref(),
+    ) {
+        (Ok(computed), Some(declared)) if &computed == declared => {}
+        (Ok(computed), Some(declared)) => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_PRODUCER_BINDING,
+                "receipt.producer_profile",
+                "displayed producer fields do not match the bound producer profile",
+            )
+            .with_detail("declared", declared.profile_identity.hex.as_str())
+            .with_detail("computed", computed.profile_identity.hex.as_str()),
+        ),
+        (Ok(_), None) => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_PRODUCER_BINDING,
+            "receipt.producer_profile",
+            "current function-address receipt requires a bound producer profile",
+        )),
+        (Err(mut inner), _) => diagnostics.append(&mut inner),
+    }
     let input = FunctionAddressReceiptInput {
         producer: projection.receipt.producer.clone(),
         source_envelopes: projection.receipt.source_envelopes.clone(),
@@ -375,8 +544,20 @@ pub fn validate_function_address_json_projection(
 
 pub fn export_function_address_valence_projection(
     receipt: &FunctionAddressReceiptEnvelope,
-) -> FunctionAddressValenceProjection {
-    let mut artifact_identities = Vec::new();
+) -> Result<FunctionAddressValenceProjection, Vec<Diagnostic>> {
+    let Some(producer_profile) = &receipt.body.producer_profile else {
+        return Err(vec![Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_PRODUCER_BINDING,
+            "producer_profile",
+            "Valence projection requires a current producer-bound function-address receipt",
+        )]);
+    };
+    let mut artifact_identities = vec![FunctionAddressValenceArtifact {
+        role: "producer-profile".to_string(),
+        key: producer_profile.schema_version.clone(),
+        identity: producer_profile.profile_identity.clone(),
+    }];
     for source in &receipt.body.source_envelopes {
         artifact_identities.push(FunctionAddressValenceArtifact {
             role: "source-envelope".to_string(),
@@ -393,31 +574,34 @@ pub fn export_function_address_valence_projection(
     }
     artifact_identities
         .sort_by(|left, right| left.key.cmp(&right.key).then(left.role.cmp(&right.role)));
-    FunctionAddressValenceProjection {
+    Ok(FunctionAddressValenceProjection {
         schema_version: FUNCTION_ADDRESS_VALENCE_PROJECTION_SCHEMA_VERSION.to_string(),
         source_receipt_identity: receipt.receipt_identity.clone(),
         producer: receipt.body.producer.name.clone(),
+        producer_profile_identity: producer_profile.profile_identity.clone(),
         artifact_identities,
         dependency_edges: receipt.body.dependency_edges.clone(),
         non_claims: receipt.body.non_claims.clone(),
-    }
+    })
 }
 
 fn build_receipt(
     input: &FunctionAddressReceiptInput,
     source_identities: &BTreeMap<String, Identity>,
 ) -> Result<FunctionAddressReceiptEnvelope, ReceiptError> {
+    let producer_profile = function_address_producer_profile_unchecked(&input.producer)?;
     let body = FunctionAddressReceiptBody {
         schema_version: FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION.to_string(),
         canonical_codec: FUNCTION_ADDRESS_CANONICAL_CODEC.to_string(),
         producer: input.producer.clone(),
+        producer_profile: Some(producer_profile),
         source_envelopes: input.source_envelopes.clone(),
         functions: input.functions.clone(),
         dependency_edges: input.dependency_edges.clone(),
         caveats: input.caveats.clone(),
         non_claims: input.non_claims.clone(),
     };
-    let canonical = canonical_receipt(input, source_identities);
+    let canonical = canonical_receipt(input, source_identities)?;
     let mut bytes = CANONICAL_BYTES_PREFIX.to_vec();
     bytes.extend(crate::receipt::canonical_json_bytes(&canonical)?);
     let receipt_identity = compute_identity(IdentityDomain::Receipt, &bytes);
@@ -430,7 +614,7 @@ fn build_receipt(
 fn canonical_receipt<'a>(
     input: &'a FunctionAddressReceiptInput,
     source_identities: &BTreeMap<String, Identity>,
-) -> CanonicalReceipt<'a> {
+) -> Result<CanonicalReceipt<'a>, ReceiptError> {
     let mut source_envelopes = source_identities
         .values()
         .cloned()
@@ -496,17 +680,25 @@ fn canonical_receipt<'a>(
     non_claims.sort();
     non_claims.dedup();
 
-    CanonicalReceipt {
+    Ok(CanonicalReceipt {
         schema_version: FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
         canonical_codec: FUNCTION_ADDRESS_CANONICAL_CODEC,
-        producer_name: &input.producer.name,
-        canonicalizer: &input.producer.canonicalizer,
+        producer_profile_identity: function_address_producer_profile_unchecked(&input.producer)?
+            .profile_identity,
         source_envelopes,
         functions,
         dependency_edges,
         caveats,
         non_claims,
-    }
+    })
+}
+
+pub fn validate_function_address_producer(producer: &FunctionAddressProducer) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    validate_producer(producer, &mut diagnostics);
+    diagnostics.sort();
+    diagnostics.dedup();
+    diagnostics
 }
 
 fn validate_producer(producer: &FunctionAddressProducer, diagnostics: &mut Vec<Diagnostic>) {
@@ -522,14 +714,71 @@ fn validate_producer(producer: &FunctionAddressProducer, diagnostics: &mut Vec<D
             .with_detail("expected", OCTET_PRODUCER),
         );
     }
-    if producer.canonicalizer.is_empty() {
+    if producer.canonicalizer.trim().is_empty() {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
             REQUIREMENT_CONTRACT,
             "producer.canonicalizer",
-            "function-address receipts must bind the producer canonicalizer identity",
+            "function-address receipts must bind the producer canonicalizer profile and version",
+        ));
+    } else if !has_versioned_canonicalizer_profile(&producer.canonicalizer) {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_PRODUCER_PROFILE,
+            "producer.canonicalizer",
+            "canonicalizer profile must end in an explicit numeric version such as -v1",
         ));
     }
+    if producer.tool_version.trim().is_empty() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_PRODUCER_PROFILE,
+            "producer.tool_version",
+            "function-address producer profiles require a tool version or build cohort",
+        ));
+    }
+    if let Some(build_identity) = &producer.build_identity {
+        validate_identity_domain(
+            build_identity,
+            IdentityDomain::Adapter,
+            "producer.build_identity",
+            diagnostics,
+        );
+    }
+    for (key, value) in &producer.normative_options {
+        if key.trim().is_empty() || value.trim().is_empty() {
+            diagnostics.push(Diagnostic::new(
+                DiagnosticCode::IncompleteMetadata,
+                REQUIREMENT_PRODUCER_PROFILE,
+                "producer.normative_options",
+                "producer normative option keys and values must be non-empty",
+            ));
+        }
+    }
+    for required in REQUIRED_PRODUCER_NON_CLAIMS {
+        if !producer
+            .non_claims
+            .iter()
+            .any(|non_claim| non_claim == required)
+        {
+            diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingNonClaim,
+                    REQUIREMENT_PRODUCER_PROFILE,
+                    "producer.non_claims",
+                    "producer profile is missing a required non-claim",
+                )
+                .with_detail("missing", *required),
+            );
+        }
+    }
+}
+
+fn has_versioned_canonicalizer_profile(value: &str) -> bool {
+    let Some((profile, version)) = value.rsplit_once("-v") else {
+        return false;
+    };
+    !profile.is_empty() && !version.is_empty() && version.bytes().all(|byte| byte.is_ascii_digit())
 }
 
 fn validate_non_claims(non_claims: &[String], diagnostics: &mut Vec<Diagnostic>) {
@@ -913,6 +1162,13 @@ fn source_identity_map(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<St
         .collect()
 }
 
+fn sorted_strings(values: &[String]) -> Vec<String> {
+    let mut values = values.to_vec();
+    values.sort();
+    values.dedup();
+    values
+}
+
 fn source_byte_lengths(
     sources: &[FunctionAddressSourceEnvelope],
     diagnostics: &mut Vec<Diagnostic>,
@@ -971,6 +1227,12 @@ mod tests {
                 name: OCTET_PRODUCER.to_string(),
                 canonicalizer: CANONICALIZER.to_string(),
                 tool_version: TOOL_VERSION.to_string(),
+                build_identity: None,
+                normative_options: BTreeMap::new(),
+                non_claims: REQUIRED_PRODUCER_NON_CLAIMS
+                    .iter()
+                    .map(|claim| (*claim).to_string())
+                    .collect(),
             },
             source_envelopes: vec![FunctionAddressSourceEnvelope {
                 key: SOURCE_KEY.to_string(),
@@ -1115,6 +1377,171 @@ mod tests {
     }
 
     #[test]
+    fn producer_profile_and_receipt_identity_bind_normative_provenance() {
+        let original_input = valid_input();
+        let original_profile_result = function_address_producer_profile(&original_input.producer);
+        assert!(original_profile_result.is_ok());
+        let Ok(original_profile) = original_profile_result else {
+            return;
+        };
+        let original_receipt_result = validate_function_address_receipt(&original_input);
+        assert!(original_receipt_result.receipt.is_some());
+        let Some(original_receipt) = original_receipt_result.receipt else {
+            return;
+        };
+
+        let mut changed_version = original_input.clone();
+        changed_version.producer.tool_version = "octet-test-v2".to_string();
+        let version_profile_result = function_address_producer_profile(&changed_version.producer);
+        assert!(version_profile_result.is_ok());
+        let Ok(version_profile) = version_profile_result else {
+            return;
+        };
+        let version_receipt_result = validate_function_address_receipt(&changed_version);
+        assert!(version_receipt_result.receipt.is_some());
+        let Some(version_receipt) = version_receipt_result.receipt else {
+            return;
+        };
+
+        let mut changed_canonicalizer = original_input.clone();
+        changed_canonicalizer.producer.canonicalizer =
+            "octet-source-token-function-address-v2".to_string();
+        let canonicalizer_profile_result =
+            function_address_producer_profile(&changed_canonicalizer.producer);
+        assert!(canonicalizer_profile_result.is_ok());
+        let Ok(canonicalizer_profile) = canonicalizer_profile_result else {
+            return;
+        };
+
+        let mut changed_options = original_input.clone();
+        changed_options
+            .producer
+            .normative_options
+            .insert("macro-expansion".to_string(), "disabled".to_string());
+        let options_profile_result = function_address_producer_profile(&changed_options.producer);
+        assert!(options_profile_result.is_ok());
+        let Ok(options_profile) = options_profile_result else {
+            return;
+        };
+
+        assert_ne!(
+            original_profile.profile_identity,
+            version_profile.profile_identity
+        );
+        assert_ne!(
+            original_profile.profile_identity,
+            canonicalizer_profile.profile_identity
+        );
+        assert_ne!(
+            original_profile.profile_identity,
+            options_profile.profile_identity
+        );
+        assert_ne!(
+            original_receipt.receipt_identity,
+            version_receipt.receipt_identity
+        );
+    }
+
+    #[test]
+    fn projection_rejects_unbound_displayed_producer_version() {
+        let receipt_result = valid_receipt();
+        assert!(receipt_result.is_ok());
+        let Ok(receipt) = receipt_result else {
+            return;
+        };
+        let mut projection = function_address_json_projection(&receipt);
+        projection.receipt.producer.tool_version = "unbound-version".to_string();
+
+        let diagnostics = validate_function_address_json_projection(&projection);
+
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == DiagnosticCode::StaleIdentity
+                && diagnostic.field == "receipt.producer_profile"
+        }));
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == DiagnosticCode::StaleIdentity
+                && diagnostic.field == "receipt_identity"
+        }));
+    }
+
+    #[test]
+    fn legacy_v1_receipts_require_the_tool_version_unbound_caveat() {
+        let receipt_result = valid_receipt();
+        assert!(receipt_result.is_ok());
+        let Ok(receipt) = receipt_result else {
+            return;
+        };
+        let mut legacy = receipt.body;
+        legacy.schema_version = LEGACY_FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION.to_string();
+        legacy.canonical_codec = LEGACY_FUNCTION_ADDRESS_CANONICAL_CODEC.to_string();
+        legacy.producer_profile = None;
+
+        assert_eq!(
+            classify_function_address_receipt(&legacy),
+            FunctionAddressReceiptTrustClass::Unsupported
+        );
+
+        legacy.caveats.push(FunctionAddressCaveat {
+            locator: "*".to_string(),
+            reason: LEGACY_TOOL_VERSION_UNBOUND_CAVEAT.to_string(),
+        });
+        assert_eq!(
+            classify_function_address_receipt(&legacy),
+            FunctionAddressReceiptTrustClass::LegacyToolVersionUnbound
+        );
+    }
+
+    #[test]
+    fn producer_profile_rejects_missing_provenance_and_non_claims() {
+        let mut input = valid_input();
+        input.producer.tool_version.clear();
+        input.producer.canonicalizer = "unversioned-canonicalizer".to_string();
+        input.producer.build_identity = Some(compute_identity(
+            IdentityDomain::Receipt,
+            b"wrong producer build domain",
+        ));
+        input.producer.non_claims.clear();
+        input
+            .producer
+            .normative_options
+            .insert(String::new(), String::new());
+
+        let result = validate_function_address_receipt(&input);
+
+        assert!(!result.passed);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.field == "producer.tool_version" })
+        );
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.field == "producer.non_claims" })
+        );
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.field == "producer.canonicalizer" })
+        );
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.field == "producer.build_identity" })
+        );
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.field == "producer.normative_options" })
+        );
+    }
+
+    #[test]
     fn projection_drift_or_json_authority_is_rejected() {
         let receipt_result = valid_receipt();
         assert!(
@@ -1211,7 +1638,14 @@ mod tests {
             return;
         };
 
-        let projection = export_function_address_valence_projection(&receipt);
+        let projection_result = export_function_address_valence_projection(&receipt);
+        assert!(
+            projection_result.is_ok(),
+            "valid receipt must export to Valence"
+        );
+        let Ok(projection) = projection_result else {
+            return;
+        };
 
         assert_eq!(projection.source_receipt_identity, receipt.receipt_identity);
         assert_eq!(

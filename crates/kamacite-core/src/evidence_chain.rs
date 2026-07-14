@@ -519,7 +519,9 @@ mod tests {
         FUNCTION_ADDRESS_CANONICAL_CODEC, FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
         FunctionAddressProducer, FunctionAddressReceiptBody, FunctionAddressReceiptEnvelope,
         FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
+        function_address_producer_profile,
     };
+    use std::collections::BTreeMap;
 
     const NON_CLAIM_FUNCTION_SEMANTICS: &str = "not host-language semantic correctness";
     const SOURCE_KEY: &str = "src/lib.rs";
@@ -727,15 +729,24 @@ mod tests {
     fn function_address_receipt() -> FunctionAddressReceiptEnvelope {
         let source_identity = compute_identity(IdentityDomain::Source, SOURCE_BYTES.as_bytes());
         let function_address = compute_identity(IdentityDomain::FunctionAddress, b"function f");
+        let producer = FunctionAddressProducer {
+            name: "octet".to_string(),
+            canonicalizer: "octet-source-token-function-address-v1".to_string(),
+            tool_version: "octet-test".to_string(),
+            build_identity: None,
+            normative_options: BTreeMap::new(),
+            non_claims: vec![
+                "not producer correctness".to_string(),
+                "not semantic dependency closure".to_string(),
+            ],
+        };
+        let producer_profile = function_address_producer_profile(&producer).ok();
         FunctionAddressReceiptEnvelope {
             body: FunctionAddressReceiptBody {
                 schema_version: FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION.to_string(),
                 canonical_codec: FUNCTION_ADDRESS_CANONICAL_CODEC.to_string(),
-                producer: FunctionAddressProducer {
-                    name: "octet".to_string(),
-                    canonicalizer: "octet-source-token-function-address-v1".to_string(),
-                    tool_version: "octet-test".to_string(),
-                },
+                producer,
+                producer_profile,
                 source_envelopes: vec![FunctionAddressSourceEnvelope {
                     key: SOURCE_KEY.to_string(),
                     display_path: SOURCE_KEY.to_string(),

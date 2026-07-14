@@ -201,6 +201,41 @@
             touch $out
           '';
 
+          function-address-receipt-validation =
+            pkgs.runCommand "kamacite-function-address-receipt-validation"
+              {
+                nativeBuildInputs = [
+                  pkgs.diffutils
+                  pkgs.gnugrep
+                ];
+              }
+              ''
+                ${copySource}
+                mkdir -p target/function-address-check
+                ${kamacite} emit-function-address-receipt \
+                  --root . \
+                  --report fixtures/function-address/octet-valid-report.json \
+                  --source fixtures/function-address/source.rs=fixtures/function-address/source.rs \
+                  --out target/function-address-check/receipt.json \
+                  --valence-out target/function-address-check/valence.json \
+                  >target/function-address-check/report.json
+                cmp fixtures/function-address/octet-valid-receipt-v2.json \
+                  target/function-address-check/receipt.json
+                cmp fixtures/function-address/octet-valid-valence-v2.json \
+                  target/function-address-check/valence.json
+                if ${kamacite} emit-function-address-receipt \
+                  --root . \
+                  --report fixtures/function-address/octet-wrong-domain-report.json \
+                  --source fixtures/function-address/source.rs=fixtures/function-address/source.rs \
+                  >target/function-address-check/negative.out 2>&1; then
+                  echo "expected wrong-domain function-address fixture to fail" >&2
+                  exit 1
+                fi
+                grep -q "invalid structured Octet identity" \
+                  target/function-address-check/negative.out
+                touch $out
+              '';
+
           stale-manifest-detects-drift =
             pkgs.runCommand "kamacite-stale-manifest-detects-drift"
               {

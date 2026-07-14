@@ -1,0 +1,63 @@
+{
+  "schema_version": "kamacite.function-address-valence-projection.v2",
+  "source_receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "de8532885f97db6a522a7f399f4752e8552d7d293ea3c3c57e0567405bf8e66c"
+  },
+  "producer": "octet",
+  "producer_profile_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "18fdabfe13678f1ad1cf421d1b8e9ebcbec4ac4aeb4b896fc6383f23f465a538"
+  },
+  "artifact_identities": [
+    {
+      "role": "source-envelope",
+      "key": "fixtures/function-address/source.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2c9045e6f614e37c42e7d6f1823994d17444b21dc4d8f1b037d08bfbd21e5570"
+      }
+    },
+    {
+      "role": "function-address",
+      "key": "fixtures/function-address/source.rs::f",
+      "identity": {
+        "domain": "function-address",
+        "algorithm": "blake3",
+        "hex": "680af701c517bd7cad2f6e6f0b218a45d463afd40a84ba53eeb36f65bfd45a79"
+      }
+    },
+    {
+      "role": "producer-profile",
+      "key": "kamacite.function-address-producer-profile.v1",
+      "identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "18fdabfe13678f1ad1cf421d1b8e9ebcbec4ac4aeb4b896fc6383f23f465a538"
+      }
+    }
+  ],
+  "dependency_edges": [
+    {
+      "from_locator": "fixtures/function-address/source.rs::f",
+      "to_locator": "fixtures/function-address/source.rs::f",
+      "dependency_identity": {
+        "domain": "dependency-closure",
+        "algorithm": "blake3",
+        "hex": "ed1de155a2a993ebf754c7b2045a1d1be5abbbdfad0f64cde535719871587498"
+      },
+      "dependency_identity_kind": "source-token-dependency-set"
+    }
+  ],
+  "non_claims": [
+    "not host-language semantic correctness",
+    "not compiler correctness",
+    "not runtime behavior",
+    "not whole-program safety",
+    "not verifier soundness",
+    "not release eligibility"
+  ]
+}

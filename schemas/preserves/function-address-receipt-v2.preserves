@@ -1,0 +1,90 @@
+; Kamacite function-address receipt schema v2.
+; Canonical Preserves binary bytes bind the content-addressed producer profile.
+; Legacy v1 identities remain tool-version-unbound recorded evidence only.
+
+FunctionAddressReceiptEnvelope = <function-address-receipt-envelope-v2 {
+  body: FunctionAddressReceipt,
+  receipt-identity: Identity,
+  projection-binding: JsonProjectionBinding | false
+}>
+
+JsonProjectionBinding = {
+  compatibility-projection: "kamacite.function-address-receipt.v2.compat-json",
+  canonical-identity-owner: "kamacite-preserves-canonical-binary-function-address-receipt-v2",
+  receipt-identity: Identity
+}
+
+FunctionAddressReceipt = <function-address-receipt-v2 {
+  producer: Producer,
+  producer-profile: ProducerProfile,
+  source-envelopes: [SourceEnvelope ...],
+  functions: [FunctionRecord ...],
+  dependency-edges: [DependencyEdge ...],
+  caveats: [Caveat ...],
+  non-claims: [string ...]
+}>
+
+Producer = {
+  name: string,
+  canonicalizer: string,
+  tool-version: string,
+  build-identity: Identity | false,
+  normative-options: {string: string ...},
+  non-claims: [string ...]
+}
+
+ProducerProfile = <function-address-producer-profile-v1 {
+  schema-version: "kamacite.function-address-producer-profile.v1",
+  producer-kind: string,
+  tool-version: string,
+  build-identity: Identity | false,
+  canonicalizer-profile: string,
+  normative-options: {string: string ...},
+  non-claims: [string ...],
+  profile-identity: Identity
+}>
+
+SourceEnvelope = {
+  key: string,
+  display-path: string,
+  language: string,
+  source-bytes: bytes,
+  source-identity: Identity
+}
+
+FunctionRecord = {
+  locator: string,
+  display-name: string,
+  source-key: string,
+  span: Span | false,
+  function-address: Identity,
+  dependency-closure: Identity | false,
+  dependency-identity-kind: DependencyIdentityKind | false,
+  caveats: [string ...]
+}
+
+Span = {
+  source-key: string,
+  start-byte: uint,
+  end-byte: uint
+}
+
+DependencyEdge = {
+  from-locator: string,
+  to-locator: string,
+  dependency-identity: Identity | false,
+  dependency-identity-kind: DependencyIdentityKind | false
+}
+
+DependencyIdentityKind = "source-token-dependency-set" | "source-shape-dependency-set"
+
+Caveat = {
+  locator: string,
+  reason: string
+}
+
+Identity = {
+  domain: string,
+  algorithm: "blake3",
+  hex: string
+}

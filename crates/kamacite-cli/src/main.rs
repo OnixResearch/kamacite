@@ -80,6 +80,10 @@ const GOLDEN_STATUS_MISSING_RESULT: &str = "missing-result";
 const GOLDEN_STATUS_MISSING_RECEIPT: &str = "missing-receipt";
 const GOLDEN_STATUS_MISSING_GOLDEN: &str = "missing-golden";
 const GOLDEN_STATUS_MISMATCHED: &str = "mismatched";
+const FUNCTION_ADDRESS_PRODUCER_ROLE_OPTION: &str = "producer-role";
+const FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_CORRECTNESS: &str = "not producer correctness";
+const FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_SEMANTIC_CLOSURE: &str =
+    "not semantic dependency closure";
 
 #[derive(Debug)]
 struct CliError(String);
@@ -208,6 +212,7 @@ struct DocsCommandReport {
 
 #[derive(Clone, Debug, Deserialize)]
 struct OctetFunctionAddressReport {
+    #[serde(default)]
     canonicalizer: String,
     #[serde(default)]
     tool: String,
@@ -229,6 +234,16 @@ struct OctetFunctionAddressProducer {
     name: String,
     #[serde(default)]
     role: String,
+    #[serde(default)]
+    canonicalizer: String,
+    #[serde(default)]
+    tool_version: String,
+    #[serde(default)]
+    build_identity: Option<OctetIdentity>,
+    #[serde(default)]
+    normative_options: BTreeMap<String, String>,
+    #[serde(default)]
+    non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -238,7 +253,7 @@ struct OctetFunctionAddressSourceEnvelope {
     #[serde(default, alias = "display_path")]
     path: String,
     language: String,
-    source_identity: String,
+    source_identity: OctetIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -249,15 +264,26 @@ struct OctetFunctionAddressRecord {
     name: String,
     #[serde(default)]
     source_key: String,
+    #[serde(default)]
     start_byte: u64,
+    #[serde(default)]
     end_byte: u64,
-    function_address: String,
+    #[serde(default)]
+    span: Option<FunctionAddressSpan>,
+    function_address: OctetIdentity,
     #[serde(default, alias = "dependency_closure")]
-    dependency_set_hash: Option<String>,
+    dependency_set_hash: Option<OctetIdentity>,
     #[serde(default)]
     dependency_identity_kind: Option<String>,
     #[serde(default)]
     caveats: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(untagged)]
+enum OctetIdentity {
+    Text(String),
+    Structured(Identity),
 }
 
 #[derive(Debug, Serialize)]
@@ -1170,7 +1196,12 @@ fn run_emit_function_address_receipt(args: FunctionAddressReceiptArgs) -> CliRes
 
     let (valence_projection, valence_projection_path) = match &args.valence_out {
         Some(path) => {
-            let projection = export_function_address_valence_projection(&receipt);
+            let projection =
+                export_function_address_valence_projection(&receipt).map_err(|diagnostics| {
+                    CliError(format!(
+                        "function-address Valence projection validation failed: {diagnostics:?}"
+                    ))
+                })?;
             let rendered = serde_json::to_string_pretty(&projection).map_err(|error| {
                 CliError(format!(
                     "function-address Valence projection serialization failed: {error}"
@@ -1251,16 +1282,44 @@ fn build_function_address_receipt_input(
         .into_iter()
         .map(octet_function_record)
         .collect::<CliResult<Vec<_>>>()?;
-    let tool_version = if report.tool.is_empty() {
-        report.producer.role
+    let producer = report.producer;
+    let canonicalizer = if report.canonicalizer.is_empty() {
+        producer.canonicalizer.clone()
     } else {
-        report.tool
+        report.canonicalizer
     };
+    let tool_version = if !report.tool.is_empty() {
+        report.tool
+    } else if !producer.tool_version.is_empty() {
+        producer.tool_version.clone()
+    } else {
+        producer.role.clone()
+    };
+    let build_identity = producer
+        .build_identity
+        .as_ref()
+        .map(|identity| octet_identity(IdentityDomain::Adapter, identity))
+        .transpose()?;
+    let mut normative_options = producer.normative_options;
+    if !producer.role.is_empty() {
+        normative_options.insert(
+            FUNCTION_ADDRESS_PRODUCER_ROLE_OPTION.to_string(),
+            producer.role,
+        );
+    }
+    let mut producer_non_claims = producer.non_claims;
+    producer_non_claims.push(FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_CORRECTNESS.to_string());
+    producer_non_claims.push(FUNCTION_ADDRESS_PRODUCER_NON_CLAIM_SEMANTIC_CLOSURE.to_string());
+    producer_non_claims.sort();
+    producer_non_claims.dedup();
     Ok(FunctionAddressReceiptInput {
         producer: FunctionAddressProducer {
-            name: report.producer.name,
-            canonicalizer: report.canonicalizer,
+            name: producer.name,
+            canonicalizer,
             tool_version,
+            build_identity,
+            normative_options,
+            non_claims: producer_non_claims,
         },
         source_envelopes: normalized_sources,
         functions,
@@ -1285,22 +1344,30 @@ fn octet_function_record(record: OctetFunctionAddressRecord) -> CliResult<Functi
     } else {
         record.source_key
     };
-    Ok(FunctionAddressRecord {
-        locator: format!("{}::{}", record.path, record.name),
-        display_name: record.name,
-        source_key: source_key.clone(),
-        span: Some(FunctionAddressSpan {
-            source_key,
+    let locator = if record.path.contains("::") {
+        record.path.clone()
+    } else {
+        format!("{}::{}", record.path, record.name)
+    };
+    let span = record.span.or_else(|| {
+        Some(FunctionAddressSpan {
+            source_key: source_key.clone(),
             start_byte: record.start_byte,
             end_byte: record.end_byte,
-        }),
+        })
+    });
+    Ok(FunctionAddressRecord {
+        locator,
+        display_name: record.name,
+        source_key,
+        span,
         function_address: octet_identity(
             IdentityDomain::FunctionAddress,
             &record.function_address,
         )?,
         dependency_closure: record
             .dependency_set_hash
-            .as_deref()
+            .as_ref()
             .map(|hash| octet_identity(IdentityDomain::DependencyClosure, hash))
             .transpose()?,
         dependency_identity_kind: record
@@ -1312,11 +1379,22 @@ fn octet_function_record(record: OctetFunctionAddressRecord) -> CliResult<Functi
     })
 }
 
-fn octet_identity(domain: IdentityDomain, value: &str) -> CliResult<Identity> {
-    let hex = value.strip_prefix("b3:").unwrap_or(value);
-    let parsed = Blake3Hex::parse(hex.to_owned())
-        .map_err(|error| CliError(format!("invalid Octet BLAKE3 identity `{value}`: {error}")))?;
-    Ok(Identity::new(domain, parsed))
+fn octet_identity(domain: IdentityDomain, value: &OctetIdentity) -> CliResult<Identity> {
+    match value {
+        OctetIdentity::Text(value) => {
+            let hex = value.strip_prefix("b3:").unwrap_or(value);
+            let parsed = Blake3Hex::parse(hex.to_owned()).map_err(|error| {
+                CliError(format!("invalid Octet BLAKE3 identity `{value}`: {error}"))
+            })?;
+            Ok(Identity::new(domain, parsed))
+        }
+        OctetIdentity::Structured(identity) => {
+            identity
+                .validate_domain(domain)
+                .map_err(|error| CliError(format!("invalid structured Octet identity: {error}")))?;
+            Ok(identity.clone())
+        }
+    }
 }
 
 fn octet_dependency_kind(value: &str) -> CliResult<FunctionAddressDependencyIdentityKind> {
@@ -2471,12 +2549,20 @@ mod tests {
             producer: OctetFunctionAddressProducer {
                 name: "octet".to_string(),
                 role: "rust-source-shape-producer".to_string(),
+                canonicalizer: String::new(),
+                tool_version: String::new(),
+                build_identity: None,
+                normative_options: BTreeMap::new(),
+                non_claims: Vec::new(),
             },
             source_envelopes: vec![OctetFunctionAddressSourceEnvelope {
                 key: TEST_SOURCE_KEY.to_string(),
                 path: TEST_SOURCE_PATH.to_string(),
                 language: "rust".to_string(),
-                source_identity: format!("b3:{}", source_identity.hex.as_str()),
+                source_identity: OctetIdentity::Text(format!(
+                    "b3:{}",
+                    source_identity.hex.as_str()
+                )),
             }],
             records: vec![OctetFunctionAddressRecord {
                 path: TEST_SOURCE_PATH.to_string(),
@@ -2484,8 +2570,15 @@ mod tests {
                 source_key: TEST_SOURCE_KEY.to_string(),
                 start_byte: 0,
                 end_byte: u64::try_from(TEST_SOURCE_BYTES.len()).unwrap_or(u64::MAX),
-                function_address: format!("b3:{}", function_address.hex.as_str()),
-                dependency_set_hash: Some(format!("b3:{}", dependency_identity.hex.as_str())),
+                span: None,
+                function_address: OctetIdentity::Text(format!(
+                    "b3:{}",
+                    function_address.hex.as_str()
+                )),
+                dependency_set_hash: Some(OctetIdentity::Text(format!(
+                    "b3:{}",
+                    dependency_identity.hex.as_str()
+                ))),
                 dependency_identity_kind: Some("source-token-set".to_string()),
                 caveats: Vec::new(),
             }],
@@ -2606,6 +2699,116 @@ mod tests {
             "unexpected diagnostics: {:?}",
             result.diagnostics
         );
+    }
+
+    #[test]
+    fn accepts_compatibility_shaped_function_address_fixture() {
+        const FIXTURE_SOURCE_KEY: &str = "fixtures/function-address/source.rs";
+        let report_result = serde_json::from_str::<OctetFunctionAddressReport>(include_str!(
+            "../../../fixtures/function-address/octet-valid-report.json"
+        ));
+        assert!(report_result.is_ok());
+        let Ok(report) = report_result else {
+            return;
+        };
+        let mut sources = BTreeMap::new();
+        sources.insert(
+            FIXTURE_SOURCE_KEY.to_string(),
+            include_str!("../../../fixtures/function-address/source.rs").to_string(),
+        );
+
+        let input_result = build_function_address_receipt_input(report, &sources);
+        assert!(input_result.is_ok());
+        let Ok(input) = input_result else {
+            return;
+        };
+        let result = validate_function_address_receipt(&input);
+
+        assert!(
+            result.passed,
+            "unexpected diagnostics: {:?}",
+            result.diagnostics
+        );
+        assert_eq!(input.producer.tool_version, "octet-fixture");
+        assert_eq!(input.producer.canonicalizer, TEST_CANONICALIZER);
+    }
+
+    #[test]
+    fn migration_evidence_binds_reference_v1_and_v2_identities() {
+        const FIXTURE_SOURCE_KEY: &str = "fixtures/function-address/source.rs";
+        let report_result = serde_json::from_str::<OctetFunctionAddressReport>(include_str!(
+            "../../../fixtures/function-address/octet-valid-report.json"
+        ));
+        assert!(report_result.is_ok());
+        let Ok(report) = report_result else {
+            return;
+        };
+        let migration_result = serde_json::from_str::<serde_json::Value>(include_str!(
+            "../../../fixtures/function-address/migration-v1-to-v2.json"
+        ));
+        assert!(migration_result.is_ok());
+        let Ok(migration) = migration_result else {
+            return;
+        };
+        let mut sources = BTreeMap::new();
+        sources.insert(
+            FIXTURE_SOURCE_KEY.to_string(),
+            include_str!("../../../fixtures/function-address/source.rs").to_string(),
+        );
+        let input_result = build_function_address_receipt_input(report, &sources);
+        assert!(input_result.is_ok());
+        let Ok(input) = input_result else {
+            return;
+        };
+        let receipt_result = validate_function_address_receipt(&input);
+        assert!(receipt_result.receipt.is_some());
+        let Some(receipt) = receipt_result.receipt else {
+            return;
+        };
+        let Some(profile) = receipt.body.producer_profile else {
+            assert!(!receipt_result.passed);
+            return;
+        };
+
+        assert_eq!(
+            migration
+                .pointer("/current/receipt_identity")
+                .and_then(serde_json::Value::as_str),
+            Some(receipt.receipt_identity.hex.as_str())
+        );
+        assert_eq!(
+            migration
+                .pointer("/current/producer_profile_identity")
+                .and_then(serde_json::Value::as_str),
+            Some(profile.profile_identity.hex.as_str())
+        );
+        assert_ne!(
+            migration
+                .pointer("/legacy/receipt_identity")
+                .and_then(serde_json::Value::as_str),
+            Some(receipt.receipt_identity.hex.as_str())
+        );
+    }
+
+    #[test]
+    fn rejects_compatibility_fixture_with_wrong_identity_domain() {
+        const FIXTURE_SOURCE_KEY: &str = "fixtures/function-address/source.rs";
+        let report_result = serde_json::from_str::<OctetFunctionAddressReport>(include_str!(
+            "../../../fixtures/function-address/octet-wrong-domain-report.json"
+        ));
+        assert!(report_result.is_ok());
+        let Ok(report) = report_result else {
+            return;
+        };
+        let mut sources = BTreeMap::new();
+        sources.insert(
+            FIXTURE_SOURCE_KEY.to_string(),
+            include_str!("../../../fixtures/function-address/source.rs").to_string(),
+        );
+
+        let result = build_function_address_receipt_input(report, &sources);
+
+        assert!(result.is_err());
     }
 
     #[test]

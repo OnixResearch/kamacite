@@ -1,0 +1,23 @@
+{
+  "schema_version": "kamacite.function-address-receipt-migration.v1",
+  "fixture": "octet-valid-report",
+  "legacy": {
+    "receipt_schema": "kamacite.function-address-receipt.v1",
+    "canonical_codec": "kamacite-preserves-canonical-binary-function-address-receipt-v1",
+    "receipt_identity": "8b96b74eeb1a636b31f47c7040956c85936f3436828b8901c9bedb26bf4bc7c8",
+    "trust_class": "legacy-tool-version-unbound",
+    "required_caveat": "tool-version-unbound"
+  },
+  "current": {
+    "receipt_schema": "kamacite.function-address-receipt.v2",
+    "canonical_codec": "kamacite-preserves-canonical-binary-function-address-receipt-v2",
+    "producer_profile_identity": "18fdabfe13678f1ad1cf421d1b8e9ebcbec4ac4aeb4b896fc6383f23f465a538",
+    "receipt_identity": "de8532885f97db6a522a7f399f4752e8552d7d293ea3c3c57e0567405bf8e66c",
+    "trust_class": "current-producer-bound"
+  },
+  "non_claims": [
+    "legacy identity did not bind tool version",
+    "migration does not rewrite or reinterpret the legacy identity",
+    "producer binding does not prove producer correctness"
+  ]
+}
