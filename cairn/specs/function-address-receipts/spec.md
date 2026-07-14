@@ -196,15 +196,19 @@ r[kamacite.function_address_receipts.cli_adapter.negative]
 - WHEN the operator requests Valence projection output
 - THEN the projection MUST bind the source Kamacite receipt identity and MUST fail closed if receipt validation failed.
 
-### Requirement: Documentation and final validation
+### Requirement: Documentation states ownership boundaries
 
-r[kamacite.function_address_receipts.docs] Kamacite documentation MUST describe function-address receipts as portable identity/interchange evidence with explicit Octet, Valence, Mantle, and Cairn ownership boundaries. r[kamacite.function_address_receipts.final_validation] The change MUST include positive and negative fixtures plus focused validation before archive.
+r[kamacite.function_address_receipts.docs] Kamacite documentation MUST describe function-address receipts as portable identity/interchange evidence with explicit Octet, Valence, Mantle, and Cairn ownership boundaries.
 
 #### Scenario: Boundary is visible
 r[kamacite.function_address_receipts.docs.boundary]
 - GIVEN an operator reads Kamacite function-address receipt documentation
 - WHEN the supported claim is described
 - THEN the documentation MUST state that Kamacite preserves receipt identity and interchange facts only, while producers own source analysis and downstream systems own evidence linkage or release gates.
+
+### Requirement: Final validation evidence is reviewable
+
+r[kamacite.function_address_receipts.final_validation] The change MUST include positive and negative fixtures plus focused validation before archive.
 
 #### Scenario: Validation covers pass and fail cases
 r[kamacite.function_address_receipts.final_validation.reviewable]
