@@ -127,6 +127,12 @@ const REQUIREMENT_FSM_TERMINAL: &str =
 const REQUIREMENT_FSM_TRACE: &str = "r[kamacite.fsms.trace_receipts.valid_path]";
 const REQUIREMENT_FSM_TRACE_IMPOSSIBLE: &str =
     "r[kamacite.fsms.trace_receipts.impossible_transition]";
+const REQUIREMENT_FSM_DESCRIPTOR_BINDING: &str =
+    "r[kamacite.findings.fsm_receipts.descriptor_binding]";
+const REQUIREMENT_FSM_COVERAGE_RECOMPUTATION: &str =
+    "r[kamacite.findings.fsm_receipts.coverage_recomputation]";
+const REQUIREMENT_FSM_TRACE_CONSISTENCY: &str =
+    "r[kamacite.findings.fsm_receipts.trace_consistency]";
 const REQUIREMENT_FSM_STACK_VALENCE: &str =
     "r[kamacite.stack_integration.fsm_valence_export.non_claims]";
 const REQUIREMENT_FSM_STACK_OCTET: &str =
@@ -208,8 +214,17 @@ const ALGEBRAIC_EFFECT_SCHEMA_VERSION: &str = "kamacite.algebraic-effect.v2";
 const ALGEBRAIC_EFFECT_ROOT_LABEL: &str = "kamacite-algebraic-effect-v2";
 const FSM_SPEC_SCHEMA_VERSION: &str = "kamacite.fsm-spec.v2";
 const FSM_SPEC_ROOT_LABEL: &str = "kamacite-fsm-spec-v2";
-const FSM_RECEIPT_SCHEMA_VERSION: &str = "kamacite.fsm-receipt.v2";
-const FSM_RECEIPT_ROOT_LABEL: &str = "kamacite-fsm-receipt-v2";
+const FSM_RECEIPT_SCHEMA_VERSION: &str = "kamacite.fsm-receipt.v3";
+const FSM_RECEIPT_ROOT_LABEL: &str = "kamacite-fsm-receipt-v3";
+const FSM_COVERAGE_SCHEMA_VERSION: &str = "kamacite.fsm-coverage.v1";
+const FSM_COVERAGE_ROOT_LABEL: &str = "FsmCoverageMaterial";
+const FSM_TRANSITION_KIND: &str = "transition";
+const FSM_STATE_UNIVERSE_KIND: &str = "state-universe";
+const FSM_EVENT_UNIVERSE_KIND: &str = "event-universe";
+const FSM_TRANSITION_COVERAGE_KIND: &str = "transition-coverage";
+const FSM_DENIAL_COVERAGE_KIND: &str = "denial-coverage";
+const FSM_EXCLUSION_COVERAGE_KIND: &str = "exclusion-coverage";
+const FSM_MISSING_CELLS_KIND: &str = "missing-cells";
 const DOCUMENTATION_IR_SCHEMA_VERSION: &str = "kamacite.documentation-ir.v2";
 const DOCUMENTATION_IR_ROOT_LABEL: &str = "kamacite-documentation-ir-v2";
 const DOCUMENTATION_RECEIPT_SCHEMA_VERSION: &str = "kamacite.documentation-receipt.v2";
@@ -593,10 +608,19 @@ pub struct FsmSpecInput {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct FsmGuardDecisionInput {
+    pub guard_id: String,
+    pub allowed: bool,
+    pub evidence_refs: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FsmTraceStepInput {
     pub from_state: String,
     pub event: String,
     pub to_state: String,
+    pub transition_identity: Option<Identity>,
+    pub guard_decisions: Vec<FsmGuardDecisionInput>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -622,6 +646,7 @@ pub struct FsmReceiptInput {
     pub trace_events: Vec<String>,
     pub trace_steps: Vec<FsmTraceStepInput>,
     pub trace_final_state: Option<String>,
+    pub descriptor: Option<Box<FsmSpecInput>>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -798,7 +823,7 @@ impl From<&FsmSpecInput> for CanonicalFsmSpec {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename = "kamacite-fsm-receipt-v2")]
+#[serde(rename = "kamacite-fsm-receipt-v3")]
 struct CanonicalFsmReceipt {
     schema_version: u32,
     receipt_kind: String,
@@ -845,6 +870,301 @@ impl From<&FsmReceiptInput> for CanonicalFsmReceipt {
             trace_final_state: input.trace_final_state.clone(),
         }
     }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+struct FsmCoverageMaterial<T> {
+    kind: String,
+    entries: Vec<T>,
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct FsmMatrixCell {
+    pub state: String,
+    pub event: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct FsmCoverageEvidence {
+    pub state_universe_identity: Identity,
+    pub event_universe_identity: Identity,
+    pub transition_coverage_identity: Identity,
+    pub denial_coverage_identity: Identity,
+    pub exclusion_coverage_identity: Identity,
+    pub missing_cells_identity: Identity,
+    pub missing_cells: Vec<FsmMatrixCell>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ValidatedFsmDescriptor {
+    pub spec_identity: Identity,
+    pub initial_state: String,
+    pub states: BTreeSet<String>,
+    pub events: BTreeSet<String>,
+    pub coverage: FsmCoverageEvidence,
+    transitions: BTreeMap<(String, String, String), (FsmTransitionRowInput, Identity)>,
+    guards: BTreeMap<String, FsmGuardInput>,
+}
+
+impl ValidatedFsmDescriptor {
+    #[must_use]
+    pub fn transition_identity(
+        &self,
+        from_state: &str,
+        event: &str,
+        to_state: &str,
+    ) -> Option<&Identity> {
+        self.transitions
+            .get(&(
+                from_state.to_string(),
+                event.to_string(),
+                to_state.to_string(),
+            ))
+            .map(|(_, identity)| identity)
+    }
+}
+
+// r[impl kamacite.findings.fsm_receipts.descriptor_binding]
+// r[impl kamacite.findings.fsm_receipts.coverage_recomputation]
+pub fn validate_fsm_descriptor(
+    input: &FsmSpecInput,
+) -> Result<ValidatedFsmDescriptor, Vec<Diagnostic>> {
+    let mut accumulator = ValidationAccumulator::default();
+    validate_fsm_spec(input, &mut accumulator);
+    if !accumulator.diagnostics.is_empty() {
+        accumulator.diagnostics.sort();
+        accumulator.diagnostics.dedup();
+        return Err(accumulator.diagnostics);
+    }
+    decode_fsm_descriptor(input).map_err(|diagnostic| vec![diagnostic])?;
+    let evidence = fsm_coverage_evidence(input).map_err(|diagnostic| vec![diagnostic])?;
+    let mut transitions = BTreeMap::new();
+    for transition in &input.transitions {
+        let identity =
+            fsm_transition_identity(transition).map_err(|diagnostic| vec![diagnostic])?;
+        transitions.insert(
+            (
+                transition.from_state.clone(),
+                transition.event.clone(),
+                transition.to_state.clone(),
+            ),
+            (transition.clone(), identity),
+        );
+    }
+    let guards = input
+        .guards
+        .iter()
+        .map(|guard| (guard.guard_id.clone(), guard.clone()))
+        .collect();
+    Ok(ValidatedFsmDescriptor {
+        spec_identity: input.declared_identity.clone(),
+        initial_state: input.initial_state.clone(),
+        states: input
+            .states
+            .iter()
+            .map(|state| state.state_id.clone())
+            .collect(),
+        events: input
+            .events
+            .iter()
+            .map(|event| event.event_id.clone())
+            .collect(),
+        coverage: evidence,
+        transitions,
+        guards,
+    })
+}
+
+fn decode_fsm_descriptor(input: &FsmSpecInput) -> Result<(), Diagnostic> {
+    let artifact = canonicalize_preserves(
+        &input.canonical_bytes,
+        PreservesSyntax::Text,
+        PreservesSchema {
+            schema_version: FSM_SPEC_SCHEMA_VERSION,
+            root_label: FSM_SPEC_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map_err(|error| {
+        Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_FSM_DESCRIPTOR_BINDING,
+            "fsm_receipt.descriptor.canonical_bytes",
+            format!("FSM descriptor canonical decode failed: {error}"),
+        )
+    })?;
+    let expected = encode_typed_preserves(
+        &CanonicalFsmSpec::from(input),
+        PreservesSchema {
+            schema_version: FSM_SPEC_SCHEMA_VERSION,
+            root_label: FSM_SPEC_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map_err(|error| {
+        Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_FSM_DESCRIPTOR_BINDING,
+            "fsm_receipt.descriptor",
+            format!("FSM descriptor typed encoding failed: {error}"),
+        )
+    })?;
+    if artifact.value != expected.value {
+        return Err(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_FSM_DESCRIPTOR_BINDING,
+            "fsm_receipt.descriptor",
+            "decoded FSM descriptor value does not match the validated descriptor DTO",
+        ));
+    }
+    Ok(())
+}
+
+fn fsm_coverage_evidence(input: &FsmSpecInput) -> Result<FsmCoverageEvidence, Diagnostic> {
+    let mut states: Vec<String> = input
+        .states
+        .iter()
+        .map(|state| state.state_id.clone())
+        .collect();
+    states.sort();
+    let mut events: Vec<String> = input
+        .events
+        .iter()
+        .map(|event| event.event_id.clone())
+        .collect();
+    events.sort();
+    let mut transitions = input.transitions.clone();
+    transitions.sort_by(|left, right| {
+        (
+            &left.from_state,
+            &left.event,
+            &left.to_state,
+            &left.guards,
+            &left.side_effect,
+        )
+            .cmp(&(
+                &right.from_state,
+                &right.event,
+                &right.to_state,
+                &right.guards,
+                &right.side_effect,
+            ))
+    });
+    let mut denials = input.denials.clone();
+    denials.sort_by(|left, right| {
+        (
+            &left.from_state,
+            &left.event,
+            &left.reason,
+            &left.guards,
+            &left.side_effect,
+            left.preserves_state,
+        )
+            .cmp(&(
+                &right.from_state,
+                &right.event,
+                &right.reason,
+                &right.guards,
+                &right.side_effect,
+                right.preserves_state,
+            ))
+    });
+    let mut exclusions = input.intentionally_unreachable_states.clone();
+    exclusions.sort();
+    exclusions.dedup();
+
+    let covered: BTreeSet<(String, String)> = input
+        .transitions
+        .iter()
+        .map(|row| (row.from_state.clone(), row.event.clone()))
+        .chain(
+            input
+                .denials
+                .iter()
+                .map(|row| (row.from_state.clone(), row.event.clone())),
+        )
+        .collect();
+    let mut missing_cells = Vec::new();
+    for state in &states {
+        for event in &events {
+            if !covered.contains(&(state.clone(), event.clone())) {
+                missing_cells.push(FsmMatrixCell {
+                    state: state.clone(),
+                    event: event.clone(),
+                });
+            }
+        }
+    }
+
+    Ok(FsmCoverageEvidence {
+        state_universe_identity: fsm_material_identity(
+            IdentityDomain::FsmUniverse,
+            FSM_STATE_UNIVERSE_KIND,
+            states,
+        )?,
+        event_universe_identity: fsm_material_identity(
+            IdentityDomain::FsmUniverse,
+            FSM_EVENT_UNIVERSE_KIND,
+            events,
+        )?,
+        transition_coverage_identity: fsm_material_identity(
+            IdentityDomain::FsmCoverage,
+            FSM_TRANSITION_COVERAGE_KIND,
+            transitions,
+        )?,
+        denial_coverage_identity: fsm_material_identity(
+            IdentityDomain::FsmCoverage,
+            FSM_DENIAL_COVERAGE_KIND,
+            denials,
+        )?,
+        exclusion_coverage_identity: fsm_material_identity(
+            IdentityDomain::FsmCoverage,
+            FSM_EXCLUSION_COVERAGE_KIND,
+            exclusions,
+        )?,
+        missing_cells_identity: fsm_material_identity(
+            IdentityDomain::FsmCoverage,
+            FSM_MISSING_CELLS_KIND,
+            missing_cells.clone(),
+        )?,
+        missing_cells,
+    })
+}
+
+fn fsm_transition_identity(transition: &FsmTransitionRowInput) -> Result<Identity, Diagnostic> {
+    fsm_material_identity(
+        IdentityDomain::FsmCoverage,
+        FSM_TRANSITION_KIND,
+        vec![transition.clone()],
+    )
+}
+
+fn fsm_material_identity<T: Serialize>(
+    domain: IdentityDomain,
+    kind: &str,
+    entries: Vec<T>,
+) -> Result<Identity, Diagnostic> {
+    let material = FsmCoverageMaterial {
+        kind: kind.to_string(),
+        entries,
+    };
+    let encoded = encode_typed_preserves(
+        &material,
+        PreservesSchema {
+            schema_version: FSM_COVERAGE_SCHEMA_VERSION,
+            root_label: FSM_COVERAGE_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map_err(|error| {
+        Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_FSM_COVERAGE_RECOMPUTATION,
+            "fsm.coverage",
+            format!("FSM coverage canonicalization failed: {error}"),
+        )
+    })?;
+    Ok(compute_identity(domain, &encoded.packed_bytes))
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -2844,11 +3164,16 @@ fn validate_fsm_receipt(input: &FsmReceiptInput, accumulator: &mut ValidationAcc
             "unsupported FSM receipt schema version rejected",
         ));
     }
+    let descriptor = validate_bound_fsm_descriptor(input, accumulator);
     validate_fsm_receipt_identities(input, accumulator);
     validate_fsm_receipt_claims(input, accumulator);
     match input.receipt_kind.as_str() {
         FSM_EXHAUSTIVENESS_RECEIPT_KIND => {}
-        FSM_TRACE_RECEIPT_KIND => validate_fsm_trace_receipt(input, accumulator),
+        FSM_TRACE_RECEIPT_KIND => {
+            if let Some(descriptor) = descriptor.as_ref() {
+                validate_fsm_trace_receipt(input, descriptor, accumulator);
+            }
+        }
         _ => accumulator.diagnostics.push(
             Diagnostic::new(
                 DiagnosticCode::UnsupportedArtifactClass,
@@ -2860,6 +3185,112 @@ fn validate_fsm_receipt(input: &FsmReceiptInput, accumulator: &mut ValidationAcc
         ),
     }
     accumulator.checked_laws.extend(input.checked_laws.clone());
+}
+
+fn validate_bound_fsm_descriptor(
+    input: &FsmReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) -> Option<ValidatedFsmDescriptor> {
+    let Some(descriptor_input) = input.descriptor.as_deref() else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_FSM_DESCRIPTOR_BINDING,
+            "fsm_receipt.descriptor",
+            "FSM receipt validation requires the bound descriptor value",
+        ));
+        return None;
+    };
+    let descriptor = match validate_fsm_descriptor(descriptor_input) {
+        Ok(descriptor) => descriptor,
+        Err(diagnostics) => {
+            accumulator.diagnostics.extend(diagnostics);
+            return None;
+        }
+    };
+    compare_fsm_evidence_identity(
+        &input.spec_identity,
+        &descriptor.spec_identity,
+        REQUIREMENT_FSM_DESCRIPTOR_BINDING,
+        "fsm_receipt.spec_identity",
+        accumulator,
+    );
+    compare_fsm_evidence_identity(
+        &input.state_universe_identity,
+        &descriptor.coverage.state_universe_identity,
+        REQUIREMENT_FSM_COVERAGE_RECOMPUTATION,
+        "fsm_receipt.state_universe_identity",
+        accumulator,
+    );
+    compare_fsm_evidence_identity(
+        &input.event_universe_identity,
+        &descriptor.coverage.event_universe_identity,
+        REQUIREMENT_FSM_COVERAGE_RECOMPUTATION,
+        "fsm_receipt.event_universe_identity",
+        accumulator,
+    );
+    compare_fsm_evidence_identity(
+        &input.transition_coverage_identity,
+        &descriptor.coverage.transition_coverage_identity,
+        REQUIREMENT_FSM_COVERAGE_RECOMPUTATION,
+        "fsm_receipt.transition_coverage_identity",
+        accumulator,
+    );
+    compare_fsm_evidence_identity(
+        &input.denial_coverage_identity,
+        &descriptor.coverage.denial_coverage_identity,
+        REQUIREMENT_FSM_COVERAGE_RECOMPUTATION,
+        "fsm_receipt.denial_coverage_identity",
+        accumulator,
+    );
+    if !descriptor.coverage.missing_cells.is_empty() {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_COVERAGE_RECOMPUTATION,
+                "fsm_receipt.missing_cells",
+                "bound FSM descriptor has uncovered state/event cells",
+            )
+            .with_detail(
+                "missing_cells_identity",
+                descriptor
+                    .coverage
+                    .missing_cells_identity
+                    .hex
+                    .as_str()
+                    .to_string(),
+            ),
+        );
+    }
+    accumulator.input_identities.insert(
+        "fsm-exclusion-coverage".to_string(),
+        descriptor.coverage.exclusion_coverage_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "fsm-missing-cells".to_string(),
+        descriptor.coverage.missing_cells_identity.clone(),
+    );
+    Some(descriptor)
+}
+
+fn compare_fsm_evidence_identity(
+    supplied: &Identity,
+    expected: &Identity,
+    requirement_id: &str,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) {
+    if supplied != expected {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                requirement_id,
+                field,
+                "FSM receipt identity does not match evidence recomputed from the bound descriptor",
+            )
+            .with_detail("expected", expected.hex.as_str().to_string())
+            .with_detail("supplied", supplied.hex.as_str().to_string()),
+        );
+    }
 }
 
 fn validate_fsm_receipt_identities(
@@ -3076,7 +3507,12 @@ fn fsm_claim_is_forbidden(claim: &str) -> bool {
         .any(|forbidden| normalized.contains(forbidden))
 }
 
-fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut ValidationAccumulator) {
+// r[impl kamacite.findings.fsm_receipts.trace_consistency]
+fn validate_fsm_trace_receipt(
+    input: &FsmReceiptInput,
+    descriptor: &ValidatedFsmDescriptor,
+    accumulator: &mut ValidationAccumulator,
+) {
     let Some(start_state) = &input.trace_start_state else {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
@@ -3095,6 +3531,19 @@ fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut Validat
         ));
         return;
     };
+    if start_state != &descriptor.initial_state {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                "fsm_receipt.trace_start_state",
+                "FSM trace start state does not match the descriptor initial state",
+            )
+            .with_detail("expected", descriptor.initial_state.clone())
+            .with_detail("supplied", start_state.clone()),
+        );
+        return;
+    }
     if input.trace_events.len() != input.trace_steps.len() {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::IncompleteMetadata,
@@ -3106,9 +3555,19 @@ fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut Validat
     }
     let mut current_state = start_state.clone();
     for (event, step) in input.trace_events.iter().zip(input.trace_steps.iter()) {
-        if step.from_state.as_str() != current_state.as_str()
-            || step.event.as_str() != event.as_str()
-        {
+        if !descriptor.events.contains(event) {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                    "fsm_receipt.trace_events",
+                    "FSM trace event is not declared by the bound descriptor",
+                )
+                .with_detail("event", event.clone()),
+            );
+            return;
+        }
+        if step.from_state != current_state || step.event != *event {
             accumulator.diagnostics.push(
                 Diagnostic::new(
                     DiagnosticCode::MissingInput,
@@ -3121,6 +3580,42 @@ fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut Validat
             );
             return;
         }
+        let key = (
+            step.from_state.clone(),
+            step.event.clone(),
+            step.to_state.clone(),
+        );
+        let Some((transition, expected_identity)) = descriptor.transitions.get(&key) else {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MissingInput,
+                    REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                    "fsm_receipt.trace_steps",
+                    "FSM trace step is not an enabled transition in the bound descriptor",
+                )
+                .with_detail("from_state", step.from_state.clone())
+                .with_detail("event", step.event.clone())
+                .with_detail("to_state", step.to_state.clone()),
+            );
+            return;
+        };
+        let Some(transition_identity) = &step.transition_identity else {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                "fsm_receipt.trace_steps.transition_identity",
+                "FSM trace step must bind its descriptor transition identity",
+            ));
+            return;
+        };
+        compare_fsm_evidence_identity(
+            transition_identity,
+            expected_identity,
+            REQUIREMENT_FSM_TRACE_CONSISTENCY,
+            "fsm_receipt.trace_steps.transition_identity",
+            accumulator,
+        );
+        validate_fsm_guard_decisions(step, transition, descriptor, accumulator);
         current_state = step.to_state.clone();
     }
     if &current_state != final_state {
@@ -3134,6 +3629,65 @@ fn validate_fsm_trace_receipt(input: &FsmReceiptInput, accumulator: &mut Validat
             .with_detail("observed", current_state)
             .with_detail("declared", final_state.clone()),
         );
+    }
+}
+
+fn validate_fsm_guard_decisions(
+    step: &FsmTraceStepInput,
+    transition: &FsmTransitionRowInput,
+    descriptor: &ValidatedFsmDescriptor,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let decisions: BTreeMap<&str, &FsmGuardDecisionInput> = step
+        .guard_decisions
+        .iter()
+        .map(|decision| (decision.guard_id.as_str(), decision))
+        .collect();
+    if decisions.len() != step.guard_decisions.len() || decisions.len() != transition.guards.len() {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_FSM_TRACE_CONSISTENCY,
+            "fsm_receipt.trace_steps.guard_decisions",
+            "FSM trace guard decisions must uniquely cover the descriptor transition guards",
+        ));
+        return;
+    }
+    for guard_id in &transition.guards {
+        let Some(guard) = descriptor.guards.get(guard_id) else {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::UndeclaredAuthority,
+                REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                "fsm_receipt.trace_steps.guard_decisions",
+                "FSM trace references an undeclared descriptor guard",
+            ));
+            continue;
+        };
+        let Some(decision) = decisions.get(guard_id.as_str()) else {
+            accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::MissingInput,
+                REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                "fsm_receipt.trace_steps.guard_decisions",
+                "FSM trace is missing required guard-decision evidence",
+            ));
+            continue;
+        };
+        let mut expected_refs = guard.required_evidence_refs.clone();
+        expected_refs.sort();
+        expected_refs.dedup();
+        let mut supplied_refs = decision.evidence_refs.clone();
+        supplied_refs.sort();
+        supplied_refs.dedup();
+        if !decision.allowed || supplied_refs != expected_refs {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::UndeclaredAuthority,
+                    REQUIREMENT_FSM_TRACE_CONSISTENCY,
+                    "fsm_receipt.trace_steps.guard_decisions",
+                    "FSM trace guard decision is denied or does not bind exact required evidence refs",
+                )
+                .with_detail("guard", guard_id.clone()),
+            );
+        }
     }
 }
 
@@ -5202,23 +5756,18 @@ mod tests {
         );
     }
 
-    fn valid_fsm_receipt_input() -> FsmReceiptInput {
+    fn valid_fsm_receipt_input() -> Result<FsmReceiptInput, Vec<Diagnostic>> {
         let spec = valid_fsm_spec_input();
+        let descriptor = validate_fsm_descriptor(&spec)?;
         let mut input = FsmReceiptInput {
             schema_version: SUPPORTED_SCHEMA_VERSION,
             receipt_kind: FSM_EXHAUSTIVENESS_RECEIPT_KIND.to_string(),
             canonical_bytes: FSM_RECEIPT_BYTES.to_vec(),
             spec_identity: spec.declared_identity.clone(),
-            state_universe_identity: compute_identity(IdentityDomain::FsmUniverse, b"idle,active"),
-            event_universe_identity: compute_identity(IdentityDomain::FsmUniverse, b"start,stop"),
-            transition_coverage_identity: compute_identity(
-                IdentityDomain::FsmCoverage,
-                b"idle/start,active/stop",
-            ),
-            denial_coverage_identity: compute_identity(
-                IdentityDomain::FsmCoverage,
-                b"idle/stop,active/start",
-            ),
+            state_universe_identity: descriptor.coverage.state_universe_identity.clone(),
+            event_universe_identity: descriptor.coverage.event_universe_identity.clone(),
+            transition_coverage_identity: descriptor.coverage.transition_coverage_identity.clone(),
+            denial_coverage_identity: descriptor.coverage.denial_coverage_identity.clone(),
             adapter_identity: compute_identity(IdentityDomain::Adapter, b"fsm-adapter"),
             dependency_identities: Vec::new(),
             octet_receipt_identities: vec![compute_identity(IdentityDomain::Receipt, b"octet-fsm")],
@@ -5238,9 +5787,16 @@ mod tests {
             trace_events: Vec::new(),
             trace_steps: Vec::new(),
             trace_final_state: None,
+            descriptor: Some(Box::new(spec)),
         };
         bind_fsm_receipt_canonical(&mut input);
-        input
+        Ok(input)
+    }
+
+    fn test_transition_identity(input: &FsmReceiptInput, index: usize) -> Option<Identity> {
+        let descriptor = input.descriptor.as_deref()?;
+        let transition = descriptor.transitions.get(index)?;
+        fsm_transition_identity(transition).ok()
     }
 
     fn fsm_receipt_fixture(
@@ -5261,17 +5817,23 @@ mod tests {
 
     #[test]
     fn accepts_fsm_receipt_with_octet_and_valence_links() {
-        let result = validate_fixture(&fsm_receipt_fixture(
-            valid_fsm_receipt_input(),
-            ValidationVerdict::Accepted,
-        ));
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok(), "{:?}", input.as_ref().err());
+        let Ok(input) = input else {
+            return;
+        };
+        let result = validate_fixture(&fsm_receipt_fixture(input, ValidationVerdict::Accepted));
         assert!(result.expectation_met);
         assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
     }
 
     #[test]
     fn rejects_fsm_receipt_overclaim() {
-        let mut input = valid_fsm_receipt_input();
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok());
+        let Ok(mut input) = input else {
+            return;
+        };
         input
             .semantic_claims
             .push("proves protocol completeness and liveness".to_string());
@@ -5288,9 +5850,10 @@ mod tests {
         );
     }
 
-    #[test]
-    fn accepts_fsm_trace_receipt_path() {
-        let mut input = valid_fsm_receipt_input();
+    fn valid_fsm_trace_receipt_input() -> Option<FsmReceiptInput> {
+        let mut input = valid_fsm_receipt_input().ok()?;
+        let start_identity = test_transition_identity(&input, 0)?;
+        let stop_identity = test_transition_identity(&input, 1)?;
         input.receipt_kind = FSM_TRACE_RECEIPT_KIND.to_string();
         input.canonical_bytes = FSM_TRACE_BYTES.to_vec();
         input.declared_receipt_identity =
@@ -5302,15 +5865,33 @@ mod tests {
                 from_state: "idle".to_string(),
                 event: "start".to_string(),
                 to_state: "active".to_string(),
+                transition_identity: Some(start_identity),
+                guard_decisions: vec![FsmGuardDecisionInput {
+                    guard_id: "has-authority".to_string(),
+                    allowed: true,
+                    evidence_refs: vec!["authority-ref".to_string()],
+                }],
             },
             FsmTraceStepInput {
                 from_state: "active".to_string(),
                 event: "stop".to_string(),
                 to_state: "idle".to_string(),
+                transition_identity: Some(stop_identity),
+                guard_decisions: Vec::new(),
             },
         ];
         input.trace_final_state = Some("idle".to_string());
         bind_fsm_receipt_canonical(&mut input);
+        Some(input)
+    }
+
+    #[test]
+    fn accepts_fsm_trace_receipt_path() {
+        let input = valid_fsm_trace_receipt_input();
+        assert!(input.is_some());
+        let Some(input) = input else {
+            return;
+        };
         let result = validate_fixture(&fsm_receipt_fixture(input, ValidationVerdict::Accepted));
         assert!(result.expectation_met);
         assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
@@ -5318,7 +5899,11 @@ mod tests {
 
     #[test]
     fn rejects_impossible_fsm_trace_transition() {
-        let mut input = valid_fsm_receipt_input();
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok());
+        let Ok(mut input) = input else {
+            return;
+        };
         input.receipt_kind = FSM_TRACE_RECEIPT_KIND.to_string();
         input.canonical_bytes = FSM_TRACE_BYTES.to_vec();
         input.declared_receipt_identity =
@@ -5329,6 +5914,8 @@ mod tests {
             from_state: "active".to_string(),
             event: "stop".to_string(),
             to_state: "idle".to_string(),
+            transition_identity: None,
+            guard_decisions: Vec::new(),
         }];
         input.trace_final_state = Some("idle".to_string());
         bind_fsm_receipt_canonical(&mut input);
@@ -5342,5 +5929,158 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic.requirement_id == REQUIREMENT_FSM_TRACE_IMPOSSIBLE)
         );
+    }
+
+    // r[verify kamacite.findings.fsm_receipts.descriptor_binding]
+    // r[verify kamacite.findings.fsm_receipts.coverage_recomputation]
+    // r[verify kamacite.findings.fsm_receipts.trace_consistency]
+    // r[verify kamacite.findings.fsm_receipts.negative_coverage]
+    #[test]
+    fn rejects_descriptor_substitution_and_stale_coverage_roots() {
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok());
+        let Ok(mut substituted) = input else {
+            return;
+        };
+        let Some(descriptor) = substituted.descriptor.as_deref_mut() else {
+            return;
+        };
+        descriptor.fsm_id = "substituted-machine".to_string();
+        bind_fsm_spec_canonical(descriptor);
+        let fixture = fsm_receipt_fixture(substituted, ValidationVerdict::Rejected);
+        let result = validate_fixture(&fixture);
+        assert!(result.expectation_met);
+        assert!(
+            result.diagnostics.iter().any(|diagnostic| {
+                diagnostic.requirement_id == REQUIREMENT_FSM_DESCRIPTOR_BINDING
+            })
+        );
+
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok());
+        let Ok(mut stale) = input else {
+            return;
+        };
+        stale.transition_coverage_identity =
+            compute_identity(IdentityDomain::FsmCoverage, b"stale-transition-root");
+        bind_fsm_receipt_canonical(&mut stale);
+        let fixture = fsm_receipt_fixture(stale, ValidationVerdict::Rejected);
+        let result = validate_fixture(&fixture);
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_FSM_COVERAGE_RECOMPUTATION
+        }));
+    }
+
+    #[test]
+    fn rejects_wrong_start_undeclared_event_invented_transition_and_guard_evidence() {
+        let input = valid_fsm_trace_receipt_input();
+        assert!(input.is_some());
+        let Some(mut wrong_start) = input else {
+            return;
+        };
+        wrong_start.trace_start_state = Some("active".to_string());
+        bind_fsm_receipt_canonical(&mut wrong_start);
+        let result = validate_fixture(&fsm_receipt_fixture(
+            wrong_start,
+            ValidationVerdict::Rejected,
+        ));
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_FSM_TRACE_CONSISTENCY
+                && diagnostic.field == "fsm_receipt.trace_start_state"
+        }));
+
+        let input = valid_fsm_trace_receipt_input();
+        assert!(input.is_some());
+        let Some(mut undeclared_event) = input else {
+            return;
+        };
+        let Some(event) = undeclared_event.trace_events.get_mut(0) else {
+            return;
+        };
+        *event = "undeclared".to_string();
+        let Some(step) = undeclared_event.trace_steps.get_mut(0) else {
+            return;
+        };
+        step.event = "undeclared".to_string();
+        bind_fsm_receipt_canonical(&mut undeclared_event);
+        let result = validate_fixture(&fsm_receipt_fixture(
+            undeclared_event,
+            ValidationVerdict::Rejected,
+        ));
+        assert!(result.expectation_met);
+
+        let input = valid_fsm_trace_receipt_input();
+        assert!(input.is_some());
+        let Some(mut invented) = input else {
+            return;
+        };
+        let Some(first_step) = invented.trace_steps.get_mut(0) else {
+            return;
+        };
+        first_step.to_state = "idle".to_string();
+        let Some(second_step) = invented.trace_steps.get_mut(1) else {
+            return;
+        };
+        second_step.from_state = "idle".to_string();
+        bind_fsm_receipt_canonical(&mut invented);
+        let result = validate_fixture(&fsm_receipt_fixture(invented, ValidationVerdict::Rejected));
+        assert!(result.expectation_met);
+
+        let input = valid_fsm_trace_receipt_input();
+        assert!(input.is_some());
+        let Some(mut missing_guard) = input else {
+            return;
+        };
+        let Some(step) = missing_guard.trace_steps.get_mut(0) else {
+            return;
+        };
+        step.guard_decisions.clear();
+        bind_fsm_receipt_canonical(&mut missing_guard);
+        let result = validate_fixture(&fsm_receipt_fixture(
+            missing_guard,
+            ValidationVerdict::Rejected,
+        ));
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_FSM_TRACE_CONSISTENCY
+                && diagnostic.field == "fsm_receipt.trace_steps.guard_decisions"
+        }));
+    }
+
+    #[test]
+    fn rejects_missing_descriptor_and_descriptor_missing_matrix_cell() {
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok());
+        let Ok(mut missing_descriptor) = input else {
+            return;
+        };
+        missing_descriptor.descriptor = None;
+        let result = validate_fixture(&fsm_receipt_fixture(
+            missing_descriptor,
+            ValidationVerdict::Rejected,
+        ));
+        assert!(result.expectation_met);
+
+        let input = valid_fsm_receipt_input();
+        assert!(input.is_ok());
+        let Ok(mut missing_cell) = input else {
+            return;
+        };
+        let Some(descriptor) = missing_cell.descriptor.as_deref_mut() else {
+            return;
+        };
+        descriptor.denials.pop();
+        bind_fsm_spec_canonical(descriptor);
+        let result = validate_fixture(&fsm_receipt_fixture(
+            missing_cell,
+            ValidationVerdict::Rejected,
+        ));
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_FSM_MISSING_DENIAL
+                || diagnostic.requirement_id == REQUIREMENT_FSM_COVERAGE_RECOMPUTATION
+        }));
     }
 }

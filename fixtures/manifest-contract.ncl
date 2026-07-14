@@ -152,10 +152,18 @@ let FsmDenial = {
   preserves_state | Bool,
 } in
 
+let FsmGuardDecision = {
+  guard_id | String,
+  allowed | Bool,
+  evidence_refs | StringArray,
+} in
+
 let FsmTraceStep = {
   from_state | String,
   event | String,
   to_state | String,
+  transition_identity | NullableIdentity,
+  guard_decisions | Array FsmGuardDecision,
 } in
 
 let DocumentationSection = {
@@ -343,6 +351,7 @@ let FsmReceipt = Tagged {
   schema_version | Natural,
   receipt_kind | String,
   canonical_path | String,
+  descriptor_fixture_id | String,
   spec_identity | Identity,
   state_universe_identity | Identity,
   event_universe_identity | Identity,

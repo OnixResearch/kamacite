@@ -6,13 +6,16 @@
     "artifact_class": "fsm-receipt",
     "verdict": "rejected",
     "requirement_ids": [
+      "r[kamacite.findings.fsm_receipts.descriptor_binding]",
+      "r[kamacite.findings.fsm_receipts.negative_coverage]",
+      "r[kamacite.findings.fsm_receipts.trace_consistency]",
       "r[kamacite.fsms.trace_receipts.impossible_transition]"
     ],
     "input_identities": {
       "declared-fsm-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
+        "hex": "e8d50aa68423f9cf2f291b9b3e1e2b8ad2b0f9478485a297fa12df5b9eb4929b"
       },
       "fsm-adapter": {
         "domain": "adapter",
@@ -22,12 +25,22 @@
       "fsm-denial-coverage": {
         "domain": "fsm-coverage",
         "algorithm": "blake3",
-        "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+        "hex": "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f"
       },
       "fsm-event-universe": {
         "domain": "fsm-universe",
         "algorithm": "blake3",
-        "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+        "hex": "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28"
+      },
+      "fsm-exclusion-coverage": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "d7f54611c11cee92aa1b303bc0606761e79fd8112c38051945b554572f68cccc"
+      },
+      "fsm-missing-cells": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "ffd8e07f3077ae6c6f92ae1d360db65d3f9130372a689a7540c22e4224b0b06b"
       },
       "fsm-spec": {
         "domain": "fsm-spec",
@@ -37,19 +50,19 @@
       "fsm-state-universe": {
         "domain": "fsm-universe",
         "algorithm": "blake3",
-        "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+        "hex": "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b"
       },
       "fsm-transition-coverage": {
         "domain": "fsm-coverage",
         "algorithm": "blake3",
-        "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+        "hex": "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026"
       }
     },
     "output_identities": {
       "computed-fsm-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266"
+        "hex": "e8d50aa68423f9cf2f291b9b3e1e2b8ad2b0f9478485a297fa12df5b9eb4929b"
       }
     },
     "checked_laws": [
@@ -74,6 +87,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "c9fb15df5f444094edb1bfefc1d9112c765ba489877b76d21f4627c05fa7f0bb"
+    "hex": "6e6e83017c9e3a575243f4e8f694683deb21c4568b018be20fcb3c3077f28938"
   }
 }

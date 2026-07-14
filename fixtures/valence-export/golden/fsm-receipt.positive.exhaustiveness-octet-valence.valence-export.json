@@ -7,7 +7,7 @@
     "source_receipt_identity": {
       "domain": "receipt",
       "algorithm": "blake3",
-      "hex": "e625e31e5d6a8304f0a1eae264e22cc98e1c9efd3c803cff2a4f438e8cabd60c"
+      "hex": "e482f3481ea5c062a24fd18d6351809c053c52a690fd6b7e2ee5827408b8c67d"
     },
     "source_fixture_id": "fsm-receipt.positive.exhaustiveness-octet-valence",
     "source_artifact_class": "fsm-receipt",
@@ -33,7 +33,7 @@
         "identity": {
           "domain": "receipt",
           "algorithm": "blake3",
-          "hex": "e625e31e5d6a8304f0a1eae264e22cc98e1c9efd3c803cff2a4f438e8cabd60c"
+          "hex": "e482f3481ea5c062a24fd18d6351809c053c52a690fd6b7e2ee5827408b8c67d"
         }
       },
       {
@@ -42,7 +42,7 @@
         "identity": {
           "domain": "receipt",
           "algorithm": "blake3",
-          "hex": "4c74f74e7580c6ad40e0ddd45dfb0454797b70c889ebf47d0f020a74bad924a6"
+          "hex": "6426edec5ef7282b545a65fad4abf4c1fbe90d1e734ac878467b2ec420491673"
         }
       },
       {
@@ -60,7 +60,7 @@
         "identity": {
           "domain": "fsm-coverage",
           "algorithm": "blake3",
-          "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+          "hex": "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f"
         }
       },
       {
@@ -69,7 +69,25 @@
         "identity": {
           "domain": "fsm-universe",
           "algorithm": "blake3",
-          "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+          "hex": "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28"
+        }
+      },
+      {
+        "role": "source-receipt-input",
+        "key": "fsm-exclusion-coverage",
+        "identity": {
+          "domain": "fsm-coverage",
+          "algorithm": "blake3",
+          "hex": "d7f54611c11cee92aa1b303bc0606761e79fd8112c38051945b554572f68cccc"
+        }
+      },
+      {
+        "role": "source-receipt-input",
+        "key": "fsm-missing-cells",
+        "identity": {
+          "domain": "fsm-coverage",
+          "algorithm": "blake3",
+          "hex": "ffd8e07f3077ae6c6f92ae1d360db65d3f9130372a689a7540c22e4224b0b06b"
         }
       },
       {
@@ -78,7 +96,7 @@
         "identity": {
           "domain": "fsm-spec",
           "algorithm": "blake3",
-          "hex": "b9dcbe9bcaca7cbddd315cd29afe446ceaba6c7e9362c215e5ce86e691434207"
+          "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
         }
       },
       {
@@ -87,7 +105,7 @@
         "identity": {
           "domain": "fsm-universe",
           "algorithm": "blake3",
-          "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+          "hex": "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b"
         }
       },
       {
@@ -96,7 +114,7 @@
         "identity": {
           "domain": "fsm-coverage",
           "algorithm": "blake3",
-          "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+          "hex": "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026"
         }
       },
       {
@@ -123,7 +141,7 @@
         "identity": {
           "domain": "receipt",
           "algorithm": "blake3",
-          "hex": "4c74f74e7580c6ad40e0ddd45dfb0454797b70c889ebf47d0f020a74bad924a6"
+          "hex": "6426edec5ef7282b545a65fad4abf4c1fbe90d1e734ac878467b2ec420491673"
         }
       }
     ],
@@ -158,6 +176,6 @@
   "export_identity": {
     "domain": "projection",
     "algorithm": "blake3",
-    "hex": "7092fbe6d42b1f754659f4d0b11cbe1b5538239d22ae2fb79b9f7063a4d550d8"
+    "hex": "933aa9aa73e62948d48985b9bcb924ff75a304be8f73d2cc2cb061a8cb44d196"
   }
 }

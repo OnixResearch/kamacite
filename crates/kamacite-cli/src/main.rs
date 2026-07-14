@@ -465,6 +465,7 @@ enum PayloadProjection {
         schema_version: u32,
         receipt_kind: String,
         canonical_path: String,
+        descriptor_fixture_id: String,
         spec_identity: Identity,
         state_universe_identity: Identity,
         event_universe_identity: Identity,
@@ -2467,6 +2468,7 @@ fn materialize_suite(
     nickel_shell: Option<&NickelExecutionShell>,
     steel_shell: Option<&SteelExecutionShell>,
 ) -> CliResult<FixtureSuite> {
+    let fsm_descriptors = materialize_fsm_descriptors(root, manifest)?;
     let mut fixtures = Vec::new();
     for projection in &manifest.fixtures {
         fixtures.push(materialize_fixture(
@@ -2474,9 +2476,66 @@ fn materialize_suite(
             projection,
             nickel_shell,
             steel_shell,
+            &fsm_descriptors,
         )?);
     }
     Ok(FixtureSuite { fixtures })
+}
+
+fn materialize_fsm_descriptors(
+    root: &RootCapability,
+    manifest: &ManifestProjection,
+) -> CliResult<BTreeMap<String, FsmSpecInput>> {
+    let mut descriptors = BTreeMap::new();
+    for fixture in &manifest.fixtures {
+        let PayloadProjection::FsmSpec {
+            schema_version,
+            fsm_id,
+            canonical_path,
+            source_envelope_identity,
+            declared_identity,
+            states,
+            events,
+            initial_state,
+            terminal_states,
+            intentionally_unreachable_states,
+            determinism_policy,
+            totality_policy,
+            guards,
+            side_effects,
+            transitions,
+            denials,
+            checked_laws,
+            non_claims,
+        } = &fixture.payload
+        else {
+            continue;
+        };
+        descriptors.insert(
+            fixture.id.clone(),
+            FsmSpecInput {
+                schema_version: *schema_version,
+                fsm_id: fsm_id.clone(),
+                canonical_bytes: read_manifest_bytes(root, canonical_path)?,
+                source_envelope_identity: source_envelope_identity.as_ref().clone(),
+                declared_identity: declared_identity.clone(),
+                states: states.clone(),
+                events: events.clone(),
+                initial_state: initial_state.clone(),
+                terminal_states: terminal_states.clone(),
+                intentionally_unreachable_states: intentionally_unreachable_states.clone(),
+                determinism_policy: determinism_policy.clone(),
+                totality_policy: totality_policy.clone(),
+                guards: guards.clone(),
+                side_effects: side_effects.clone(),
+                transitions: transitions.clone(),
+                denials: denials.clone(),
+                checked_laws: checked_laws.clone(),
+                non_claims: non_claims.clone(),
+            },
+        );
+    }
+    Ok(descriptors)
 }
 
 fn materialize_fixture(
@@ -2484,6 +2543,7 @@ fn materialize_fixture(
     projection: &FixtureProjection,
     nickel_shell: Option<&NickelExecutionShell>,
     steel_shell: Option<&SteelExecutionShell>,
+    fsm_descriptors: &BTreeMap<String, FsmSpecInput>,
 ) -> CliResult<FixtureCase> {
     let payload = match &projection.payload {
         PayloadProjection::SourceEnvelope {
@@ -2630,49 +2690,20 @@ fn materialize_fixture(
         PayloadProjection::IdentityUse(input) => FixturePayload::IdentityUse(input.clone()),
         PayloadProjection::CapabilityShell(input) => FixturePayload::CapabilityShell(input.clone()),
         PayloadProjection::StackEvidence(input) => FixturePayload::StackEvidence(input.clone()),
-        PayloadProjection::FsmSpec {
-            schema_version,
-            fsm_id,
-            canonical_path,
-            source_envelope_identity,
-            declared_identity,
-            states,
-            events,
-            initial_state,
-            terminal_states,
-            intentionally_unreachable_states,
-            determinism_policy,
-            totality_policy,
-            guards,
-            side_effects,
-            transitions,
-            denials,
-            checked_laws,
-            non_claims,
-        } => FixturePayload::FsmSpec(Box::new(FsmSpecInput {
-            schema_version: *schema_version,
-            fsm_id: fsm_id.clone(),
-            canonical_bytes: read_manifest_bytes(root, canonical_path)?,
-            source_envelope_identity: source_envelope_identity.as_ref().clone(),
-            declared_identity: declared_identity.clone(),
-            states: states.clone(),
-            events: events.clone(),
-            initial_state: initial_state.clone(),
-            terminal_states: terminal_states.clone(),
-            intentionally_unreachable_states: intentionally_unreachable_states.clone(),
-            determinism_policy: determinism_policy.clone(),
-            totality_policy: totality_policy.clone(),
-            guards: guards.clone(),
-            side_effects: side_effects.clone(),
-            transitions: transitions.clone(),
-            denials: denials.clone(),
-            checked_laws: checked_laws.clone(),
-            non_claims: non_claims.clone(),
-        })),
+        PayloadProjection::FsmSpec { .. } => {
+            let descriptor = fsm_descriptors.get(&projection.id).ok_or_else(|| {
+                CliError(format!(
+                    "FSM descriptor fixture `{}` was not materialized",
+                    projection.id
+                ))
+            })?;
+            FixturePayload::FsmSpec(Box::new(descriptor.clone()))
+        }
         PayloadProjection::FsmReceipt {
             schema_version,
             receipt_kind,
             canonical_path,
+            descriptor_fixture_id,
             spec_identity,
             state_universe_identity,
             event_universe_identity,
@@ -2691,29 +2722,37 @@ fn materialize_fixture(
             trace_events,
             trace_steps,
             trace_final_state,
-        } => FixturePayload::FsmReceipt(Box::new(FsmReceiptInput {
-            schema_version: *schema_version,
-            receipt_kind: receipt_kind.clone(),
-            canonical_bytes: read_manifest_bytes(root, canonical_path)?,
-            spec_identity: spec_identity.clone(),
-            state_universe_identity: state_universe_identity.clone(),
-            event_universe_identity: event_universe_identity.clone(),
-            transition_coverage_identity: transition_coverage_identity.clone(),
-            denial_coverage_identity: denial_coverage_identity.clone(),
-            adapter_identity: adapter_identity.clone(),
-            dependency_identities: dependency_identities.clone(),
-            octet_receipt_identities: octet_receipt_identities.clone(),
-            valence_export_identity: valence_export_identity.as_ref().clone(),
-            checked_laws: checked_laws.clone(),
-            diagnostics: diagnostics.clone(),
-            non_claims: non_claims.clone(),
-            semantic_claims: semantic_claims.clone(),
-            declared_receipt_identity: declared_receipt_identity.as_ref().clone(),
-            trace_start_state: trace_start_state.as_ref().clone(),
-            trace_events: trace_events.clone(),
-            trace_steps: trace_steps.clone(),
-            trace_final_state: trace_final_state.as_ref().clone(),
-        })),
+        } => {
+            let descriptor = fsm_descriptors.get(descriptor_fixture_id).ok_or_else(|| {
+                CliError(format!(
+                    "FSM receipt descriptor fixture `{descriptor_fixture_id}` was not found"
+                ))
+            })?;
+            FixturePayload::FsmReceipt(Box::new(FsmReceiptInput {
+                schema_version: *schema_version,
+                receipt_kind: receipt_kind.clone(),
+                canonical_bytes: read_manifest_bytes(root, canonical_path)?,
+                spec_identity: spec_identity.clone(),
+                state_universe_identity: state_universe_identity.clone(),
+                event_universe_identity: event_universe_identity.clone(),
+                transition_coverage_identity: transition_coverage_identity.clone(),
+                denial_coverage_identity: denial_coverage_identity.clone(),
+                adapter_identity: adapter_identity.clone(),
+                dependency_identities: dependency_identities.clone(),
+                octet_receipt_identities: octet_receipt_identities.clone(),
+                valence_export_identity: valence_export_identity.as_ref().clone(),
+                checked_laws: checked_laws.clone(),
+                diagnostics: diagnostics.clone(),
+                non_claims: non_claims.clone(),
+                semantic_claims: semantic_claims.clone(),
+                declared_receipt_identity: declared_receipt_identity.as_ref().clone(),
+                trace_start_state: trace_start_state.as_ref().clone(),
+                trace_events: trace_events.clone(),
+                trace_steps: trace_steps.clone(),
+                trace_final_state: trace_final_state.as_ref().clone(),
+                descriptor: Some(Box::new(descriptor.clone())),
+            }))
+        }
         PayloadProjection::DocumentationIr {
             schema_version,
             canonical_path,

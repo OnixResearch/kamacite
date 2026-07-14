@@ -4705,6 +4705,7 @@
           "hex" = "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e",
         },
         "canonical_path" = "fixtures/core/fsm/receipt-exhaustiveness.preserves",
+        "descriptor_fixture_id" = "fsm-spec.positive.complete-denial-coverage",
         "checked_laws" = [
           "total-pair-coverage",
           "non-claim-preservation",
@@ -4712,19 +4713,19 @@
         "declared_receipt_identity" = {
           "algorithm" = "blake3",
           "domain" = "receipt",
-          "hex" = "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c",
+          "hex" = "6426edec5ef7282b545a65fad4abf4c1fbe90d1e734ac878467b2ec420491673",
         },
         "denial_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575",
+          "hex" = "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f",
         },
         "dependency_identities" = [],
         "diagnostics" = [],
         "event_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4",
+          "hex" = "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28",
         },
         "kind" = "fsm-receipt",
         "non_claims" = [
@@ -4750,7 +4751,7 @@
         "state_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c",
+          "hex" = "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b",
         },
         "trace_events" = [],
         "trace_final_state" = null,
@@ -4759,7 +4760,7 @@
         "transition_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186",
+          "hex" = "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026",
         },
         "valence_export_identity" = {
           "algorithm" = "blake3",
@@ -4768,6 +4769,8 @@
         },
       },
       "requirement_ids" = [
+        "r[kamacite.findings.fsm_receipts.coverage_recomputation]",
+        "r[kamacite.findings.fsm_receipts.descriptor_binding]",
         "r[kamacite.lossless_ir.fsm_receipt_vocabulary.checked_claim]",
         "r[kamacite.stack_integration.fsm_valence_export.projection]",
         "r[kamacite.stack_integration.fsm_octet_interop.source_shape]",
@@ -4792,25 +4795,26 @@
           "hex" = "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e",
         },
         "canonical_path" = "fixtures/core/fsm/receipt-overclaim.preserves",
+        "descriptor_fixture_id" = "fsm-spec.positive.complete-denial-coverage",
         "checked_laws" = [
           "semantic-overclaim-rejected",
         ],
         "declared_receipt_identity" = {
           "algorithm" = "blake3",
           "domain" = "receipt",
-          "hex" = "34a5e3edb8bf2067bc477f02013b65bb7c13056df5c06e0814d299ac98f27eb9",
+          "hex" = "dccef8617fe3b70773f6a77904537b7e526ed86304ef19c290628969a925757d",
         },
         "denial_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575",
+          "hex" = "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f",
         },
         "dependency_identities" = [],
         "diagnostics" = [],
         "event_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4",
+          "hex" = "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28",
         },
         "kind" = "fsm-receipt",
         "non_claims" = [
@@ -4836,7 +4840,7 @@
         "state_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c",
+          "hex" = "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b",
         },
         "trace_events" = [],
         "trace_final_state" = null,
@@ -4845,7 +4849,7 @@
         "transition_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186",
+          "hex" = "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026",
         },
         "valence_export_identity" = {
           "algorithm" = "blake3",
@@ -4854,6 +4858,9 @@
         },
       },
       "requirement_ids" = [
+        "r[kamacite.findings.fsm_receipts.coverage_recomputation]",
+        "r[kamacite.findings.fsm_receipts.descriptor_binding]",
+        "r[kamacite.findings.fsm_receipts.negative_coverage]",
         "r[kamacite.stack_integration.fsm_valence_export.non_claims]",
         "r[kamacite.stack_integration.fsm_octet_interop.overclaim]",
       ],
@@ -4877,25 +4884,26 @@
           "hex" = "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e",
         },
         "canonical_path" = "fixtures/core/fsm/trace-valid.preserves",
+        "descriptor_fixture_id" = "fsm-spec.positive.complete-denial-coverage",
         "checked_laws" = [
           "trace-path-consistency",
         ],
         "declared_receipt_identity" = {
           "algorithm" = "blake3",
           "domain" = "receipt",
-          "hex" = "f64300b603f1ccf898469bf8a823a24f1015dcdf847177752e86218481be6586",
+          "hex" = "06bfbdedac1c0a8a73ab9faef13196f81fc1e647b3b2f8ea244f6966ff550ead",
         },
         "denial_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575",
+          "hex" = "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f",
         },
         "dependency_identities" = [],
         "diagnostics" = [],
         "event_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4",
+          "hex" = "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28",
         },
         "kind" = "fsm-receipt",
         "non_claims" = [
@@ -4913,7 +4921,7 @@
         "state_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c",
+          "hex" = "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b",
         },
         "trace_events" = [
           "start",
@@ -4925,22 +4933,42 @@
           {
             "event" = "start",
             "from_state" = "idle",
+            "guard_decisions" = [
+              {
+                "allowed" = true,
+                "evidence_refs" = ["authority-ref"],
+                "guard_id" = "has-authority",
+              },
+            ],
             "to_state" = "active",
+            "transition_identity" = {
+              "algorithm" = "blake3",
+              "domain" = "fsm-coverage",
+              "hex" = "d747e3e376fb36e70b5459b71eaf49b8bb56c026e2ad3e9fdd6c0fa111822a1a",
+            },
           },
           {
             "event" = "stop",
             "from_state" = "active",
+            "guard_decisions" = [],
             "to_state" = "idle",
+            "transition_identity" = {
+              "algorithm" = "blake3",
+              "domain" = "fsm-coverage",
+              "hex" = "b800c02bdacc0928118852dadf8b1667e6ac2277a9e144671b0c612fdbfdfe62",
+            },
           },
         ],
         "transition_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186",
+          "hex" = "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026",
         },
         "valence_export_identity" = null,
       },
       "requirement_ids" = [
+        "r[kamacite.findings.fsm_receipts.descriptor_binding]",
+        "r[kamacite.findings.fsm_receipts.trace_consistency]",
         "r[kamacite.fsms.trace_receipts.valid_path]",
       ],
     },
@@ -4963,25 +4991,26 @@
           "hex" = "8ebb62f28593ba13c5d38d0c63810944b242da57d3ee0f2c81c1fde0747aff0e",
         },
         "canonical_path" = "fixtures/core/fsm/trace-impossible.preserves",
+        "descriptor_fixture_id" = "fsm-spec.positive.complete-denial-coverage",
         "checked_laws" = [
           "impossible-trace-rejected",
         ],
         "declared_receipt_identity" = {
           "algorithm" = "blake3",
           "domain" = "receipt",
-          "hex" = "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266",
+          "hex" = "e8d50aa68423f9cf2f291b9b3e1e2b8ad2b0f9478485a297fa12df5b9eb4929b",
         },
         "denial_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575",
+          "hex" = "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f",
         },
         "dependency_identities" = [],
         "diagnostics" = [],
         "event_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4",
+          "hex" = "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28",
         },
         "kind" = "fsm-receipt",
         "non_claims" = [
@@ -4999,7 +5028,7 @@
         "state_universe_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-universe",
-          "hex" = "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c",
+          "hex" = "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b",
         },
         "trace_events" = [
           "stop",
@@ -5010,17 +5039,26 @@
           {
             "event" = "stop",
             "from_state" = "active",
+            "guard_decisions" = [],
             "to_state" = "idle",
+            "transition_identity" = {
+              "algorithm" = "blake3",
+              "domain" = "fsm-coverage",
+              "hex" = "b800c02bdacc0928118852dadf8b1667e6ac2277a9e144671b0c612fdbfdfe62",
+            },
           },
         ],
         "transition_coverage_identity" = {
           "algorithm" = "blake3",
           "domain" = "fsm-coverage",
-          "hex" = "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186",
+          "hex" = "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026",
         },
         "valence_export_identity" = null,
       },
       "requirement_ids" = [
+        "r[kamacite.findings.fsm_receipts.descriptor_binding]",
+        "r[kamacite.findings.fsm_receipts.negative_coverage]",
+        "r[kamacite.findings.fsm_receipts.trace_consistency]",
         "r[kamacite.fsms.trace_receipts.impossible_transition]",
       ],
     },

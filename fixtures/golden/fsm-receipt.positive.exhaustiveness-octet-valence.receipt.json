@@ -6,6 +6,8 @@
     "artifact_class": "fsm-receipt",
     "verdict": "accepted",
     "requirement_ids": [
+      "r[kamacite.findings.fsm_receipts.coverage_recomputation]",
+      "r[kamacite.findings.fsm_receipts.descriptor_binding]",
       "r[kamacite.lossless_ir.fsm_receipt_vocabulary.checked_claim]",
       "r[kamacite.stack_integration.fsm_octet_interop.source_shape]",
       "r[kamacite.stack_integration.fsm_valence_export.projection]"
@@ -14,7 +16,7 @@
       "declared-fsm-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c"
+        "hex": "6426edec5ef7282b545a65fad4abf4c1fbe90d1e734ac878467b2ec420491673"
       },
       "fsm-adapter": {
         "domain": "adapter",
@@ -24,12 +26,22 @@
       "fsm-denial-coverage": {
         "domain": "fsm-coverage",
         "algorithm": "blake3",
-        "hex": "41a1e2b2199aa344108ccd464e474e564063346c7182b2c6abb98d52c201f575"
+        "hex": "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f"
       },
       "fsm-event-universe": {
         "domain": "fsm-universe",
         "algorithm": "blake3",
-        "hex": "48e9e15a9639256b5caab7407804c2509ae898bad16718b7cf76529f9b2914d4"
+        "hex": "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28"
+      },
+      "fsm-exclusion-coverage": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "d7f54611c11cee92aa1b303bc0606761e79fd8112c38051945b554572f68cccc"
+      },
+      "fsm-missing-cells": {
+        "domain": "fsm-coverage",
+        "algorithm": "blake3",
+        "hex": "ffd8e07f3077ae6c6f92ae1d360db65d3f9130372a689a7540c22e4224b0b06b"
       },
       "fsm-spec": {
         "domain": "fsm-spec",
@@ -39,12 +51,12 @@
       "fsm-state-universe": {
         "domain": "fsm-universe",
         "algorithm": "blake3",
-        "hex": "efc8dc208a0cd49aeb479f273966dfe29e8b5f6f3ac7a315a981da8ed512524c"
+        "hex": "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b"
       },
       "fsm-transition-coverage": {
         "domain": "fsm-coverage",
         "algorithm": "blake3",
-        "hex": "61c82e2473f6461a0a2dfbd4adfebdf07e48a68b8d13f0caef7b8f2e07405186"
+        "hex": "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026"
       },
       "octet-source-shape-receipt": {
         "domain": "receipt",
@@ -61,7 +73,7 @@
       "computed-fsm-receipt": {
         "domain": "receipt",
         "algorithm": "blake3",
-        "hex": "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c"
+        "hex": "6426edec5ef7282b545a65fad4abf4c1fbe90d1e734ac878467b2ec420491673"
       }
     },
     "checked_laws": [
@@ -78,6 +90,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "708a31335006a6f6a64492e4ba881974cc5a09b3aad749615bd4f50b5e2a2dba"
+    "hex": "e482f3481ea5c062a24fd18d6351809c053c52a690fd6b7e2ee5827408b8c67d"
   }
 }

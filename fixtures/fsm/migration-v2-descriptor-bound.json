@@ -1,0 +1,55 @@
+{
+  "schema": "kamacite.fsm-receipt-migration.v2-descriptor-bound",
+  "from_canonical_schema": "kamacite.fsm-receipt.v2",
+  "to_canonical_schema": "kamacite.fsm-receipt.v3",
+  "descriptor_identity": {
+    "domain": "fsm-spec",
+    "algorithm": "blake3",
+    "hex": "f7e6b8cafb915755fedc8cd1f1d267142ee35d309ba76128e1ee15c6ee0a0bf0"
+  },
+  "coverage_identities": {
+    "state_universe": "1eea718435e25dbd3dea52ec1bcd77dd159a752e54225f8bf09e93a5a799b15b",
+    "event_universe": "da69e68d038be61ac54cdd5df8a1145281abf3ac9d73b18498e496fcbc9ffe28",
+    "transitions": "ed6b7e12821d15e4b9f4544e5ed98e20abfbcca92ee53c2eea7a772a02799026",
+    "denials": "3c469a84fb15ed4177391b809ef242b29a4f14790de0230848213af16b40e79f",
+    "exclusions": "d7f54611c11cee92aa1b303bc0606761e79fd8112c38051945b554572f68cccc",
+    "missing_cells": "ffd8e07f3077ae6c6f92ae1d360db65d3f9130372a689a7540c22e4224b0b06b"
+  },
+  "receipts": [
+    {
+      "fixture_id": "fsm-receipt.positive.exhaustiveness-octet-valence",
+      "old_identity": "c169b520587e66824e315990ed15dce0f29e048c60585ee395066522692e684c",
+      "new_identity": "6426edec5ef7282b545a65fad4abf4c1fbe90d1e734ac878467b2ec420491673"
+    },
+    {
+      "fixture_id": "fsm-receipt.negative.semantic-overclaim",
+      "old_identity": "34a5e3edb8bf2067bc477f02013b65bb7c13056df5c06e0814d299ac98f27eb9",
+      "new_identity": "dccef8617fe3b70773f6a77904537b7e526ed86304ef19c290628969a925757d"
+    },
+    {
+      "fixture_id": "fsm-receipt.positive.trace-path",
+      "old_identity": "f64300b603f1ccf898469bf8a823a24f1015dcdf847177752e86218481be6586",
+      "new_identity": "06bfbdedac1c0a8a73ab9faef13196f81fc1e647b3b2f8ea244f6966ff550ead"
+    },
+    {
+      "fixture_id": "fsm-receipt.negative.impossible-trace",
+      "old_identity": "2c7ffe6290924b98a3e40ee0c94b275abc9a40895544d0af47a47b5a64514266",
+      "new_identity": "e8d50aa68423f9cf2f291b9b3e1e2b8ad2b0f9478485a297fa12df5b9eb4929b"
+    }
+  ],
+  "valence_export": {
+    "old_identity": "7092fbe6d42b1f754659f4d0b11cbe1b5538239d22ae2fb79b9f7063a4d550d8",
+    "new_identity": "933aa9aa73e62948d48985b9bcb924ff75a304be8f73d2cc2cb061a8cb44d196"
+  },
+  "checked_laws": [
+    "descriptor-value-required",
+    "coverage-roots-recomputed",
+    "trace-transitions-bound",
+    "guard-evidence-exact"
+  ],
+  "non_claims": [
+    "migration does not execute an FSM",
+    "descriptor consistency is not runtime correctness",
+    "Valence export remains derived evidence"
+  ]
+}

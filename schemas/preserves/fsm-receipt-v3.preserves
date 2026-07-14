@@ -1,0 +1,44 @@
+; Kamacite descriptor-bound FSM receipt canonical schema v3.
+; Descriptor values are validated separately and bound here by spec_identity.
+
+CanonicalFsmReceipt = <kamacite-fsm-receipt-v3 {
+  schema_version: 1,
+  receipt_kind: "exhaustiveness" | "trace",
+  spec_identity: Identity,
+  state_universe_identity: Identity,
+  event_universe_identity: Identity,
+  transition_coverage_identity: Identity,
+  denial_coverage_identity: Identity,
+  adapter_identity: Identity,
+  dependency_identities: [Identity ...],
+  octet_receipt_identities: [Identity ...],
+  valence_export_identity: Identity | false,
+  checked_laws: [string ...],
+  diagnostics: [string ...],
+  non_claims: [string ...],
+  semantic_claims: [string ...],
+  trace_start_state: string | false,
+  trace_events: [string ...],
+  trace_steps: [FsmTraceStepInput ...],
+  trace_final_state: string | false
+}>
+
+FsmTraceStepInput = <FsmTraceStepInput {
+  from_state: string,
+  event: string,
+  to_state: string,
+  transition_identity: Identity | false,
+  guard_decisions: [FsmGuardDecisionInput ...]
+}>
+
+FsmGuardDecisionInput = <FsmGuardDecisionInput {
+  guard_id: string,
+  allowed: bool,
+  evidence_refs: [string ...]
+}>
+
+Identity = <Identity {
+  domain: symbol,
+  algorithm: "blake3",
+  hex: string
+}>
