@@ -88,9 +88,11 @@ pub use proof_evidence::{
 };
 pub use receipt::{ReceiptBody, ReceiptEnvelope, ReceiptError, canonical_json_bytes, receipt_json};
 pub use valence_export::{
-    SourceSpan, SourceSpanSet, VALENCE_EXPORT_CANONICAL_CODEC, VALENCE_EXPORT_DEPENDENCY_PROFILE,
-    VALENCE_EXPORT_PROFILE_VERSION, VALENCE_EXPORT_SCHEMA_VERSION, ValenceArtifactIdentity,
-    ValenceExportConformance, ValenceReceiptExportBody, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValenceReceiptExportResult, export_identity_key,
-    export_valence_receipt,
+    SourceSpan, SourceSpanSet, VALENCE_CONFORMANCE_CANONICAL_CODEC,
+    VALENCE_CONFORMANCE_SCHEMA_VERSION, VALENCE_EXPORT_CANONICAL_CODEC,
+    VALENCE_EXPORT_DEPENDENCY_PROFILE, VALENCE_EXPORT_PROFILE_VERSION,
+    VALENCE_EXPORT_SCHEMA_VERSION, ValenceArtifactIdentity, ValenceExportConformance,
+    ValenceReceiptExportBody, ValenceReceiptExportEnvelope, ValenceReceiptExportInput,
+    ValenceReceiptExportResult, ValidatedValenceExportConformance, admit_valence_conformance,
+    export_identity_key, export_valence_receipt, valence_conformance_identity,
 };

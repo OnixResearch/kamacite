@@ -93,13 +93,8 @@
             chmod -R u+w source
             cd source
           '';
-          valenceReceiptArgs = ''
-            --root . \
-            --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json \
-            --conformance fixtures/valence-export/conformance.json \
-            --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
-          '';
           manifestProjectionIdentity = "f7b607f8f93749b4c4092b5e1b7db3fab2b9c245d29930a074156e945cc7a855";
+          valenceConformanceIdentity = "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830";
           staleProjectionIdentity = "0000000000000000000000000000000000000000000000000000000000000000";
         in
         {
@@ -195,11 +190,32 @@
             touch $out
           '';
 
-          valence-export-validation = pkgs.runCommand "kamacite-valence-export-validation" { } ''
-            ${copySource}
-            ${kamacite} export-valence-receipt ${valenceReceiptArgs} >valence-export-validation.json
-            touch $out
-          '';
+          valence-export-validation =
+            pkgs.runCommand "kamacite-valence-export-validation"
+              {
+                nativeBuildInputs = [
+                  pkgs.gnugrep
+                ];
+              }
+              ''
+                ${copySource}
+                run_valence_export() {
+                  ${kamacite} export-valence-receipt \
+                    --root . \
+                    --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json \
+                    --conformance fixtures/valence-export/conformance.json \
+                    --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
+                }
+                run_valence_export >valence-export-validation.json
+                substituteInPlace fixtures/valence-export/conformance.json \
+                  --replace-fail '${valenceConformanceIdentity}' '${staleProjectionIdentity}'
+                if run_valence_export >valence-export-stale.out 2>&1; then
+                  echo "expected stale Valence conformance identity to fail" >&2
+                  exit 1
+                fi
+                grep -q "conformance admission failed" valence-export-stale.out
+                touch $out
+              '';
 
           function-address-receipt-validation =
             pkgs.runCommand "kamacite-function-address-receipt-validation"

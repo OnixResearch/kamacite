@@ -15,7 +15,7 @@
     "conformance_identity": {
       "domain": "adapter",
       "algorithm": "blake3",
-      "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+      "hex": "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830"
     },
     "artifact_identities": [
       {
@@ -24,7 +24,7 @@
         "identity": {
           "domain": "adapter",
           "algorithm": "blake3",
-          "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+          "hex": "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830"
         }
       },
       {
@@ -158,6 +158,6 @@
   "export_identity": {
     "domain": "projection",
     "algorithm": "blake3",
-    "hex": "f78f1ff64887146424fbdb928ac6c223d4eedde1bbee8c8c8432ceb333a18122"
+    "hex": "7092fbe6d42b1f754659f4d0b11cbe1b5538239d22ae2fb79b9f7063a4d550d8"
   }
 }

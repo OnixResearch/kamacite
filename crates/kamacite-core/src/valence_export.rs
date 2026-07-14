@@ -1,6 +1,6 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
-use crate::receipt::{RECEIPT_SCHEMA_VERSION, ReceiptEnvelope, canonical_json_bytes};
+use crate::receipt::{RECEIPT_SCHEMA_VERSION, ReceiptEnvelope, ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -9,6 +9,9 @@ pub const VALENCE_EXPORT_PROFILE_VERSION: &str = "kamacite.valence_receipt_expor
 pub const VALENCE_EXPORT_CANONICAL_CODEC: &str =
     "kamacite-deterministic-json-valence-export-projection-v1";
 pub const VALENCE_EXPORT_DEPENDENCY_PROFILE: &str = "artifacts-first-no-valence-runtime";
+pub const VALENCE_CONFORMANCE_SCHEMA_VERSION: &str = "kamacite.valence-conformance.v1";
+pub const VALENCE_CONFORMANCE_CANONICAL_CODEC: &str =
+    "kamacite-deterministic-json-valence-conformance-body-v1";
 const VALENCE_EXPORT_EVIDENCE_ROLE: &str = "derived-evidence-projection";
 const VALENCE_EXPORT_CLAIM_BOUNDARY: &str =
     "Valence export preserves Kamacite receipt facts without broadening claims";
@@ -44,6 +47,10 @@ const REQUIREMENT_SEMANTIC_OVERCLAIM: &str =
     "r[kamacite.valence_receipt_export.conformance.semantic_overclaim]";
 const REQUIREMENT_MALFORMED_INPUT: &str =
     "r[kamacite.valence_receipt_export.conformance.malformed_input]";
+const REQUIREMENT_CONFORMANCE_CONTENT_IDENTITY: &str =
+    "r[kamacite.findings.valence_conformance.content_identity]";
+const REQUIREMENT_CONFORMANCE_BOUND_PROJECTION: &str =
+    "r[kamacite.findings.valence_conformance.bound_projection]";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SourceSpan {
@@ -69,6 +76,8 @@ impl Default for SourceSpanSet {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ValenceExportConformance {
+    pub schema_version: String,
+    pub canonical_codec: String,
     pub has_entry: bool,
     pub profile_version: String,
     pub source_schema: String,
@@ -80,6 +89,17 @@ pub struct ValenceExportConformance {
     pub fixture_coverage: Vec<String>,
     pub non_claims: Vec<String>,
     pub conformance_identity: Identity,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct ValidatedValenceExportConformance {
+    projection: ValenceExportConformance,
+}
+
+impl ValidatedValenceExportConformance {
+    pub fn projection(&self) -> &ValenceExportConformance {
+        &self.projection
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -133,6 +153,70 @@ pub struct ValenceReceiptExportResult {
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 struct ArtifactKey(String);
+
+#[derive(Serialize)]
+struct CanonicalValenceConformanceBody<'a> {
+    schema_version: &'a str,
+    canonical_codec: &'a str,
+    has_entry: bool,
+    profile_version: &'a str,
+    source_schema: &'a str,
+    output_schema: &'a str,
+    required_input_identity_domains: Vec<IdentityDomain>,
+    output_identity_domain: &'a IdentityDomain,
+    checked_laws: Vec<String>,
+    dependency_profile: &'a str,
+    fixture_coverage: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+pub fn valence_conformance_identity(
+    conformance: &ValenceExportConformance,
+) -> Result<Identity, ReceiptError> {
+    let body = canonical_valence_conformance_body(conformance);
+    Ok(compute_identity(
+        IdentityDomain::Adapter,
+        &canonical_json_bytes(&body)?,
+    ))
+}
+
+pub fn admit_valence_conformance(
+    conformance: ValenceExportConformance,
+) -> Result<ValidatedValenceExportConformance, Vec<Diagnostic>> {
+    let mut diagnostics = Vec::new();
+    validate_conformance(&conformance, &mut diagnostics);
+    diagnostics.sort();
+    diagnostics.dedup();
+    if diagnostics.is_empty() {
+        Ok(ValidatedValenceExportConformance {
+            projection: conformance,
+        })
+    } else {
+        Err(diagnostics)
+    }
+}
+
+fn canonical_valence_conformance_body(
+    conformance: &ValenceExportConformance,
+) -> CanonicalValenceConformanceBody<'_> {
+    let mut required_input_identity_domains = conformance.required_input_identity_domains.clone();
+    required_input_identity_domains.sort();
+    required_input_identity_domains.dedup();
+    CanonicalValenceConformanceBody {
+        schema_version: VALENCE_CONFORMANCE_SCHEMA_VERSION,
+        canonical_codec: VALENCE_CONFORMANCE_CANONICAL_CODEC,
+        has_entry: conformance.has_entry,
+        profile_version: &conformance.profile_version,
+        source_schema: &conformance.source_schema,
+        output_schema: &conformance.output_schema,
+        required_input_identity_domains,
+        output_identity_domain: &conformance.output_identity_domain,
+        checked_laws: sorted_unique(conformance.checked_laws.clone()),
+        dependency_profile: &conformance.dependency_profile,
+        fixture_coverage: sorted_unique(conformance.fixture_coverage.clone()),
+        non_claims: sorted_unique(conformance.non_claims.clone()),
+    }
+}
 
 pub fn export_valence_receipt(input: &ValenceReceiptExportInput) -> ValenceReceiptExportResult {
     let mut diagnostics = Vec::new();
@@ -266,6 +350,25 @@ fn duplicate_artifact_key_diagnostic(key: &str) -> Diagnostic {
 }
 
 fn validate_conformance(conformance: &ValenceExportConformance, diagnostics: &mut Vec<Diagnostic>) {
+    if conformance.schema_version != VALENCE_CONFORMANCE_SCHEMA_VERSION {
+        diagnostics.push(schema_mismatch_diagnostic(
+            "conformance.schema_version",
+            &conformance.schema_version,
+            VALENCE_CONFORMANCE_SCHEMA_VERSION,
+        ));
+    }
+    if conformance.canonical_codec != VALENCE_CONFORMANCE_CANONICAL_CODEC {
+        diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_CONFORMANCE_BOUND_PROJECTION,
+                "conformance.canonical_codec",
+                "Valence conformance JSON must identify the canonical conformance body codec",
+            )
+            .with_detail("actual", conformance.canonical_codec.clone())
+            .with_detail("expected", VALENCE_CONFORMANCE_CANONICAL_CODEC),
+        );
+    }
     if !conformance.has_entry {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingConformanceEntry,
@@ -342,6 +445,26 @@ fn validate_conformance(conformance: &ValenceExportConformance, diagnostics: &mu
             .with_detail("expected", IdentityDomain::Adapter.to_string()),
         );
     }
+    match valence_conformance_identity(conformance) {
+        Ok(computed) if computed == conformance.conformance_identity => {}
+        Ok(computed) => diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::StaleIdentity,
+                REQUIREMENT_CONFORMANCE_CONTENT_IDENTITY,
+                "conformance.conformance_identity",
+                "Valence conformance identity does not match canonical normative content",
+            )
+            .with_detail("declared", conformance.conformance_identity.hex.as_str())
+            .with_detail("computed", computed.hex.as_str()),
+        ),
+        Err(error) => diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_CONFORMANCE_CONTENT_IDENTITY,
+            "conformance",
+            format!("Valence conformance canonicalization failed: {error}"),
+        )),
+    }
+    validate_set_uniqueness(conformance, diagnostics);
     if conformance.checked_laws.is_empty() {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingCheckedLaw,
@@ -369,6 +492,48 @@ fn validate_conformance(conformance: &ValenceExportConformance, diagnostics: &mu
             REQUIREMENT_CONFORMANCE,
             "conformance.non_claims",
             "Valence export conformance entry must carry explicit non-claims",
+        ));
+    }
+}
+
+fn validate_set_uniqueness(
+    conformance: &ValenceExportConformance,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    validate_unique_set(
+        &conformance.required_input_identity_domains,
+        "conformance.required_input_identity_domains",
+        diagnostics,
+    );
+    validate_unique_set(
+        &conformance.checked_laws,
+        "conformance.checked_laws",
+        diagnostics,
+    );
+    validate_unique_set(
+        &conformance.fixture_coverage,
+        "conformance.fixture_coverage",
+        diagnostics,
+    );
+    validate_unique_set(
+        &conformance.non_claims,
+        "conformance.non_claims",
+        diagnostics,
+    );
+}
+
+fn validate_unique_set<T: Clone + Ord>(
+    values: &[T],
+    field: &str,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    let unique_count = values.iter().cloned().collect::<BTreeSet<_>>().len();
+    if unique_count != values.len() {
+        diagnostics.push(Diagnostic::new(
+            DiagnosticCode::DuplicateArtifactIdentity,
+            REQUIREMENT_CONFORMANCE_CONTENT_IDENTITY,
+            field,
+            "Valence conformance set-like fields must not contain duplicate entries",
         ));
     }
 }
@@ -634,7 +799,8 @@ mod tests {
     const CONFORMANCE_LAW: &str = "non-claim-preservation";
     const REQUIREMENT_ID: &str = "r[kamacite.valence_receipt_export.profile]";
     const SOURCE_BYTES: &[u8] = b"let value = 1 in value\n";
-    const CONFORMANCE_DESCRIPTOR: &[u8] = b"kamacite-valence-export-conformance-v1";
+    const CONFORMANCE_IDENTITY_PLACEHOLDER: &[u8] =
+        b"kamacite-valence-export-conformance-placeholder";
     const SPAN_START_BYTE: u64 = 0;
     const SPAN_END_BYTE: u64 = 3;
 
@@ -654,8 +820,10 @@ mod tests {
         ReceiptEnvelope::finalize(body)
     }
 
-    fn valid_conformance() -> ValenceExportConformance {
-        ValenceExportConformance {
+    fn valid_conformance() -> Result<ValenceExportConformance, crate::receipt::ReceiptError> {
+        let mut conformance = ValenceExportConformance {
+            schema_version: VALENCE_CONFORMANCE_SCHEMA_VERSION.to_string(),
+            canonical_codec: VALENCE_CONFORMANCE_CANONICAL_CODEC.to_string(),
             has_entry: true,
             profile_version: VALENCE_EXPORT_PROFILE_VERSION.to_string(),
             source_schema: RECEIPT_SCHEMA_VERSION.to_string(),
@@ -669,14 +837,19 @@ mod tests {
                 REQUIRED_NEGATIVE_FIXTURE_COVERAGE.to_string(),
             ],
             non_claims: vec![CONFORMANCE_NON_CLAIM.to_string()],
-            conformance_identity: compute_identity(IdentityDomain::Adapter, CONFORMANCE_DESCRIPTOR),
-        }
+            conformance_identity: compute_identity(
+                IdentityDomain::Adapter,
+                CONFORMANCE_IDENTITY_PLACEHOLDER,
+            ),
+        };
+        conformance.conformance_identity = valence_conformance_identity(&conformance)?;
+        Ok(conformance)
     }
 
     fn valid_input() -> Result<ValenceReceiptExportInput, crate::receipt::ReceiptError> {
         Ok(ValenceReceiptExportInput {
             source_receipt: valid_source_receipt()?,
-            conformance: valid_conformance(),
+            conformance: valid_conformance()?,
             source_spans: SourceSpanSet::Absent {
                 reason: SOURCE_SPANS_ABSENT_REASON.to_string(),
             },
@@ -805,6 +978,77 @@ mod tests {
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::StaleIdentity)
         );
+        Ok(())
+    }
+
+    #[test]
+    fn conformance_identity_rejects_normative_field_mutation()
+    -> Result<(), crate::receipt::ReceiptError> {
+        let mut conformance = valid_conformance()?;
+        conformance.checked_laws.push("invented-law".to_string());
+
+        let result = admit_valence_conformance(conformance);
+
+        assert!(result.is_err());
+        if let Err(diagnostics) = result {
+            assert!(diagnostics.iter().any(|diagnostic| {
+                diagnostic.code == DiagnosticCode::StaleIdentity
+                    && diagnostic.field == "conformance.conformance_identity"
+            }));
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn conformance_set_reordering_preserves_identity() -> Result<(), crate::receipt::ReceiptError> {
+        let mut first = valid_conformance()?;
+        first.checked_laws.push("artifact-preservation".to_string());
+        first.fixture_coverage.push("identity-domains".to_string());
+        let first_identity = valence_conformance_identity(&first)?;
+        first.checked_laws.reverse();
+        first.fixture_coverage.reverse();
+        let reordered_identity = valence_conformance_identity(&first)?;
+
+        assert_eq!(first_identity, reordered_identity);
+        Ok(())
+    }
+
+    #[test]
+    fn conformance_admission_rejects_duplicates_domains_and_self_asserted_identity()
+    -> Result<(), crate::receipt::ReceiptError> {
+        let mut duplicate = valid_conformance()?;
+        duplicate
+            .checked_laws
+            .push(duplicate.checked_laws[0].clone());
+        duplicate.conformance_identity = valence_conformance_identity(&duplicate)?;
+        let duplicate_result = admit_valence_conformance(duplicate);
+        assert!(duplicate_result.is_err());
+
+        let mut wrong_domain = valid_conformance()?;
+        wrong_domain.conformance_identity =
+            compute_identity(IdentityDomain::Source, b"wrong-domain");
+        let wrong_domain_result = admit_valence_conformance(wrong_domain);
+        assert!(wrong_domain_result.is_err());
+
+        let mut self_asserted = valid_conformance()?;
+        self_asserted.conformance_identity =
+            compute_identity(IdentityDomain::Adapter, b"self-asserted");
+        let self_asserted_result = admit_valence_conformance(self_asserted);
+        assert!(self_asserted_result.is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn conformance_admission_rejects_malformed_projection_metadata()
+    -> Result<(), crate::receipt::ReceiptError> {
+        let mut conformance = valid_conformance()?;
+        conformance.schema_version = "unsupported".to_string();
+        conformance.canonical_codec = "json-self-assertion".to_string();
+        conformance.conformance_identity = valence_conformance_identity(&conformance)?;
+
+        let result = admit_valence_conformance(conformance);
+
+        assert!(result.is_err());
         Ok(())
     }
 

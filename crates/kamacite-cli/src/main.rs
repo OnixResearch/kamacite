@@ -14,8 +14,8 @@ use kamacite_core::{
     ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
     SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
     UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValidationVerdict, compute_identity, docs_config_identity,
-    export_function_address_valence_projection, export_valence_receipt,
+    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance, compute_identity,
+    docs_config_identity, export_function_address_valence_projection, export_valence_receipt,
     function_address_projection_json, receipt_json, validate_fixture_suite,
     validate_function_address_receipt,
 };
@@ -1110,8 +1110,15 @@ fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
     let receipt_path = resolve_under_root(&root, &args.receipt)?;
     let conformance_path = resolve_under_root(&root, &args.conformance)?;
     let source_receipt: ReceiptEnvelope = read_json(&receipt_path, "Valence source receipt")?;
-    let conformance: ValenceExportConformance =
+    let conformance_projection: ValenceExportConformance =
         read_json(&conformance_path, "Valence export conformance")?;
+    let validated_conformance =
+        admit_valence_conformance(conformance_projection).map_err(|diagnostics| {
+            CliError(format!(
+                "Valence export conformance admission failed: {diagnostics:?}"
+            ))
+        })?;
+    let conformance = validated_conformance.projection().clone();
     let source_spans = match &args.source_spans {
         Some(path) => read_json(
             &resolve_under_root(&root, path)?,

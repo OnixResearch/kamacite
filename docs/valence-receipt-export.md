@@ -19,7 +19,9 @@ The export body is hashed with BLAKE3 over deterministic JSON projection bytes w
 
 ## Conformance entry
 
-`fixtures/valence-export/conformance.json` is the reviewed conformance entry for the current profile. It names the source schema, output schema, required identity domains, output identity domain, checked laws, artifacts-first dependency profile, fixture coverage, and non-claims. Valence-like exports without a matching conformance entry fail closed.
+`fixtures/valence-export/conformance.json` is the reviewed JSON compatibility projection for the current conformance artifact. It names the conformance schema and deterministic canonical-body codec, source/output schemas, required identity domains, output identity domain, checked laws, artifacts-first dependency profile, fixture coverage, and non-claims. Kamacite sorted-unique normalizes set-like fields, recomputes the adapter-domain identity from every normative field, and rejects stale, duplicate, wrong-domain, malformed, or self-asserted identities before export. The interim codec is explicitly deterministic JSON body bytes, not a claim of Preserves binary encoding; `schemas/preserves/valence-conformance-v1.preserves` records the projection shape until the shared real Preserves codec is available.
+
+`fixtures/valence-export/migration-v1-content-bound.json` records the old self-asserted conformance identity, the new content-bound identity, and the resulting export identity migration without reinterpreting the old hash.
 
 ## Command
 

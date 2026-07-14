@@ -13,7 +13,7 @@
       "valence-conformance": {
         "domain": "adapter",
         "algorithm": "blake3",
-        "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+        "hex": "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830"
       },
       "valence-source-receipt": {
         "domain": "receipt",
@@ -50,6 +50,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "fb52e599174020c126764ac2ddc2a20e55ba8943bfc70aa3e27def18c330828c"
+    "hex": "8e23497448c7a29ef574cf65e8d2e1b701778c1fd6c185ced93e273c2e119068"
   }
 }

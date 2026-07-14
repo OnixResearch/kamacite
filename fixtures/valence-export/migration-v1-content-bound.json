@@ -1,0 +1,88 @@
+{
+  "schema_version": "kamacite.valence-conformance-migration.v1",
+  "conformance_identity_migration": {
+    "legacy_self_asserted_identity": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b",
+    "content_bound_identity": "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830",
+    "canonical_codec": "kamacite-deterministic-json-valence-conformance-body-v1",
+    "non_claim": "legacy identity is not reinterpreted as content-bound"
+  },
+  "changed_exports": [
+    {
+      "path": "fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json",
+      "source_receipt_identity": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "cb2233ee6d78163198525dbf77bc8f632b910fac660b59babc7c38fffd77c5ef"
+      },
+      "old_export_identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "964b652666cf388feb4f8a0a047880030e5e792fd1e5fff5903b5ad6d0d44149"
+      },
+      "new_export_identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "1a0b4d95500a6acf644a2f7ae81b7884ce1d316b6b8e8e73f751414e4a3b37db"
+      },
+      "checked_laws": [
+        "artifact-identity-preservation",
+        "artifacts-first-no-valence-runtime",
+        "checked-law-preservation",
+        "diagnostic-summary-preservation",
+        "names-as-metadata",
+        "non-claim-preservation",
+        "source-envelope-preservation",
+        "source-receipt-identity-bound",
+        "source-span-absence-explicit"
+      ],
+      "non_claims": [
+        "Valence export is derived compatibility evidence",
+        "not Nickel evaluation semantics",
+        "not Valence semantic ownership",
+        "not arbitrary source translation",
+        "not canonical Kamacite IR",
+        "not compiler correctness",
+        "not evaluator soundness",
+        "not runtime correctness"
+      ]
+    },
+    {
+      "path": "fixtures/valence-export/golden/fsm-receipt.positive.exhaustiveness-octet-valence.valence-export.json",
+      "source_receipt_identity": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "e625e31e5d6a8304f0a1eae264e22cc98e1c9efd3c803cff2a4f438e8cabd60c"
+      },
+      "old_export_identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "f78f1ff64887146424fbdb928ac6c223d4eedde1bbee8c8c8432ceb333a18122"
+      },
+      "new_export_identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "7092fbe6d42b1f754659f4d0b11cbe1b5538239d22ae2fb79b9f7063a4d550d8"
+      },
+      "checked_laws": [
+        "artifact-identity-preservation",
+        "artifacts-first-no-valence-runtime",
+        "checked-law-preservation",
+        "diagnostic-summary-preservation",
+        "non-claim-preservation",
+        "source-receipt-identity-bound",
+        "source-span-absence-explicit",
+        "total-pair-coverage"
+      ],
+      "non_claims": [
+        "Octet evidence is source-shape only",
+        "Valence export is derived compatibility evidence",
+        "Valence export is derived evidence",
+        "not Valence semantic ownership",
+        "not canonical Kamacite IR",
+        "not compiler correctness",
+        "not evaluator soundness",
+        "not runtime correctness"
+      ]
+    }
+  ]
+}

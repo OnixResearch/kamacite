@@ -1,0 +1,25 @@
+; Kamacite Valence export conformance projection v1.
+; The JSON projection is validated against deterministic canonical body bytes.
+; This schema does not claim that the interim body codec is Preserves binary.
+
+ValenceConformanceProjection = <valence-conformance-v1 {
+  schema-version: "kamacite.valence-conformance.v1",
+  canonical-codec: "kamacite-deterministic-json-valence-conformance-body-v1",
+  has-entry: bool,
+  profile-version: string,
+  source-schema: string,
+  output-schema: string,
+  required-input-identity-domains: [string ...],
+  output-identity-domain: string,
+  checked-laws: [string ...],
+  dependency-profile: string,
+  fixture-coverage: [string ...],
+  non-claims: [string ...],
+  conformance-identity: Identity
+}>
+
+Identity = {
+  domain: "adapter",
+  algorithm: "blake3",
+  hex: string
+}

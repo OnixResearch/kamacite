@@ -1,4 +1,6 @@
 {
+  "schema_version": "kamacite.valence-conformance.v1",
+  "canonical_codec": "kamacite-deterministic-json-valence-conformance-body-v1",
   "has_entry": false,
   "profile_version": "kamacite.valence_receipt_export.v1",
   "source_schema": "kamacite.receipt.v1",
@@ -12,6 +14,6 @@
   "conformance_identity": {
     "domain": "adapter",
     "algorithm": "blake3",
-    "hex": "fbb543de6ba3417607e14038cf98a77d6951c7060fe6f2936b4fb47031e9c83b"
+    "hex": "476c08d5c3cd9afdb3a6f8cc408ff973df116cb2a71479f8f7ab59936663896a"
   }
 }
