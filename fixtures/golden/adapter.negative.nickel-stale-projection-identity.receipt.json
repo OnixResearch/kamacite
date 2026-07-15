@@ -52,6 +52,13 @@
         "field": "nickel.projection_identity.hex",
         "message": "declared Nickel export projection identity does not match export bytes",
         "details": {}
+      },
+      {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.capability_boundary]",
+        "field": "nickel.sandbox_evidence",
+        "message": "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        "details": {}
       }
     ],
     "non_claims": [
@@ -61,6 +68,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "59f58f3d798e3a93589ccaf50ff0546d0686af1e5df5da0ccad28a777a92cd5c"
+    "hex": "e5487666d2587db0f28ab970c070e409f28002dca18ac496f78ef498051c13d8"
   }
 }

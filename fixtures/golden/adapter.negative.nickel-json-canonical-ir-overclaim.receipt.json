@@ -52,6 +52,13 @@
         "field": "nickel.claims_canonical_ir",
         "message": "Nickel JSON export is derived projection evidence, not canonical Kamacite IR",
         "details": {}
+      },
+      {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.capability_boundary]",
+        "field": "nickel.sandbox_evidence",
+        "message": "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        "details": {}
       }
     ],
     "non_claims": [
@@ -61,6 +68,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "c0c089ef0fa859ea57e6e999c2ab2cbf9d71c5cc9f119fb58ddd7e1e82035a1d"
+    "hex": "3b2af15335d6a85dfb698809dbb7d2d4056af9701869835470c8933f3988b006"
   }
 }

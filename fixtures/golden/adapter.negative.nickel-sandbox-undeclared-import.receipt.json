@@ -1,0 +1,96 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.negative.nickel-sandbox-undeclared-import",
+    "artifact_class": "adapter-receipt",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.findings.nickel_sandbox.import_closure]"
+    ],
+    "input_identities": {
+      "nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+      },
+      "nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "nickel-import:source.ncl": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "57bcaec8e2ced80f71ad975d39c033b45cc10b41182bc6bc47726b8cd75101f3"
+      },
+      "nickel-sandbox-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "25c29a5c58c512eb2fc179fc59a26c45be970d04b276f72137a1269776d0e748"
+      },
+      "nickel-sandbox-profile": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+      },
+      "nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "57bcaec8e2ced80f71ad975d39c033b45cc10b41182bc6bc47726b8cd75101f3"
+      }
+    },
+    "output_identities": {
+      "computed-nickel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+      },
+      "computed-nickel-export-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "computed-nickel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "57bcaec8e2ced80f71ad975d39c033b45cc10b41182bc6bc47726b8cd75101f3"
+      },
+      "nickel-sandbox-stderr": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "6c9514cef195452dd9ecd3a689b69e5ddea15282a2c36996cc6349c7a5779bea"
+      }
+    },
+    "checked_laws": [
+      "declared-import-closure"
+    ],
+    "diagnostics": [
+      {
+        "code": "malformed-projection-output",
+        "requirement_id": "r[kamacite.findings.nickel_sandbox.enforced_evidence]",
+        "field": "nickel.sandbox_evidence.outcome",
+        "message": "Nickel sandbox did not produce a successful export",
+        "details": {
+          "exit_code": "1",
+          "outcome": "ExitFailure"
+        }
+      },
+      {
+        "code": "malformed-projection-output",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.negative_fixtures.malformed_export]",
+        "field": "nickel.export_bytes",
+        "message": "Nickel export bytes must decode under the declared JSON projection schema",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "sibling files are not implicitly admitted"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "5b3c36f39047557c2d43640f7423131c91a6a614d6115650d499d64a73b3758e"
+  }
+}

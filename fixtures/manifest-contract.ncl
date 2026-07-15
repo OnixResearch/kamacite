@@ -225,6 +225,41 @@ let AdapterReceipt = Tagged {
   checked_laws | StringArray,
 } in
 
+let NickelSandboxLimits = {
+  execution_timeout_milliseconds | Natural,
+  cpu_seconds | Natural,
+  memory_limit_bytes | Natural,
+  output_limit_bytes | Natural,
+  diagnostic_limit_bytes | Natural,
+} in
+let NickelSandboxProfile = {
+  schema_version | String,
+  sandbox_kind | String,
+  evaluator_profile | String,
+  environment | Dyn,
+  read_only_source_path | String,
+  read_only_import_root | String,
+  network_allowed | Bool,
+  process_context_visible | Bool,
+  writable_paths | StringArray,
+  admitted_capabilities | StringArray,
+  limits | NickelSandboxLimits,
+  profile_identity | Identity,
+} in
+let NickelSandboxEvidence = {
+  profile_identity | Identity,
+  evaluator_identity | Identity,
+  import_identities | Dyn,
+  requested_capabilities | StringArray,
+  admitted_capabilities | StringArray,
+  expected_effects | StringArray,
+  observed_execution_facts | StringArray,
+  outcome | String,
+  exit_code | Nullable Natural,
+  stdout_identity | NullableIdentity,
+  stderr_identity | Identity,
+  sandbox_enforced | Bool,
+} in
 let NickelAdapterReceipt = Tagged {
   kind = "nickel-adapter-receipt",
   schema_version | Natural,
@@ -238,6 +273,9 @@ let NickelAdapterReceipt = Tagged {
   projection_identity | NullableIdentity,
   declared_capabilities | StringArray,
   observed_effects | StringArray,
+  import_paths | StringArray,
+  sandbox_profile | Nullable NickelSandboxProfile,
+  sandbox_evidence | Nullable NickelSandboxEvidence,
   claims_canonical_ir | Bool,
   checked_laws | StringArray,
   execution_mode | String,

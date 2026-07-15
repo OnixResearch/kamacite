@@ -49,6 +49,13 @@
         "field": "nickel.source_bytes",
         "message": "Nickel adapter receipt must preserve source bytes before trusting export evidence",
         "details": {}
+      },
+      {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.capability_boundary]",
+        "field": "nickel.sandbox_evidence",
+        "message": "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        "details": {}
       }
     ],
     "non_claims": [
@@ -58,6 +65,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "31aff0aa695a2a945b514cfcd01d296211f7f24e41a4ada1f86efb4a27a7f834"
+    "hex": "4b42af2911ee3abbb3fddd7d1cd17345fedae4bdb193aae83273ec18bbe436ce"
   }
 }

@@ -140,13 +140,6 @@ impl RootCapability {
         Ok(Some(bytes))
     }
 
-    /// Opens the exact admitted source object for an explicitly authorized child process.
-    /// The descriptor intentionally remains inheritable until the child exits.
-    pub(crate) fn open_inheritable(&self, path: &Path) -> Result<File, RootIoError> {
-        let admitted = admit_relative_path(path)?;
-        self.open_read_file(&admitted, false)
-    }
-
     pub(crate) fn write(&self, path: &Path, bytes: &[u8]) -> Result<(), RootIoError> {
         self.write_with_pre_commit(path, bytes, || Ok(()))
     }
@@ -437,6 +430,7 @@ fn rustix_operation_error(
 // r[verify kamacite.findings.root_io_confinement.symlink_safe]
 // r[verify kamacite.findings.root_io_confinement.mutation_safe]
 // r[verify kamacite.findings.root_io_confinement.coverage]
+// r[verify kamacite.findings.nickel_sandbox.import_closure]
 #[cfg(all(test, target_os = "linux"))]
 mod tests {
     use super::*;
@@ -541,7 +535,6 @@ mod tests {
                 .err()
                 .is_some_and(|error| error.to_string().contains("symlink-or-escape"))
         );
-
         let destination_result = capability.write(Path::new("destination-link"), REPLACEMENT_BYTES);
         assert!(destination_result.is_err());
         assert_eq!(

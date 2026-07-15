@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod nickel_sandbox;
 mod root_io;
 
 use kamacite_core::{
@@ -15,18 +16,23 @@ use kamacite_core::{
     FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
     IdentityDomain, IdentityUseInput, MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE,
     ManifestGenerationInput, ManifestGenerationReceipt, ManifestGenerationValidation,
-    NickelAdapterReceiptInput, PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC,
-    PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope,
-    ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet, StackEvidenceInput,
-    SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
-    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance,
-    build_manifest_generation_receipt, compute_identity, docs_config_identity,
-    evaluate_docs_action, export_function_address_valence_projection, export_valence_receipt,
-    fixture_expected_canonical_artifact, function_address_projection_json, receipt_json,
-    render_documentation_projection, validate_docs_config, validate_documentation_render_output,
-    validate_fixture_suite, validate_function_address_receipt,
-    validate_manifest_generation_receipt,
+    NICKEL_SANDBOX_SOURCE_PATH, NickelAdapterReceiptInput, NickelSandboxEvidence,
+    NickelSandboxOutcome, NickelSandboxProfile, PRESERVES_CANONICAL_CODEC,
+    PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION,
+    ReceiptBody, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet,
+    StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass,
+    TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
+    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict,
+    admit_valence_conformance, build_manifest_generation_receipt, compute_identity,
+    docs_config_identity, evaluate_docs_action, export_function_address_valence_projection,
+    export_valence_receipt, fixture_expected_canonical_artifact, function_address_projection_json,
+    nickel_sandbox_profile, receipt_json, render_documentation_projection, validate_docs_config,
+    validate_documentation_render_output, validate_fixture_suite,
+    validate_function_address_receipt, validate_manifest_generation_receipt,
+};
+use nickel_sandbox::{
+    NickelSandboxFile, NickelSandboxRequest, inheritable_sandbox_data_file, resolve_command,
+    run_nickel_sandbox, runtime_closure_paths, validate_enforcement_command_paths,
 };
 use root_io::{RootCapability, RootIoError};
 use serde::{Deserialize, Serialize};
@@ -51,6 +57,10 @@ const DEFAULT_PRESERVES_MIGRATION_REPORT: &str = "target/kamacite-preserves-migr
 const PRESERVES_MIGRATION_SCHEMA_VERSION: &str = "kamacite.preserves-migration.v1";
 const PRESERVES_MIGRATION_MAX_PASSES: usize = 4;
 const DEFAULT_DOCS_CONFIG: &str = "docs/site.ncl";
+const NICKEL_EXPORT_ARGUMENT: &str = "export";
+const NICKEL_VERSION_ARGUMENT: &str = "--version";
+const NICKEL_SOURCE_MEMFD_NAME: &str = "kamacite-nickel-source";
+const NICKEL_IMPORT_MEMFD_NAME: &str = "kamacite-nickel-import";
 const DEFAULT_DOCS_CONTRACT: &str = "docs/docs-config-contract.ncl";
 const DOCS_CONFIG_IMPORT_PREAMBLE: &str =
     "let DocsConfig = import \"docs-config-contract.ncl\" in\n";
@@ -90,6 +100,8 @@ const DOMAIN_DOCUMENTATION_FACTS: &str = "documentation-facts";
 const DOMAIN_DIALECT_PAYLOAD: &str = "dialect-payload";
 const DOMAIN_EVIDENCE_CHAIN: &str = "evidence-chain";
 const DEFAULT_NICKEL_EVALUATOR_COMMAND: &str = "nickel";
+const DEFAULT_NICKEL_SANDBOX_COMMAND: &str = "bwrap";
+const DEFAULT_NICKEL_LIMIT_COMMAND: &str = "prlimit";
 const NICKEL_COMMAND_EXPORT: &str = "export";
 const NICKEL_COMMAND_VERSION: &str = "--version";
 const NICKEL_OPTION_FORMAT: &str = "--format";
@@ -99,6 +111,8 @@ const PROC_SELF_FD_PREFIX: &str = "/proc/self/fd/";
 const NICKEL_EVALUATOR_DESCRIPTOR_PREFIX: &str = "nickel-reference-cli:";
 const NICKEL_EXECUTION_MODE_REFERENCE_EXPORT: &str = "reference-export";
 const NICKEL_EXECUTION_MODE_STORED_EVIDENCE: &str = "stored-evidence";
+const NICKEL_EXECUTION_MODE_SANDBOXED_REFERENCE_EXPORT: &str = "sandboxed-reference-export";
+const NICKEL_EXECUTION_MODE_STORED_SANDBOX_EVIDENCE: &str = "stored-sandbox-evidence";
 const DEFAULT_STEEL_EVALUATOR_DESCRIPTOR: &str =
     "steel-dto-probe-shell:kamacite-cli-dto-profile-v1";
 const STEEL_EXECUTION_MODE_DTO_PROBE: &str = "dto-probe";
@@ -167,6 +181,8 @@ struct ValidateArgs {
 struct NickelAdapterArgs {
     validate: ValidateArgs,
     evaluator_command: PathBuf,
+    sandbox_command: PathBuf,
+    limit_command: PathBuf,
 }
 
 #[derive(Clone, Debug)]
@@ -176,8 +192,18 @@ struct SteelAdapterArgs {
 }
 
 #[derive(Clone, Debug)]
+struct NickelExecutionRequest {
+    evaluator_command: PathBuf,
+    sandbox_command: PathBuf,
+    limit_command: PathBuf,
+}
+
+#[derive(Clone, Debug)]
 struct NickelExecutionShell {
     evaluator_command: PathBuf,
+    sandbox_command: PathBuf,
+    limit_command: PathBuf,
+    runtime_closure_paths: Vec<PathBuf>,
 }
 
 #[derive(Clone, Debug)]
@@ -418,6 +444,12 @@ enum PayloadProjection {
         projection_identity: Option<Identity>,
         declared_capabilities: Vec<String>,
         observed_effects: Vec<String>,
+        #[serde(default)]
+        import_paths: Vec<String>,
+        #[serde(default)]
+        sandbox_profile: Option<NickelSandboxProfile>,
+        #[serde(default)]
+        sandbox_evidence: Box<Option<NickelSandboxEvidence>>,
         claims_canonical_ir: bool,
         checked_laws: Vec<String>,
         execution_mode: String,
@@ -657,6 +689,9 @@ struct NickelAdapterProjectionParts<'a> {
     projection_identity: &'a Option<Identity>,
     declared_capabilities: &'a [String],
     observed_effects: &'a [String],
+    import_paths: &'a [String],
+    sandbox_profile: &'a Option<NickelSandboxProfile>,
+    sandbox_evidence: &'a Option<NickelSandboxEvidence>,
     claims_canonical_ir: bool,
     checked_laws: &'a [String],
     execution_mode: &'a str,
@@ -889,12 +924,16 @@ fn parse_validate_args(args: Vec<String>) -> CliResult<Command> {
 fn parse_nickel_adapter_args(args: Vec<String>) -> CliResult<Command> {
     let mut validate_args = Vec::new();
     let mut evaluator_command = PathBuf::from(DEFAULT_NICKEL_EVALUATOR_COMMAND);
+    let mut sandbox_command = PathBuf::from(DEFAULT_NICKEL_SANDBOX_COMMAND);
+    let mut limit_command = PathBuf::from(DEFAULT_NICKEL_LIMIT_COMMAND);
     let mut index = args.into_iter();
     while let Some(flag) = index.next() {
         match flag.as_str() {
             "--evaluator-command" => {
                 evaluator_command = next_path(&mut index, "--evaluator-command")?
             }
+            "--sandbox-command" => sandbox_command = next_path(&mut index, "--sandbox-command")?,
+            "--limit-command" => limit_command = next_path(&mut index, "--limit-command")?,
             _ => {
                 validate_args.push(flag);
                 if validate_args
@@ -913,6 +952,8 @@ fn parse_nickel_adapter_args(args: Vec<String>) -> CliResult<Command> {
     Ok(Command::ValidateNickelAdapter(NickelAdapterArgs {
         validate,
         evaluator_command,
+        sandbox_command,
+        limit_command,
     }))
 }
 
@@ -2723,10 +2764,28 @@ fn run_validate(args: ValidateArgs) -> CliResult<i32> {
 }
 
 fn run_validate_nickel_adapter(args: NickelAdapterArgs) -> CliResult<i32> {
-    let shell = NickelExecutionShell {
+    let request = NickelExecutionRequest {
         evaluator_command: args.evaluator_command,
+        sandbox_command: args.sandbox_command,
+        limit_command: args.limit_command,
     };
-    run_validate_with_shells(args.validate, Some(&shell), None)
+    run_validate_with_shells(args.validate, Some(&request), None)
+}
+
+fn resolve_nickel_execution_shell(
+    request: &NickelExecutionRequest,
+) -> CliResult<NickelExecutionShell> {
+    let evaluator_command = resolve_command(&request.evaluator_command).map_err(CliError)?;
+    let sandbox_command = resolve_command(&request.sandbox_command).map_err(CliError)?;
+    let limit_command = resolve_command(&request.limit_command).map_err(CliError)?;
+    validate_enforcement_command_paths(&sandbox_command, &limit_command).map_err(CliError)?;
+    let runtime_closure_paths = runtime_closure_paths(&evaluator_command).map_err(CliError)?;
+    Ok(NickelExecutionShell {
+        evaluator_command,
+        sandbox_command,
+        limit_command,
+        runtime_closure_paths,
+    })
 }
 
 fn run_validate_steel_adapter(args: SteelAdapterArgs) -> CliResult<i32> {
@@ -2739,7 +2798,7 @@ fn run_validate_steel_adapter(args: SteelAdapterArgs) -> CliResult<i32> {
 // r[impl kamacite.findings.manifest_semantic_freshness.generation_receipt]
 fn run_validate_with_shells(
     args: ValidateArgs,
-    nickel_shell: Option<&NickelExecutionShell>,
+    nickel_request: Option<&NickelExecutionRequest>,
     steel_shell: Option<&SteelExecutionShell>,
 ) -> CliResult<i32> {
     let root = RootCapability::open(&args.root)?;
@@ -2759,7 +2818,10 @@ fn run_validate_with_shells(
     validate_manifest_projection_shape(&manifest_bytes)?;
     let manifest: ManifestProjection = serde_json::from_slice(&manifest_bytes)
         .map_err(|error| CliError(format!("manifest parse failed: {error}")))?;
-    let suite = materialize_suite(&root, &manifest, nickel_shell, steel_shell)?;
+    let nickel_shell = nickel_request
+        .map(resolve_nickel_execution_shell)
+        .transpose()?;
+    let suite = materialize_suite(&root, &manifest, nickel_shell.as_ref(), steel_shell)?;
     let fixture_report = validate_fixture_suite(&suite);
     let golden_report =
         check_golden_receipts(&root, &manifest.fixtures, &fixture_report.results, &args)?;
@@ -2928,10 +2990,13 @@ fn materialize_fixture(
             projection_identity,
             declared_capabilities,
             observed_effects,
+            import_paths,
+            sandbox_profile,
+            sandbox_evidence,
             claims_canonical_ir,
             checked_laws,
             execution_mode,
-        } => FixturePayload::NickelAdapterReceipt(materialize_nickel_adapter_receipt(
+        } => FixturePayload::NickelAdapterReceipt(Box::new(materialize_nickel_adapter_receipt(
             root,
             nickel_shell,
             NickelAdapterProjectionParts {
@@ -2946,11 +3011,14 @@ fn materialize_fixture(
                 projection_identity,
                 declared_capabilities,
                 observed_effects,
+                import_paths,
+                sandbox_profile,
+                sandbox_evidence,
                 claims_canonical_ir: *claims_canonical_ir,
                 checked_laws,
                 execution_mode,
             },
-        )?),
+        )?)),
         PayloadProjection::SteelAdapterReceipt {
             schema_version,
             adapter_kind,
@@ -3276,28 +3344,87 @@ fn materialize_nickel_adapter_receipt(
         Some(path) => read_manifest_bytes(root, path)?,
         None => Vec::new(),
     };
-    let mut evaluator_descriptor = parts.evaluator_descriptor.to_string();
-    let mut evaluator_identity = parts.evaluator_identity.clone();
+    let mut execution_mode = NICKEL_EXECUTION_MODE_STORED_SANDBOX_EVIDENCE.to_string();
+    let mut sandbox_profile = parts.sandbox_profile.clone();
+    let mut sandbox_evidence = parts.sandbox_evidence.clone();
     let export_bytes = if parts.execution_mode == NICKEL_EXECUTION_MODE_REFERENCE_EXPORT {
         match nickel_shell {
             Some(shell) => {
-                let Some(source_path) = parts.source_path else {
+                if parts.source_path.is_none() {
                     return Err(CliError(
                         "reference-export Nickel fixture requires source_path".to_string(),
                     ));
-                };
-                evaluator_descriptor =
-                    nickel_evaluator_descriptor(&run_nickel_version(&shell.evaluator_command)?)?;
-                evaluator_identity = Some(compute_identity(
-                    IdentityDomain::Evaluator,
-                    evaluator_descriptor.as_bytes(),
-                ));
-                let source_file = root.open_inheritable(Path::new(source_path))?;
-                run_nickel_export(
-                    &shell.evaluator_command,
-                    source_file,
-                    Path::new(source_path),
-                )?
+                }
+                let profile = nickel_sandbox_profile().map_err(|error| {
+                    CliError(format!(
+                        "Nickel sandbox profile construction failed: {error}"
+                    ))
+                })?;
+                let source_identity = compute_identity(IdentityDomain::Source, &source_bytes);
+                let admitted_imports = admit_nickel_import_closure(root, parts.import_paths)?;
+                let declared_evaluator_identity =
+                    parts.evaluator_identity.clone().ok_or_else(|| {
+                        CliError(
+                            "reference-export Nickel fixture requires evaluator identity"
+                                .to_string(),
+                        )
+                    })?;
+                let version = run_nickel_sandbox(NickelSandboxRequest {
+                    evaluator_command: shell.evaluator_command.clone(),
+                    evaluator_arguments: vec![NICKEL_VERSION_ARGUMENT.to_string()],
+                    evaluator_identity: declared_evaluator_identity,
+                    sandbox_command: shell.sandbox_command.clone(),
+                    limit_command: shell.limit_command.clone(),
+                    runtime_closure_paths: shell.runtime_closure_paths.clone(),
+                    source_file: inheritable_sandbox_data_file(
+                        NICKEL_SOURCE_MEMFD_NAME,
+                        &source_bytes,
+                    )
+                    .map_err(CliError)?,
+                    source_identity: source_identity.clone(),
+                    imports: materialize_nickel_import_closure(&admitted_imports)?,
+                    requested_capabilities: parts.declared_capabilities.to_vec(),
+                    expected_effects: parts.observed_effects.to_vec(),
+                    profile: profile.clone(),
+                })
+                .map_err(CliError)?;
+                if version.evidence.outcome != NickelSandboxOutcome::Success {
+                    return Err(CliError(format!(
+                        "sandboxed Nickel version probe did not complete successfully: {:?} ({:?}): {}",
+                        version.evidence.outcome,
+                        version.evidence.exit_code,
+                        String::from_utf8_lossy(&version.stderr).trim()
+                    )));
+                }
+                let observed_descriptor = nickel_evaluator_descriptor(&version.stdout)?;
+                let observed_evaluator_identity =
+                    compute_identity(IdentityDomain::Evaluator, observed_descriptor.as_bytes());
+                let run = run_nickel_sandbox(NickelSandboxRequest {
+                    evaluator_command: shell.evaluator_command.clone(),
+                    evaluator_arguments: vec![
+                        NICKEL_EXPORT_ARGUMENT.to_string(),
+                        NICKEL_SANDBOX_SOURCE_PATH.to_string(),
+                    ],
+                    evaluator_identity: observed_evaluator_identity,
+                    sandbox_command: shell.sandbox_command.clone(),
+                    limit_command: shell.limit_command.clone(),
+                    runtime_closure_paths: shell.runtime_closure_paths.clone(),
+                    source_file: inheritable_sandbox_data_file(
+                        NICKEL_SOURCE_MEMFD_NAME,
+                        &source_bytes,
+                    )
+                    .map_err(CliError)?,
+                    source_identity,
+                    imports: materialize_nickel_import_closure(&admitted_imports)?,
+                    requested_capabilities: parts.declared_capabilities.to_vec(),
+                    expected_effects: parts.observed_effects.to_vec(),
+                    profile: profile.clone(),
+                })
+                .map_err(CliError)?;
+                execution_mode = NICKEL_EXECUTION_MODE_SANDBOXED_REFERENCE_EXPORT.to_string();
+                sandbox_profile = Some(profile);
+                sandbox_evidence = Some(run.evidence);
+                run.stdout
             }
             None => stored_export_bytes,
         }
@@ -3313,18 +3440,60 @@ fn materialize_nickel_adapter_receipt(
     Ok(NickelAdapterReceiptInput {
         schema_version: parts.schema_version,
         adapter_kind: parts.adapter_kind.to_string(),
+        execution_mode,
         source_bytes,
         source_identity: parts.declared_source_identity.clone(),
         evaluator_profile: parts.evaluator_profile.to_string(),
-        evaluator_descriptor,
-        evaluator_identity,
+        evaluator_descriptor: parts.evaluator_descriptor.to_string(),
+        evaluator_identity: parts.evaluator_identity.clone(),
         export_bytes,
         projection_identity: parts.projection_identity.clone(),
         declared_capabilities: parts.declared_capabilities.to_vec(),
-        observed_effects: parts.observed_effects.to_vec(),
+        expected_effects: parts.observed_effects.to_vec(),
+        sandbox_profile,
+        sandbox_evidence,
         claims_canonical_ir: parts.claims_canonical_ir,
         checked_laws: parts.checked_laws.to_vec(),
     })
+}
+
+struct AdmittedNickelImport {
+    sandbox_path: String,
+    bytes: Vec<u8>,
+    identity: Identity,
+}
+
+fn admit_nickel_import_closure(
+    root: &RootCapability,
+    import_paths: &[String],
+) -> CliResult<Vec<AdmittedNickelImport>> {
+    let mut imports = Vec::with_capacity(import_paths.len());
+    for path in import_paths {
+        let bytes = root.read(Path::new(path))?;
+        let identity = compute_identity(IdentityDomain::Source, &bytes);
+        imports.push(AdmittedNickelImport {
+            sandbox_path: path.clone(),
+            bytes,
+            identity,
+        });
+    }
+    Ok(imports)
+}
+
+fn materialize_nickel_import_closure(
+    imports: &[AdmittedNickelImport],
+) -> CliResult<Vec<NickelSandboxFile>> {
+    imports
+        .iter()
+        .map(|import| {
+            Ok(NickelSandboxFile {
+                sandbox_path: import.sandbox_path.clone(),
+                file: inheritable_sandbox_data_file(NICKEL_IMPORT_MEMFD_NAME, &import.bytes)
+                    .map_err(CliError)?,
+                identity: import.identity.clone(),
+            })
+        })
+        .collect()
 }
 
 fn materialize_steel_adapter_receipt(
@@ -3396,36 +3565,6 @@ fn run_nickel_version(command: &Path) -> CliResult<Vec<u8>> {
             ))
         })?;
     command_stdout(output, "Nickel version")
-}
-
-fn run_nickel_export(
-    command: &Path,
-    source_file: std::fs::File,
-    source_path: &Path,
-) -> CliResult<Vec<u8>> {
-    #[cfg(not(target_os = "linux"))]
-    {
-        let _ = (command, source_file, source_path);
-        return Err(CliError(
-            "Nickel export requires Linux descriptor-path confinement".to_string(),
-        ));
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        let descriptor_path = PathBuf::from(format!("/proc/self/fd/{}", source_file.as_raw_fd()));
-        let output = ProcessCommand::new(command)
-            .arg(NICKEL_COMMAND_EXPORT)
-            .arg(descriptor_path)
-            .output()
-            .map_err(|error| {
-                CliError(format!(
-                    "Nickel export command failed for {}: {error}",
-                    source_path.display()
-                ))
-            })?;
-        command_stdout(output, "Nickel export")
-    }
 }
 
 fn command_stdout(output: Output, label: &str) -> CliResult<Vec<u8>> {
@@ -3625,6 +3764,7 @@ mod tests {
     const TEST_FUNCTION_NAME: &str = "f";
     const TEST_CANONICALIZER: &str = "octet-source-token-function-address-v1";
     const TEST_OCTET_VERSION: &str = "octet-test";
+    const TEST_SYMLINK_IMPORT_PATH: &str = "fixtures/adapters/nickel/sandbox/support-link.ncl";
 
     fn projection_json(fixture_id: &str) -> String {
         format!(
@@ -3759,6 +3899,20 @@ mod tests {
 
         let result = merge_migration_artifacts(vec![previous], &[current]);
 
+        assert!(result.is_err());
+    }
+
+    // r[verify kamacite.findings.nickel_sandbox.import_closure]
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn rejects_symlink_import_fixture_before_sandbox_execution() {
+        let repository_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let root = RootCapability::open(&repository_root);
+        assert!(root.is_ok());
+        let Ok(root) = root else {
+            return;
+        };
+        let result = admit_nickel_import_closure(&root, &[TEST_SYMLINK_IMPORT_PATH.to_string()]);
         assert!(result.is_err());
     }
 

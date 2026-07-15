@@ -337,6 +337,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "reference-export",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -347,6 +348,95 @@
           "algorithm": "blake3",
           "domain": "projection",
           "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 0,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "dee483bc97a1e84b5e4da7a288a66abfb02665de4edd4036290ce1f31cec3d93"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "success",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+          },
+          "stdout_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
+          }
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
         },
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
@@ -391,6 +481,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -402,6 +493,8 @@
           "domain": "projection",
           "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": null
       },
@@ -446,6 +539,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -457,6 +551,8 @@
           "domain": "projection",
           "hex": "0000000000000000000000000000000000000000000000000000000000000000"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
       },
@@ -501,6 +597,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -512,6 +609,8 @@
           "domain": "projection",
           "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
       },
@@ -552,6 +651,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -563,6 +663,8 @@
           "domain": "projection",
           "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
       },
@@ -607,6 +709,7 @@
         "evaluator_profile": "third-party-nickel-wrapper",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -618,6 +721,8 @@
           "domain": "projection",
           "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
       },
@@ -662,6 +767,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/malformed-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -673,6 +779,8 @@
           "domain": "projection",
           "hex": "0dea94cdddc2781473066572c89204968f46c27e6e6d390d9e5c8db75869cff9"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
       },
@@ -717,6 +825,7 @@
         "evaluator_profile": "nickel-reference-cli",
         "execution_mode": "stored-evidence",
         "export_path": "fixtures/adapters/nickel/valid-export.json",
+        "import_paths": [],
         "kind": "nickel-adapter-receipt",
         "observed_effects": [
           "fixture-read",
@@ -729,12 +838,864 @@
           "domain": "projection",
           "hex": "50cc1102b1c612e6962547aacdcef9a400d4416ef8dd9388e885991853c400c9"
         },
+        "sandbox_evidence": null,
+        "sandbox_profile": null,
         "schema_version": 1,
         "source_path": "fixtures/core/source-envelopes/valid.nickel"
       },
       "requirement_ids": [
         "r[kamacite.nickel_adapter_suite.negative_fixtures.undeclared_effect]",
         "r[kamacite.nickel_adapter_suite.capability_boundary]"
+      ]
+    },
+    {
+      "artifact_class": "adapter-receipt",
+      "checked_laws": [
+        "sandbox-import-closure"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/adapter.negative.nickel-sandbox-import-escape.receipt.json",
+      "id": "adapter.negative.nickel-sandbox-import-escape",
+      "non_claims": [
+        "outside-root imports are not admitted"
+      ],
+      "payload": {
+        "adapter_kind": "nickel-export",
+        "checked_laws": [
+          "sandbox-import-closure"
+        ],
+        "claims_canonical_ir": false,
+        "declared_capabilities": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "declared_source_identity": {
+          "algorithm": "blake3",
+          "domain": "source",
+          "hex": "d4685005dc977e4903a82bfa2bf6783a1fd72719d6e3a59f435f5782eaeb28b3"
+        },
+        "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+        "evaluator_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+        },
+        "evaluator_profile": "nickel-reference-cli",
+        "execution_mode": "reference-export",
+        "export_path": "fixtures/adapters/nickel/sandbox/empty-export.json",
+        "import_paths": [],
+        "kind": "nickel-adapter-receipt",
+        "observed_effects": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "projection_identity": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 1,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "d4685005dc977e4903a82bfa2bf6783a1fd72719d6e3a59f435f5782eaeb28b3"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "exit-failure",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "65c60d806494ab0518e505ac8a086fb58286f4ca0f3fd55d005114fd03f30139"
+          },
+          "stdout_identity": null
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
+        },
+        "schema_version": 1,
+        "source_path": "fixtures/adapters/nickel/sandbox/import-escape.ncl"
+      },
+      "requirement_ids": [
+        "r[kamacite.findings.nickel_sandbox.import_closure]"
+      ]
+    },
+    {
+      "artifact_class": "adapter-receipt",
+      "checked_laws": [
+        "declared-import-closure"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/adapter.negative.nickel-sandbox-undeclared-import.receipt.json",
+      "id": "adapter.negative.nickel-sandbox-undeclared-import",
+      "non_claims": [
+        "sibling files are not implicitly admitted"
+      ],
+      "payload": {
+        "adapter_kind": "nickel-export",
+        "checked_laws": [
+          "declared-import-closure"
+        ],
+        "claims_canonical_ir": false,
+        "declared_capabilities": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "declared_source_identity": {
+          "algorithm": "blake3",
+          "domain": "source",
+          "hex": "57bcaec8e2ced80f71ad975d39c033b45cc10b41182bc6bc47726b8cd75101f3"
+        },
+        "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+        "evaluator_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+        },
+        "evaluator_profile": "nickel-reference-cli",
+        "execution_mode": "reference-export",
+        "export_path": "fixtures/adapters/nickel/sandbox/empty-export.json",
+        "import_paths": [],
+        "kind": "nickel-adapter-receipt",
+        "observed_effects": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "projection_identity": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 1,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "57bcaec8e2ced80f71ad975d39c033b45cc10b41182bc6bc47726b8cd75101f3"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "exit-failure",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "6c9514cef195452dd9ecd3a689b69e5ddea15282a2c36996cc6349c7a5779bea"
+          },
+          "stdout_identity": null
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
+        },
+        "schema_version": 1,
+        "source_path": "fixtures/adapters/nickel/sandbox/undeclared-import.ncl"
+      },
+      "requirement_ids": [
+        "r[kamacite.findings.nickel_sandbox.import_closure]"
+      ]
+    },
+    {
+      "artifact_class": "adapter-receipt",
+      "checked_laws": [
+        "declared-package-closure"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/adapter.negative.nickel-sandbox-undeclared-package.receipt.json",
+      "id": "adapter.negative.nickel-sandbox-undeclared-package",
+      "non_claims": [
+        "package inputs are denied unless reviewed"
+      ],
+      "payload": {
+        "adapter_kind": "nickel-export",
+        "checked_laws": [
+          "declared-package-closure"
+        ],
+        "claims_canonical_ir": false,
+        "declared_capabilities": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "declared_source_identity": {
+          "algorithm": "blake3",
+          "domain": "source",
+          "hex": "fae733102b96301cf4bca3e9147a2e7cf4ca02b286addd79117b4dcb953078ad"
+        },
+        "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+        "evaluator_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+        },
+        "evaluator_profile": "nickel-reference-cli",
+        "execution_mode": "reference-export",
+        "export_path": "fixtures/adapters/nickel/sandbox/empty-export.json",
+        "import_paths": [],
+        "kind": "nickel-adapter-receipt",
+        "observed_effects": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "projection_identity": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 1,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "fae733102b96301cf4bca3e9147a2e7cf4ca02b286addd79117b4dcb953078ad"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "exit-failure",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "7219292e4262459688434c9ed20cd8eff59f008bc7fce8c6d9c0f77b4009a1c0"
+          },
+          "stdout_identity": null
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
+        },
+        "schema_version": 1,
+        "source_path": "fixtures/adapters/nickel/sandbox/undeclared-package.ncl"
+      },
+      "requirement_ids": [
+        "r[kamacite.findings.nickel_sandbox.import_closure]"
+      ]
+    },
+    {
+      "artifact_class": "adapter-receipt",
+      "checked_laws": [
+        "environment-sanitized"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/adapter.negative.nickel-sandbox-environment-dependence.receipt.json",
+      "id": "adapter.negative.nickel-sandbox-environment-dependence",
+      "non_claims": [
+        "ambient environment is not evaluator input"
+      ],
+      "payload": {
+        "adapter_kind": "nickel-export",
+        "checked_laws": [
+          "environment-sanitized"
+        ],
+        "claims_canonical_ir": false,
+        "declared_capabilities": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "declared_source_identity": {
+          "algorithm": "blake3",
+          "domain": "source",
+          "hex": "b91f56420df56ffa1a5640f242426f0b12787540401a3d43157e1c42c6f7c70e"
+        },
+        "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+        "evaluator_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+        },
+        "evaluator_profile": "nickel-reference-cli",
+        "execution_mode": "reference-export",
+        "export_path": "fixtures/adapters/nickel/sandbox/empty-export.json",
+        "import_paths": [],
+        "kind": "nickel-adapter-receipt",
+        "observed_effects": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "projection_identity": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 1,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "b91f56420df56ffa1a5640f242426f0b12787540401a3d43157e1c42c6f7c70e"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "exit-failure",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "1bbf6592a4db8870c537c758a6f9faf84a0f6812125037dc6c7e1f58606636bc"
+          },
+          "stdout_identity": null
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
+        },
+        "schema_version": 1,
+        "source_path": "fixtures/adapters/nickel/sandbox/environment-dependence.ncl"
+      },
+      "requirement_ids": [
+        "r[kamacite.findings.nickel_sandbox.enforced_evidence]"
+      ]
+    },
+    {
+      "artifact_class": "adapter-receipt",
+      "checked_laws": [
+        "execution-budget"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/adapter.negative.nickel-sandbox-resource-exhaustion.receipt.json",
+      "id": "adapter.negative.nickel-sandbox-resource-exhaustion",
+      "non_claims": [
+        "nontermination is not admitted"
+      ],
+      "payload": {
+        "adapter_kind": "nickel-export",
+        "checked_laws": [
+          "execution-budget"
+        ],
+        "claims_canonical_ir": false,
+        "declared_capabilities": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "declared_source_identity": {
+          "algorithm": "blake3",
+          "domain": "source",
+          "hex": "5809f24d41411b808fe4f39c212856ac422efe73b295cf2922aca932ae2aa9ef"
+        },
+        "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+        "evaluator_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+        },
+        "evaluator_profile": "nickel-reference-cli",
+        "execution_mode": "reference-export",
+        "export_path": "fixtures/adapters/nickel/sandbox/empty-export.json",
+        "import_paths": [],
+        "kind": "nickel-adapter-receipt",
+        "observed_effects": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "projection_identity": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 134,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "5809f24d41411b808fe4f39c212856ac422efe73b295cf2922aca932ae2aa9ef"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "resource-limit",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "d53f2e4f5287511e65de77ee29010ddc6fd331a144c1f9632fce5f812415cfb6"
+          },
+          "stdout_identity": null
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
+        },
+        "schema_version": 1,
+        "source_path": "fixtures/adapters/nickel/sandbox/resource-exhaustion.ncl"
+      },
+      "requirement_ids": [
+        "r[kamacite.findings.nickel_sandbox.resource_limits]"
+      ]
+    },
+    {
+      "artifact_class": "adapter-receipt",
+      "checked_laws": [
+        "output-budget"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/adapter.negative.nickel-sandbox-oversized-output.receipt.json",
+      "id": "adapter.negative.nickel-sandbox-oversized-output",
+      "non_claims": [
+        "unbounded output is not admitted"
+      ],
+      "payload": {
+        "adapter_kind": "nickel-export",
+        "checked_laws": [
+          "output-budget"
+        ],
+        "claims_canonical_ir": false,
+        "declared_capabilities": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "declared_source_identity": {
+          "algorithm": "blake3",
+          "domain": "source",
+          "hex": "a990b8a9f1ac5a655c9b2f8b7e48108a476c3ceee2e9643f2c3ba971b5fc48c5"
+        },
+        "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
+        "evaluator_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+        },
+        "evaluator_profile": "nickel-reference-cli",
+        "execution_mode": "reference-export",
+        "export_path": "fixtures/adapters/nickel/sandbox/oversized-export-prefix.json",
+        "import_paths": [],
+        "kind": "nickel-adapter-receipt",
+        "observed_effects": [
+          "fixture-read",
+          "nickel-reference-export",
+          "capture-stdout"
+        ],
+        "projection_identity": {
+          "algorithm": "blake3",
+          "domain": "projection",
+          "hex": "4948eb60229c01923ca4ef87c42fc069f106446000103828a68e22cfd5300634"
+        },
+        "sandbox_evidence": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "evaluator_identity": {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "97c4f5c61695ff74293d0eca8371587368de724256328082e095867fbfac3524"
+          },
+          "exit_code": 153,
+          "expected_effects": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "import_identities": {
+            "source.ncl": {
+              "algorithm": "blake3",
+              "domain": "source",
+              "hex": "a990b8a9f1ac5a655c9b2f8b7e48108a476c3ceee2e9643f2c3ba971b5fc48c5"
+            }
+          },
+          "observed_execution_facts": [
+            "environment-sanitized",
+            "network-isolated",
+            "bounded-output",
+            "read-only-import-closure",
+            "sandbox-enforced"
+          ],
+          "outcome": "output-limit",
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "requested_capabilities": [
+            "fixture-read",
+            "nickel-reference-export",
+            "capture-stdout"
+          ],
+          "sandbox_enforced": true,
+          "stderr_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "2c29636f125516625621fd12e2b81b4dd8f54cd3a24cda829a384bd0dcb74fb6"
+          },
+          "stdout_identity": {
+            "algorithm": "blake3",
+            "domain": "projection",
+            "hex": "4948eb60229c01923ca4ef87c42fc069f106446000103828a68e22cfd5300634"
+          }
+        },
+        "sandbox_profile": {
+          "admitted_capabilities": [
+            "capture-stdout",
+            "fixture-read",
+            "nickel-reference-export"
+          ],
+          "environment": {
+            "HOME": "/homeless",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "TZ": "UTC"
+          },
+          "evaluator_profile": "nickel-reference-cli",
+          "limits": {
+            "cpu_seconds": 5,
+            "diagnostic_limit_bytes": 65536,
+            "execution_timeout_milliseconds": 5000,
+            "memory_limit_bytes": 1073741824,
+            "output_limit_bytes": 1048576
+          },
+          "network_allowed": false,
+          "process_context_visible": false,
+          "profile_identity": {
+            "algorithm": "blake3",
+            "domain": "adapter",
+            "hex": "1b97ef2db104877c185fbf849bde9999a98c0b66f240a5f24d9331d83bf2c706"
+          },
+          "read_only_import_root": "/work",
+          "read_only_source_path": "/work/source.ncl",
+          "sandbox_kind": "bubblewrap-linux-v1",
+          "schema_version": "kamacite.nickel-sandbox.v1",
+          "writable_paths": [
+            "/tmp"
+          ]
+        },
+        "schema_version": 1,
+        "source_path": "fixtures/adapters/nickel/sandbox/oversized-output.ncl"
+      },
+      "requirement_ids": [
+        "r[kamacite.findings.nickel_sandbox.resource_limits]"
       ]
     },
     {

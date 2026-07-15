@@ -42,6 +42,13 @@
         "field": "nickel.evaluator_identity",
         "message": "trusted Nickel export evidence must bind evaluator identity",
         "details": {}
+      },
+      {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.capability_boundary]",
+        "field": "nickel.sandbox_evidence",
+        "message": "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        "details": {}
       }
     ],
     "non_claims": [
@@ -51,6 +58,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "71e175fb75ab3427fe41e52218a9d6b19dad937d8e5922e79eb06b789b080faa"
+    "hex": "52ab80d867a248ab5db5c0a5e2fc8c311b6b62a0cabfc8e95f4f93e9ecea8d17"
   }
 }

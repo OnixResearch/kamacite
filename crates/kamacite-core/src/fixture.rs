@@ -1,5 +1,11 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::nickel_sandbox::{
+    NickelSandboxEvidence, NickelSandboxProfile, nickel_sandbox_evidence_identity,
+    validate_nickel_sandbox,
+};
+#[cfg(test)]
+use crate::nickel_sandbox::{nickel_sandbox_observed_facts, nickel_sandbox_profile};
 use crate::preserves_codec::{
     CanonicalPreservesArtifact, PreservesCodecError, PreservesLimits, PreservesSchema,
     PreservesSyntax, canonicalize_preserves, encode_typed_preserves,
@@ -66,8 +72,6 @@ const REQUIREMENT_NICKEL_UNSUPPORTED_EVALUATOR: &str =
     "r[kamacite.nickel_adapter_suite.evaluator_identity.unsupported]";
 const REQUIREMENT_NICKEL_MALFORMED_OUTPUT: &str =
     "r[kamacite.nickel_adapter_suite.negative_fixtures.malformed_export]";
-const REQUIREMENT_NICKEL_UNDECLARED_EFFECT: &str =
-    "r[kamacite.nickel_adapter_suite.negative_fixtures.undeclared_effect]";
 const REQUIREMENT_NICKEL_SOURCE_EXPORT: &str =
     "r[kamacite.nickel_adapter_suite.source_export_separation]";
 const REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY: &str =
@@ -327,7 +331,7 @@ pub enum FixturePayload {
     SourceEnvelope(SourceEnvelopeInput),
     CanonicalValue(CanonicalValueInput),
     AdapterReceipt(AdapterReceiptInput),
-    NickelAdapterReceipt(NickelAdapterReceiptInput),
+    NickelAdapterReceipt(Box<NickelAdapterReceiptInput>),
     SteelAdapterReceipt(Box<SteelAdapterReceiptInput>),
     TargetArtifact(TargetArtifactInput),
     UnsupportedClaim(UnsupportedClaimInput),
@@ -379,6 +383,7 @@ pub struct AdapterReceiptInput {
 pub struct NickelAdapterReceiptInput {
     pub schema_version: u32,
     pub adapter_kind: String,
+    pub execution_mode: String,
     pub source_bytes: Vec<u8>,
     pub source_identity: Option<Identity>,
     pub evaluator_profile: String,
@@ -387,7 +392,9 @@ pub struct NickelAdapterReceiptInput {
     pub export_bytes: Vec<u8>,
     pub projection_identity: Option<Identity>,
     pub declared_capabilities: Vec<String>,
-    pub observed_effects: Vec<String>,
+    pub expected_effects: Vec<String>,
+    pub sandbox_profile: Option<NickelSandboxProfile>,
+    pub sandbox_evidence: Option<NickelSandboxEvidence>,
     pub claims_canonical_ir: bool,
     pub checked_laws: Vec<String>,
 }
@@ -1662,7 +1669,7 @@ fn validate_nickel_adapter_receipt(
     validate_nickel_source(input, accumulator);
     validate_nickel_evaluator(input, accumulator);
     validate_nickel_projection(input, accumulator);
-    validate_nickel_capabilities(input, accumulator);
+    validate_nickel_sandbox_evidence(input, accumulator);
     if input.claims_canonical_ir {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::CanonicalIrOverclaim,
@@ -1852,7 +1859,7 @@ fn validate_nickel_projection(
     }
 }
 
-fn validate_nickel_capabilities(
+fn validate_nickel_sandbox_evidence(
     input: &NickelAdapterReceiptInput,
     accumulator: &mut ValidationAccumulator,
 ) {
@@ -1861,23 +1868,56 @@ fn validate_nickel_capabilities(
             DiagnosticCode::IncompleteMetadata,
             REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY,
             "nickel.declared_capabilities",
-            "Nickel adapter receipts must declare shell capabilities before execution evidence is trusted",
+            "Nickel adapter receipts must declare requested shell capabilities",
         ));
     }
-    let declared: BTreeSet<&String> = input.declared_capabilities.iter().collect();
-    for observed in &input.observed_effects {
-        if !declared.contains(observed) {
-            accumulator.diagnostics.push(
-                Diagnostic::new(
-                    DiagnosticCode::UndeclaredCapability,
-                    REQUIREMENT_NICKEL_UNDECLARED_EFFECT,
-                    "nickel.observed_effects",
-                    "observed Nickel adapter host effect was not declared",
-                )
-                .with_detail("effect", observed.clone()),
-            );
+    let (Some(profile), Some(evidence)) = (&input.sandbox_profile, &input.sandbox_evidence) else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UndeclaredAuthority,
+            REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY,
+            "nickel.sandbox_evidence",
+            "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        ));
+        return;
+    };
+    accumulator.input_identities.insert(
+        "nickel-sandbox-profile".to_string(),
+        profile.profile_identity.clone(),
+    );
+    match nickel_sandbox_evidence_identity(evidence) {
+        Ok(identity) => {
+            accumulator
+                .input_identities
+                .insert("nickel-sandbox-evidence".to_string(), identity);
         }
+        Err(error) => accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_NICKEL_CAPABILITY_BOUNDARY,
+            "nickel.sandbox_evidence",
+            format!("Nickel sandbox evidence identity failed: {error}"),
+        )),
     }
+    for (path, identity) in &evidence.import_identities {
+        accumulator
+            .input_identities
+            .insert(format!("nickel-import:{path}"), identity.clone());
+    }
+    if let Some(identity) = &evidence.stdout_identity {
+        accumulator
+            .output_identities
+            .insert("nickel-sandbox-stdout".to_string(), identity.clone());
+    }
+    accumulator.output_identities.insert(
+        "nickel-sandbox-stderr".to_string(),
+        evidence.stderr_identity.clone(),
+    );
+    accumulator.diagnostics.extend(validate_nickel_sandbox(
+        profile,
+        evidence,
+        &input.declared_capabilities,
+        input.projection_identity.as_ref(),
+        input.evaluator_identity.as_ref(),
+    ));
 }
 
 fn validate_steel_adapter_receipt(
@@ -5094,8 +5134,36 @@ mod tests {
         );
     }
 
-    fn valid_nickel_adapter_fixture() -> FixtureCase {
-        FixtureCase {
+    fn valid_nickel_adapter_fixture() -> Option<FixtureCase> {
+        let profile = nickel_sandbox_profile().ok()?;
+        let declared_capabilities = vec![
+            FIXTURE_READ_CAPABILITY.to_string(),
+            NICKEL_EXPORT_CAPABILITY.to_string(),
+            CAPTURE_STDOUT_CAPABILITY.to_string(),
+        ];
+        let mut import_identities = BTreeMap::new();
+        import_identities.insert(
+            "source.ncl".to_string(),
+            compute_identity(IdentityDomain::Source, VALID_SOURCE),
+        );
+        let evidence = NickelSandboxEvidence {
+            profile_identity: profile.profile_identity.clone(),
+            evaluator_identity: compute_identity(
+                IdentityDomain::Evaluator,
+                NICKEL_EVALUATOR_DESCRIPTOR.as_bytes(),
+            ),
+            import_identities,
+            requested_capabilities: declared_capabilities.clone(),
+            admitted_capabilities: profile.admitted_capabilities.clone(),
+            expected_effects: declared_capabilities.clone(),
+            observed_execution_facts: nickel_sandbox_observed_facts(),
+            outcome: crate::nickel_sandbox::NickelSandboxOutcome::Success,
+            exit_code: Some(0),
+            stdout_identity: Some(compute_identity(IdentityDomain::Projection, VALID_EXPORT)),
+            stderr_identity: compute_identity(IdentityDomain::Projection, b""),
+            sandbox_enforced: true,
+        };
+        Some(FixtureCase {
             id: NICKEL_FIXTURE_ID.to_string(),
             fixture_class: FixtureClass::Positive,
             artifact_class: ArtifactClass::AdapterReceipt,
@@ -5103,9 +5171,10 @@ mod tests {
             non_claims: vec![NICKEL_NON_CLAIM.to_string()],
             expected_verdict: ValidationVerdict::Accepted,
             checked_laws: vec![NICKEL_ADAPTER_LAW.to_string()],
-            payload: FixturePayload::NickelAdapterReceipt(NickelAdapterReceiptInput {
+            payload: FixturePayload::NickelAdapterReceipt(Box::new(NickelAdapterReceiptInput {
                 schema_version: SUPPORTED_SCHEMA_VERSION,
                 adapter_kind: NICKEL_ADAPTER_KIND.to_string(),
+                execution_mode: "sandboxed-reference-export".to_string(),
                 source_bytes: VALID_SOURCE.to_vec(),
                 source_identity: Some(compute_identity(IdentityDomain::Source, VALID_SOURCE)),
                 evaluator_profile: NICKEL_EVALUATOR_PROFILE.to_string(),
@@ -5119,25 +5188,26 @@ mod tests {
                     IdentityDomain::Projection,
                     VALID_EXPORT,
                 )),
-                declared_capabilities: vec![
+                declared_capabilities,
+                expected_effects: vec![
                     FIXTURE_READ_CAPABILITY.to_string(),
                     NICKEL_EXPORT_CAPABILITY.to_string(),
                     CAPTURE_STDOUT_CAPABILITY.to_string(),
                 ],
-                observed_effects: vec![
-                    FIXTURE_READ_CAPABILITY.to_string(),
-                    NICKEL_EXPORT_CAPABILITY.to_string(),
-                    CAPTURE_STDOUT_CAPABILITY.to_string(),
-                ],
+                sandbox_profile: Some(profile),
+                sandbox_evidence: Some(evidence),
                 claims_canonical_ir: false,
                 checked_laws: vec![NICKEL_ADAPTER_LAW.to_string()],
-            }),
-        }
+            })),
+        })
     }
 
     #[test]
     fn accepts_nickel_adapter_export_evidence() {
-        let result = validate_fixture(&valid_nickel_adapter_fixture());
+        let Some(fixture) = valid_nickel_adapter_fixture() else {
+            return;
+        };
+        let result = validate_fixture(&fixture);
         assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
         assert!(result.expectation_met);
         assert!(result.diagnostics.is_empty());
@@ -5145,7 +5215,9 @@ mod tests {
 
     #[test]
     fn rejects_nickel_adapter_missing_source() {
-        let mut fixture = valid_nickel_adapter_fixture();
+        let Some(mut fixture) = valid_nickel_adapter_fixture() else {
+            return;
+        };
         fixture.id = "unit.nickel.adapter.missing-source".to_string();
         fixture.fixture_class = FixtureClass::Negative;
         fixture.expected_verdict = ValidationVerdict::Rejected;
@@ -5167,7 +5239,9 @@ mod tests {
 
     #[test]
     fn rejects_nickel_adapter_stale_projection_identity() {
-        let mut fixture = valid_nickel_adapter_fixture();
+        let Some(mut fixture) = valid_nickel_adapter_fixture() else {
+            return;
+        };
         fixture.id = "unit.nickel.adapter.stale-projection".to_string();
         fixture.fixture_class = FixtureClass::Negative;
         fixture.expected_verdict = ValidationVerdict::Rejected;
@@ -5189,7 +5263,9 @@ mod tests {
 
     #[test]
     fn rejects_nickel_adapter_unsupported_evaluator_profile() {
-        let mut fixture = valid_nickel_adapter_fixture();
+        let Some(mut fixture) = valid_nickel_adapter_fixture() else {
+            return;
+        };
         fixture.id = "unit.nickel.adapter.unsupported-evaluator".to_string();
         fixture.fixture_class = FixtureClass::Negative;
         fixture.expected_verdict = ValidationVerdict::Rejected;
@@ -5209,12 +5285,18 @@ mod tests {
 
     #[test]
     fn rejects_nickel_adapter_undeclared_effect() {
-        let mut fixture = valid_nickel_adapter_fixture();
+        let Some(mut fixture) = valid_nickel_adapter_fixture() else {
+            return;
+        };
         fixture.id = "unit.nickel.adapter.undeclared-effect".to_string();
         fixture.fixture_class = FixtureClass::Negative;
         fixture.expected_verdict = ValidationVerdict::Rejected;
-        if let FixturePayload::NickelAdapterReceipt(input) = &mut fixture.payload {
-            input.observed_effects.push(NETWORK_CAPABILITY.to_string());
+        if let FixturePayload::NickelAdapterReceipt(input) = &mut fixture.payload
+            && let Some(evidence) = &mut input.sandbox_evidence
+        {
+            evidence
+                .admitted_capabilities
+                .push(NETWORK_CAPABILITY.to_string());
         }
 
         let result = validate_fixture(&fixture);

@@ -23,7 +23,13 @@
         pkgs:
         let
           system = pkgs.stdenv.hostPlatform.system;
-          nickelRuntimePath = pkgs.lib.makeBinPath [ pkgs.nickel ];
+          nickelSandboxTools = [
+            pkgs.bubblewrap
+            pkgs.nickel
+            pkgs.util-linux
+          ];
+          nickelRuntimePath = pkgs.lib.makeBinPath nickelSandboxTools;
+          nickelRuntimeClosure = pkgs.closureInfo { rootPaths = [ pkgs.nickel ]; };
         in
         {
           kamacite = pkgs.rustPlatform.buildRustPackage {
@@ -38,9 +44,11 @@
             nativeBuildInputs = [ pkgs.makeWrapper ];
             postInstall = ''
               wrapProgram $out/bin/kamacite-validate \
-                --prefix PATH : ${nickelRuntimePath}
+                --prefix PATH : ${nickelRuntimePath} \
+                --set KAMACITE_NICKEL_RUNTIME_CLOSURE_FILE ${nickelRuntimeClosure}/store-paths
               makeWrapper $out/bin/kamacite-validate $out/bin/kamacite \
-                --prefix PATH : ${nickelRuntimePath}
+                --prefix PATH : ${nickelRuntimePath} \
+                --set KAMACITE_NICKEL_RUNTIME_CLOSURE_FILE ${nickelRuntimeClosure}/store-paths
             '';
             doCheck = false;
           };
@@ -286,14 +294,20 @@
         {
           default = pkgs.mkShell {
             packages = [
+              pkgs.bubblewrap
               pkgs.cargo
               pkgs.clippy
               pkgs.nickel
+              pkgs.nix
               pkgs.rustc
               pkgs.rustfmt
+              pkgs.util-linux
               cairn.packages.${system}.cairn
               self.packages.${system}.kamacite
             ];
+            KAMACITE_NICKEL_RUNTIME_CLOSURE_FILE = "${
+              pkgs.closureInfo { rootPaths = [ pkgs.nickel ]; }
+            }/store-paths";
           };
         }
       );

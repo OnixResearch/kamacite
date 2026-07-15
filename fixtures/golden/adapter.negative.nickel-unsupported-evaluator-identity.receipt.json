@@ -47,6 +47,13 @@
     ],
     "diagnostics": [
       {
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.capability_boundary]",
+        "field": "nickel.sandbox_evidence",
+        "message": "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        "details": {}
+      },
+      {
         "code": "unsupported-evaluator-identity",
         "requirement_id": "r[kamacite.nickel_adapter_suite.evaluator_identity.unsupported]",
         "field": "nickel.evaluator_profile",
@@ -63,6 +70,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "aa1eaff48f75873aa43fa216750a381fcfb257b7f8202dd11dae1e536862ab5d"
+    "hex": "1200f8dc31ffd351167a5c4325c4c4e9945bb822e7f4d33aaf767cedfd5eb780"
   }
 }

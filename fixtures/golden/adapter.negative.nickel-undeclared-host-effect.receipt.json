@@ -48,13 +48,11 @@
     ],
     "diagnostics": [
       {
-        "code": "undeclared-capability",
-        "requirement_id": "r[kamacite.nickel_adapter_suite.negative_fixtures.undeclared_effect]",
-        "field": "nickel.observed_effects",
-        "message": "observed Nickel adapter host effect was not declared",
-        "details": {
-          "effect": "network"
-        }
+        "code": "undeclared-authority",
+        "requirement_id": "r[kamacite.nickel_adapter_suite.capability_boundary]",
+        "field": "nickel.sandbox_evidence",
+        "message": "Nickel adapter receipt lacks shell-enforced sandbox evidence",
+        "details": {}
       }
     ],
     "non_claims": [
@@ -64,6 +62,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "a7c5aefb629a12d8c59421257de2058a2fd03f915cd4be7e46a52b2f9c29519a"
+    "hex": "c3f3c207319b9686f14edba03da2762b56f004c0784d0acaa5e640eddd11734f"
   }
 }

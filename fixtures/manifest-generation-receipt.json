@@ -4,12 +4,12 @@
     "source_identity": {
       "domain": "source",
       "algorithm": "blake3",
-      "hex": "8264c1f5e6f025acd66e0edc18ebff6be1de4c67d5c87f3459c57f52b1be94a7"
+      "hex": "8e3408ca1385f4c3d0e96e524cecc2443d2679a250d14d15e35da030c19485e7"
     },
     "contract_identity": {
       "domain": "adapter",
       "algorithm": "blake3",
-      "hex": "7ce3de57590a992ecbfb9fe1d93a4f1ce0a205d84f634a8f04c3338f55b0f43c"
+      "hex": "8693fe4d4286d25a1a92e8f982ee6099407aa01149b015f1f1b9263843adfe0d"
     },
     "evaluator_profile": "nickel-reference-cli-1.17.0",
     "evaluator_descriptor": "nickel-reference-cli:nickel-lang-cli nickel 1.17.0 (rev cargore)",
@@ -21,7 +21,7 @@
     "projection_identity": {
       "domain": "projection",
       "algorithm": "blake3",
-      "hex": "065198892272c168b0c65923d30caaee307f31d74b88383e7b20fdb912d03476"
+      "hex": "6103298fe5adb3a08614ba079cc642eca72a9d02a2f4420e09f63815db63a0d3"
     },
     "checked_laws": [
       "complete-nickel-projection-bound",
@@ -37,6 +37,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "396a5338091a6c8b8f55a42b448d36f92a8e8e6bed489eb5471a9280acc878dd"
+    "hex": "9b62c347e49fa5b3d0e27c1be75166ce9a04526b03492171882819a3d1ebca52"
   }
 }
