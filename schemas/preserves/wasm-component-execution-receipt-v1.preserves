@@ -1,0 +1,13 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "wasm-component-execution-receipt"
+  version: "v1"
+  schema-id: "kamacite.wasm-component-execution-receipt.v1"
+  alternatives: [
+    <execution-success {plan-identity: "adapter" component-identity: "target-artifact" input-identity: "canonical-value" output-identity: "canonical-value" hostcall-summary-identity: "effect-log" resource-observation-identity: "receipt" result-class: "success"}>
+    <execution-denial {static-receipt-identity: "receipt" optional-plan-identity: "adapter" result-class: "denied|error|trap" diagnostic-identity: "projection"}>
+  ]
+  required-parents: ["WIT source" "runtime profile" "adapter descriptor" "component" "Mantle bundle" "canonical input" "capability/effect/resource plan"]
+  construction-rule: "only a future shell result tied to a plan admitted by an external Mantle verifier may construct execution-success"
+  output-rule: "exact returned bytes must pass canonical packed Preserves and declared output-schema validation before success"
+  non-claims: ["not runtime correctness" "not sandbox completeness" "not host authority" "not behavioral correctness" "not semantic equivalence" "not release readiness"]
+}>

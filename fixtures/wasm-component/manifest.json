@@ -1,0 +1,136 @@
+{
+  "adapter_profile": "kamacite.wit-component-adapter.v1",
+  "fixtures": [
+    {
+      "class": "positive-static",
+      "expected_blockers": [
+        "missing-materialization-bundle"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "wasm-component.static.valid-without-materialization",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "positive-denial",
+      "expected_blockers": [
+        "test-only-materialization"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "wasm-component.static.test-only-materialization",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "positive-denial",
+      "expected_blockers": [
+        "external-materialization-verifier-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "wasm-component.static.self-authored-production",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "wasm-component.negative.stale-wit",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "decode"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "wasm-component.negative.stale-runtime-profile",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "ambient-authority",
+        "undeclared-import"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "wasm-component.negative.ambient-wasi",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "invalid-canonical-input"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "wasm-component.negative.noncanonical-input",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "semantic-overclaim"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "wasm-component.negative.semantic-overclaim",
+      "non_claims": [
+        "not component execution",
+        "not Mantle materialization evidence",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    }
+  ],
+  "schema_version": "kamacite.wasm-component-static-fixtures.v1",
+  "source_revision": "62b02a3435a7000a85bbb6988a88f8afe5effbbb"
+}

@@ -29,6 +29,8 @@ Missing production materialization returns a successful `static-only` decision w
 
 Live execution is intentionally unavailable. Mantle does not yet expose a real WIT binding/guest compilation/WAC composition materializer or an exact production `mantle.component-materialization-bundle.v1` for this adapter. The sibling Aspen tests use synthetic bundle references and therefore are not imported as production evidence. The initial Molten profile also admits no host imports, so a positive hostcall fixture requires a later reviewed profile cohort.
 
+A static-only decision can be encoded as `kamacite.wasm-component-static-receipt.v1`. That canonical Preserves receipt requires nonempty execution blockers and cannot contain an execution plan or passing output claim; validation recomputes it from the static decision.
+
 Until those exact external artifacts exist, Kamacite must not add a production component build fallback, relabel loose test bytes as Mantle output, instantiate Wasmtime, or issue a passing execution receipt.
 
 ## Non-claims

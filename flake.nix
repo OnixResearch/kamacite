@@ -253,6 +253,8 @@
                 ${copySource}
                 nickel export --format json adapters/wasm-component/profile.ncl >profile.json
                 cmp profile.json adapters/wasm-component/generated/profile.json
+                nickel export --format json fixtures/wasm-component/manifest.ncl >fixture-manifest.json
+                cmp fixture-manifest.json fixtures/wasm-component/manifest.json
                 test -s adapters/wasm-component/upstream/runtime.wit
                 test -s adapters/wasm-component/upstream/molten-profile.json
                 touch $out

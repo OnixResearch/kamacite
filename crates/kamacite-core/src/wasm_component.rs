@@ -1,6 +1,6 @@
 use crate::{
     Identity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema,
-    PreservesSyntax, canonicalize_preserves, compute_identity,
+    PreservesSyntax, canonicalize_preserves, compute_identity, encode_typed_preserves,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -12,6 +12,7 @@ pub const WASM_COMPONENT_DESCRIPTOR_SCHEMA: &str = "kamacite.wasm-component-desc
 pub const WASM_COMPONENT_MATERIALIZATION_SCHEMA: &str =
     "mantle.component-materialization-bundle.v1";
 pub const WASM_COMPONENT_RUNTIME_PROFILE_ID: &str = "molten.wasm.component.v1";
+pub const WASM_COMPONENT_STATIC_RECEIPT_SCHEMA: &str = "kamacite.wasm-component-static-receipt.v1";
 pub const WASM_COMPONENT_WIT_PACKAGE: &str = "molten:component-runtime@1.0.0";
 pub const WASM_COMPONENT_WIT_WORLD: &str = "actor";
 pub const WASM_COMPONENT_INVOKE_EXPORT: &str = "invoke";
@@ -37,6 +38,7 @@ const WASM_COMPONENT_PROFILE_SOURCE_LANGUAGE: &str = "nickel";
 const WASM_COMPONENT_RUNTIME_STRATEGY: &str = "portable-component";
 const WASM_COMPONENT_EVIDENCE_SCOPE: &str = "production";
 const WASM_COMPONENT_PRODUCER: &str = "mantle";
+const WASM_COMPONENT_STATIC_RECEIPT_ROOT: &str = "WasmComponentStaticReceiptBody";
 const WASM_COMPONENT_FIXED_GROWTH: &str = "fixed";
 const WASM_COMPONENT_RECORDED_INPUTS: &str = "recorded-effects-only";
 const WASM_COMPONENT_BLAKE3_PREFIX: &str = "blake3:";
@@ -333,14 +335,14 @@ pub struct WasmComponentStaticRequest<'a> {
     pub inspection: Option<&'a WasmComponentInspection>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum WasmComponentPlanningState {
     Executable,
     StaticOnly,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Ord, PartialOrd, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum WasmComponentBlocker {
     ExternalMaterializationVerifierUnavailable,
@@ -386,6 +388,31 @@ pub struct WasmComponentStaticValidation {
     pub blockers: Vec<WasmComponentBlocker>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct WasmComponentStaticReceiptBody {
+    pub schema_version: String,
+    pub state: WasmComponentPlanningState,
+    pub source_repository: String,
+    pub source_revision: String,
+    pub profile_identity: Identity,
+    pub runtime_profile_identity: Identity,
+    pub wit_identity: Identity,
+    pub descriptor_identity: Identity,
+    pub canonical_input_identity: Identity,
+    pub materialization_bundle_identity: Option<Identity>,
+    pub blockers: Vec<WasmComponentBlocker>,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct WasmComponentStaticReceipt {
+    pub body: WasmComponentStaticReceiptBody,
+    pub receipt_identity: Identity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -526,6 +553,90 @@ pub fn validate_wasm_component_static(
         checked_laws: admitted.profile.adapter.checked_laws,
         non_claims: admitted.profile.adapter.non_claims,
     })
+}
+
+// r[impl kamacite.wasm_adapter.receipt]
+pub fn build_wasm_component_static_receipt(
+    validation: &WasmComponentStaticValidation,
+) -> Result<WasmComponentStaticReceipt, WasmComponentValidationError> {
+    let mut diagnostics = Vec::new();
+    if validation.state != WasmComponentPlanningState::StaticOnly {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "receipt-overclaim",
+            "state",
+            "static receipt cannot represent executable component evidence",
+        ));
+    }
+    if validation.blockers.is_empty() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "missing-blocker",
+            "blockers",
+            "static receipt requires at least one explicit execution blocker",
+        ));
+    }
+    if validation.execution_plan.is_some() || validation.execution_plan_identity.is_some() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "receipt-overclaim",
+            "execution_plan",
+            "static receipt cannot bind an execution plan",
+        ));
+    }
+    if !diagnostics.is_empty() {
+        return Err(validation_error(diagnostics));
+    }
+    let mut blockers = validation.blockers.clone();
+    blockers.sort();
+    blockers.dedup();
+    let body = WasmComponentStaticReceiptBody {
+        schema_version: WASM_COMPONENT_STATIC_RECEIPT_SCHEMA.to_string(),
+        state: WasmComponentPlanningState::StaticOnly,
+        source_repository: WASM_COMPONENT_SOURCE_REPOSITORY.to_string(),
+        source_revision: WASM_COMPONENT_SOURCE_REVISION.to_string(),
+        profile_identity: validation.profile_identity.clone(),
+        runtime_profile_identity: validation.runtime_profile_identity.clone(),
+        wit_identity: validation.wit_identity.clone(),
+        descriptor_identity: validation.descriptor_identity.clone(),
+        canonical_input_identity: validation.canonical_input_identity.clone(),
+        materialization_bundle_identity: validation.materialization_bundle_identity.clone(),
+        blockers,
+        checked_laws: validation.checked_laws.clone(),
+        non_claims: validation.non_claims.clone(),
+    };
+    let artifact = encode_typed_preserves(
+        &body,
+        PreservesSchema {
+            schema_version: WASM_COMPONENT_STATIC_RECEIPT_SCHEMA,
+            root_label: WASM_COMPONENT_STATIC_RECEIPT_ROOT,
+        },
+        PreservesLimits::default(),
+    )
+    .map_err(|error| {
+        single_error(WasmComponentDiagnostic::new(
+            "receipt-encoding",
+            "receipt",
+            error.to_string(),
+        ))
+    })?;
+    Ok(WasmComponentStaticReceipt {
+        body,
+        receipt_identity: compute_identity(IdentityDomain::Receipt, &artifact.packed_bytes),
+    })
+}
+
+pub fn validate_wasm_component_static_receipt(
+    validation: &WasmComponentStaticValidation,
+    receipt: &WasmComponentStaticReceipt,
+) -> Result<(), WasmComponentValidationError> {
+    let expected = build_wasm_component_static_receipt(validation)?;
+    if receipt == &expected {
+        Ok(())
+    } else {
+        Err(single_error(WasmComponentDiagnostic::new(
+            "stale-receipt",
+            "receipt",
+            "static receipt differs from the deterministic validation evidence",
+        )))
+    }
 }
 
 fn admit_profile(
@@ -1627,6 +1738,7 @@ mod tests {
     // r[verify kamacite.wasm_adapter.wit_identity]
     // r[verify kamacite.wasm_adapter.profile]
     // r[verify kamacite.wasm_adapter.functional_core]
+    // r[verify kamacite.wasm_adapter.receipt]
     #[test]
     fn exact_profile_descriptor_and_canonical_input_validate_without_execution()
     -> Result<(), Box<dyn std::error::Error>> {
@@ -1647,6 +1759,12 @@ mod tests {
                 result.runtime_profile_identity.domain,
                 IdentityDomain::Evaluator
             );
+            let receipt = build_wasm_component_static_receipt(&result)?;
+            assert_eq!(receipt.receipt_identity.domain, IdentityDomain::Receipt);
+            assert!(validate_wasm_component_static_receipt(&result, &receipt).is_ok());
+            let mut stale = receipt;
+            stale.body.source_revision = "substituted".to_string();
+            assert!(validate_wasm_component_static_receipt(&result, &stale).is_err());
         }
         Ok(())
     }

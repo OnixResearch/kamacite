@@ -1,0 +1,80 @@
+let Contracts = import "contracts.ncl" in
+let NonClaims = [
+  "not component execution",
+  "not Mantle materialization evidence",
+  "not Wasmtime correctness or sandbox completeness",
+  "not behavioral correctness or semantic equivalence",
+  "not release eligibility",
+] in
+let Manifest = {
+  schema_version = "kamacite.wasm-component-static-fixtures.v1",
+  adapter_profile = "kamacite.wit-component-adapter.v1",
+  source_revision = "62b02a3435a7000a85bbb6988a88f8afe5effbbb",
+  fixtures = [
+    {
+      fixture_id = "wasm-component.static.valid-without-materialization",
+      class = "positive-static",
+      expected_state = "static-only",
+      expected_blockers = ["missing-materialization-bundle"],
+      expected_diagnostic_codes = [],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.static.test-only-materialization",
+      class = "positive-denial",
+      expected_state = "static-only",
+      expected_blockers = ["test-only-materialization"],
+      expected_diagnostic_codes = [],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.static.self-authored-production",
+      class = "positive-denial",
+      expected_state = "static-only",
+      expected_blockers = ["external-materialization-verifier-unavailable"],
+      expected_diagnostic_codes = [],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.negative.stale-wit",
+      class = "negative",
+      expected_state = "rejected",
+      expected_blockers = [],
+      expected_diagnostic_codes = ["stale-identity"],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.negative.stale-runtime-profile",
+      class = "negative",
+      expected_state = "rejected",
+      expected_blockers = [],
+      expected_diagnostic_codes = ["decode"],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.negative.ambient-wasi",
+      class = "negative",
+      expected_state = "rejected",
+      expected_blockers = [],
+      expected_diagnostic_codes = ["ambient-authority", "undeclared-import"],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.negative.noncanonical-input",
+      class = "negative",
+      expected_state = "rejected",
+      expected_blockers = [],
+      expected_diagnostic_codes = ["invalid-canonical-input"],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.negative.semantic-overclaim",
+      class = "negative",
+      expected_state = "rejected",
+      expected_blockers = [],
+      expected_diagnostic_codes = ["semantic-overclaim"],
+      non_claims = NonClaims,
+    },
+  ],
+} in
+Manifest | Contracts.Manifest
