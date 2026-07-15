@@ -37,10 +37,16 @@ The available Mantle reference module exports only hostless `run`, has no memory
 3. no Mantle bundle materializes a Kamacite guest module under this ABI;
 4. no admitted consumer SpaceWasm shell exists.
 
-No execution plan or passing execution receipt can be constructed from these artifacts. The next external handoff must add a Mantle-produced Kamacite guest module and a matching Octet profile/report without weakening either producer's current claim boundary.
+No execution plan or passing execution receipt can be constructed from these artifacts. Kamacite can instead emit `kamacite.spacewasm-static-receipt.v1`: canonical packed Preserves denial evidence that is rebuilt by rerunning static validation over the exact source, profile, bundle, module, Octet report, descriptor, schema, capability/effect/resource plan, and canonical-input identities. A supplied receipt validates only when it exactly matches that recomputation.
+
+The pure core also exposes canonical-output validation under an explicit output schema and byte bound, but output validation alone is not execution evidence and cannot remove any blocker. Its deterministic Valence-friendly projection assigns only `recorded-only` or `boundary` verification classes, preserves every typed parent edge, records exact byte spans where local bytes own the identity, and records explicit absent-span reasons otherwise. Projection identity and linkage do not transfer Mantle, Octet, SpaceWasm, Kamacite, or Valence trust.
+
+The next external handoff must add a Mantle-produced Kamacite guest module and a matching Octet profile/report without weakening either producer's current claim boundary.
 
 ## Authority and non-claims
 
 The initial profile admits no host functions, WASI, filesystem, network, process, environment, clock, random, credential, device, compiler, evaluator, package-manager, or mutation authority. Descriptor possession and static conformance grant no execution authority.
+
+`fixtures/spacewasm-mvp/manifest.ncl` is the typed positive/negative scenario inventory. Execution-dependent cases record the same exact blockers rather than fabricating runtime results; implemented static, identity, canonical-value, overclaim, and stale-receipt cases are exercised by the pure-core tests.
 
 This boundary is not WIT/component compatibility, source-language semantic equivalence, SpaceWasm correctness, memory safety, WebAssembly conformance, sandbox completeness, portable interpreter state, flight qualification, certification, production readiness, or release eligibility.

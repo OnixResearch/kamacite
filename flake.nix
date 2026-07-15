@@ -274,6 +274,8 @@
                 ${copySource}
                 nickel export --format json adapters/spacewasm-mvp/profile.ncl >profile.json
                 cmp profile.json adapters/spacewasm-mvp/generated/profile.json
+                nickel export --format json fixtures/spacewasm-mvp/manifest.ncl >fixture-manifest.json
+                cmp fixture-manifest.json fixtures/spacewasm-mvp/manifest.json
                 cmp adapters/spacewasm-mvp/upstream/mantle/mvp-positive.wasm \
                   adapters/spacewasm-mvp/upstream/octet/wasm-artifact.bin
 

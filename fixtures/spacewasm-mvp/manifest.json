@@ -1,0 +1,543 @@
+{
+  "fixtures": [
+    {
+      "class": "positive-static",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.exact-bundle-report",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "external-evidence"
+    },
+    {
+      "class": "positive-static",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.admitted-core-module",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "module-admission"
+    },
+    {
+      "class": "positive-static",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.canonical-input-roundtrip",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "preserves-input"
+    },
+    {
+      "class": "blocked-positive",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.declared-hostcall",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "capability-plan"
+    },
+    {
+      "class": "blocked-positive",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.expected-trap",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "execution"
+    },
+    {
+      "class": "blocked-positive",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.deterministic-replay",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "execution"
+    },
+    {
+      "class": "blocked-positive",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.positive.bounded-resources",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "execution"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "profile-confusion"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.component-fallback",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "external-evidence-mismatch"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.unsupported-proposal",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "external-evidence"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.stale-evidence",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "external-evidence"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.tampered-evidence",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "external-evidence"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.wrong-abi",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    },
+    {
+      "class": "blocked-negative",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.negative.invalid-pointer-length",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "execution"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "invalid-canonical-value"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.malformed-input",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "preserves-input"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "invalid-canonical-value"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.noncanonical-output",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "preserves-output"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "external-evidence-mismatch"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.undeclared-import",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "external-evidence"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.undeclared-effect",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.missing-authority",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    },
+    {
+      "class": "blocked-negative",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.negative.interpreter-resource-failure",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "execution"
+    },
+    {
+      "class": "blocked-negative",
+      "expected_blockers": [
+        "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+        "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+        "kamacite-guest-materialization-bundle-unavailable",
+        "consumer-spacewasm-shell-unavailable"
+      ],
+      "expected_diagnostic_codes": [],
+      "expected_state": "static-only",
+      "fixture_id": "spacewasm.negative.guest-resource-failure",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "execution"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.runtime-mismatch",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-receipt"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.stale-receipt",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "receipt"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "identity-domain"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.identity-confusion",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "semantic-overclaim"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "spacewasm.negative.equivalence-overclaim",
+      "non_claims": [
+        "not WIT or Component Model compatibility",
+        "not source-language semantic equivalence",
+        "not SpaceWasm correctness or memory safety",
+        "not WebAssembly conformance",
+        "not sandbox completeness or host authority",
+        "not portable interpreter state",
+        "not flight qualification or certification",
+        "not production readiness",
+        "not release eligibility"
+      ],
+      "phase": "descriptor"
+    }
+  ],
+  "mantle_revision": "a141fcbaafe41f9a413a81275a33fe915bfca370",
+  "octet_revision": "4367300e10740ecc99ba4b2171ace561b4787327",
+  "profile_id": "kamacite-spacewasm-mvp",
+  "schema_version": "kamacite.spacewasm-mvp-fixtures.v1",
+  "spacewasm_revision": "e24cf09355a90497148eb5029fdb8e3400bd63e3"
+}

@@ -1,0 +1,61 @@
+let Contracts = import "contracts.ncl" in
+let NonClaims = [
+  "not WIT or Component Model compatibility",
+  "not source-language semantic equivalence",
+  "not SpaceWasm correctness or memory safety",
+  "not WebAssembly conformance",
+  "not sandbox completeness or host authority",
+  "not portable interpreter state",
+  "not flight qualification or certification",
+  "not production readiness",
+  "not release eligibility",
+] in
+let ExternalBlockers = [
+  "mantle-reference-module-does-not-implement-kamacite-byte-abi",
+  "octet-spacewasm-mvp-profile-permits-only-hostless-run-export",
+  "kamacite-guest-materialization-bundle-unavailable",
+  "consumer-spacewasm-shell-unavailable",
+] in
+let fixture = fun id fixture_class fixture_phase state blockers diagnostics => {
+  fixture_id = id,
+  class = fixture_class,
+  phase = fixture_phase,
+  expected_state = state,
+  expected_blockers = blockers,
+  expected_diagnostic_codes = diagnostics,
+  non_claims = NonClaims,
+} in
+let Manifest = {
+  schema_version = "kamacite.spacewasm-mvp-fixtures.v1",
+  profile_id = "kamacite-spacewasm-mvp",
+  mantle_revision = "a141fcbaafe41f9a413a81275a33fe915bfca370",
+  octet_revision = "4367300e10740ecc99ba4b2171ace561b4787327",
+  spacewasm_revision = "e24cf09355a90497148eb5029fdb8e3400bd63e3",
+  fixtures = [
+    fixture "spacewasm.positive.exact-bundle-report" "positive-static" "external-evidence" "static-only" ExternalBlockers [],
+    fixture "spacewasm.positive.admitted-core-module" "positive-static" "module-admission" "static-only" ExternalBlockers [],
+    fixture "spacewasm.positive.canonical-input-roundtrip" "positive-static" "preserves-input" "static-only" ExternalBlockers [],
+    fixture "spacewasm.positive.declared-hostcall" "blocked-positive" "capability-plan" "static-only" ExternalBlockers [],
+    fixture "spacewasm.positive.expected-trap" "blocked-positive" "execution" "static-only" ExternalBlockers [],
+    fixture "spacewasm.positive.deterministic-replay" "blocked-positive" "execution" "static-only" ExternalBlockers [],
+    fixture "spacewasm.positive.bounded-resources" "blocked-positive" "execution" "static-only" ExternalBlockers [],
+    fixture "spacewasm.negative.component-fallback" "negative" "descriptor" "rejected" [] ["profile-confusion"],
+    fixture "spacewasm.negative.unsupported-proposal" "negative" "external-evidence" "rejected" [] ["external-evidence-mismatch"],
+    fixture "spacewasm.negative.stale-evidence" "negative" "external-evidence" "rejected" [] ["stale-identity"],
+    fixture "spacewasm.negative.tampered-evidence" "negative" "external-evidence" "rejected" [] ["stale-identity"],
+    fixture "spacewasm.negative.wrong-abi" "negative" "descriptor" "rejected" [] ["stale-identity"],
+    fixture "spacewasm.negative.invalid-pointer-length" "blocked-negative" "execution" "static-only" ExternalBlockers [],
+    fixture "spacewasm.negative.malformed-input" "negative" "preserves-input" "rejected" [] ["invalid-canonical-value"],
+    fixture "spacewasm.negative.noncanonical-output" "negative" "preserves-output" "rejected" [] ["invalid-canonical-value"],
+    fixture "spacewasm.negative.undeclared-import" "negative" "external-evidence" "rejected" [] ["external-evidence-mismatch"],
+    fixture "spacewasm.negative.undeclared-effect" "negative" "descriptor" "rejected" [] ["stale-identity"],
+    fixture "spacewasm.negative.missing-authority" "negative" "descriptor" "rejected" [] ["stale-identity"],
+    fixture "spacewasm.negative.interpreter-resource-failure" "blocked-negative" "execution" "static-only" ExternalBlockers [],
+    fixture "spacewasm.negative.guest-resource-failure" "blocked-negative" "execution" "static-only" ExternalBlockers [],
+    fixture "spacewasm.negative.runtime-mismatch" "negative" "descriptor" "rejected" [] ["stale-identity"],
+    fixture "spacewasm.negative.stale-receipt" "negative" "receipt" "rejected" [] ["stale-receipt"],
+    fixture "spacewasm.negative.identity-confusion" "negative" "descriptor" "rejected" [] ["identity-domain"],
+    fixture "spacewasm.negative.equivalence-overclaim" "negative" "descriptor" "rejected" [] ["semantic-overclaim"],
+  ],
+} in
+Manifest | Contracts.Manifest

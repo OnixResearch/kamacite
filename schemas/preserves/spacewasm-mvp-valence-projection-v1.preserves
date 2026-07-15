@@ -1,0 +1,13 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "spacewasm-mvp-valence-projection"
+  version: "v1"
+  schema-id: "kamacite.spacewasm-valence-projection.v1"
+  subject: "exact static-denial receipt"
+  verification-classes: ["recorded-only" "boundary"]
+  artifact-roles: ["source-envelope" "canonical-input" "input-schema" "output-schema" "adapter-profile" "abi-profile" "capability-plan" "effect-plan" "resource-plan" "adapter-descriptor" "core-module" "spacewasm-runtime-profile" "mantle-bundle" "octet-static-report" "static-denial-receipt"]
+  spans: "exact zero-based half-open byte spans for local byte-bearing artifacts; explicit absent reasons for canonical identities without byte-local source spans"
+  edges: "every typed descriptor parent points to the descriptor; descriptor points to the static receipt"
+  projection-identity: "projection-domain BLAKE3 over deterministic JSON projection body"
+  coupling-boundary: "Valence records exact SpaceWasm static evidence roles without transferring producer trust"
+  non-claims: ["not Valence behavioral verification" "not external trust transfer" "not execution evidence" "not semantic equivalence" "not release eligibility"]
+}>

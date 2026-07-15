@@ -21,6 +21,7 @@ mod preserves_codec;
 mod proof_evidence;
 mod receipt;
 mod spacewasm;
+mod spacewasm_valence;
 mod steel_execution;
 mod valence_export;
 mod wasm_component;
@@ -142,13 +143,21 @@ pub use spacewasm::{
     SPACEWASM_ABI_PROFILE_ID, SPACEWASM_ADAPTER_KIND, SPACEWASM_ARTIFACT_KIND,
     SPACEWASM_DESCRIPTOR_SCHEMA, SPACEWASM_MANTLE_BUNDLE_ID, SPACEWASM_MANTLE_REVISION,
     SPACEWASM_MODULE_BLAKE3, SPACEWASM_OCTET_REVISION, SPACEWASM_PROFILE_ID,
-    SPACEWASM_PROFILE_SCHEMA, SPACEWASM_SOURCE_REVISION, SpaceWasmAbiProfile, SpaceWasmArtifactPin,
-    SpaceWasmBlocker, SpaceWasmDescriptor, SpaceWasmDiagnostic, SpaceWasmMantleEvidence,
-    SpaceWasmObservedModule, SpaceWasmOctetEvidence, SpaceWasmParentEdge, SpaceWasmParentRole,
-    SpaceWasmPlanningState, SpaceWasmProfile, SpaceWasmProfilePlanIdentities, SpaceWasmResources,
-    SpaceWasmSchemaRef, SpaceWasmSourcePin, SpaceWasmStaticRequest, SpaceWasmStaticValidation,
-    SpaceWasmValidationError, expected_spacewasm_parent_edges, spacewasm_profile_plan_identities,
-    spacewasm_schema_identity, validate_spacewasm_static,
+    SPACEWASM_PROFILE_SCHEMA, SPACEWASM_SOURCE_REVISION, SPACEWASM_STATIC_RECEIPT_SCHEMA,
+    SpaceWasmAbiProfile, SpaceWasmArtifactPin, SpaceWasmBlocker, SpaceWasmDescriptor,
+    SpaceWasmDiagnostic, SpaceWasmMantleEvidence, SpaceWasmObservedModule, SpaceWasmOctetEvidence,
+    SpaceWasmParentEdge, SpaceWasmParentRole, SpaceWasmPlanningState, SpaceWasmProfile,
+    SpaceWasmProfilePlanIdentities, SpaceWasmResources, SpaceWasmSchemaRef, SpaceWasmSourcePin,
+    SpaceWasmStaticReceipt, SpaceWasmStaticReceiptBody, SpaceWasmStaticRequest,
+    SpaceWasmStaticValidation, SpaceWasmValidationError, build_spacewasm_static_receipt,
+    expected_spacewasm_parent_edges, spacewasm_profile_plan_identities, spacewasm_schema_identity,
+    validate_spacewasm_canonical_output, validate_spacewasm_static,
+    validate_spacewasm_static_receipt,
+};
+pub use spacewasm_valence::{
+    SPACEWASM_VALENCE_PROJECTION_SCHEMA, SpaceWasmValenceArtifact, SpaceWasmValenceEdge,
+    SpaceWasmValenceProjection, SpaceWasmValenceProjectionBody, SpaceWasmValenceProjectionError,
+    SpaceWasmValenceVerificationClass, project_spacewasm_static_to_valence,
 };
 pub use steel_execution::{
     STEEL_DTO_BYTECODE_SCHEMA, STEEL_DTO_CALLABLE_DESCRIPTOR_SCHEMA, STEEL_DTO_INTEGER_SCHEMA,

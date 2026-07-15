@@ -1,0 +1,13 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "spacewasm-mvp-static-receipt"
+  version: "v1"
+  schema-id: "kamacite.spacewasm-static-receipt.v1"
+  root-label: "SpaceWasmStaticReceiptBody"
+  required-state: "static-only"
+  identity-fields: ["adapter-profile" "descriptor" "ABI profile" "capability plan" "effect plan" "resource plan" "source envelope" "canonical input" "input schema" "output schema" "core module" "SpaceWasm runtime profile" "Mantle bundle" "Octet static report"]
+  required-blockers: ["mantle-reference-module-does-not-implement-kamacite-byte-abi" "octet-spacewasm-mvp-profile-permits-only-hostless-run-export" "kamacite-guest-materialization-bundle-unavailable" "consumer-spacewasm-shell-unavailable"]
+  forbidden-fields: ["execution-plan" "runtime-observation" "hostcall-transcript" "canonical-output" "passing-execution-claim"]
+  construction-rule: "rerun pure static validation over exact reviewed external bytes before encoding canonical packed Preserves"
+  canonical-identity: "receipt-domain BLAKE3 over packed Preserves bytes"
+  non-claims: ["not execution evidence" "not ABI compatibility" "not runtime correctness" "not sandbox completeness" "not host authority" "not semantic equivalence" "not production or release readiness"]
+}>

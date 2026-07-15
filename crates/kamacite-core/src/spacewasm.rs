@@ -6,7 +6,7 @@ use serde_json::Value;
 
 use crate::{
     Identity, IdentityDomain, PreservesLimits, PreservesSchema, PreservesSyntax,
-    canonicalize_preserves, compute_identity,
+    canonicalize_preserves, compute_identity, encode_typed_preserves,
 };
 
 pub const SPACEWASM_PROFILE_SCHEMA: &str = "kamacite.spacewasm-mvp-profile.v1";
@@ -15,6 +15,7 @@ pub const SPACEWASM_ADAPTER_KIND: &str = "spacewasm-core-module";
 pub const SPACEWASM_ARTIFACT_KIND: &str = "webassembly-1.0-core-module";
 pub const SPACEWASM_ABI_PROFILE_ID: &str = "kamacite.spacewasm.bytes.v1";
 pub const SPACEWASM_DESCRIPTOR_SCHEMA: &str = "kamacite.spacewasm-descriptor.v1";
+pub const SPACEWASM_STATIC_RECEIPT_SCHEMA: &str = "kamacite.spacewasm-static-receipt.v1";
 pub const SPACEWASM_MANTLE_REVISION: &str = "a141fcbaafe41f9a413a81275a33fe915bfca370";
 pub const SPACEWASM_OCTET_REVISION: &str = "4367300e10740ecc99ba4b2171ace561b4787327";
 pub const SPACEWASM_SOURCE_REVISION: &str = "e24cf09355a90497148eb5029fdb8e3400bd63e3";
@@ -24,6 +25,7 @@ pub const SPACEWASM_MODULE_BLAKE3: &str =
     "b2568cffcad3c442a90dd65ccb82d6b7e285bf71c2c9908ce539b6b515217bde";
 
 const SPACEWASM_MANTLE_PROFILE_ID: &str = "nasa-spacewasm-e24cf093-reference-v1";
+const SPACEWASM_STATIC_RECEIPT_ROOT: &str = "SpaceWasmStaticReceiptBody";
 const SPACEWASM_MANTLE_BUNDLE_SCHEMA: &str = "mantle-spacewasm-reference-bundle-v1";
 const SPACEWASM_MANTLE_REPORT_SCHEMA: &str = "mantle-spacewasm-materialization-report-v1";
 const SPACEWASM_OCTET_RECEIPT_SCHEMA: &str = "octet-evidence-rail-receipt/v1";
@@ -335,7 +337,7 @@ pub enum SpaceWasmBlocker {
     ConsumerSpacewasmShellUnavailable,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum SpaceWasmPlanningState {
     StaticOnly,
@@ -352,6 +354,8 @@ pub struct SpaceWasmStaticValidation {
     pub resource_plan_identity: Identity,
     pub source_identity: Identity,
     pub canonical_input_identity: Identity,
+    pub input_schema_identity: Identity,
+    pub output_schema_identity: Identity,
     pub module_identity: Identity,
     pub runtime_identity: Identity,
     pub mantle_bundle_identity: Identity,
@@ -359,6 +363,37 @@ pub struct SpaceWasmStaticValidation {
     pub blockers: Vec<SpaceWasmBlocker>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SpaceWasmStaticReceiptBody {
+    pub schema_version: String,
+    pub state: SpaceWasmPlanningState,
+    pub profile_identity: Identity,
+    pub descriptor_identity: Identity,
+    pub abi_profile_identity: Identity,
+    pub capability_plan_identity: Identity,
+    pub effect_plan_identity: Identity,
+    pub resource_plan_identity: Identity,
+    pub source_identity: Identity,
+    pub canonical_input_identity: Identity,
+    pub input_schema_identity: Identity,
+    pub output_schema_identity: Identity,
+    pub module_identity: Identity,
+    pub runtime_identity: Identity,
+    pub mantle_bundle_identity: Identity,
+    pub octet_report_identity: Identity,
+    pub blockers: Vec<SpaceWasmBlocker>,
+    pub checked_laws: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SpaceWasmStaticReceipt {
+    pub body: SpaceWasmStaticReceiptBody,
+    pub receipt_identity: Identity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -544,6 +579,8 @@ pub fn validate_spacewasm_static(
         resource_plan_identity: plan_identities.resource_plan_identity,
         source_identity,
         canonical_input_identity,
+        input_schema_identity: request.descriptor.input_schema.identity.clone(),
+        output_schema_identity: request.descriptor.output_schema.identity.clone(),
         module_identity,
         runtime_identity,
         mantle_bundle_identity,
@@ -556,6 +593,94 @@ pub fn validate_spacewasm_static(
         ],
         checked_laws: profile.checked_laws,
         non_claims: profile.non_claims,
+    })
+}
+
+// r[impl kamacite.spacewasm_adapter.receipt]
+pub fn build_spacewasm_static_receipt(
+    request: &SpaceWasmStaticRequest<'_>,
+) -> Result<SpaceWasmStaticReceipt, SpaceWasmValidationError> {
+    let validation = validate_spacewasm_static(request)?;
+    let body = SpaceWasmStaticReceiptBody {
+        schema_version: SPACEWASM_STATIC_RECEIPT_SCHEMA.to_string(),
+        state: validation.state,
+        profile_identity: validation.profile_identity,
+        descriptor_identity: validation.descriptor_identity,
+        abi_profile_identity: validation.abi_profile_identity,
+        capability_plan_identity: validation.capability_plan_identity,
+        effect_plan_identity: validation.effect_plan_identity,
+        resource_plan_identity: validation.resource_plan_identity,
+        source_identity: validation.source_identity,
+        canonical_input_identity: validation.canonical_input_identity,
+        input_schema_identity: validation.input_schema_identity,
+        output_schema_identity: validation.output_schema_identity,
+        module_identity: validation.module_identity,
+        runtime_identity: validation.runtime_identity,
+        mantle_bundle_identity: validation.mantle_bundle_identity,
+        octet_report_identity: validation.octet_report_identity,
+        blockers: validation.blockers,
+        checked_laws: validation.checked_laws,
+        non_claims: validation.non_claims,
+    };
+    let artifact = encode_typed_preserves(
+        &body,
+        PreservesSchema {
+            schema_version: SPACEWASM_STATIC_RECEIPT_SCHEMA,
+            root_label: SPACEWASM_STATIC_RECEIPT_ROOT,
+        },
+        PreservesLimits::default(),
+    )
+    .map_err(|error| {
+        single_error(SpaceWasmDiagnostic::new(
+            "receipt-encoding",
+            "receipt",
+            error.to_string(),
+        ))
+    })?;
+    Ok(SpaceWasmStaticReceipt {
+        body,
+        receipt_identity: compute_identity(IdentityDomain::Receipt, &artifact.packed_bytes),
+    })
+}
+
+pub fn validate_spacewasm_static_receipt(
+    request: &SpaceWasmStaticRequest<'_>,
+    receipt: &SpaceWasmStaticReceipt,
+) -> Result<(), SpaceWasmValidationError> {
+    let expected = build_spacewasm_static_receipt(request)?;
+    if receipt == &expected {
+        Ok(())
+    } else {
+        Err(single_error(SpaceWasmDiagnostic::new(
+            "stale-receipt",
+            "receipt",
+            "receipt differs from deterministic validation over exact external evidence",
+        )))
+    }
+}
+
+pub fn validate_spacewasm_canonical_output(
+    bytes: &[u8],
+    schema: &SpaceWasmSchemaRef,
+) -> Result<Identity, SpaceWasmValidationError> {
+    let mut diagnostics = Vec::new();
+    validate_schema_ref(&mut diagnostics, "output_schema", schema);
+    let identity = validate_canonical_value(
+        bytes,
+        schema,
+        SPACEWASM_MAXIMUM_ARTIFACT_BYTES,
+        "canonical_output",
+        &mut diagnostics,
+    );
+    if !diagnostics.is_empty() {
+        return Err(validation_error(diagnostics));
+    }
+    identity.ok_or_else(|| {
+        single_error(SpaceWasmDiagnostic::new(
+            "internal-invariant",
+            "canonical_output",
+            "successful output validation did not retain canonical identity",
+        ))
     })
 }
 
@@ -1346,12 +1471,22 @@ fn validate_canonical_input(
     maximum_bytes: u64,
     diagnostics: &mut Vec<SpaceWasmDiagnostic>,
 ) -> Option<Identity> {
+    validate_canonical_value(bytes, schema, maximum_bytes, "canonical_input", diagnostics)
+}
+
+fn validate_canonical_value(
+    bytes: &[u8],
+    schema: &SpaceWasmSchemaRef,
+    maximum_bytes: u64,
+    field: &'static str,
+    diagnostics: &mut Vec<SpaceWasmDiagnostic>,
+) -> Option<Identity> {
     let observed_bytes = u64::try_from(bytes.len()).unwrap_or(u64::MAX);
     if observed_bytes > maximum_bytes {
         diagnostics.push(SpaceWasmDiagnostic::new(
             "resource-limit",
-            "canonical_input",
-            "canonical input exceeds the profile byte bound",
+            field,
+            "canonical value exceeds the profile byte bound",
         ));
         return None;
     }
@@ -1369,16 +1504,16 @@ fn validate_canonical_input(
         }
         Ok(_) => {
             diagnostics.push(SpaceWasmDiagnostic::new(
-                "noncanonical-input",
-                "canonical_input",
-                "input packed bytes are not canonical",
+                "noncanonical-value",
+                field,
+                "packed bytes are not canonical",
             ));
             None
         }
         Err(error) => {
             diagnostics.push(SpaceWasmDiagnostic::new(
-                "invalid-canonical-input",
-                "canonical_input",
+                "invalid-canonical-value",
+                field,
                 error.to_string(),
             ));
             None
@@ -1834,6 +1969,8 @@ mod tests {
     // r[verify kamacite.spacewasm_adapter.identity]
     // r[verify kamacite.spacewasm_adapter.functional_core]
     // r[verify kamacite.spacewasm_adapter.preserves_io]
+    // r[verify kamacite.spacewasm_adapter.receipt]
+    // r[verify kamacite.spacewasm_adapter.valence_export]
     #[test]
     fn exact_external_evidence_is_static_only_when_guest_abi_is_absent()
     -> Result<(), Box<dyn std::error::Error>> {
@@ -1854,6 +1991,44 @@ mod tests {
             );
             assert_eq!(result.module_identity.hex.as_str(), SPACEWASM_MODULE_BLAKE3);
         }
+
+        let exact_request = request(&descriptor, &input);
+        let receipt = build_spacewasm_static_receipt(&exact_request)?;
+        assert_eq!(receipt.receipt_identity.domain, IdentityDomain::Receipt);
+        assert!(validate_spacewasm_static_receipt(&exact_request, &receipt).is_ok());
+        let projection = crate::project_spacewasm_static_to_valence(&exact_request)?;
+        let repeated_projection = crate::project_spacewasm_static_to_valence(&exact_request)?;
+        assert_eq!(projection, repeated_projection);
+        assert_eq!(
+            projection.projection_identity.domain,
+            IdentityDomain::Projection
+        );
+        assert_eq!(
+            projection.body.parent_edges.len(),
+            descriptor.parent_edges.len() + 1
+        );
+        let source_artifact = projection
+            .body
+            .artifacts
+            .iter()
+            .find(|artifact| artifact.role == "source-envelope");
+        assert!(source_artifact.is_some());
+        if let Some(source_artifact) = source_artifact {
+            assert!(matches!(
+                source_artifact.spans,
+                crate::SourceSpanSet::Present { .. }
+            ));
+        }
+        let mut stale_receipt = receipt;
+        stale_receipt.body.schema_version = "substituted".to_string();
+        assert!(validate_spacewasm_static_receipt(&exact_request, &stale_receipt).is_err());
+
+        let output_identity =
+            validate_spacewasm_canonical_output(&input, &descriptor.output_schema)?;
+        assert_eq!(output_identity.domain, IdentityDomain::CanonicalValue);
+        assert!(
+            validate_spacewasm_canonical_output(b"malformed", &descriptor.output_schema).is_err()
+        );
         Ok(())
     }
 
@@ -1910,7 +2085,7 @@ mod tests {
                 error
                     .diagnostics
                     .iter()
-                    .any(|diagnostic| diagnostic.code == "invalid-canonical-input")
+                    .any(|diagnostic| diagnostic.code == "invalid-canonical-value")
             );
         }
         Ok(())
