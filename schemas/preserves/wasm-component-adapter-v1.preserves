@@ -1,0 +1,20 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "wasm-component-adapter"
+  version: "v1"
+  schema-id: "kamacite.wasm-component-adapter.v1"
+  layers: [
+    <wit-source {identity-domain: "source" authority: "exact reviewed WIT bytes"}>
+    <runtime-profile {identity-domain: "evaluator" authority: "exact pinned Molten profile bytes"}>
+    <adapter-descriptor {identity-domain: "adapter" authority: "Kamacite execution contract"}>
+    <component {identity-domain: "target-artifact" authority: "remeasured portable component bytes"}>
+    <materialization-bundle {identity-domain: "dependency-closure" authority: "exact Mantle manifest bytes"}>
+    <canonical-input {identity-domain: "canonical-value" authority: "packed Preserves bytes"}>
+    <execution-plan {identity-domain: "adapter" authority: "pure admitted plan"}>
+    <receipt {identity-domain: "receipt" authority: "bounded execution or denial evidence"}>
+  ]
+  static-states: ["static-only" "executable"]
+  blockers: ["external-materialization-verifier-unavailable" "missing-materialization-bundle" "missing-component-bytes" "missing-inspection" "test-only-materialization"]
+  initial-import-policy: "deny-all"
+  production-requirement: "exact Mantle materialization and production evidence scope"
+  non-claims: ["not Wasm canonical IR" "not component execution" "not behavioral correctness" "not runtime correctness" "not sandbox completeness" "not authority" "not semantic equivalence" "not release readiness"]
+}>

@@ -241,6 +241,23 @@
             touch $out
           '';
 
+          wasm-component-static-profile =
+            pkgs.runCommand "kamacite-wasm-component-static-profile"
+              {
+                nativeBuildInputs = [
+                  pkgs.diffutils
+                  pkgs.nickel
+                ];
+              }
+              ''
+                ${copySource}
+                nickel export --format json adapters/wasm-component/profile.ncl >profile.json
+                cmp profile.json adapters/wasm-component/generated/profile.json
+                test -s adapters/wasm-component/upstream/runtime.wit
+                test -s adapters/wasm-component/upstream/molten-profile.json
+                touch $out
+              '';
+
           nickel-preserves-adapter =
             pkgs.runCommand "kamacite-nickel-preserves-adapter"
               {

@@ -22,6 +22,7 @@ mod proof_evidence;
 mod receipt;
 mod steel_execution;
 mod valence_export;
+mod wasm_component;
 
 pub use ast_grep_audit::{
     AST_GREP_AUDIT_SCHEMA_VERSION, AST_GREP_BOUNDARY_ROLE, AST_GREP_RECORDED_ONLY_ROLE,
@@ -151,4 +152,20 @@ pub use valence_export::{
     ValenceReceiptExportBody, ValenceReceiptExportEnvelope, ValenceReceiptExportInput,
     ValenceReceiptExportResult, ValidatedValenceExportConformance, admit_valence_conformance,
     export_identity_key, export_valence_receipt, valence_conformance_identity,
+};
+pub use wasm_component::{
+    WASM_COMPONENT_ARTIFACT_KIND, WASM_COMPONENT_DESCRIPTOR_SCHEMA,
+    WASM_COMPONENT_MATERIALIZATION_SCHEMA, WASM_COMPONENT_PROFILE_ID,
+    WASM_COMPONENT_PROFILE_SCHEMA, WASM_COMPONENT_RUNTIME_PROFILE_ID,
+    WASM_COMPONENT_SOURCE_REPOSITORY, WASM_COMPONENT_SOURCE_REVISION, WASM_COMPONENT_WIT_BLAKE3,
+    WASM_COMPONENT_WIT_PACKAGE, WASM_COMPONENT_WIT_WORLD, WasmComponentAdapterProfile,
+    WasmComponentBlocker, WasmComponentDescriptor, WasmComponentDeterminism,
+    WasmComponentDiagnostic, WasmComponentEvidenceScope, WasmComponentExecutionPlan,
+    WasmComponentFeatures, WasmComponentImportBinding, WasmComponentInspection,
+    WasmComponentMaterializationBundle, WasmComponentParentEdge, WasmComponentParentRole,
+    WasmComponentPlanningState, WasmComponentProfile, WasmComponentProfileSource,
+    WasmComponentReplayClass, WasmComponentResources, WasmComponentRuntimeProfile,
+    WasmComponentRuntimeProfileExport, WasmComponentSchemaRef, WasmComponentStaticRequest,
+    WasmComponentStaticValidation, WasmComponentToolchain, WasmComponentValidationError,
+    WasmComponentWitCohort, validate_wasm_component_static,
 };
