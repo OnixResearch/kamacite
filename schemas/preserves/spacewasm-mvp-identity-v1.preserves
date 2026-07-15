@@ -1,0 +1,28 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "spacewasm-mvp-identity"
+  version: "v1"
+  algorithm: "BLAKE3"
+  layers: [
+    <source-envelope "source">
+    <canonical-input "canonical-value">
+    <canonical-output "canonical-value">
+    <input-schema "projection">
+    <output-schema "projection">
+    <adapter-profile "adapter">
+    <abi-profile "adapter">
+    <adapter-descriptor "adapter">
+    <core-module "target-artifact">
+    <spacewasm-runtime-profile "evaluator">
+    <mantle-bundle "dependency-closure">
+    <octet-static-report "projection">
+    <optional-differential-report "projection">
+    <capability-plan "adapter">
+    <effect-plan "algebraic-effect">
+    <resource-plan "adapter">
+    <hostcall-transcript "effect-log">
+    <execution-or-denial-receipt "receipt">
+  ]
+  parent-rule: "every descriptor, plan, output, and receipt binds exact typed parent identities; role substitution fails closed"
+  current-state: "source/input/schema/profile/descriptor/module/runtime/Mantle/Octet edges validated; output/differential/transcript/receipt edges unavailable until execution is admitted"
+  non-claims: ["identity linkage is not behavioral correctness" "static evidence is not execution" "external roles do not transfer producer semantics"]
+}>

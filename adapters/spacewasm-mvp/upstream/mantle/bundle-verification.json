@@ -1,0 +1,6 @@
+{
+  "schema": "mantle-spacewasm-bundle-verify-summary-v1",
+  "valid": true,
+  "bundle_identity_blake3": "7775e57a4d07da89ca57ff282ab0d321f1adf70e9d650f3de4e3a329c92a71e6",
+  "diagnostics": []
+}

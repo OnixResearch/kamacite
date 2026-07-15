@@ -1,0 +1,100 @@
+let StringArray = Array String in
+let SourcePin = {
+  repository | String,
+  revision | String,
+} in
+let IdentityPin = {
+  path | String,
+  blake3 | String,
+} in
+let MantleEvidence = {
+  source | SourcePin,
+  bundle_schema | String,
+  bundle_identity_blake3 | String,
+  bundle_manifest | IdentityPin,
+  materialization_report | IdentityPin,
+  profile | IdentityPin,
+  module | IdentityPin,
+  verifier_summary | IdentityPin,
+  materialization_profile_id | String,
+  materialization_profile_identity | String,
+  materialization_cohort_identity | String,
+} in
+let OctetEvidence = {
+  source | SourcePin,
+  profile_id | String,
+  profile_identity | String,
+  registry_identity | String,
+  cohort_identity | String,
+  runtime_cohort_identity | String,
+  registry | IdentityPin,
+  support_projection | IdentityPin,
+  report | IdentityPin,
+  module | IdentityPin,
+  verification_role | String,
+} in
+let Abi = {
+  profile_id | String,
+  memory_export | String,
+  allocation_export | String,
+  deallocation_export | String,
+  entry_export | String,
+  pointer_type | String,
+  length_type | String,
+  result_type | String,
+  result_encoding | String,
+  input_encoding | String,
+  output_encoding | String,
+  max_input_bytes | Number,
+  max_output_bytes | Number,
+  max_hostcall_bytes | Number,
+  result_classes | StringArray,
+  allowed_host_functions | StringArray,
+  denied_ambient_authority | StringArray,
+} in
+let Resources = {
+  max_artifact_bytes | Number,
+  max_exports | Number,
+  max_functions | Number,
+  max_memories | Number,
+  max_tables | Number,
+  max_guest_memory_pages | Number,
+  max_guest_table_elements | Number,
+  allow_memory_grow | Bool,
+  allow_start | Bool,
+  interpreter_code_pages | Number,
+  interpreter_control_frames | Number,
+  interpreter_stack_words | Number,
+  interpreter_default_fuel | Number,
+  interpreter_stream_chunks | Number,
+} in
+let ObservedExternalModule = {
+  artifact_kind | String,
+  proposals | StringArray,
+  imports | StringArray,
+  exports | StringArray,
+  has_memory | Bool,
+  abi_compatible | Bool,
+} in
+let ProfileContract = {
+  schema_version | String,
+  profile_id | String,
+  adapter_kind | String,
+  artifact_kind | String,
+  promotion_state | String,
+  canonical_ir | String,
+  mantle | MantleEvidence,
+  octet | OctetEvidence,
+  abi | Abi,
+  admitted_proposals | StringArray,
+  denied_proposals | StringArray,
+  resources | Resources,
+  observed_external_module | ObservedExternalModule,
+  required_parent_roles | StringArray,
+  execution_blockers | StringArray,
+  checked_laws | StringArray,
+  non_claims | StringArray,
+} in
+{
+  Profile = ProfileContract,
+}

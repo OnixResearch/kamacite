@@ -1,0 +1,134 @@
+{
+  "schema": "mantle-spacewasm-materialization-report-v1",
+  "profile_id": "nasa-spacewasm-e24cf093-reference-v1",
+  "profile_identity_blake3": "cceb1bd03f90dd382d4c7ff6e79266650830a7c87e9fae07db2e48773469eb67",
+  "cohort_identity_blake3": "fb2c9e84459271828ad6840093c80af359508f47b06125f6741b14a31c9cc103",
+  "disposition": "complete",
+  "source_admitted": true,
+  "support_matches_profile": true,
+  "checks": [
+    {
+      "check_id": "continuous-fuzzing",
+      "expected_status": "unavailable",
+      "observed_status": "unavailable",
+      "result_code": "no-continuous-fuzzing-run",
+      "matched": true,
+      "command_blake3": "1a7a2b6f065545ba782683087ec7232dcd9de6eabbb093d0234ae5af9fd567c2",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": null
+    },
+    {
+      "check_id": "fixture-replay",
+      "expected_status": "passed",
+      "observed_status": "passed",
+      "result_code": "all-eight-fixtures-passed",
+      "matched": true,
+      "command_blake3": "6e116b4acd1108324c21d31f7e619ce29101fb202ef8df7e2027e8c4f9fbea9e",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": "f30920851afb3adedeaf1bc6af5e1647f8f9b1c199a1493977c4153ff3abad0b"
+    },
+    {
+      "check_id": "full-spectest-suite",
+      "expected_status": "skipped",
+      "observed_status": "skipped",
+      "result_code": "bounded-lane-runs-address-only",
+      "matched": true,
+      "command_blake3": "05b9b70e9913b3e15d0b5a4f9d0f4be624e3aac4fcdf5290eb5369ddbcc2a2c5",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": null
+    },
+    {
+      "check_id": "host-diagnostic-runner-build",
+      "expected_status": "passed",
+      "observed_status": "passed",
+      "result_code": "host-runner-built",
+      "matched": true,
+      "command_blake3": "0e8aeab479773832cf8fa8dd95a41ac4ef2bcd1232b03dc36ebb62a8687738ab",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": "95561a0293ad3ee49f44019232c4e51fdb4a874f7dabde1ff8fc57033ef5a620"
+    },
+    {
+      "check_id": "host-library-build",
+      "expected_status": "passed",
+      "observed_status": "passed",
+      "result_code": "host-library-built",
+      "matched": true,
+      "command_blake3": "1ec87b7e4bf7e7a5b35db11836e7767f1d1b8a091ed0c2208f9645dfee07533f",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": "09105a4aa047e618b79bf89ca5b732dda85cf0e24e44096e3528e570767e5cbe"
+    },
+    {
+      "check_id": "post-mvp-feature-build",
+      "expected_status": "unsupported",
+      "observed_status": "unsupported",
+      "result_code": "profile-allows-mvp-only",
+      "matched": true,
+      "command_blake3": "a7b156e93164cc4e777b795b27ca4799fb5f038bfcbb8878d164ceda9c539f17",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": null
+    },
+    {
+      "check_id": "spacewasm-check",
+      "expected_status": "unavailable",
+      "observed_status": "unavailable",
+      "result_code": "upstream-check-workflow-not-present",
+      "matched": true,
+      "command_blake3": "bd8d6c1e35479766d7ffe51fb152c3a894204a1c22c77bb66646cc864f174ae8",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": null
+    },
+    {
+      "check_id": "upstream-spectest-address",
+      "expected_status": "passed",
+      "observed_status": "passed",
+      "result_code": "spectest-address-passed",
+      "matched": true,
+      "command_blake3": "c3be3d72a05e80af8321b1ddf0d482f5bb02272da7447f7c80b4c26abbb27a44",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": "5ec51e520d156cc029a6fd799c380d4fea1bc222611835402f67d9a53589a0d9"
+    },
+    {
+      "check_id": "upstream-unit-tests",
+      "expected_status": "passed",
+      "observed_status": "passed",
+      "result_code": "unit-tests-passed",
+      "matched": true,
+      "command_blake3": "25bb6d3f332f04a78d46e53a7e7b0311e419b403ad87a0ab40b59e5570820e79",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": "6ac7cdde5422f1cce8852eff99796e0bd1bd1d4c0978aabb074e495a1dbfd400"
+    },
+    {
+      "check_id": "wasm-library-build",
+      "expected_status": "passed",
+      "observed_status": "passed",
+      "result_code": "wasm-library-built",
+      "matched": true,
+      "command_blake3": "c3d08160ff2bc3949bb819a142b8bad29fab1aaebd181a7ed6d0e7871085291b",
+      "configuration_blake3": "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348",
+      "input_blake3": "0db57636fb83a8c47f0c55601236cab648dd5edfdd2567cae0619aa74b8c4da3",
+      "output_blake3": "b017275106de469910e789317b57797c5a4387a9f86661f024973ba45e0912fd"
+    }
+  ],
+  "diagnostics": [],
+  "claim_class": "exact-reference-materialization-facts",
+  "non_claims": [
+    "not-consumer-runtime-admission",
+    "not-flight-qualification",
+    "not-memory-safety",
+    "not-production-readiness",
+    "not-release-eligibility",
+    "not-sandbox-effectiveness",
+    "not-spacewasm-correctness",
+    "not-webassembly-conformance"
+  ],
+  "report_identity_blake3": "f3870c3682a9dc3dfb0658cd473ceedb2f4525475b0d4b341a44ac68cd5e8dcc"
+}

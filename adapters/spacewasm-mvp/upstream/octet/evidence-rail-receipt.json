@@ -1,0 +1,104 @@
+{
+  "schema_version": "octet-evidence-rail-receipt/v1",
+  "rail_id": "wasm-artifact",
+  "checker_id": "cargo-octet",
+  "mode": "import",
+  "command_argv": [
+    "cargo",
+    "octet",
+    "evidence",
+    "collect",
+    "--rail",
+    "wasm-artifact"
+  ],
+  "workspace_scope": ".",
+  "config_path": "standards/wasm-artifact/generated/profiles.json",
+  "lockfile_identity": "b3:4a56ecf83cc80ca067fa50045e5469e293df542f2a004b8880876869b92112ec",
+  "checked_rule_families": [
+    "exact-byte-validation",
+    "module-component-classification",
+    "imports-exports-worlds",
+    "memory-table-growth-start",
+    "producer-and-custom-metadata",
+    "resource-limits",
+    "exact-and-interface-identities",
+    "recorded-only-valence-boundary"
+  ],
+  "status": "passed",
+  "finding_counts": {},
+  "bounded_log_identity": "b3:38f62e8fd99fe3a6f6e0f407bfabb2b4bbc56497cacc86854e3e4d50479ac88e",
+  "imported_input_identity": "b3:38f62e8fd99fe3a6f6e0f407bfabb2b4bbc56497cacc86854e3e4d50479ac88e",
+  "profile": "spacewasm-mvp",
+  "non_claims": [
+    "Wasm artifact evidence records bounded static facts and does not prove execution correctness",
+    "Matching normalized interfaces do not prove semantic equivalence or identify one implementation",
+    "Static validation does not prove sandbox effectiveness, capability authority, provenance truth, release eligibility, or whole-system safety",
+    "Producer metadata is recorded input and is not provenance truth"
+  ],
+  "diagnostics": [],
+  "findings": [],
+  "parent_artifacts": [],
+  "wasm_artifact": {
+    "profile_id": "spacewasm-mvp",
+    "profile_identity": "b3:5d6d9f57001dbc698e017c6b2fa59412131596712722d42c718f7493ff497d9e",
+    "registry_identity": "b3:f58715eb73f91d8a6fffd565cc3b030e7f1f8296ec8e91851155d1bb5e52bafd",
+    "cohort_id": "wasm-tools-0.253.0",
+    "cohort_identity": "b3:c50e2d7f0e8c49de4a1d44afae196bdf96bb14e67e7de0a153de146a6207449a",
+    "exact_artifact_identity": "b3:b2568cffcad3c442a90dd65ccb82d6b7e285bf71c2c9908ce539b6b515217bde",
+    "interface_identity": "b3:dd89ddee4a32f67b8d9b6d631658f0270dabe350e16699994324a6181d0a0e83",
+    "exact_identity_role": "exact-bytes",
+    "interface_identity_role": "normalized-interface-non-equivalence",
+    "input_artifact": "wasm-artifact.bin",
+    "handoff_role": "standalone",
+    "verification_role": "boundary",
+    "target_runtime": {
+      "runtime_id": "nasa-spacewasm",
+      "source_repository": "https://github.com/nasa/spacewasm",
+      "source_revision": "e24cf09355a90497148eb5029fdb8e3400bd63e3",
+      "source_lock_identity": "b3:4e6a07910125d4c921a62cec03d8bc9acb3bf341ebd1a11999df08d6c6c5c5f1",
+      "cohort_identity": "b3:7c537eef7bff66d0a90508715de08de79c9aaac23352e1007a6d47e7fb4674a2",
+      "support_projection_identity": "b3:63ca0c1025232ffa786dcc3d6ff509f1998410baec0afaf29a04cedbbb44f60e",
+      "verification_role": "recorded_only"
+    },
+    "facts": {
+      "artifact_kind": "module",
+      "proposals": [
+        "wasm1"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "namespace": "module",
+          "name": "run",
+          "kind": "Func"
+        }
+      ],
+      "worlds": [],
+      "memory_count": 0,
+      "table_count": 0,
+      "function_count": 1,
+      "memories": [],
+      "tables": [],
+      "max_function_parameter_words": 0,
+      "max_local_words_per_function": 0,
+      "memory_grow_count": 0,
+      "has_start": false,
+      "custom_sections": [],
+      "producer_sections": 0
+    },
+    "findings": [],
+    "sarif": {
+      "runs": [
+        {
+          "results": [],
+          "tool": {
+            "driver": {
+              "name": "cargo-octet-wasm-artifact"
+            }
+          }
+        }
+      ],
+      "version": "2.1.0"
+    }
+  }
+}

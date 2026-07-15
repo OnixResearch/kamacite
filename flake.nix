@@ -260,6 +260,43 @@
                 touch $out
               '';
 
+          spacewasm-mvp-static-profile =
+            pkgs.runCommand "kamacite-spacewasm-mvp-static-profile"
+              {
+                nativeBuildInputs = [
+                  pkgs.b3sum
+                  pkgs.diffutils
+                  pkgs.jq
+                  pkgs.nickel
+                ];
+              }
+              ''
+                ${copySource}
+                nickel export --format json adapters/spacewasm-mvp/profile.ncl >profile.json
+                cmp profile.json adapters/spacewasm-mvp/generated/profile.json
+                cmp adapters/spacewasm-mvp/upstream/mantle/mvp-positive.wasm \
+                  adapters/spacewasm-mvp/upstream/octet/wasm-artifact.bin
+
+                test "$(b3sum adapters/spacewasm-mvp/upstream/mantle/bundle-manifest.json | cut -d ' ' -f 1)" = \
+                  "e3f4afcee53cf9bf0401a2aedc5ca47c5d53b92e01dc3b72f2dadc657abd5562"
+                test "$(b3sum adapters/spacewasm-mvp/upstream/mantle/materialization-report.json | cut -d ' ' -f 1)" = \
+                  "4b9a91e0ef9ac2774ae053f70e690485f516b52b42e1dbcc1c96cdae6b66bece"
+                test "$(b3sum adapters/spacewasm-mvp/upstream/mantle/profile.json | cut -d ' ' -f 1)" = \
+                  "742ab4c8f4eb81f49de04f8eb74d5b7a87d43638215bd0a71d2ccd8e493d0348"
+                test "$(b3sum adapters/spacewasm-mvp/upstream/mantle/mvp-positive.wasm | cut -d ' ' -f 1)" = \
+                  "b2568cffcad3c442a90dd65ccb82d6b7e285bf71c2c9908ce539b6b515217bde"
+                test "$(b3sum adapters/spacewasm-mvp/upstream/octet/profiles.json | cut -d ' ' -f 1)" = \
+                  "f58715eb73f91d8a6fffd565cc3b030e7f1f8296ec8e91851155d1bb5e52bafd"
+                test "$(b3sum adapters/spacewasm-mvp/upstream/octet/evidence-rail-receipt.json | cut -d ' ' -f 1)" = \
+                  "0362dec1532a9a138f27e1b70d49cd68bf5d6e27653f11cc3af081f0a69a77ab"
+
+                jq -e '.valid == true and .bundle_identity_blake3 == "7775e57a4d07da89ca57ff282ab0d321f1adf70e9d650f3de4e3a329c92a71e6"' \
+                  adapters/spacewasm-mvp/upstream/mantle/bundle-verification.json >/dev/null
+                jq -e '.status == "passed" and .profile == "spacewasm-mvp" and (.findings | length) == 0 and (.diagnostics | length) == 0' \
+                  adapters/spacewasm-mvp/upstream/octet/evidence-rail-receipt.json >/dev/null
+                touch $out
+              '';
+
           nickel-preserves-adapter =
             pkgs.runCommand "kamacite-nickel-preserves-adapter"
               {

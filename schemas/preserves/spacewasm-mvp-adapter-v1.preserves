@@ -1,0 +1,20 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "spacewasm-mvp-adapter"
+  version: "v1"
+  profile-schema: "kamacite.spacewasm-mvp-profile.v1"
+  descriptor-schema: "kamacite.spacewasm-descriptor.v1"
+  adapter-kind: "spacewasm-core-module"
+  artifact-kind: "webassembly-1.0-core-module"
+  abi-profile: "kamacite.spacewasm.bytes.v1"
+  abi: {
+    exports: ["memory" "kamacite_alloc" "kamacite_dealloc" "kamacite_invoke"]
+    scalar-types: ["i32-pointer" "i32-length" "i64-packed-result"]
+    input: "bounded canonical packed Preserves or source-envelope bytes"
+    output: "bounded canonical packed Preserves bytes"
+  }
+  exact-external-evidence: ["Mantle bundle manifest and verifier summary" "Mantle materialization report and runtime profile" "Octet registry, support projection, static report, and copied module bytes"]
+  planning-state: "static-only"
+  blockers: ["mantle-reference-module-does-not-implement-kamacite-byte-abi" "octet-spacewasm-mvp-profile-permits-only-hostless-run-export" "kamacite-guest-materialization-bundle-unavailable" "consumer-spacewasm-shell-unavailable"]
+  canonical-owner: "packed Preserves bytes"
+  non-claims: ["not WIT/component compatibility" "not semantic equivalence" "not SpaceWasm correctness" "not memory safety" "not WebAssembly conformance" "not sandbox completeness" "not host authority" "not portable interpreter state" "not flight qualification" "not production readiness" "not release eligibility"]
+}>
