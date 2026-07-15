@@ -1,0 +1,62 @@
+--- audits/ast-grep/sgconfig.yml
+ruleDirs:
+  - rules
+testConfigs:
+  - testDir: rule-tests
+
+--- audits/ast-grep/rules/core-ambient-process.yml
+id: core-ambient-process
+language: Rust
+severity: error
+message: Pure Kamacite core must not construct ambient processes.
+note: A syntax match establishes only a source-shape boundary violation candidate.
+rule:
+  pattern: std::process::Command::new($COMMAND)
+metadata:
+  category: adapter-boundary
+  promotion-lane: error
+  evidence-role: boundary
+
+--- audits/ast-grep/rule-tests/core-ambient-process-test.yml
+id: core-ambient-process
+valid:
+  - |
+    fn validate(input: &Input) -> Output {
+        pure_validate(input)
+    }
+  - |
+    fn shell(command: &str) {
+        ProcessCommand::new(command);
+    }
+invalid:
+  - |
+    fn hidden_shell(command: &str) {
+        std::process::Command::new(command);
+    }
+  - |
+    fn hidden_literal_shell() {
+        std::process::Command::new("nickel");
+    }
+
+--- audits/ast-grep/rule-tests/__snapshots__/core-ambient-process-snapshot.yml
+id: core-ambient-process
+snapshots:
+  ? |
+    fn hidden_literal_shell() {
+        std::process::Command::new("nickel");
+    }
+  : labels:
+    - source: std::process::Command::new("nickel")
+      style: primary
+      start: 32
+      end: 68
+  ? |
+    fn hidden_shell(command: &str) {
+        std::process::Command::new(command);
+    }
+  : labels:
+    - source: std::process::Command::new(command)
+      style: primary
+      start: 37
+      end: 72
+

@@ -4,24 +4,25 @@ mod nickel_sandbox;
 mod root_io;
 
 use kamacite_core::{
-    AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, Blake3Hex, CanonicalValueInput,
-    CapabilityShellInput, DocsActionEvidenceInput, DocsActionKind, DocsActionOutcome,
-    DocsCompletionState, DocsConfigProjection, DocumentationCellInput, DocumentationIrInput,
-    DocumentationOutputInput, DocumentationPageInput, DocumentationReceiptInput, EffectOperation,
-    FixtureCase, FixtureClass, FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput,
-    FsmGuardInput, FsmReceiptInput, FsmSideEffectInput, FsmSpecInput, FsmStateInput,
-    FsmTraceStepInput, FsmTransitionRowInput, FunctionAddressCaveat, FunctionAddressDependencyEdge,
-    FunctionAddressDependencyIdentityKind, FunctionAddressProducer, FunctionAddressReceiptInput,
-    FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
-    FunctionAddressValenceProjection, HandlerDescriptorInput, HandlerReceiptInput, Identity,
-    IdentityDomain, IdentityUseInput, MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE,
-    ManifestGenerationInput, ManifestGenerationReceipt, ManifestGenerationValidation,
-    NICKEL_SANDBOX_SOURCE_PATH, NickelAdapterReceiptInput, NickelSandboxEvidence,
-    NickelSandboxOutcome, NickelSandboxProfile, PRESERVES_CANONICAL_CODEC,
-    PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION, PRESERVES_SPEC_VERSION,
-    ReceiptBody, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput, SourceSpanSet,
-    StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput, SteelOutputClass,
-    TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
+    AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, AstGrepAuditInput,
+    AstGrepCodemodArtifact, AstGrepFinding, AstGrepLanguageProfile, AstGrepRuleCoverage,
+    AstGrepSourceEnvelope, Blake3Hex, CanonicalValueInput, CapabilityShellInput,
+    DocsActionEvidenceInput, DocsActionKind, DocsActionOutcome, DocsCompletionState,
+    DocsConfigProjection, DocumentationCellInput, DocumentationIrInput, DocumentationOutputInput,
+    DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
+    FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
+    FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
+    FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressDependencyIdentityKind,
+    FunctionAddressProducer, FunctionAddressReceiptInput, FunctionAddressRecord,
+    FunctionAddressSourceEnvelope, FunctionAddressSpan, FunctionAddressValenceProjection,
+    HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
+    MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE, ManifestGenerationInput,
+    ManifestGenerationReceipt, ManifestGenerationValidation, NICKEL_SANDBOX_SOURCE_PATH,
+    NickelAdapterReceiptInput, NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile,
+    PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION,
+    PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
+    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
+    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
     ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict,
     admit_valence_conformance, build_manifest_generation_receipt, compute_identity,
     docs_config_identity, evaluate_docs_action, export_function_address_valence_projection,
@@ -412,6 +413,27 @@ struct FixtureProjection {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AstGrepSourceProjection {
+    path: String,
+    identity: Identity,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AstGrepCodemodProjection {
+    recipe_path: String,
+    recipe_identity: Identity,
+    before_source_path: String,
+    before_source_identity: Identity,
+    after_source_path: String,
+    after_source_identity: Identity,
+    dry_run: bool,
+    post_check_commands: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
 enum PayloadProjection {
     SourceEnvelope {
@@ -432,6 +454,24 @@ enum PayloadProjection {
         aliases: Vec<String>,
     },
     AdapterReceipt(AdapterReceiptInput),
+    AstGrepAudit {
+        schema_version: String,
+        profile_path: String,
+        profile_identity: Identity,
+        rule_bundle_path: String,
+        rule_bundle_identity: Identity,
+        source_scope_identity: Identity,
+        findings_identity: Identity,
+        valence_projection_path: String,
+        valence_projection_identity: Identity,
+        language_profiles: Vec<AstGrepLanguageProfile>,
+        rules: Vec<AstGrepRuleCoverage>,
+        sources: Vec<AstGrepSourceProjection>,
+        findings: Vec<AstGrepFinding>,
+        verification_role: String,
+        codemod: Box<Option<AstGrepCodemodProjection>>,
+        non_claims: Vec<String>,
+    },
     NickelAdapterReceipt {
         schema_version: u32,
         adapter_kind: String,
@@ -2978,6 +3018,69 @@ fn materialize_fixture(
             aliases: aliases.clone(),
         }),
         PayloadProjection::AdapterReceipt(input) => FixturePayload::AdapterReceipt(input.clone()),
+        PayloadProjection::AstGrepAudit {
+            schema_version,
+            profile_path,
+            profile_identity,
+            rule_bundle_path,
+            rule_bundle_identity,
+            source_scope_identity,
+            findings_identity,
+            valence_projection_path,
+            valence_projection_identity,
+            language_profiles,
+            rules,
+            sources,
+            findings,
+            verification_role,
+            codemod,
+            non_claims,
+        } => FixturePayload::AstGrepAudit(Box::new(AstGrepAuditInput {
+            schema_version: schema_version.clone(),
+            profile_bytes: read_manifest_bytes(root, profile_path)?,
+            profile_identity: profile_identity.clone(),
+            rule_bundle_bytes: read_manifest_bytes(root, rule_bundle_path)?,
+            rule_bundle_identity: rule_bundle_identity.clone(),
+            source_scope_identity: source_scope_identity.clone(),
+            findings_identity: findings_identity.clone(),
+            valence_projection_bytes: read_manifest_bytes(root, valence_projection_path)?,
+            valence_projection_identity: valence_projection_identity.clone(),
+            language_profiles: language_profiles.clone(),
+            rules: rules.clone(),
+            sources: sources
+                .iter()
+                .map(|source| {
+                    Ok(AstGrepSourceEnvelope {
+                        path: source.path.clone(),
+                        bytes: read_manifest_bytes(root, &source.path)?,
+                        identity: source.identity.clone(),
+                    })
+                })
+                .collect::<CliResult<Vec<_>>>()?,
+            findings: findings.clone(),
+            verification_role: verification_role.clone(),
+            codemod: codemod
+                .as_ref()
+                .as_ref()
+                .map(|codemod| {
+                    Ok::<AstGrepCodemodArtifact, CliError>(AstGrepCodemodArtifact {
+                        recipe_bytes: read_manifest_bytes(root, &codemod.recipe_path)?,
+                        recipe_identity: codemod.recipe_identity.clone(),
+                        before_source_bytes: read_manifest_bytes(
+                            root,
+                            &codemod.before_source_path,
+                        )?,
+                        before_source_identity: codemod.before_source_identity.clone(),
+                        after_source_bytes: read_manifest_bytes(root, &codemod.after_source_path)?,
+                        after_source_identity: codemod.after_source_identity.clone(),
+                        dry_run: codemod.dry_run,
+                        post_check_commands: codemod.post_check_commands.clone(),
+                        non_claims: codemod.non_claims.clone(),
+                    })
+                })
+                .transpose()?,
+            non_claims: non_claims.clone(),
+        })),
         PayloadProjection::NickelAdapterReceipt {
             schema_version,
             adapter_kind,

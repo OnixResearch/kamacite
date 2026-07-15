@@ -1,0 +1,81 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.positive.ast-grep-boundary-audit",
+    "artifact_class": "adapter-receipt",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.ast_grep_adapter_audits.codemods]",
+      "r[kamacite.ast_grep_adapter_audits.fixtures]",
+      "r[kamacite.ast_grep_adapter_audits.identity]",
+      "r[kamacite.ast_grep_adapter_audits.language_boundary]",
+      "r[kamacite.ast_grep_adapter_audits.profile]",
+      "r[kamacite.ast_grep_adapter_audits.valence_export]"
+    ],
+    "input_identities": {
+      "ast-grep-profile": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "fb1f8c348ab915ca635be3c58943c05e3009eefa2f290e092e94b5ed9461acd7"
+      },
+      "ast-grep-rule-bundle": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "2d92694ed79df8c79637a5b350fb79d51888e8718dae9aeef18a46f2d55dcad5"
+      },
+      "ast-grep-source-scope": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "3f08ff69255b708c62f384ac88c235337259d15ca2c9421891167db05c4d2547"
+      },
+      "ast-grep-source:audits/ast-grep/fixtures/negative/core-pure.rs": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "e208cae51ae00173bc8882f3865a5914002a44cd16e1094bd4ee84c93c797dc6"
+      },
+      "ast-grep-source:audits/ast-grep/fixtures/positive/core-ambient-process.rs": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb"
+      },
+      "ast-grep-source:audits/ast-grep/rules/core-ambient-process.yml": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "0ece21345e4c362c56ab265c2839f2d8dc13b1d6ac8152bb481f1bc65b582717"
+      }
+    },
+    "output_identities": {
+      "ast-grep-codemod-recipe": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "5ac74155860d20ea9c7e5deaeb5e92f1ed89ffeb46fe5b4aaf5a43742de51606"
+      },
+      "ast-grep-findings": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "e8d5ef04953be9efe92e2cc81f2b7b6ebaa1060590f08d9b6df293fcde05fd2e"
+      },
+      "ast-grep-valence-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "31a4ce24f399e9ad96c084fc2a3d732592be1e03b284ada3fef807b5cbe00b6f"
+      }
+    },
+    "checked_laws": [
+      "ast-grep-fixture-coverage",
+      "syntax-only-role"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "a clean scan does not prove adapter correctness or semantic equivalence",
+      "ast-grep findings are syntax-only candidate boundary evidence",
+      "codemod output remains an unapplied migration proposal until post-checks pass"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "256b2c41a6437111b0ebee530d304dc9a8239318106391c14835c260fe45022c"
+  }
+}

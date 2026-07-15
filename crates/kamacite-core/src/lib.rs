@@ -6,6 +6,7 @@
 #![deny(clippy::unreachable)]
 #![deny(clippy::unwrap_used)]
 
+mod ast_grep_audit;
 mod diagnostic;
 mod dialect_roundtrip;
 mod docs_generation;
@@ -20,6 +21,12 @@ mod proof_evidence;
 mod receipt;
 mod valence_export;
 
+pub use ast_grep_audit::{
+    AST_GREP_AUDIT_SCHEMA_VERSION, AST_GREP_BOUNDARY_ROLE, AST_GREP_RECORDED_ONLY_ROLE,
+    AST_GREP_VALENCE_SCHEMA_VERSION, AstGrepAuditInput, AstGrepCodemodArtifact, AstGrepFinding,
+    AstGrepLanguageProfile, AstGrepRuleCoverage, AstGrepSourceEnvelope, AstGrepValenceProjection,
+    validate_ast_grep_audit,
+};
 pub use diagnostic::{Diagnostic, DiagnosticCode};
 pub use dialect_roundtrip::{
     DIALECT_ROUNDTRIP_CANONICAL_OWNER, DIALECT_ROUNDTRIP_JSON_PROJECTION,

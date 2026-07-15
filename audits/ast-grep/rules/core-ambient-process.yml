@@ -1,0 +1,11 @@
+id: core-ambient-process
+language: Rust
+severity: error
+message: Pure Kamacite core must not construct ambient processes.
+note: A syntax match establishes only a source-shape boundary violation candidate.
+rule:
+  pattern: std::process::Command::new($COMMAND)
+metadata:
+  category: adapter-boundary
+  promotion-lane: error
+  evidence-role: boundary

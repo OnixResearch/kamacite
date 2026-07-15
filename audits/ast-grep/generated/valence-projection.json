@@ -1,0 +1,37 @@
+{
+  "schema_version": "kamacite.ast-grep-valence.v1",
+  "profile_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "fb1f8c348ab915ca635be3c58943c05e3009eefa2f290e092e94b5ed9461acd7"
+  },
+  "rule_bundle_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "2d92694ed79df8c79637a5b350fb79d51888e8718dae9aeef18a46f2d55dcad5"
+  },
+  "findings_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "e8d5ef04953be9efe92e2cc81f2b7b6ebaa1060590f08d9b6df293fcde05fd2e"
+  },
+  "verification_role": "boundary",
+  "findings": [
+    {
+      "rule_id": "core-ambient-process",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb"
+      },
+      "start_byte": 41,
+      "end_byte": 76,
+      "message": "Pure Kamacite core must not construct ambient processes."
+    }
+  ],
+  "non_claims": [
+    "ast-grep findings are syntax-only candidate boundary evidence",
+    "a clean scan does not prove adapter correctness or semantic equivalence",
+    "codemod output remains an unapplied migration proposal until post-checks pass"
+  ]
+}

@@ -173,6 +173,8 @@ nix run .#kamacite -- generate-manifest --root .
 nix run .#kamacite -- generate-manifest --root . --update
 nix run .#kamacite -- validate-nickel-adapter --root . --manifest fixtures/manifest.json
 nix run .#kamacite -- validate-steel-adapter --root . --manifest fixtures/manifest.json
+ast-grep test --config audits/ast-grep/sgconfig.yml
+ast-grep scan --rule audits/ast-grep/rules/core-ambient-process.yml --json=compact crates/kamacite-core/src
 nix run .#kamacite -- migrate-preserves --root . --manifest fixtures/manifest.json --manifest-source fixtures/manifest.ncl
 nix run .#kamacite -- export-valence-receipt --root . --receipt fixtures/golden/source-envelope.valid.nickel-minimal.receipt.json --conformance fixtures/valence-export/conformance.json --golden fixtures/valence-export/golden/source-envelope.valid.nickel-minimal.valence-export.json
 nix run .#kamacite -- docs check --root .
@@ -185,6 +187,7 @@ nix flake check
 # The export-valence-receipt command validates deterministic Valence-friendly projections without invoking live Valence APIs.
 # Documentation actions evaluate their checked Nickel config and emit completion receipts; run-cells and non-dry-run update fail until actual execution or mutation evidence exists.
 # Every --root child path rejects absolute, parent, and symlink traversal; mutation uses confined temporary-file replacement.
+# ast-grep audit receipts bind syntax-only rules, parser identities, fixture coverage, spans, dry-run codemods, and boundary-role Valence projections; they do not prove adapter semantics.
 ```
 
 Run lifecycle validation through the packaged Cairn lifecycle tool input:

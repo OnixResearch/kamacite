@@ -1,0 +1,124 @@
+{
+  "bundle_identity": {
+    "algorithm": "blake3",
+    "domain": "adapter",
+    "hex": "2d92694ed79df8c79637a5b350fb79d51888e8718dae9aeef18a46f2d55dcad5"
+  },
+  "bundle_inputs": [
+    "audits/ast-grep/sgconfig.yml",
+    "audits/ast-grep/rules/core-ambient-process.yml",
+    "audits/ast-grep/rule-tests/core-ambient-process-test.yml",
+    "audits/ast-grep/rule-tests/__snapshots__/core-ambient-process-snapshot.yml"
+  ],
+  "bundle_path": "audits/ast-grep/generated/rule-bundle.txt",
+  "codemod": {
+    "mode": "dry-run-only",
+    "recipe_path": "audits/ast-grep/codemods/core-ambient-process.json",
+    "validation_commands": [
+      "ast-grep test --config audits/ast-grep/sgconfig.yml",
+      "cargo test --workspace",
+      "cargo clippy --workspace --all-targets -- -D warnings"
+    ]
+  },
+  "language_profiles": [
+    {
+      "extensions": [
+        "rs"
+      ],
+      "language": "Rust",
+      "parser_identity": {
+        "algorithm": "blake3",
+        "domain": "evaluator",
+        "hex": "6fe5e10a782fc7ce7a96991458c9c1db3787e8f11c142ecc4ded94bda4401ae2"
+      },
+      "parser_kind": "built-in"
+    },
+    {
+      "extensions": [
+        "nix"
+      ],
+      "language": "Nix",
+      "parser_identity": {
+        "algorithm": "blake3",
+        "domain": "evaluator",
+        "hex": "8799a1f54aa491df9cc34c384c65abdba9926e9a3eca2008e7d2c6fd3836c7c7"
+      },
+      "parser_kind": "built-in"
+    },
+    {
+      "extensions": [
+        "yaml",
+        "yml"
+      ],
+      "language": "Yaml",
+      "parser_identity": {
+        "algorithm": "blake3",
+        "domain": "evaluator",
+        "hex": "f875d0fe110bddc1c1a53512d81fe1235989c302e84f3ea6c2fdcb321d0923fe"
+      },
+      "parser_kind": "built-in"
+    },
+    {
+      "extensions": [
+        "json"
+      ],
+      "language": "Json",
+      "parser_identity": {
+        "algorithm": "blake3",
+        "domain": "evaluator",
+        "hex": "4ad43ce58b36a9ea053552e9231bc290ec34e4f3932f7ad893365866b165924b"
+      },
+      "parser_kind": "built-in"
+    }
+  ],
+  "non_claims": [
+    "ast-grep findings are syntax-only candidate boundary evidence",
+    "a clean scan does not prove adapter correctness or semantic equivalence",
+    "codemod output remains an unapplied migration proposal until post-checks pass"
+  ],
+  "profile_id": "kamacite-adapter-boundary-audits",
+  "rules": [
+    {
+      "gate_eligible": true,
+      "language": "Rust",
+      "negative_cases": 2,
+      "negative_fixture_identity": {
+        "algorithm": "blake3",
+        "domain": "source",
+        "hex": "e208cae51ae00173bc8882f3865a5914002a44cd16e1094bd4ee84c93c797dc6"
+      },
+      "negative_fixture_path": "audits/ast-grep/fixtures/negative/core-pure.rs",
+      "positive_cases": 2,
+      "positive_fixture_identity": {
+        "algorithm": "blake3",
+        "domain": "source",
+        "hex": "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb"
+      },
+      "positive_fixture_path": "audits/ast-grep/fixtures/positive/core-ambient-process.rs",
+      "rule_id": "core-ambient-process",
+      "rule_identity": {
+        "algorithm": "blake3",
+        "domain": "source",
+        "hex": "0ece21345e4c362c56ab265c2839f2d8dc13b1d6ac8152bb481f1bc65b582717"
+      },
+      "rule_path": "audits/ast-grep/rules/core-ambient-process.yml"
+    }
+  ],
+  "scan_scope": {
+    "globs": [
+      "*.rs",
+      "!**/target/**"
+    ],
+    "paths": [
+      "crates/kamacite-core/src"
+    ]
+  },
+  "schema_version": "kamacite.ast-grep-profile.v1",
+  "severity_posture": "error",
+  "sgconfig_path": "audits/ast-grep/sgconfig.yml",
+  "tool": {
+    "name": "ast-grep",
+    "version": "0.44.1"
+  },
+  "verification_role": "boundary"
+}

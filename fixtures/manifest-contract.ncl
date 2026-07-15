@@ -225,6 +225,64 @@ let AdapterReceipt = Tagged {
   checked_laws | StringArray,
 } in
 
+let AstGrepLanguageProfile = {
+  language | String,
+  parser_kind | String,
+  parser_identity | Identity,
+  extensions | StringArray,
+} in
+let AstGrepRuleCoverage = {
+  rule_id | String,
+  language | String,
+  rule_identity | Identity,
+  positive_fixture_identity | NullableIdentity,
+  negative_fixture_identity | NullableIdentity,
+  positive_cases | Natural,
+  negative_cases | Natural,
+  gate_eligible | Bool,
+} in
+let AstGrepSource = {
+  path | String,
+  identity | Identity,
+} in
+let AstGrepFinding = {
+  rule_id | String,
+  source_identity | Identity,
+  start_byte | Natural,
+  end_byte | Natural,
+  message | String,
+} in
+let AstGrepCodemod = {
+  recipe_path | String,
+  recipe_identity | Identity,
+  before_source_path | String,
+  before_source_identity | Identity,
+  after_source_path | String,
+  after_source_identity | Identity,
+  dry_run | Bool,
+  post_check_commands | StringArray,
+  non_claims | StringArray,
+} in
+let AstGrepAudit = Tagged {
+  kind = "ast-grep-audit",
+  schema_version | String,
+  profile_path | String,
+  profile_identity | Identity,
+  rule_bundle_path | String,
+  rule_bundle_identity | Identity,
+  source_scope_identity | Identity,
+  findings_identity | Identity,
+  valence_projection_path | String,
+  valence_projection_identity | Identity,
+  language_profiles | Array AstGrepLanguageProfile,
+  rules | Array AstGrepRuleCoverage,
+  sources | Array AstGrepSource,
+  findings | Array AstGrepFinding,
+  verification_role | String,
+  codemod | Nullable AstGrepCodemod,
+  non_claims | StringArray,
+} in
+
 let NickelSandboxLimits = {
   execution_timeout_milliseconds | Natural,
   cpu_seconds | Natural,
@@ -505,6 +563,7 @@ let Payload = std.contract.any_of [
   SourceEnvelope,
   CanonicalValue,
   AdapterReceipt,
+  AstGrepAudit,
   NickelAdapterReceipt,
   SteelAdapterReceipt,
   TargetArtifact,

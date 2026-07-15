@@ -1,0 +1,19 @@
+id: core-ambient-process
+valid:
+  - |
+    fn validate(input: &Input) -> Output {
+        pure_validate(input)
+    }
+  - |
+    fn shell(command: &str) {
+        ProcessCommand::new(command);
+    }
+invalid:
+  - |
+    fn hidden_shell(command: &str) {
+        std::process::Command::new(command);
+    }
+  - |
+    fn hidden_literal_shell() {
+        std::process::Command::new("nickel");
+    }

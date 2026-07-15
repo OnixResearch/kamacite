@@ -51,6 +51,70 @@ let nickel_sandbox_evidence = fun source_hex outcome_value exit_code_value stdou
   stderr_identity = { algorithm = "blake3", domain = "projection", hex = stderr_hex },
   sandbox_enforced = true,
 } in
+let ast_grep_languages = [
+  {
+    language = "Rust",
+    parser_kind = "built-in",
+    parser_identity = { domain = "evaluator", algorithm = "blake3", hex = "6fe5e10a782fc7ce7a96991458c9c1db3787e8f11c142ecc4ded94bda4401ae2" },
+    extensions = ["rs"],
+  },
+  {
+    language = "Nix",
+    parser_kind = "built-in",
+    parser_identity = { domain = "evaluator", algorithm = "blake3", hex = "8799a1f54aa491df9cc34c384c65abdba9926e9a3eca2008e7d2c6fd3836c7c7" },
+    extensions = ["nix"],
+  },
+  {
+    language = "Yaml",
+    parser_kind = "built-in",
+    parser_identity = { domain = "evaluator", algorithm = "blake3", hex = "f875d0fe110bddc1c1a53512d81fe1235989c302e84f3ea6c2fdcb321d0923fe" },
+    extensions = ["yaml", "yml"],
+  },
+  {
+    language = "Json",
+    parser_kind = "built-in",
+    parser_identity = { domain = "evaluator", algorithm = "blake3", hex = "4ad43ce58b36a9ea053552e9231bc290ec34e4f3932f7ad893365866b165924b" },
+    extensions = ["json"],
+  },
+] in
+let ast_grep_rule = fun negative_count negative_identity_value gate_value => {
+  rule_id = "core-ambient-process",
+  language = "Rust",
+  rule_identity = { domain = "source", algorithm = "blake3", hex = "0ece21345e4c362c56ab265c2839f2d8dc13b1d6ac8152bb481f1bc65b582717" },
+  positive_fixture_identity = { domain = "source", algorithm = "blake3", hex = "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb" },
+  negative_fixture_identity = negative_identity_value,
+  positive_cases = 2,
+  negative_cases = negative_count,
+  gate_eligible = gate_value,
+} in
+let ast_grep_sources = [
+  { path = "audits/ast-grep/rules/core-ambient-process.yml", identity = { domain = "source", algorithm = "blake3", hex = "0ece21345e4c362c56ab265c2839f2d8dc13b1d6ac8152bb481f1bc65b582717" } },
+  { path = "audits/ast-grep/fixtures/positive/core-ambient-process.rs", identity = { domain = "source", algorithm = "blake3", hex = "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb" } },
+  { path = "audits/ast-grep/fixtures/negative/core-pure.rs", identity = { domain = "source", algorithm = "blake3", hex = "e208cae51ae00173bc8882f3865a5914002a44cd16e1094bd4ee84c93c797dc6" } },
+] in
+let ast_grep_findings = [
+  {
+    rule_id = "core-ambient-process",
+    source_identity = { domain = "source", algorithm = "blake3", hex = "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb" },
+    start_byte = 41,
+    end_byte = 76,
+    message = "Pure Kamacite core must not construct ambient processes.",
+  },
+] in
+let ast_grep_codemod = {
+  recipe_path = "audits/ast-grep/codemods/core-ambient-process.json",
+  recipe_identity = { domain = "source", algorithm = "blake3", hex = "5ac74155860d20ea9c7e5deaeb5e92f1ed89ffeb46fe5b4aaf5a43742de51606" },
+  before_source_path = "audits/ast-grep/fixtures/positive/core-ambient-process.rs",
+  before_source_identity = { domain = "source", algorithm = "blake3", hex = "e36a898551e0be83b4b9cb325e42c47c919953c15f722521e10209e0f41f70eb" },
+  after_source_path = "audits/ast-grep/fixtures/codemod/core-process-after.rs",
+  after_source_identity = { domain = "source", algorithm = "blake3", hex = "13fe64e6a9461dc00c330590668730dd1a7876912f2e55c31f034f7bc929c76a" },
+  dry_run = true,
+  post_check_commands = [
+    "ast-grep test --config audits/ast-grep/sgconfig.yml",
+    "cargo test --workspace",
+  ],
+  non_claims = ["the rewrite proposal does not prove semantic equivalence"],
+} in
 {
   "authority_non_claims" = [
     "manifest source is review authority",
@@ -7174,6 +7238,82 @@ let nickel_sandbox_evidence = fun source_hex outcome_value exit_code_value stdou
       },
       "requirement_ids" = [
         "r[kamacite.docs.receipts.non_claim_violation]",
+      ],
+    },
+    {
+      "artifact_class" = "adapter-receipt",
+      "checked_laws" = ["ast-grep-fixture-coverage", "syntax-only-role"],
+      "expected_verdict" = "accepted",
+      "fixture_class" = "positive",
+      "golden_receipt" = "fixtures/golden/adapter.positive.ast-grep-boundary-audit.receipt.json",
+      "id" = "adapter.positive.ast-grep-boundary-audit",
+      "non_claims" = [
+        "ast-grep findings are syntax-only candidate boundary evidence",
+        "a clean scan does not prove adapter correctness or semantic equivalence",
+        "codemod output remains an unapplied migration proposal until post-checks pass",
+      ],
+      "payload" = {
+        "kind" = "ast-grep-audit",
+        "schema_version" = "kamacite.ast-grep-audit.v1",
+        "profile_path" = "audits/ast-grep/generated/profile.json",
+        "profile_identity" = { domain = "adapter", algorithm = "blake3", hex = "fb1f8c348ab915ca635be3c58943c05e3009eefa2f290e092e94b5ed9461acd7" },
+        "rule_bundle_path" = "audits/ast-grep/generated/rule-bundle.txt",
+        "rule_bundle_identity" = { domain = "adapter", algorithm = "blake3", hex = "2d92694ed79df8c79637a5b350fb79d51888e8718dae9aeef18a46f2d55dcad5" },
+        "source_scope_identity" = { domain = "adapter", algorithm = "blake3", hex = "3f08ff69255b708c62f384ac88c235337259d15ca2c9421891167db05c4d2547" },
+        "findings_identity" = { domain = "adapter", algorithm = "blake3", hex = "e8d5ef04953be9efe92e2cc81f2b7b6ebaa1060590f08d9b6df293fcde05fd2e" },
+        "valence_projection_path" = "audits/ast-grep/generated/valence-projection.json",
+        "valence_projection_identity" = { domain = "projection", algorithm = "blake3", hex = "31a4ce24f399e9ad96c084fc2a3d732592be1e03b284ada3fef807b5cbe00b6f" },
+        "language_profiles" = ast_grep_languages,
+        "rules" = [ast_grep_rule 2 { domain = "source", algorithm = "blake3", hex = "e208cae51ae00173bc8882f3865a5914002a44cd16e1094bd4ee84c93c797dc6" } true],
+        "sources" = ast_grep_sources,
+        "findings" = ast_grep_findings,
+        "verification_role" = "boundary",
+        "codemod" = ast_grep_codemod,
+        "non_claims" = [
+          "ast-grep findings are syntax-only candidate boundary evidence",
+          "a clean scan does not prove adapter correctness or semantic equivalence",
+          "codemod output remains an unapplied migration proposal until post-checks pass",
+        ],
+      },
+      "requirement_ids" = [
+        "r[kamacite.ast_grep_adapter_audits.profile]",
+        "r[kamacite.ast_grep_adapter_audits.language_boundary]",
+        "r[kamacite.ast_grep_adapter_audits.identity]",
+        "r[kamacite.ast_grep_adapter_audits.fixtures]",
+        "r[kamacite.ast_grep_adapter_audits.codemods]",
+        "r[kamacite.ast_grep_adapter_audits.valence_export]",
+      ],
+    },
+    {
+      "artifact_class" = "adapter-receipt",
+      "checked_laws" = ["rules-without-negative-fixtures-remain-advisory"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/adapter.negative.ast-grep-missing-fixture.receipt.json",
+      "id" = "adapter.negative.ast-grep-missing-fixture",
+      "non_claims" = ["ast-grep cannot establish semantic verification"],
+      "payload" = {
+        "kind" = "ast-grep-audit",
+        "schema_version" = "kamacite.ast-grep-audit.v1",
+        "profile_path" = "audits/ast-grep/generated/profile.json",
+        "profile_identity" = { domain = "adapter", algorithm = "blake3", hex = "fb1f8c348ab915ca635be3c58943c05e3009eefa2f290e092e94b5ed9461acd7" },
+        "rule_bundle_path" = "audits/ast-grep/generated/rule-bundle.txt",
+        "rule_bundle_identity" = { domain = "adapter", algorithm = "blake3", hex = "2d92694ed79df8c79637a5b350fb79d51888e8718dae9aeef18a46f2d55dcad5" },
+        "source_scope_identity" = { domain = "adapter", algorithm = "blake3", hex = "3f08ff69255b708c62f384ac88c235337259d15ca2c9421891167db05c4d2547" },
+        "findings_identity" = { domain = "adapter", algorithm = "blake3", hex = "e8d5ef04953be9efe92e2cc81f2b7b6ebaa1060590f08d9b6df293fcde05fd2e" },
+        "valence_projection_path" = "audits/ast-grep/generated/valence-projection.json",
+        "valence_projection_identity" = { domain = "projection", algorithm = "blake3", hex = "31a4ce24f399e9ad96c084fc2a3d732592be1e03b284ada3fef807b5cbe00b6f" },
+        "language_profiles" = ast_grep_languages,
+        "rules" = [ast_grep_rule 0 null true],
+        "sources" = ast_grep_sources,
+        "findings" = ast_grep_findings,
+        "verification_role" = "verified-semantic",
+        "codemod" = ast_grep_codemod,
+        "non_claims" = ["ast-grep cannot establish semantic verification"],
+      },
+      "requirement_ids" = [
+        "r[kamacite.ast_grep_adapter_audits.fixtures]",
+        "r[kamacite.ast_grep_adapter_audits.valence_export]",
       ],
     },
   ],

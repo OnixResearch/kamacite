@@ -1,0 +1,16 @@
+{
+  "schema_version": "kamacite.ast-grep-codemod.v1",
+  "rule_id": "core-ambient-process",
+  "mode": "dry-run-only",
+  "before_path": "audits/ast-grep/fixtures/positive/core-ambient-process.rs",
+  "after_path": "audits/ast-grep/fixtures/codemod/core-process-after.rs",
+  "post_check_commands": [
+    "ast-grep test --config audits/ast-grep/sgconfig.yml",
+    "cargo test --workspace",
+    "cargo clippy --workspace --all-targets -- -D warnings"
+  ],
+  "non_claims": [
+    "the proposed rewrite does not prove semantic equivalence",
+    "the proposed rewrite is not applied by the audit rail"
+  ]
+}

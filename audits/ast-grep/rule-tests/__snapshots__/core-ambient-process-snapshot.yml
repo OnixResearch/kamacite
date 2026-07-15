@@ -1,0 +1,20 @@
+id: core-ambient-process
+snapshots:
+  ? |
+    fn hidden_literal_shell() {
+        std::process::Command::new("nickel");
+    }
+  : labels:
+    - source: std::process::Command::new("nickel")
+      style: primary
+      start: 32
+      end: 68
+  ? |
+    fn hidden_shell(command: &str) {
+        std::process::Command::new(command);
+    }
+  : labels:
+    - source: std::process::Command::new(command)
+      style: primary
+      start: 37
+      end: 72

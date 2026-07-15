@@ -1,3 +1,4 @@
+use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
 use crate::nickel_sandbox::{
@@ -331,6 +332,7 @@ pub enum FixturePayload {
     SourceEnvelope(SourceEnvelopeInput),
     CanonicalValue(CanonicalValueInput),
     AdapterReceipt(AdapterReceiptInput),
+    AstGrepAudit(Box<AstGrepAuditInput>),
     NickelAdapterReceipt(Box<NickelAdapterReceiptInput>),
     SteelAdapterReceipt(Box<SteelAdapterReceiptInput>),
     TargetArtifact(TargetArtifactInput),
@@ -1367,6 +1369,9 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         FixturePayload::SourceEnvelope(input) => validate_source_envelope(input, &mut accumulator),
         FixturePayload::CanonicalValue(input) => validate_canonical_value(input, &mut accumulator),
         FixturePayload::AdapterReceipt(input) => validate_adapter_receipt(input, &mut accumulator),
+        FixturePayload::AstGrepAudit(input) => {
+            validate_ast_grep_audit_fixture(input, &mut accumulator)
+        }
         FixturePayload::NickelAdapterReceipt(input) => {
             validate_nickel_adapter_receipt(input, &mut accumulator)
         }
@@ -1624,6 +1629,47 @@ fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut Valid
             "compatibility projection cannot replace canonical Preserves bytes",
         ));
     }
+}
+
+fn validate_ast_grep_audit_fixture(
+    input: &AstGrepAuditInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    accumulator.input_identities.insert(
+        "ast-grep-profile".to_string(),
+        input.profile_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "ast-grep-rule-bundle".to_string(),
+        input.rule_bundle_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "ast-grep-source-scope".to_string(),
+        input.source_scope_identity.clone(),
+    );
+    for source in &input.sources {
+        accumulator.input_identities.insert(
+            format!("ast-grep-source:{}", source.path),
+            source.identity.clone(),
+        );
+    }
+    accumulator.output_identities.insert(
+        "ast-grep-findings".to_string(),
+        input.findings_identity.clone(),
+    );
+    accumulator.output_identities.insert(
+        "ast-grep-valence-projection".to_string(),
+        input.valence_projection_identity.clone(),
+    );
+    if let Some(codemod) = &input.codemod {
+        accumulator.output_identities.insert(
+            "ast-grep-codemod-recipe".to_string(),
+            codemod.recipe_identity.clone(),
+        );
+    }
+    accumulator
+        .diagnostics
+        .extend(validate_ast_grep_audit(input));
 }
 
 fn validate_adapter_receipt(input: &AdapterReceiptInput, accumulator: &mut ValidationAccumulator) {

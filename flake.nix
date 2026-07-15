@@ -182,6 +182,49 @@
             touch $out
           '';
 
+          ast-grep-adapter-audits =
+            pkgs.runCommand "kamacite-ast-grep-adapter-audits"
+              {
+                nativeBuildInputs = [
+                  pkgs.ast-grep
+                  pkgs.diffutils
+                  pkgs.gnugrep
+                  pkgs.nickel
+                ];
+              }
+              ''
+                ${copySource}
+                nickel export --format json audits/ast-grep/profile.ncl >profile.json
+                cmp profile.json audits/ast-grep/generated/profile.json
+                {
+                  for path in \
+                    audits/ast-grep/sgconfig.yml \
+                    audits/ast-grep/rules/core-ambient-process.yml \
+                    audits/ast-grep/rule-tests/core-ambient-process-test.yml \
+                    audits/ast-grep/rule-tests/__snapshots__/core-ambient-process-snapshot.yml
+                  do
+                    printf '%s\n' "--- $path"
+                    cat "$path"
+                    printf '\n'
+                  done
+                } >rule-bundle.txt
+                cmp rule-bundle.txt audits/ast-grep/generated/rule-bundle.txt
+                ast-grep test --config audits/ast-grep/sgconfig.yml
+                ast-grep scan --warning \
+                  --rule audits/ast-grep/rules/core-ambient-process.yml \
+                  --json=compact audits/ast-grep/fixtures/positive >positive.json
+                grep -q '"ruleId":"core-ambient-process"' positive.json
+                ast-grep scan --warning \
+                  --rule audits/ast-grep/rules/core-ambient-process.yml \
+                  --json=compact audits/ast-grep/fixtures/negative >negative.json
+                test "$(cat negative.json)" = "[]"
+                ast-grep scan \
+                  --rule audits/ast-grep/rules/core-ambient-process.yml \
+                  --json=compact crates/kamacite-core/src >core.json
+                test "$(cat core.json)" = "[]"
+                touch $out
+              '';
+
           fixture-validation = pkgs.runCommand "kamacite-fixture-validation" { } ''
             ${copySource}
             ${kamacite} validate --root . --manifest fixtures/manifest.json >fixture-validation.json
@@ -294,6 +337,7 @@
         {
           default = pkgs.mkShell {
             packages = [
+              pkgs.ast-grep
               pkgs.bubblewrap
               pkgs.cargo
               pkgs.clippy
