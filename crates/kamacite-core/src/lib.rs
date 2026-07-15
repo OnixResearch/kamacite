@@ -25,6 +25,7 @@ mod spacewasm_valence;
 mod steel_execution;
 mod valence_export;
 mod wasm_component;
+mod wasm_component_valence;
 
 pub use ast_grep_audit::{
     AST_GREP_AUDIT_SCHEMA_VERSION, AST_GREP_BOUNDARY_ROLE, AST_GREP_RECORDED_ONLY_ROLE,
@@ -192,4 +193,10 @@ pub use wasm_component::{
     WasmComponentStaticRequest, WasmComponentStaticValidation, WasmComponentToolchain,
     WasmComponentValidationError, WasmComponentWitCohort, build_wasm_component_static_receipt,
     validate_wasm_component_static, validate_wasm_component_static_receipt,
+};
+pub use wasm_component_valence::{
+    WASM_COMPONENT_VALENCE_PROJECTION_SCHEMA, WasmComponentValenceArtifact,
+    WasmComponentValenceEdge, WasmComponentValenceProjection, WasmComponentValenceProjectionBody,
+    WasmComponentValenceProjectionError, WasmComponentValenceVerificationClass,
+    project_wasm_component_static_to_valence,
 };

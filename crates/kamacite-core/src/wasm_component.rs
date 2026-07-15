@@ -382,6 +382,8 @@ pub struct WasmComponentStaticValidation {
     pub wit_identity: Identity,
     pub descriptor_identity: Identity,
     pub canonical_input_identity: Identity,
+    pub component_identity: Option<Identity>,
+    pub inspection_identity: Option<Identity>,
     pub materialization_bundle_identity: Option<Identity>,
     pub execution_plan_identity: Option<Identity>,
     pub execution_plan: Option<WasmComponentExecutionPlan>,
@@ -402,6 +404,8 @@ pub struct WasmComponentStaticReceiptBody {
     pub wit_identity: Identity,
     pub descriptor_identity: Identity,
     pub canonical_input_identity: Identity,
+    pub component_identity: Option<Identity>,
+    pub inspection_identity: Option<Identity>,
     pub materialization_bundle_identity: Option<Identity>,
     pub blockers: Vec<WasmComponentBlocker>,
     pub checked_laws: Vec<String>,
@@ -490,10 +494,26 @@ pub fn validate_wasm_component_static(
 
     let mut blockers = Vec::new();
     let mut materialization_bundle_identity = None;
+    let component_identity = request
+        .component_bytes
+        .map(|bytes| compute_identity(IdentityDomain::TargetArtifact, bytes));
+    let inspection_identity = request
+        .inspection
+        .map(|inspection| serialized_identity(IdentityDomain::Adapter, "inspection", inspection))
+        .transpose()?;
     let execution_plan: Option<WasmComponentExecutionPlan> = None;
     let execution_plan_identity: Option<Identity> = None;
     match request.materialization_manifest_bytes {
-        None => blockers.push(WasmComponentBlocker::MissingMaterializationBundle),
+        None => {
+            blockers.push(WasmComponentBlocker::MissingMaterializationBundle);
+            if request.component_bytes.is_some() || request.inspection.is_some() {
+                diagnostics.push(WasmComponentDiagnostic::new(
+                    "orphan-artifact",
+                    "materialization",
+                    "component bytes and inspection require a materialization manifest",
+                ));
+            }
+        }
         Some(manifest_bytes) => {
             let bundle = parse_materialization(manifest_bytes)?;
             let bundle_identity =
@@ -546,6 +566,8 @@ pub fn validate_wasm_component_static(
         wit_identity: admitted.wit_identity,
         descriptor_identity,
         canonical_input_identity,
+        component_identity,
+        inspection_identity,
         materialization_bundle_identity,
         execution_plan_identity,
         execution_plan,
@@ -557,50 +579,25 @@ pub fn validate_wasm_component_static(
 
 // r[impl kamacite.wasm_adapter.receipt]
 pub fn build_wasm_component_static_receipt(
-    validation: &WasmComponentStaticValidation,
+    request: &WasmComponentStaticRequest<'_>,
 ) -> Result<WasmComponentStaticReceipt, WasmComponentValidationError> {
-    let mut diagnostics = Vec::new();
-    if validation.state != WasmComponentPlanningState::StaticOnly {
-        diagnostics.push(WasmComponentDiagnostic::new(
-            "receipt-overclaim",
-            "state",
-            "static receipt cannot represent executable component evidence",
-        ));
-    }
-    if validation.blockers.is_empty() {
-        diagnostics.push(WasmComponentDiagnostic::new(
-            "missing-blocker",
-            "blockers",
-            "static receipt requires at least one explicit execution blocker",
-        ));
-    }
-    if validation.execution_plan.is_some() || validation.execution_plan_identity.is_some() {
-        diagnostics.push(WasmComponentDiagnostic::new(
-            "receipt-overclaim",
-            "execution_plan",
-            "static receipt cannot bind an execution plan",
-        ));
-    }
-    if !diagnostics.is_empty() {
-        return Err(validation_error(diagnostics));
-    }
-    let mut blockers = validation.blockers.clone();
-    blockers.sort();
-    blockers.dedup();
+    let validation = validate_wasm_component_static(request)?;
     let body = WasmComponentStaticReceiptBody {
         schema_version: WASM_COMPONENT_STATIC_RECEIPT_SCHEMA.to_string(),
-        state: WasmComponentPlanningState::StaticOnly,
+        state: validation.state,
         source_repository: WASM_COMPONENT_SOURCE_REPOSITORY.to_string(),
         source_revision: WASM_COMPONENT_SOURCE_REVISION.to_string(),
-        profile_identity: validation.profile_identity.clone(),
-        runtime_profile_identity: validation.runtime_profile_identity.clone(),
-        wit_identity: validation.wit_identity.clone(),
-        descriptor_identity: validation.descriptor_identity.clone(),
-        canonical_input_identity: validation.canonical_input_identity.clone(),
-        materialization_bundle_identity: validation.materialization_bundle_identity.clone(),
-        blockers,
-        checked_laws: validation.checked_laws.clone(),
-        non_claims: validation.non_claims.clone(),
+        profile_identity: validation.profile_identity,
+        runtime_profile_identity: validation.runtime_profile_identity,
+        wit_identity: validation.wit_identity,
+        descriptor_identity: validation.descriptor_identity,
+        canonical_input_identity: validation.canonical_input_identity,
+        component_identity: validation.component_identity,
+        inspection_identity: validation.inspection_identity,
+        materialization_bundle_identity: validation.materialization_bundle_identity,
+        blockers: validation.blockers,
+        checked_laws: validation.checked_laws,
+        non_claims: validation.non_claims,
     };
     let artifact = encode_typed_preserves(
         &body,
@@ -624,10 +621,10 @@ pub fn build_wasm_component_static_receipt(
 }
 
 pub fn validate_wasm_component_static_receipt(
-    validation: &WasmComponentStaticValidation,
+    request: &WasmComponentStaticRequest<'_>,
     receipt: &WasmComponentStaticReceipt,
 ) -> Result<(), WasmComponentValidationError> {
-    let expected = build_wasm_component_static_receipt(validation)?;
+    let expected = build_wasm_component_static_receipt(request)?;
     if receipt == &expected {
         Ok(())
     } else {
@@ -1489,6 +1486,21 @@ fn validate_inspection(
     diagnostics
 }
 
+fn serialized_identity<T: Serialize>(
+    domain: IdentityDomain,
+    field: &'static str,
+    value: &T,
+) -> Result<Identity, WasmComponentValidationError> {
+    let bytes = serde_json::to_vec(value).map_err(|error| {
+        single_error(WasmComponentDiagnostic::new(
+            "encoding",
+            field,
+            error.to_string(),
+        ))
+    })?;
+    Ok(compute_identity(domain, &bytes))
+}
+
 fn validate_encoded_identity<T: Serialize>(
     diagnostics: &mut Vec<WasmComponentDiagnostic>,
     field: &'static str,
@@ -1739,12 +1751,14 @@ mod tests {
     // r[verify kamacite.wasm_adapter.profile]
     // r[verify kamacite.wasm_adapter.functional_core]
     // r[verify kamacite.wasm_adapter.receipt]
+    // r[verify kamacite.wasm_adapter.valence_export]
     #[test]
     fn exact_profile_descriptor_and_canonical_input_validate_without_execution()
     -> Result<(), Box<dyn std::error::Error>> {
         let input = canonical_input()?;
         let descriptor = descriptor(None)?;
-        let result = validate_wasm_component_static(&request(&descriptor, &input));
+        let exact_request = request(&descriptor, &input);
+        let result = validate_wasm_component_static(&exact_request);
         assert!(result.is_ok(), "{result:?}");
         if let Ok(result) = result {
             assert_eq!(result.state, WasmComponentPlanningState::StaticOnly);
@@ -1759,12 +1773,33 @@ mod tests {
                 result.runtime_profile_identity.domain,
                 IdentityDomain::Evaluator
             );
-            let receipt = build_wasm_component_static_receipt(&result)?;
+            let receipt = build_wasm_component_static_receipt(&exact_request)?;
             assert_eq!(receipt.receipt_identity.domain, IdentityDomain::Receipt);
-            assert!(validate_wasm_component_static_receipt(&result, &receipt).is_ok());
+            assert!(validate_wasm_component_static_receipt(&exact_request, &receipt).is_ok());
+            let projection = crate::project_wasm_component_static_to_valence(&exact_request)?;
+            let repeated_projection =
+                crate::project_wasm_component_static_to_valence(&exact_request)?;
+            assert_eq!(projection, repeated_projection);
+            assert_eq!(
+                projection.projection_identity.domain,
+                IdentityDomain::Projection
+            );
+            assert!(projection.body.parent_edges.len() > descriptor.parent_edges.len());
+            let wit_artifact = projection
+                .body
+                .artifacts
+                .iter()
+                .find(|artifact| artifact.role == "wit-source");
+            assert!(wit_artifact.is_some());
+            if let Some(wit_artifact) = wit_artifact {
+                assert!(matches!(
+                    wit_artifact.spans,
+                    crate::SourceSpanSet::Present { .. }
+                ));
+            }
             let mut stale = receipt;
             stale.body.source_revision = "substituted".to_string();
-            assert!(validate_wasm_component_static_receipt(&result, &stale).is_err());
+            assert!(validate_wasm_component_static_receipt(&exact_request, &stale).is_err());
         }
         Ok(())
     }
@@ -1783,6 +1818,10 @@ mod tests {
         let mut stale_runtime = request(&base, &input);
         stale_runtime.runtime_profile_bytes = br#"{}"#;
         assert!(validate_wasm_component_static(&stale_runtime).is_err());
+
+        let mut orphan_component = request(&base, &input);
+        orphan_component.component_bytes = Some(b"orphan component");
+        assert!(validate_wasm_component_static(&orphan_component).is_err());
 
         let mut wrong_world = base.clone();
         wrong_world.wit_world = "other".to_string();
@@ -1902,7 +1941,27 @@ mod tests {
                 vec![WasmComponentBlocker::TestOnlyMaterialization]
             );
             assert!(result.execution_plan.is_none());
+            assert!(result.component_identity.is_some());
+            assert!(result.inspection_identity.is_some());
         }
+        let test_receipt = build_wasm_component_static_receipt(&request)?;
+        assert!(test_receipt.body.component_identity.is_some());
+        assert!(test_receipt.body.inspection_identity.is_some());
+        let test_projection = crate::project_wasm_component_static_to_valence(&request)?;
+        assert!(
+            test_projection
+                .body
+                .artifacts
+                .iter()
+                .any(|artifact| artifact.role == "portable-component")
+        );
+        assert!(
+            test_projection
+                .body
+                .artifacts
+                .iter()
+                .any(|artifact| artifact.role == "component-inspection")
+        );
 
         let mut production_bundle = bundle;
         production_bundle.evidence_scope = WasmComponentEvidenceScope::Production;

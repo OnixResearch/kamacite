@@ -3,7 +3,7 @@
   version: "v1"
   schema-id: "kamacite.wasm-component-static-receipt.v1"
   root-label: "WasmComponentStaticReceiptBody"
-  fields: ["state" "source-repository" "source-revision" "profile-identity" "runtime-profile-identity" "wit-identity" "descriptor-identity" "canonical-input-identity" "optional-materialization-bundle-identity" "blockers" "checked-laws" "non-claims"]
+  fields: ["state" "source-repository" "source-revision" "profile-identity" "runtime-profile-identity" "wit-identity" "descriptor-identity" "canonical-input-identity" "optional-component-identity" "optional-inspection-identity" "optional-materialization-bundle-identity" "blockers" "checked-laws" "non-claims"]
   required-state: "static-only"
   required-blocker-posture: "nonempty sorted unique"
   forbidden-fields: ["execution-plan" "execution-result" "output-identity" "passing-execution-claim"]

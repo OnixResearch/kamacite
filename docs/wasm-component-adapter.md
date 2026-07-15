@@ -29,7 +29,9 @@ Missing production materialization returns a successful `static-only` decision w
 
 Live execution is intentionally unavailable. Mantle does not yet expose a real WIT binding/guest compilation/WAC composition materializer or an exact production `mantle.component-materialization-bundle.v1` for this adapter. The sibling Aspen tests use synthetic bundle references and therefore are not imported as production evidence. The initial Molten profile also admits no host imports, so a positive hostcall fixture requires a later reviewed profile cohort.
 
-A static-only decision can be encoded as `kamacite.wasm-component-static-receipt.v1`. That canonical Preserves receipt requires nonempty execution blockers and cannot contain an execution plan or passing output claim; validation recomputes it from the static decision.
+A static-only decision can be encoded as `kamacite.wasm-component-static-receipt.v1`. Receipt construction reruns validation over the exact request rather than trusting a caller-assembled decision, binds optional component and inspection identities when materialization bytes exist, requires nonempty execution blockers, and cannot contain an execution plan or passing output claim. Component or inspection bytes without a materialization manifest fail as orphan artifacts.
+
+The deterministic Valence-friendly projection assigns only `recorded-only` or `boundary` verification classes, preserves typed descriptor parent edges and non-claims, records exact byte spans for byte-owning artifacts, and uses explicit absent-span reasons for identity-only layers. Projection linkage does not transfer Kamacite, Mantle, Aspen/Molten, Wasmtime, or Valence trust.
 
 Until those exact external artifacts exist, Kamacite must not add a production component build fallback, relabel loose test bytes as Mantle output, instantiate Wasmtime, or issue a passing execution receipt.
 

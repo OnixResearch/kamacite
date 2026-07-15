@@ -1,0 +1,14 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "wasm-component-valence-projection"
+  version: "v1"
+  schema-id: "kamacite.wasm-component-valence-projection.v1"
+  subject: "exact component static-denial receipt"
+  verification-classes: ["recorded-only" "boundary"]
+  base-roles: ["component-adapter-profile" "molten-runtime-profile" "wit-source" "component-adapter-descriptor" "canonical-input" "input-schema" "output-schema" "component-static-denial-receipt"]
+  optional-roles: ["portable-component" "component-inspection" "mantle-materialization-manifest" "capability:<import>" "effect-operation:<import>" "authority:<import>" "resource:<import>"]
+  spans: "exact zero-based half-open byte spans for byte-owning artifacts; explicit absent reasons for canonical identities without byte-local source spans"
+  edges: "typed descriptor parents point to the descriptor; profile points to descriptor; canonical input and descriptor point to the static receipt"
+  projection-identity: "projection-domain BLAKE3 over deterministic JSON projection body"
+  coupling-boundary: "no Kamacite, Mantle, Aspen/Molten, Wasmtime, or Valence trust transfer"
+  non-claims: ["not component execution" "not materialization verification" "not runtime correctness" "not semantic equivalence" "not release eligibility"]
+}>
