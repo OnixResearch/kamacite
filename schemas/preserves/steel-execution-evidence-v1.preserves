@@ -1,0 +1,32 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "steel-execution-evidence"
+  version: "v1"
+  schema-id: "kamacite.steel-execution-evidence.v1"
+  alternatives: [
+    <stored-evidence {
+      fresh: false
+      output-identity: "optional projection-domain BLAKE3 identity"
+      non-claim: "prerecorded output is not a fresh Steel execution"
+    }>
+    <executed-probe {
+      runner-profile: "steel-dto-probe-shell"
+      runner-identity: "evaluator-domain BLAKE3 identity over the exact embedded runner descriptor"
+      source-identity: "source-domain BLAKE3 identity"
+      module-identity: "adapter-domain BLAKE3 identity"
+      input-identity: "projection-domain BLAKE3 identity"
+      input-contract-identity: "adapter-domain BLAKE3 identity"
+      output-contract-identity: "adapter-domain BLAKE3 identity"
+      output-identity: "projection-domain BLAKE3 identity"
+      declared-builtins: ["string"]
+      registered-host-functions: ["string"]
+      observed-host-functions: ["string"]
+      enforced-capabilities: ["string"]
+      observed-effects: ["string"]
+      exit-class: "success"
+      output-byte-length: "u64"
+      authority-enforced: true
+      completed: true
+    }>
+  ]
+  non-claims: ["not Steel evaluator soundness" "not arbitrary Scheme semantics" "not canonical Kamacite IR" "not semantic equivalence"]
+}>

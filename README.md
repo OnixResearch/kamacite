@@ -183,6 +183,7 @@ nix flake check
 # Default validation is receipt-only: it binds the exact source, closed contract, evaluator profile, and complete projection bytes before fixture IO or golden trust.
 # generate-manifest is the explicit live Nickel check; only --update rewrites the JSON projection and its checked generation receipt.
 # The validate-nickel-adapter command runs explicitly declared reference exports under the receipt-bound Linux Bubblewrap/prlimit profile; the Nix package supplies the required tools and Nickel runtime closure.
+# The validate-steel-adapter command runs an exact reviewed DTO cohort in a fresh raw no-kernel Steel engine with only its declared empty base module and pure host function; default validation keeps prerecorded Steel outputs explicitly non-fresh.
 # The migrate-preserves command is dry-run-only unless --update is passed; update reports default under target/.
 # The export-valence-receipt command validates deterministic Valence-friendly projections without invoking live Valence APIs.
 # Documentation actions evaluate their checked Nickel config and emit completion receipts; run-cells and non-dry-run update fail until actual execution or mutation evidence exists.

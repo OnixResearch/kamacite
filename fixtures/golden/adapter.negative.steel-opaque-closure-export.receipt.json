@@ -14,10 +14,20 @@
         "algorithm": "blake3",
         "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
       },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
       "steel-module-descriptor": {
         "domain": "adapter",
         "algorithm": "blake3",
         "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "558764300027a2f515ac9a0968c247222dfa42a9a8ed9d86174dff3b3aaaff0c"
       },
       "steel-output-projection": {
         "domain": "projection",
@@ -50,13 +60,28 @@
         "domain": "source",
         "algorithm": "blake3",
         "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-stored-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4bc4d28398d26a4ab6d844511fca508c72e626a0cd7025da22aff3b3f6d74069"
       }
     },
     "checked_laws": [
       "host-function-dto-contract",
-      "opaque-closure-export-denied"
+      "opaque-closure-export-denied",
+      "steel-stored-evidence-explicitly-nonfresh"
     ],
     "diagnostics": [
+      {
+        "code": "malformed-projection-output",
+        "requirement_id": "r[kamacite.findings.steel_execution.schema_conformance]",
+        "field": "steel.output_bytes",
+        "message": "Steel output bytes do not satisfy the admitted content-addressed contract",
+        "details": {
+          "error": "malformed Steel DTO JSON: expected value at line 1 column 1"
+        }
+      },
       {
         "code": "unsupported-artifact-class",
         "requirement_id": "r[kamacite.steel_adapter_suite.output_boundary.opaque_closure]",
@@ -72,6 +97,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "7ec8b91961beb030c48eb6f84b3b1fa9d0acd8fcecc5f9446843953c6c5de6d9"
+    "hex": "5e0aac210857b0e13980a010f6fe90e0c0e6d46775b37a39bf2b7080c3c9c6dd"
   }
 }

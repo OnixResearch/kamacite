@@ -1180,6 +1180,10 @@ let ast_grep_codemod = {
         "r[kamacite.steel_adapter_suite.receipt_profile.evaluator_identity]",
         "r[kamacite.steel_adapter_suite.host_function_boundary.declared_host_functions]",
         "r[kamacite.steel_adapter_suite.output_boundary.dto_only]",
+        "r[kamacite.findings.steel_execution.fresh_probe]",
+        "r[kamacite.findings.steel_execution.runner_identity]",
+        "r[kamacite.findings.steel_execution.schema_conformance]",
+        "r[kamacite.findings.steel_execution.capability_enforcement]",
       ],
     },
     {
@@ -1276,6 +1280,10 @@ let ast_grep_codemod = {
         "r[kamacite.steel_adapter_suite.positive_fixtures.declared_module]",
         "r[kamacite.steel_adapter_suite.receipt_profile.source_module_identity]",
         "r[kamacite.steel_adapter_suite.capability_boundary.root_relative]",
+        "r[kamacite.findings.steel_execution.fresh_probe]",
+        "r[kamacite.findings.steel_execution.runner_identity]",
+        "r[kamacite.findings.steel_execution.schema_conformance]",
+        "r[kamacite.findings.steel_execution.capability_enforcement]",
       ],
     },
     {

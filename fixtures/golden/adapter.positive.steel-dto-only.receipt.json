@@ -6,6 +6,10 @@
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
+      "r[kamacite.findings.steel_execution.capability_enforcement]",
+      "r[kamacite.findings.steel_execution.fresh_probe]",
+      "r[kamacite.findings.steel_execution.runner_identity]",
+      "r[kamacite.findings.steel_execution.schema_conformance]",
       "r[kamacite.steel_adapter_suite.host_function_boundary.declared_host_functions]",
       "r[kamacite.steel_adapter_suite.output_boundary.dto_only]",
       "r[kamacite.steel_adapter_suite.positive_fixtures.dto_only]",
@@ -17,10 +21,20 @@
         "algorithm": "blake3",
         "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
       },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
       "steel-module-descriptor": {
         "domain": "adapter",
         "algorithm": "blake3",
         "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
       },
       "steel-output-projection": {
         "domain": "projection",
@@ -53,13 +67,19 @@
         "domain": "source",
         "algorithm": "blake3",
         "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-stored-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "90b1b601eafb83518f3e65e1dcc38cffd2b946ff85405e301d5230d13aec24cb"
       }
     },
     "checked_laws": [
       "declared-host-functions",
       "dto-only-evaluation",
       "host-function-dto-contract",
-      "output-projection-bound"
+      "output-projection-bound",
+      "steel-stored-evidence-explicitly-nonfresh"
     ],
     "diagnostics": [],
     "non_claims": [
@@ -71,6 +91,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "bf3a530ef5eaba8a0b86d9630b90e7be434ec69d5e79c1fbc62e7efb43c4a6ab"
+    "hex": "feaf0779e206dea7568498b9e79a1a4e0b91d3460bde7d705835b289c72d46c5"
   }
 }

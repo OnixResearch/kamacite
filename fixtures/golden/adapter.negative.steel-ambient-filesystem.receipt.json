@@ -16,10 +16,20 @@
         "algorithm": "blake3",
         "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
       },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
       "steel-module-descriptor": {
         "domain": "adapter",
         "algorithm": "blake3",
         "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
       },
       "steel-output-projection": {
         "domain": "projection",
@@ -52,11 +62,17 @@
         "domain": "source",
         "algorithm": "blake3",
         "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-stored-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "90b1b601eafb83518f3e65e1dcc38cffd2b946ff85405e301d5230d13aec24cb"
       }
     },
     "checked_laws": [
       "deny-undeclared-authority",
-      "host-function-dto-contract"
+      "host-function-dto-contract",
+      "steel-stored-evidence-explicitly-nonfresh"
     ],
     "diagnostics": [
       {
@@ -86,6 +102,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "92901d785aa8c4675975f6828791f8f248fd6e4bc9eae8907467fff5a41bbb48"
+    "hex": "ae6060e78a48fd0a7d672de49c72ff236df6bd7c8660083e3ec53afd4870af90"
   }
 }

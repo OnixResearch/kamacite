@@ -1,0 +1,98 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "adapter.positive.steel-declared-module",
+    "artifact_class": "adapter-receipt",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.findings.steel_execution.capability_enforcement]",
+      "r[kamacite.findings.steel_execution.fresh_probe]",
+      "r[kamacite.findings.steel_execution.runner_identity]",
+      "r[kamacite.findings.steel_execution.schema_conformance]",
+      "r[kamacite.steel_adapter_suite.capability_boundary.root_relative]",
+      "r[kamacite.steel_adapter_suite.positive_fixtures.declared_module]",
+      "r[kamacite.steel_adapter_suite.receipt_profile.source_module_identity]"
+    ],
+    "input_identities": {
+      "steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "e4543578b93ac7a0a9ee987d4e8d3956b3f5ecf6fc01634a66a034485e656116"
+      },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
+      "steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "b29599410bfd746b4ae08ccf6014c6cad36b7c32082777ad5032f22b670ba72e"
+      },
+      "steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "4c9dda26213535bb9864a9c59066a8bd8540796ae283c0bca5b0c7379a188052"
+      },
+      "steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      }
+    },
+    "output_identities": {
+      "computed-steel-evaluator": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "e4543578b93ac7a0a9ee987d4e8d3956b3f5ecf6fc01634a66a034485e656116"
+      },
+      "computed-steel-input": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "10b291d392b6999ffe4aa4661fb343fc371fca3bfb5bb4e8d8226fdf85743232"
+      },
+      "computed-steel-module-descriptor": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "computed-steel-output-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "4c9dda26213535bb9864a9c59066a8bd8540796ae283c0bca5b0c7379a188052"
+      },
+      "computed-steel-source": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-executed-probe-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "e373fbf8a3e4953097af0d4de2232a56e8a6edbe32b0229547623b9c4a7565b4"
+      }
+    },
+    "checked_laws": [
+      "declared-module-imports",
+      "host-function-dto-contract",
+      "root-relative-fixture-read",
+      "steel-executed-probe"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "declared module descriptor is not portable closure identity",
+      "not ambient module loading"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "88567427f4565691eb0e4a98bd8b2641cc393eeb94623e7a5baf96d7aad48aad"
+  }
+}

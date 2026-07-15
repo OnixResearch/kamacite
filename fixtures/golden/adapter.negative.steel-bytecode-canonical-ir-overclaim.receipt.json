@@ -14,10 +14,20 @@
         "algorithm": "blake3",
         "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
       },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
       "steel-module-descriptor": {
         "domain": "adapter",
         "algorithm": "blake3",
         "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "b7522ffb2957a2dc3bd09815fa66648e6c19798ffd0f90e77e4b9735a812df65"
       },
       "steel-output-projection": {
         "domain": "projection",
@@ -50,11 +60,17 @@
         "domain": "source",
         "algorithm": "blake3",
         "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-stored-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "c23f6b02d7558fac3943dc406a02105b4848314860c67e984374a6394b9aeca8"
       }
     },
     "checked_laws": [
       "bytecode-not-canonical-ir",
-      "host-function-dto-contract"
+      "host-function-dto-contract",
+      "steel-stored-evidence-explicitly-nonfresh"
     ],
     "diagnostics": [
       {
@@ -70,6 +86,15 @@
         "field": "steel.output_class",
         "message": "Steel bytecode, JSON strings, or evaluator-internal values are not canonical IR",
         "details": {}
+      },
+      {
+        "code": "malformed-projection-output",
+        "requirement_id": "r[kamacite.findings.steel_execution.schema_conformance]",
+        "field": "steel.output_bytes",
+        "message": "Steel output bytes do not satisfy the admitted content-addressed contract",
+        "details": {
+          "error": "malformed Steel DTO JSON: expected value at line 1 column 1"
+        }
       }
     ],
     "non_claims": [
@@ -79,6 +104,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "298c6466a39fe62d03db010dc828d8486a2a023199d159a446601bb013b7a1b2"
+    "hex": "95dc75f892f6199ed7146d44a75ce26c139f6f6ed35ab9e791b3fd6031eeb793"
   }
 }

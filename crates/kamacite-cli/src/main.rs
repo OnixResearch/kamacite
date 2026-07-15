@@ -2,6 +2,7 @@
 
 mod nickel_sandbox;
 mod root_io;
+mod steel_runner;
 
 use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, AstGrepAuditInput,
@@ -21,14 +22,15 @@ use kamacite_core::{
     NickelAdapterReceiptInput, NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile,
     PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION,
     PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
-    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelHostFunctionInput,
-    SteelOutputClass, TargetArtifactInput, UnsupportedClaimInput, ValenceExportConformance,
-    ValenceReceiptExportEnvelope, ValenceReceiptExportInput, ValidationVerdict,
-    admit_valence_conformance, build_manifest_generation_receipt, compute_identity,
-    docs_config_identity, evaluate_docs_action, export_function_address_valence_projection,
-    export_valence_receipt, fixture_expected_canonical_artifact, function_address_projection_json,
-    nickel_sandbox_profile, receipt_json, render_documentation_projection, validate_docs_config,
-    validate_documentation_render_output, validate_fixture_suite,
+    SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelExecutedProbeEvidence,
+    SteelExecutionEvidence, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
+    UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
+    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance,
+    build_manifest_generation_receipt, compute_identity, docs_config_identity,
+    evaluate_docs_action, export_function_address_valence_projection, export_valence_receipt,
+    fixture_expected_canonical_artifact, function_address_projection_json, nickel_sandbox_profile,
+    receipt_json, render_documentation_projection, resolve_steel_dto_contract,
+    validate_docs_config, validate_documentation_render_output, validate_fixture_suite,
     validate_function_address_receipt, validate_manifest_generation_receipt,
 };
 use nickel_sandbox::{
@@ -44,6 +46,9 @@ use std::io::{Seek, SeekFrom, Write};
 use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
 use std::process::{Command as ProcessCommand, Output};
+use steel_runner::{
+    STEEL_RUNNER_DESCRIPTOR, STEEL_RUNNER_PROFILE, SteelProbeRequest, run_steel_probe,
+};
 
 const DEFAULT_ROOT: &str = ".";
 const DEFAULT_MANIFEST: &str = "fixtures/manifest.json";
@@ -114,10 +119,10 @@ const NICKEL_EXECUTION_MODE_REFERENCE_EXPORT: &str = "reference-export";
 const NICKEL_EXECUTION_MODE_STORED_EVIDENCE: &str = "stored-evidence";
 const NICKEL_EXECUTION_MODE_SANDBOXED_REFERENCE_EXPORT: &str = "sandboxed-reference-export";
 const NICKEL_EXECUTION_MODE_STORED_SANDBOX_EVIDENCE: &str = "stored-sandbox-evidence";
-const DEFAULT_STEEL_EVALUATOR_DESCRIPTOR: &str =
-    "steel-dto-probe-shell:kamacite-cli-dto-profile-v1";
+const DEFAULT_STEEL_EVALUATOR_DESCRIPTOR: &str = STEEL_RUNNER_DESCRIPTOR;
 const STEEL_EXECUTION_MODE_DTO_PROBE: &str = "dto-probe";
 const STEEL_EXECUTION_MODE_STORED_EVIDENCE: &str = "stored-evidence";
+const STEEL_DTO_INPUT_PATH: &str = "fixtures/adapters/steel/dto-input.json";
 const GOLDEN_STATUS_MATCHED: &str = "matched";
 const GOLDEN_STATUS_UPDATED: &str = "updated";
 const GOLDEN_STATUS_NOT_DECLARED: &str = "not-declared";
@@ -2863,8 +2868,13 @@ fn run_validate_with_shells(
         .transpose()?;
     let suite = materialize_suite(&root, &manifest, nickel_shell.as_ref(), steel_shell)?;
     let fixture_report = validate_fixture_suite(&suite);
-    let golden_report =
-        check_golden_receipts(&root, &manifest.fixtures, &fixture_report.results, &args)?;
+    let golden_report = check_golden_receipts(
+        &root,
+        &manifest.fixtures,
+        &fixture_report.results,
+        &args,
+        steel_shell.is_some(),
+    )?;
     let goldens_passed = golden_report.iter().all(|result| {
         result.status == GOLDEN_STATUS_MATCHED || result.status == GOLDEN_STATUS_UPDATED
     });
@@ -3608,53 +3618,174 @@ fn materialize_steel_adapter_receipt(
         Some(path) => read_manifest_bytes(root, path)?,
         None => Vec::new(),
     };
-    let output_bytes = match parts.output_path {
-        Some(path) => read_manifest_bytes(root, path)?,
-        None => Vec::new(),
+    let execute_probe =
+        parts.execution_mode == STEEL_EXECUTION_MODE_DTO_PROBE && steel_shell.is_some();
+    let mut output_bytes = if execute_probe {
+        Vec::new()
+    } else {
+        match parts.output_path {
+            Some(path) => read_manifest_bytes(root, path)?,
+            None => Vec::new(),
+        }
     };
     let module_descriptor_bytes = read_manifest_bytes(root, parts.module_descriptor_path)?;
+    let input_bytes = if execute_probe {
+        read_manifest_bytes(root, STEEL_DTO_INPUT_PATH)?
+    } else {
+        Vec::new()
+    };
+    let mut evaluator_profile = parts.evaluator_profile.to_string();
     let mut evaluator_descriptor = parts.evaluator_descriptor.to_string();
     let mut evaluator_identity = parts.evaluator_identity.clone();
-    if parts.execution_mode == STEEL_EXECUTION_MODE_DTO_PROBE {
-        if let Some(shell) = steel_shell {
-            evaluator_descriptor = shell.evaluator_descriptor.clone();
-            evaluator_identity = Some(compute_identity(
-                IdentityDomain::Evaluator,
-                evaluator_descriptor.as_bytes(),
-            ));
+    let mut input_identity = None;
+    let mut output_projection_identity = parts.output_projection_identity.clone();
+    let mut observed_host_functions = parts.observed_host_functions.to_vec();
+    let mut observed_effects = parts.observed_effects.to_vec();
+    let execution_evidence = if parts.execution_mode == STEEL_EXECUTION_MODE_DTO_PROBE {
+        match steel_shell {
+            Some(shell) => {
+                if shell.evaluator_descriptor != STEEL_RUNNER_DESCRIPTOR {
+                    return Err(CliError(
+                        "caller Steel evaluator descriptor does not match the admitted embedded runner"
+                            .to_string(),
+                    ));
+                }
+                let source_identity = require_steel_identity(
+                    parts.declared_source_identity,
+                    IdentityDomain::Source,
+                    &source_bytes,
+                    "source",
+                )?;
+                let module_identity = require_steel_identity(
+                    parts.module_identity,
+                    IdentityDomain::Adapter,
+                    &module_descriptor_bytes,
+                    "module descriptor",
+                )?;
+                let verified_input_identity =
+                    compute_identity(IdentityDomain::Projection, &input_bytes);
+                let run = run_steel_probe(SteelProbeRequest {
+                    source_bytes: &source_bytes,
+                    module_descriptor_bytes: &module_descriptor_bytes,
+                    input_bytes: &input_bytes,
+                    input_schema: parts.input_schema,
+                    output_schema: parts.output_schema,
+                    output_class: parts.output_class,
+                    host_functions: parts.host_functions,
+                    declared_builtin_modules: parts.declared_builtin_modules,
+                    declared_imports: parts.declared_imports,
+                    requested_imports: parts.requested_imports,
+                    declared_capabilities: parts.declared_capabilities,
+                })
+                .map_err(|error| CliError(format!("Steel probe execution failed: {error}")))?;
+                output_bytes = run.output_bytes;
+                observed_host_functions = run.observed_host_functions;
+                observed_effects = run.observed_effects;
+                evaluator_profile = STEEL_RUNNER_PROFILE.to_string();
+                evaluator_descriptor = STEEL_RUNNER_DESCRIPTOR.to_string();
+                let runner_identity =
+                    compute_identity(IdentityDomain::Evaluator, evaluator_descriptor.as_bytes());
+                evaluator_identity = Some(runner_identity.clone());
+                input_identity = Some(verified_input_identity.clone());
+                let output_identity = compute_identity(IdentityDomain::Projection, &output_bytes);
+                output_projection_identity = Some(output_identity.clone());
+                let input_contract = resolve_steel_dto_contract(parts.input_schema)
+                    .map_err(|error| CliError(error.to_string()))?;
+                let output_contract = resolve_steel_dto_contract(parts.output_schema)
+                    .map_err(|error| CliError(error.to_string()))?;
+                let output_byte_length = u64::try_from(output_bytes.len()).map_err(|error| {
+                    CliError(format!(
+                        "Steel output byte length conversion failed: {error}"
+                    ))
+                })?;
+                SteelExecutionEvidence::ExecutedProbe(Box::new(SteelExecutedProbeEvidence {
+                    runner_profile: evaluator_profile.clone(),
+                    runner_descriptor: evaluator_descriptor.clone(),
+                    runner_identity,
+                    source_identity,
+                    module_identity,
+                    input_identity: verified_input_identity,
+                    input_contract_identity: input_contract.identity,
+                    output_contract_identity: output_contract.identity,
+                    output_identity,
+                    declared_builtin_modules: parts.declared_builtin_modules.to_vec(),
+                    registered_host_functions: parts
+                        .host_functions
+                        .iter()
+                        .map(|function| function.function_id.clone())
+                        .collect(),
+                    observed_host_functions: observed_host_functions.clone(),
+                    enforced_capabilities: parts.declared_capabilities.to_vec(),
+                    observed_effects: observed_effects.clone(),
+                    exit_class: kamacite_core::STEEL_SUCCESS_EXIT_CLASS.to_string(),
+                    output_byte_length,
+                    authority_enforced: true,
+                    completed: true,
+                }))
+            }
+            None => SteelExecutionEvidence::StoredEvidence {
+                fresh: false,
+                output_identity: output_projection_identity.clone(),
+            },
         }
-    } else if parts.execution_mode != STEEL_EXECUTION_MODE_STORED_EVIDENCE {
+    } else if parts.execution_mode == STEEL_EXECUTION_MODE_STORED_EVIDENCE {
+        SteelExecutionEvidence::StoredEvidence {
+            fresh: false,
+            output_identity: output_projection_identity.clone(),
+        }
+    } else {
         return Err(CliError(format!(
             "unknown Steel execution mode: {}",
             parts.execution_mode
         )));
-    }
+    };
     Ok(SteelAdapterReceiptInput {
         schema_version: parts.schema_version,
         adapter_kind: parts.adapter_kind.to_string(),
         source_bytes,
         source_identity: parts.declared_source_identity.clone(),
-        evaluator_profile: parts.evaluator_profile.to_string(),
+        evaluator_profile,
         evaluator_descriptor,
         evaluator_identity,
         module_descriptor_bytes,
         module_identity: parts.module_identity.clone(),
+        input_bytes,
+        input_identity,
         input_schema: parts.input_schema.to_string(),
         output_schema: parts.output_schema.to_string(),
         host_functions: parts.host_functions.to_vec(),
-        observed_host_functions: parts.observed_host_functions.to_vec(),
+        observed_host_functions,
         declared_builtin_modules: parts.declared_builtin_modules.to_vec(),
         declared_imports: parts.declared_imports.to_vec(),
         requested_imports: parts.requested_imports.to_vec(),
         declared_capabilities: parts.declared_capabilities.to_vec(),
-        observed_effects: parts.observed_effects.to_vec(),
+        observed_effects,
         effect_class: parts.effect_class.to_string(),
         output_bytes,
-        output_projection_identity: parts.output_projection_identity.clone(),
+        output_projection_identity,
         output_class: parts.output_class.clone(),
         claims_canonical_ir: parts.claims_canonical_ir,
+        execution_evidence,
         checked_laws: parts.checked_laws.to_vec(),
     })
+}
+
+fn require_steel_identity(
+    declared_identity: &Option<Identity>,
+    domain: IdentityDomain,
+    bytes: &[u8],
+    label: &str,
+) -> CliResult<Identity> {
+    let declared_identity = declared_identity
+        .as_ref()
+        .ok_or_else(|| CliError(format!("executed Steel {label} is missing identity")))?;
+    let computed_identity = compute_identity(domain, bytes);
+    if declared_identity != &computed_identity {
+        return Err(CliError(format!(
+            "executed Steel {label} identity does not match exact admitted bytes"
+        )));
+    }
+    Ok(computed_identity)
 }
 
 fn run_nickel_version(command: &Path) -> CliResult<Vec<u8>> {
@@ -3708,11 +3839,34 @@ fn materialize_replay(
     }))
 }
 
+fn executed_steel_golden_path(
+    projection: &FixtureProjection,
+    default_golden_path: &str,
+    executed_steel: bool,
+) -> Option<String> {
+    if !executed_steel {
+        return None;
+    }
+    let PayloadProjection::SteelAdapterReceipt { execution_mode, .. } = &projection.payload else {
+        return None;
+    };
+    if execution_mode != STEEL_EXECUTION_MODE_DTO_PROBE {
+        return None;
+    }
+    const RECEIPT_SUFFIX: &str = ".receipt.json";
+    const EXECUTED_RECEIPT_SUFFIX: &str = ".executed.receipt.json";
+    Some(match default_golden_path.strip_suffix(RECEIPT_SUFFIX) {
+        Some(prefix) => format!("{prefix}{EXECUTED_RECEIPT_SUFFIX}"),
+        None => format!("{default_golden_path}{EXECUTED_RECEIPT_SUFFIX}"),
+    })
+}
+
 fn check_golden_receipts(
     root: &RootCapability,
     projections: &[FixtureProjection],
     results: &[kamacite_core::FixtureResult],
     args: &ValidateArgs,
+    executed_steel: bool,
 ) -> CliResult<Vec<GoldenResult>> {
     let result_by_id: BTreeMap<&str, &kamacite_core::FixtureResult> = results
         .iter()
@@ -3722,7 +3876,18 @@ fn check_golden_receipts(
     let mut updates = Vec::new();
 
     for projection in projections {
-        let Some(golden_path) = &projection.golden_receipt else {
+        let Some(default_golden_path) = projection.golden_receipt.as_ref() else {
+            golden_results.push(GoldenResult {
+                fixture_id: projection.id.clone(),
+                path: String::new(),
+                status: GOLDEN_STATUS_NOT_DECLARED.to_string(),
+            });
+            continue;
+        };
+        let executed_golden_path =
+            executed_steel_golden_path(projection, default_golden_path, executed_steel);
+        let golden_path = executed_golden_path.as_ref().unwrap_or(default_golden_path);
+        if golden_path.is_empty() {
             golden_results.push(GoldenResult {
                 fixture_id: projection.id.clone(),
                 path: String::new(),

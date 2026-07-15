@@ -14,10 +14,20 @@
         "algorithm": "blake3",
         "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
       },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
       "steel-module-descriptor": {
         "domain": "adapter",
         "algorithm": "blake3",
         "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
       },
       "steel-output-projection": {
         "domain": "source",
@@ -50,10 +60,16 @@
         "domain": "source",
         "algorithm": "blake3",
         "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-stored-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "d597ba672da5f0c020e7153e0e851ba30a81a3244badf78c6e0e8d93006746f2"
       }
     },
     "checked_laws": [
       "host-function-dto-contract",
+      "steel-stored-evidence-explicitly-nonfresh",
       "typed-output-identity-domain"
     ],
     "diagnostics": [
@@ -75,6 +91,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "8494cb4c13422849defc89eb34ce0fb7e16f34634f2d10d5e4ab28d63671d9c5"
+    "hex": "341a5ef84bb34834721e2c04096a2174f5b064b24c5857f1f860596249443f94"
   }
 }

@@ -19,6 +19,7 @@ mod nickel_sandbox;
 mod preserves_codec;
 mod proof_evidence;
 mod receipt;
+mod steel_execution;
 mod valence_export;
 
 pub use ast_grep_audit::{
@@ -125,6 +126,13 @@ pub use proof_evidence::{
     validate_trellis_proof_evidence_json_projection,
 };
 pub use receipt::{ReceiptBody, ReceiptEnvelope, ReceiptError, canonical_json_bytes, receipt_json};
+pub use steel_execution::{
+    STEEL_DTO_BYTECODE_SCHEMA, STEEL_DTO_CALLABLE_DESCRIPTOR_SCHEMA, STEEL_DTO_INTEGER_SCHEMA,
+    STEEL_DTO_MODULE_OUTPUT_SCHEMA, STEEL_EXECUTED_PROBE_KIND, STEEL_STORED_EVIDENCE_KIND,
+    STEEL_SUCCESS_EXIT_CLASS, SteelDtoContract, SteelDtoContractBody, SteelDtoShape, SteelDtoValue,
+    SteelDtoViolation, SteelExecutedProbeEvidence, SteelExecutionEvidence,
+    render_steel_probe_output, resolve_steel_dto_contract, validate_steel_dto,
+};
 pub use valence_export::{
     SourceSpan, SourceSpanSet, VALENCE_CONFORMANCE_CANONICAL_CODEC,
     VALENCE_CONFORMANCE_SCHEMA_VERSION, VALENCE_EXPORT_CANONICAL_CODEC,

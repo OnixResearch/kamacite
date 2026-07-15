@@ -12,6 +12,10 @@ use crate::preserves_codec::{
     PreservesSyntax, canonicalize_preserves, encode_typed_preserves,
 };
 use crate::receipt::{ReceiptBody, ReceiptEnvelope};
+use crate::steel_execution::{
+    STEEL_SUCCESS_EXIT_CLASS, SteelDtoValue, SteelExecutionEvidence, resolve_steel_dto_contract,
+    validate_steel_dto,
+};
 use crate::valence_export::{
     ValenceReceiptExportInput, export_identity_key, export_valence_receipt,
 };
@@ -98,6 +102,13 @@ const REQUIREMENT_STEEL_BYTECODE_NOT_IR: &str =
     "r[kamacite.steel_adapter_suite.output_boundary.bytecode_not_ir]";
 const REQUIREMENT_STEEL_CAPABILITY_BOUNDARY: &str =
     "r[kamacite.steel_adapter_suite.capability_boundary]";
+const REQUIREMENT_STEEL_FRESH_PROBE: &str = "r[kamacite.findings.steel_execution.fresh_probe]";
+const REQUIREMENT_STEEL_RUNNER_IDENTITY: &str =
+    "r[kamacite.findings.steel_execution.runner_identity]";
+const REQUIREMENT_STEEL_SCHEMA_CONFORMANCE: &str =
+    "r[kamacite.findings.steel_execution.schema_conformance]";
+const REQUIREMENT_STEEL_CAPABILITY_ENFORCEMENT: &str =
+    "r[kamacite.findings.steel_execution.capability_enforcement]";
 const REQUIREMENT_FSM_SPEC_VERSION: &str =
     "r[kamacite.lossless_ir.fsm_spec_vocabulary.unsupported_version]";
 const REQUIREMENT_FSM_SPEC_IDENTITY: &str = "r[kamacite.lossless_ir.fsm_spec_vocabulary.complete]";
@@ -435,6 +446,8 @@ pub struct SteelAdapterReceiptInput {
     pub evaluator_identity: Option<Identity>,
     pub module_descriptor_bytes: Vec<u8>,
     pub module_identity: Option<Identity>,
+    pub input_bytes: Vec<u8>,
+    pub input_identity: Option<Identity>,
     pub input_schema: String,
     pub output_schema: String,
     pub host_functions: Vec<SteelHostFunctionInput>,
@@ -449,6 +462,7 @@ pub struct SteelAdapterReceiptInput {
     pub output_projection_identity: Option<Identity>,
     pub output_class: SteelOutputClass,
     pub claims_canonical_ir: bool,
+    pub execution_evidence: SteelExecutionEvidence,
     pub checked_laws: Vec<String>,
 }
 
@@ -1981,6 +1995,7 @@ fn validate_steel_adapter_receipt(
     validate_steel_imports(input, accumulator);
     validate_steel_capabilities(input, accumulator);
     validate_steel_output(input, accumulator);
+    validate_steel_execution_evidence(input, accumulator);
     accumulator.checked_laws.extend(input.checked_laws.clone());
 }
 
@@ -2159,21 +2174,55 @@ fn validate_steel_dto_schemas(
     input: &SteelAdapterReceiptInput,
     accumulator: &mut ValidationAccumulator,
 ) {
-    if input.input_schema.is_empty() {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::IncompleteMetadata,
-            REQUIREMENT_STEEL_RECEIPT_PROFILE,
-            "steel.input_schema",
-            "Steel adapter receipts must declare an input DTO schema",
-        ));
+    let input_contract = resolve_steel_dto_contract(&input.input_schema);
+    let output_contract = resolve_steel_dto_contract(&input.output_schema);
+    match &input_contract {
+        Ok(contract) => {
+            accumulator.input_identities.insert(
+                "steel-input-contract".to_string(),
+                contract.identity.clone(),
+            );
+        }
+        Err(error) => accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedSchemaVersion,
+                REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+                "steel.input_schema",
+                "Steel input schema must resolve to an admitted content-addressed contract",
+            )
+            .with_detail("error", error.to_string()),
+        ),
     }
-    if input.output_schema.is_empty() {
-        accumulator.diagnostics.push(Diagnostic::new(
-            DiagnosticCode::IncompleteMetadata,
-            REQUIREMENT_STEEL_RECEIPT_PROFILE,
-            "steel.output_schema",
-            "Steel adapter receipts must declare an output DTO schema",
-        ));
+    match &output_contract {
+        Ok(contract) => {
+            accumulator.input_identities.insert(
+                "steel-output-contract".to_string(),
+                contract.identity.clone(),
+            );
+        }
+        Err(error) => accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::UnsupportedSchemaVersion,
+                REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+                "steel.output_schema",
+                "Steel output schema must resolve to an admitted content-addressed contract",
+            )
+            .with_detail("error", error.to_string()),
+        ),
+    }
+    if !input.input_bytes.is_empty() {
+        validate_steel_input_value(input, accumulator);
+    }
+    if let Err(error) = validate_steel_dto(&input.output_schema, &input.output_bytes) {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+                "steel.output_bytes",
+                "Steel output bytes do not satisfy the admitted content-addressed contract",
+            )
+            .with_detail("error", error.to_string()),
+        );
     }
     if input.effect_class.is_empty() {
         accumulator.diagnostics.push(Diagnostic::new(
@@ -2182,6 +2231,57 @@ fn validate_steel_dto_schemas(
             "steel.effect_class",
             "Steel adapter receipts must declare an effect class",
         ));
+    }
+}
+
+fn validate_steel_input_value(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let Some(input_identity) = &input.input_identity else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MissingInput,
+            REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+            "steel.input_identity",
+            "Steel input bytes must bind a projection-domain identity",
+        ));
+        return;
+    };
+    validate_identity_domain(
+        input_identity,
+        IdentityDomain::Projection,
+        "steel.input_identity",
+        accumulator,
+    );
+    let computed = compute_identity(IdentityDomain::Projection, &input.input_bytes);
+    accumulator
+        .output_identities
+        .insert("computed-steel-input".to_string(), computed.clone());
+    if input_identity != &computed {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+            "steel.input_identity",
+            "Steel input identity does not match exact input bytes",
+        ));
+    }
+    match validate_steel_dto(&input.input_schema, &input.input_bytes) {
+        Ok(SteelDtoValue::Integer(_)) => {}
+        Ok(_) => accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::MalformedProjectionOutput,
+            REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+            "steel.input_bytes",
+            "executed Steel DTO probes require the admitted integer input contract",
+        )),
+        Err(error) => accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::MalformedProjectionOutput,
+                REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
+                "steel.input_bytes",
+                "Steel input bytes do not satisfy the admitted content-addressed contract",
+            )
+            .with_detail("error", error.to_string()),
+        ),
     }
 }
 
@@ -2364,6 +2464,136 @@ fn validate_steel_output(
         ));
     }
     validate_steel_output_class(input, accumulator);
+}
+
+// r[impl kamacite.findings.steel_execution.fresh_probe]
+// r[impl kamacite.findings.steel_execution.runner_identity]
+// r[impl kamacite.findings.steel_execution.capability_enforcement]
+fn validate_steel_execution_evidence(
+    input: &SteelAdapterReceiptInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let evidence_bytes = match serde_json::to_vec(&input.execution_evidence) {
+        Ok(bytes) => bytes,
+        Err(error) => {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::MalformedProjectionOutput,
+                    REQUIREMENT_STEEL_FRESH_PROBE,
+                    "steel.execution_evidence",
+                    "Steel execution evidence must have a deterministic encoding",
+                )
+                .with_detail("error", error.to_string()),
+            );
+            return;
+        }
+    };
+    let evidence_identity = compute_identity(IdentityDomain::Adapter, &evidence_bytes);
+    match &input.execution_evidence {
+        SteelExecutionEvidence::StoredEvidence {
+            fresh,
+            output_identity,
+        } => {
+            accumulator
+                .checked_laws
+                .push("steel-stored-evidence-explicitly-nonfresh".to_string());
+            accumulator
+                .output_identities
+                .insert("steel-stored-evidence".to_string(), evidence_identity);
+            if *fresh || output_identity.as_ref() != input.output_projection_identity.as_ref() {
+                accumulator.diagnostics.push(Diagnostic::new(
+                    DiagnosticCode::StaleIdentity,
+                    REQUIREMENT_STEEL_FRESH_PROBE,
+                    "steel.execution_evidence",
+                    "stored Steel evidence must remain explicitly non-fresh and bind its prerecorded output",
+                ));
+            }
+        }
+        SteelExecutionEvidence::ExecutedProbe(evidence) => {
+            accumulator
+                .checked_laws
+                .push("steel-executed-probe".to_string());
+            accumulator.output_identities.insert(
+                "steel-executed-probe-evidence".to_string(),
+                evidence_identity,
+            );
+            validate_executed_steel_evidence(input, evidence, accumulator);
+        }
+    }
+}
+
+fn validate_executed_steel_evidence(
+    input: &SteelAdapterReceiptInput,
+    evidence: &crate::steel_execution::SteelExecutedProbeEvidence,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let runner_identity = compute_identity(
+        IdentityDomain::Evaluator,
+        evidence.runner_descriptor.as_bytes(),
+    );
+    let input_contract = resolve_steel_dto_contract(&input.input_schema).ok();
+    let output_contract = resolve_steel_dto_contract(&input.output_schema).ok();
+    let output_byte_length = u64::try_from(input.output_bytes.len()).ok();
+    let declared_host_functions = input
+        .host_functions
+        .iter()
+        .map(|function| function.function_id.clone())
+        .collect::<Vec<_>>();
+    let identity_edges_match = input.source_identity.as_ref() == Some(&evidence.source_identity)
+        && input.module_identity.as_ref() == Some(&evidence.module_identity)
+        && input.input_identity.as_ref() == Some(&evidence.input_identity)
+        && input.output_projection_identity.as_ref() == Some(&evidence.output_identity)
+        && input_contract
+            .as_ref()
+            .is_some_and(|contract| contract.identity == evidence.input_contract_identity)
+        && output_contract
+            .as_ref()
+            .is_some_and(|contract| contract.identity == evidence.output_contract_identity);
+    let runner_matches = evidence.runner_profile == input.evaluator_profile
+        && evidence.runner_descriptor == input.evaluator_descriptor
+        && evidence.runner_identity == runner_identity
+        && input.evaluator_identity.as_ref() == Some(&evidence.runner_identity);
+    let authority_matches = evidence.declared_builtin_modules == input.declared_builtin_modules
+        && evidence.registered_host_functions == declared_host_functions
+        && evidence.observed_host_functions == input.observed_host_functions
+        && evidence.enforced_capabilities == input.declared_capabilities
+        && evidence.observed_effects == input.observed_effects
+        && evidence.authority_enforced;
+    let completion_matches = evidence.completed
+        && evidence.exit_class == STEEL_SUCCESS_EXIT_CLASS
+        && output_byte_length == Some(evidence.output_byte_length);
+    if input.input_bytes.is_empty() || !identity_edges_match {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::StaleIdentity,
+            REQUIREMENT_STEEL_FRESH_PROBE,
+            "steel.execution_evidence.identity_edges",
+            "executed Steel evidence must bind exact source, module, input, contracts, and output",
+        ));
+    }
+    if !runner_matches {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UnsupportedEvaluatorIdentity,
+            REQUIREMENT_STEEL_RUNNER_IDENTITY,
+            "steel.execution_evidence.runner",
+            "executed Steel evidence must derive evaluator identity from the admitted runner",
+        ));
+    }
+    if !authority_matches {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::UndeclaredAuthority,
+            REQUIREMENT_STEEL_CAPABILITY_ENFORCEMENT,
+            "steel.execution_evidence.authority",
+            "executed Steel evidence does not match the shell-enforced module, function, and capability surface",
+        ));
+    }
+    if !completion_matches {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::IncompleteMetadata,
+            REQUIREMENT_STEEL_FRESH_PROBE,
+            "steel.execution_evidence.completion",
+            "executed Steel evidence must record a completed successful run and exact output length",
+        ));
+    }
 }
 
 fn validate_steel_output_class(
@@ -5090,6 +5320,7 @@ mod tests {
     const STEEL_SOURCE: &[u8] = b"(define (probe input) (kamacite.add-one input))\n";
     const STEEL_MODULE_DESCRIPTOR: &[u8] =
         b"{\"module\":\"kamacite.dto.probe\",\"imports\":[\"steel/base\"]}\n";
+    const STEEL_INPUT: &[u8] = b"{\"value\":1}\n";
     const STEEL_OUTPUT: &[u8] = b"{\"value\":2}\n";
     const MALFORMED_STEEL_OUTPUT: &[u8] = b"not-json\n";
     const STALE_STEEL_OUTPUT: &[u8] = b"{\"value\":1}\n";
@@ -5381,12 +5612,14 @@ mod tests {
                     IdentityDomain::Adapter,
                     STEEL_MODULE_DESCRIPTOR,
                 )),
-                input_schema: "kamacite.dto.input.integer-v1".to_string(),
-                output_schema: "kamacite.dto.output.integer-v1".to_string(),
+                input_bytes: STEEL_INPUT.to_vec(),
+                input_identity: Some(compute_identity(IdentityDomain::Projection, STEEL_INPUT)),
+                input_schema: crate::steel_execution::STEEL_DTO_INTEGER_SCHEMA.to_string(),
+                output_schema: crate::steel_execution::STEEL_DTO_INTEGER_SCHEMA.to_string(),
                 host_functions: vec![SteelHostFunctionInput {
                     function_id: STEEL_HOST_FUNCTION_ID.to_string(),
-                    input_schema: "kamacite.dto.input.integer-v1".to_string(),
-                    output_schema: "kamacite.dto.output.integer-v1".to_string(),
+                    input_schema: crate::steel_execution::STEEL_DTO_INTEGER_SCHEMA.to_string(),
+                    output_schema: crate::steel_execution::STEEL_DTO_INTEGER_SCHEMA.to_string(),
                     effect_class: "pure-dto".to_string(),
                     required_capabilities: vec![DTO_EVALUATION_CAPABILITY.to_string()],
                     checked_laws: vec!["host-function-dto-contract".to_string()],
@@ -5411,6 +5644,13 @@ mod tests {
                 )),
                 output_class: SteelOutputClass::Dto,
                 claims_canonical_ir: false,
+                execution_evidence: SteelExecutionEvidence::StoredEvidence {
+                    fresh: false,
+                    output_identity: Some(compute_identity(
+                        IdentityDomain::Projection,
+                        STEEL_OUTPUT,
+                    )),
+                },
                 checked_laws: vec![STEEL_ADAPTER_LAW.to_string()],
             })),
         }
@@ -5422,6 +5662,56 @@ mod tests {
         assert_eq!(result.observed_verdict, ValidationVerdict::Accepted);
         assert!(result.expectation_met);
         assert!(result.diagnostics.is_empty());
+    }
+
+    #[test]
+    fn rejects_stored_steel_evidence_relabelled_as_fresh() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.stored-relabeled-fresh".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload
+            && let SteelExecutionEvidence::StoredEvidence { fresh, .. } =
+                &mut input.execution_evidence
+        {
+            *fresh = true;
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(
+            result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| { diagnostic.requirement_id == REQUIREMENT_STEEL_FRESH_PROBE })
+        );
+    }
+
+    #[test]
+    fn rejects_steel_output_with_valid_json_but_wrong_contract_shape() {
+        let mut fixture = valid_steel_adapter_fixture();
+        fixture.id = "unit.steel.adapter.wrong-output-shape".to_string();
+        fixture.fixture_class = FixtureClass::Negative;
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SteelAdapterReceipt(input) = &mut fixture.payload {
+            input.output_bytes = br#"{"value":{"nested":2}}"#.to_vec();
+            input.output_projection_identity = Some(compute_identity(
+                IdentityDomain::Projection,
+                &input.output_bytes,
+            ));
+            input.execution_evidence = SteelExecutionEvidence::StoredEvidence {
+                fresh: false,
+                output_identity: input.output_projection_identity.clone(),
+            };
+        }
+
+        let result = validate_fixture(&fixture);
+
+        assert!(result.expectation_met);
+        assert!(result.diagnostics.iter().any(|diagnostic| {
+            diagnostic.requirement_id == REQUIREMENT_STEEL_SCHEMA_CONFORMANCE
+        }));
     }
 
     #[test]

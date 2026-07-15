@@ -6,6 +6,10 @@
     "artifact_class": "adapter-receipt",
     "verdict": "accepted",
     "requirement_ids": [
+      "r[kamacite.findings.steel_execution.capability_enforcement]",
+      "r[kamacite.findings.steel_execution.fresh_probe]",
+      "r[kamacite.findings.steel_execution.runner_identity]",
+      "r[kamacite.findings.steel_execution.schema_conformance]",
       "r[kamacite.steel_adapter_suite.capability_boundary.root_relative]",
       "r[kamacite.steel_adapter_suite.positive_fixtures.declared_module]",
       "r[kamacite.steel_adapter_suite.receipt_profile.source_module_identity]"
@@ -16,10 +20,20 @@
         "algorithm": "blake3",
         "hex": "b06189cdd31f3de2f7f0ee18640199bb287e54338b677bf092c07dd81cf80040"
       },
+      "steel-input-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "8acbb204d3f4ef283a3dd1920d6a1e0d397ede73c3affc607ec41be518b15db0"
+      },
       "steel-module-descriptor": {
         "domain": "adapter",
         "algorithm": "blake3",
         "hex": "4b849c53a6565ad8886186111f445c52ea6f9b96e0311d3f4703c401d2af4195"
+      },
+      "steel-output-contract": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "b29599410bfd746b4ae08ccf6014c6cad36b7c32082777ad5032f22b670ba72e"
       },
       "steel-output-projection": {
         "domain": "projection",
@@ -52,12 +66,18 @@
         "domain": "source",
         "algorithm": "blake3",
         "hex": "2e9351bf6cd31a2cfd9634f7aa02ee64ecdc04af552ea8aa53e5f1f3ddf073c4"
+      },
+      "steel-stored-evidence": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "0cc46885beb0523b5649c6d0e386f40794fc667fd3192c3f99eef4805512873a"
       }
     },
     "checked_laws": [
       "declared-module-imports",
       "host-function-dto-contract",
-      "root-relative-fixture-read"
+      "root-relative-fixture-read",
+      "steel-stored-evidence-explicitly-nonfresh"
     ],
     "diagnostics": [],
     "non_claims": [
@@ -68,6 +88,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "17f4dfd2037056b93bdbd59bffd84e6a1f7eca27e87260276098ab48abe9d206"
+    "hex": "42ecb06471b3d89a32de64cc34af0f3ef0f1088893e54961768e68dee65759d0"
   }
 }
