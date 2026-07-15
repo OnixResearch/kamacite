@@ -659,6 +659,7 @@ name = "kamacite-cli"
 version = "0.1.0"
 dependencies = [
  "kamacite-core",
+ "nickel-export-core",
  "rustix",
  "serde",
  "serde_json",
@@ -747,6 +748,16 @@ name = "memchr"
 version = "2.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
+
+[[package]]
+name = "nickel-export-core"
+version = "0.1.0"
+source = "git+https://github.com/OnixResearch/nickel-export?rev=710b6e03a8faf74f6afc6cc8ef36d7667958b70d#710b6e03a8faf74f6afc6cc8ef36d7667958b70d"
+dependencies = [
+ "blake3",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "num-bigint"

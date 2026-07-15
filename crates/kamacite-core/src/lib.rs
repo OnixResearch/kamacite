@@ -15,6 +15,7 @@ mod fixture;
 mod function_address;
 mod identity;
 mod manifest_freshness;
+mod nickel_preserves;
 mod nickel_sandbox;
 mod preserves_codec;
 mod proof_evidence;
@@ -100,6 +101,15 @@ pub use manifest_freshness::{
     MANIFEST_GENERATION_RECEIPT_SCHEMA, ManifestGenerationInput, ManifestGenerationReceipt,
     ManifestGenerationReceiptBody, ManifestGenerationValidation, build_manifest_generation_receipt,
     validate_manifest_generation_receipt,
+};
+pub use nickel_preserves::{
+    AdmittedNickelJsonExport, NICKEL_EXPORT_MANIFEST_SCHEMA_V3, NICKEL_EXPORT_RECEIPT_SCHEMA_V3,
+    NICKEL_PRESERVES_MAPPING_PROFILE, NICKEL_PRESERVES_PROFILE_SCHEMA,
+    NICKEL_PRESERVES_RECEIPT_SCHEMA, NICKEL_PRESERVES_ROOT_LABEL, NICKEL_PRESERVES_SCHEMA_VERSION,
+    NickelExportIdentity, NickelExportIdentityKind, NickelJsonPreservesRoot,
+    NickelJsonPreservesValue, NickelPreservesAdaptation, NickelPreservesError,
+    NickelPreservesLimits, NickelPreservesProfile, NickelPreservesReceipt,
+    NickelPreservesReceiptBody, adapt_admitted_nickel_json_export,
 };
 pub use nickel_sandbox::{
     NICKEL_SANDBOX_CPU_SECONDS, NICKEL_SANDBOX_DIAGNOSTIC_LIMIT_BYTES,

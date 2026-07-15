@@ -17,6 +17,7 @@
         "aarch64-linux"
       ];
       eachSystem = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+      nickelExportCargoHash = "sha256-QbvbyqFoqlR+eW4QgRiTZPhxTHuEpf30mrXCOmxJ0gk=";
     in
     {
       packages = eachSystem (
@@ -36,7 +37,10 @@
             pname = "kamacite";
             version = "0.1.0";
             src = self;
-            cargoLock.lockFile = ./Cargo.lock;
+            cargoLock = {
+              lockFile = ./Cargo.lock;
+              outputHashes."nickel-export-core-0.1.0" = nickelExportCargoHash;
+            };
             cargoBuildFlags = [
               "-p"
               "kamacite-cli"
@@ -125,7 +129,10 @@
             pname = "kamacite-tests";
             version = "0.1.0";
             src = self;
-            cargoLock.lockFile = ./Cargo.lock;
+            cargoLock = {
+              lockFile = ./Cargo.lock;
+              outputHashes."nickel-export-core-0.1.0" = nickelExportCargoHash;
+            };
             cargoBuildFlags = [
               "--workspace"
               "--all-targets"
@@ -138,7 +145,10 @@
             pname = "kamacite-clippy";
             version = "0.1.0";
             src = self;
-            cargoLock.lockFile = ./Cargo.lock;
+            cargoLock = {
+              lockFile = ./Cargo.lock;
+              outputHashes."nickel-export-core-0.1.0" = nickelExportCargoHash;
+            };
             nativeBuildInputs = [ pkgs.clippy ];
             buildPhase = ''
               runHook preBuild
@@ -230,6 +240,44 @@
             ${kamacite} validate --root . --manifest fixtures/manifest.json >fixture-validation.json
             touch $out
           '';
+
+          nickel-preserves-adapter =
+            pkgs.runCommand "kamacite-nickel-preserves-adapter"
+              {
+                nativeBuildInputs = [
+                  pkgs.diffutils
+                  pkgs.gnugrep
+                  pkgs.nickel
+                ];
+              }
+              ''
+                ${copySource}
+                nickel export --format json adapters/nickel-preserves/profile.ncl >profile.json
+                cmp profile.json adapters/nickel-preserves/generated/profile.json
+                ${kamacite} adapt nickel-export \
+                  --root . \
+                  --manifest fixtures/nickel-export/service-config/generated/manifest.json \
+                  --export examples/service-config/generated/service.json \
+                  --artifact fixtures/nickel-export/service-config/generated/service.json \
+                  --packed-output fixtures/nickel-export/service-config/generated/service.preserves \
+                  --text-output fixtures/nickel-export/service-config/generated/service.preserves.txt \
+                  --receipt fixtures/nickel-export/service-config/generated/service.kamacite-receipt.json \
+                  --check >nickel-preserves-validation.json
+                printf '\n' >>fixtures/nickel-export/service-config/generated/service.json
+                if ${kamacite} adapt nickel-export \
+                  --root . \
+                  --manifest fixtures/nickel-export/service-config/generated/manifest.json \
+                  --export examples/service-config/generated/service.json \
+                  --artifact fixtures/nickel-export/service-config/generated/service.json \
+                  --packed-output fixtures/nickel-export/service-config/generated/service.preserves \
+                  --receipt fixtures/nickel-export/service-config/generated/service.kamacite-receipt.json \
+                  --check >stale-artifact.out 2>&1; then
+                  echo "expected stale nickel-export artifact to fail" >&2
+                  exit 1
+                fi
+                grep -q "artifact verification failed" stale-artifact.out
+                touch $out
+              '';
 
           nickel-adapter-validation = pkgs.runCommand "kamacite-nickel-adapter-validation" { } ''
             ${copySource}

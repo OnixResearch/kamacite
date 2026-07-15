@@ -1,0 +1,25 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "nickel-export-adapter-receipt"
+  version: "v1"
+  schema-id: "kamacite.nickel-preserves-adapter-receipt.v1"
+  admitted-input: <nickel-export-json {
+    manifest-schema: "onix-nickel-export-manifest/v3"
+    receipt-schema: "onix-nickel-export-receipt/v3"
+    manifest-identity: "typed external b3 identity"
+    manifest-wire-identity: "adapter-domain BLAKE3 identity"
+    export-receipt-identity: "typed external b3 identity"
+    source-identity: "typed external b3 identity"
+    evaluator-artifact-identity: "typed external b3 identity"
+    evaluation-plan-identity: "typed external b3 identity"
+    json-output-identity: "typed external b3 identity over exact supplied bytes"
+  }>
+  mapped-value: <kamacite-nickel-json-value-v1 "closed JSON-compatible value alternative">
+  canonical-output: {
+    codec: "preserves-packed-canonical-v1"
+    packed-identity: "canonical-value-domain BLAKE3 identity"
+    review-text-identity: "projection-domain BLAKE3 identity"
+    authoritative-artifact: "packed Preserves bytes"
+  }
+  checked-laws: ["closed JSON alternatives" "deterministic object order" "one typed root owns canonical output" "packed/text value equivalence"]
+  non-claims: ["not arbitrary Nickel source losslessness" "not Nickel semantic equivalence" "not evaluator correctness" "review text is non-authoritative"]
+}>

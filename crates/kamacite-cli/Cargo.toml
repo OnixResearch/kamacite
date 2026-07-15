@@ -14,5 +14,6 @@ path = "src/main.rs"
 serde.workspace = true
 serde_json.workspace = true
 kamacite-core = { path = "../kamacite-core" }
+nickel-export-core.workspace = true
 rustix.workspace = true
 steel.workspace = true

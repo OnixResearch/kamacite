@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod nickel_preserves_adapter;
 mod nickel_sandbox;
 mod root_io;
 mod steel_runner;
@@ -33,6 +34,7 @@ use kamacite_core::{
     validate_docs_config, validate_documentation_render_output, validate_fixture_suite,
     validate_function_address_receipt, validate_manifest_generation_receipt,
 };
+use nickel_preserves_adapter::{AdaptMode, NickelPreservesCommand, run_nickel_preserves_command};
 use nickel_sandbox::{
     NickelSandboxFile, NickelSandboxRequest, inheritable_sandbox_data_file, resolve_command,
     run_nickel_sandbox, runtime_closure_paths, validate_enforcement_command_paths,
@@ -55,6 +57,7 @@ const DEFAULT_MANIFEST: &str = "fixtures/manifest.json";
 const DEFAULT_MANIFEST_SOURCE: &str = "fixtures/manifest.ncl";
 const DEFAULT_MANIFEST_CONTRACT: &str = "fixtures/manifest-contract.ncl";
 const DEFAULT_MANIFEST_GENERATION_RECEIPT: &str = "fixtures/manifest-generation-receipt.json";
+const DEFAULT_NICKEL_PRESERVES_PROFILE: &str = "adapters/nickel-preserves/generated/profile.json";
 const MANIFEST_SCHEMA_VERSION: u32 = 2;
 const DEFAULT_UPDATE_REPORT: &str = "target/kamacite-golden-update-receipt.json";
 const DEFAULT_VALENCE_EXPORT_UPDATE_REPORT: &str =
@@ -162,6 +165,7 @@ enum Command {
     Validate(ValidateArgs),
     ValidateNickelAdapter(NickelAdapterArgs),
     ValidateSteelAdapter(SteelAdapterArgs),
+    AdaptNickelExport(NickelPreservesCommand),
     HashFile(HashArgs),
     CheckManifestProjection(ManifestProjectionArgs),
     GenerateManifest(GenerateManifestArgs),
@@ -914,6 +918,7 @@ fn run() -> CliResult<i32> {
         Command::Validate(args) => run_validate(args),
         Command::ValidateNickelAdapter(args) => run_validate_nickel_adapter(args),
         Command::ValidateSteelAdapter(args) => run_validate_steel_adapter(args),
+        Command::AdaptNickelExport(args) => run_adapt_nickel_export(&args),
         Command::HashFile(args) => run_hash_file(args),
         Command::CheckManifestProjection(args) => run_check_manifest_projection(args),
         Command::GenerateManifest(args) => run_generate_manifest(args),
@@ -937,6 +942,7 @@ fn parse_command(args: Vec<String>) -> CliResult<Command> {
         "validate" => parse_validate_args(args_iter.collect()),
         "validate-nickel-adapter" => parse_nickel_adapter_args(args_iter.collect()),
         "validate-steel-adapter" => parse_steel_adapter_args(args_iter.collect()),
+        "adapt" => parse_adapt_command(args_iter.collect()),
         "hash-file" => parse_hash_args(args_iter.collect()),
         "check-manifest-projection" => parse_manifest_projection_args(args_iter.collect()),
         "generate-manifest" => parse_generate_manifest_args(args_iter.collect()),
@@ -1029,6 +1035,82 @@ fn parse_steel_adapter_args(args: Vec<String>) -> CliResult<Command> {
     Ok(Command::ValidateSteelAdapter(SteelAdapterArgs {
         validate,
         evaluator_descriptor,
+    }))
+}
+
+fn parse_adapt_command(args: Vec<String>) -> CliResult<Command> {
+    let mut index = args.into_iter();
+    let adapter = index
+        .next()
+        .ok_or_else(|| CliError("adapt requires an adapter name".to_string()))?;
+    if adapter != "nickel-export" {
+        return Err(CliError(format!("unsupported adapt command: {adapter}")));
+    }
+    parse_adapt_nickel_export_args(index.collect())
+}
+
+fn parse_adapt_nickel_export_args(args: Vec<String>) -> CliResult<Command> {
+    let mut root = PathBuf::from(DEFAULT_ROOT);
+    let mut manifest = None;
+    let mut selected_export = None;
+    let mut artifact = None;
+    let mut packed_output = None;
+    let mut text_output = None;
+    let mut receipt = None;
+    let mut profile = PathBuf::from(DEFAULT_NICKEL_PRESERVES_PROFILE);
+    let mut canonical_codec = PRESERVES_CANONICAL_CODEC.to_string();
+    let mut check = false;
+    let mut write = false;
+    let mut index = args.into_iter();
+    while let Some(flag) = index.next() {
+        match flag.as_str() {
+            "--root" => root = PathBuf::from(next_value(&mut index, "--root")?),
+            "--manifest" => manifest = Some(PathBuf::from(next_value(&mut index, "--manifest")?)),
+            "--export" => selected_export = Some(next_value(&mut index, "--export")?),
+            "--artifact" => artifact = Some(PathBuf::from(next_value(&mut index, "--artifact")?)),
+            "--packed-output" => {
+                packed_output = Some(PathBuf::from(next_value(&mut index, "--packed-output")?))
+            }
+            "--text-output" => {
+                text_output = Some(PathBuf::from(next_value(&mut index, "--text-output")?))
+            }
+            "--receipt" => receipt = Some(PathBuf::from(next_value(&mut index, "--receipt")?)),
+            "--profile" => profile = PathBuf::from(next_value(&mut index, "--profile")?),
+            "--codec" => canonical_codec = next_value(&mut index, "--codec")?,
+            "--check" => check = true,
+            "--write" => write = true,
+            _ => {
+                return Err(CliError(format!(
+                    "unknown adapt nickel-export option: {flag}"
+                )));
+            }
+        }
+    }
+    if check == write {
+        return Err(CliError(
+            "adapt nickel-export requires exactly one of --check or --write".to_string(),
+        ));
+    }
+    Ok(Command::AdaptNickelExport(NickelPreservesCommand {
+        root,
+        manifest: manifest
+            .ok_or_else(|| CliError("adapt nickel-export requires --manifest".to_string()))?,
+        selected_export: selected_export
+            .ok_or_else(|| CliError("adapt nickel-export requires --export".to_string()))?,
+        artifact: artifact
+            .ok_or_else(|| CliError("adapt nickel-export requires --artifact".to_string()))?,
+        packed_output: packed_output
+            .ok_or_else(|| CliError("adapt nickel-export requires --packed-output".to_string()))?,
+        text_output,
+        receipt: receipt
+            .ok_or_else(|| CliError("adapt nickel-export requires --receipt".to_string()))?,
+        profile,
+        canonical_codec,
+        mode: if check {
+            AdaptMode::Check
+        } else {
+            AdaptMode::Write
+        },
     }))
 }
 
@@ -2831,6 +2913,12 @@ fn resolve_nickel_execution_shell(
         limit_command,
         runtime_closure_paths,
     })
+}
+
+fn run_adapt_nickel_export(command: &NickelPreservesCommand) -> CliResult<i32> {
+    let report = run_nickel_preserves_command(command).map_err(CliError)?;
+    print_json_report(&report, "Nickel Preserves adapter report")?;
+    Ok(EXIT_SUCCESS)
 }
 
 fn run_validate_steel_adapter(args: SteelAdapterArgs) -> CliResult<i32> {

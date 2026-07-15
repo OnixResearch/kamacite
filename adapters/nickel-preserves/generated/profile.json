@@ -1,0 +1,45 @@
+{
+  "accepted_manifest_schemas": [
+    "onix-nickel-export-manifest/v3"
+  ],
+  "accepted_receipt_schemas": [
+    "onix-nickel-export-receipt/v3"
+  ],
+  "canonical_codec": "kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7",
+  "checked_laws": [
+    "exact-admitted-json-bytes-bound",
+    "closed-json-alternatives",
+    "deterministic-object-order",
+    "one-typed-value-owns-canonical-output",
+    "packed-and-text-value-equivalence"
+  ],
+  "limits": {
+    "max_collection_items": 4096,
+    "max_depth": 64,
+    "max_input_bytes": 1048576,
+    "max_numeric_lexeme_bytes": 128,
+    "max_output_bytes": 2097152,
+    "max_string_bytes": 262144,
+    "max_total_values": 65536
+  },
+  "mapping_profile": "nickel-json-to-preserves-v1",
+  "non_claims": [
+    "preserves only the decoded JSON-compatible export value",
+    "not arbitrary Nickel source losslessness or semantic equivalence",
+    "not evaluator correctness or import-closure completeness",
+    "not authorization, runtime behavior, or release eligibility",
+    "review text is non-authoritative and Markdown/AsciiDoc are outside this adapter"
+  ],
+  "numeric_policy": "signed-or-unsigned-64-bit-integers-only",
+  "object_order": "unicode-codepoint-lexicographic",
+  "output_classes": [
+    "canonical-packed-preserves",
+    "preserves-review-text",
+    "adapter-receipt"
+  ],
+  "preserves_root_label": "kamacite-nickel-json-value-v1",
+  "preserves_schema_version": "kamacite.nickel-json-value.v1",
+  "profile_id": "nickel-json-to-preserves-v1",
+  "schema_version": "kamacite.nickel-json-to-preserves-profile.v1",
+  "unicode_policy": "decoded-unicode-scalar-values"
+}

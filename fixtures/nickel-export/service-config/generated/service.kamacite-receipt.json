@@ -1,0 +1,87 @@
+{
+  "body": {
+    "schema_version": "kamacite.nickel-preserves-adapter-receipt.v1",
+    "manifest_identity": {
+      "kind": "manifest",
+      "b3": "b3:75d933143016518937e32629a414aae4da33917fd180e85c71b1bfdd6117051e"
+    },
+    "manifest_wire_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "0d5101668c1c86a6e8366cec62e04acdcb05225b19a25dcb68c3964a84cc6baf"
+    },
+    "export_receipt_identity": {
+      "kind": "export-receipt",
+      "b3": "b3:440307d72da443431cbce52c9da2083c61d0bbbad3591c8240494848a0853251"
+    },
+    "declared_input_identity": {
+      "kind": "declared-input",
+      "b3": "b3:da256293e85d14e9e1442c5d34b59830e67721e7932685a3b290c66b16990dd9"
+    },
+    "source_identity": {
+      "kind": "source",
+      "b3": "b3:916fc96fa74363bbc0d0c9e816644cc28077d65f16d883b0348bfe1b392d89d3"
+    },
+    "evaluator_label": "nixpkgs:nickel",
+    "evaluator_version": "nickel-lang-cli-1.17.0",
+    "evaluator_artifact_identity": {
+      "kind": "evaluator-artifact",
+      "b3": "b3:44110681fb63c5a68c4476d76bc6dbc86ae295e791bdc6125d02e8a4acb02d34"
+    },
+    "evaluation_plan_identity": {
+      "kind": "evaluation-plan",
+      "b3": "b3:9b750a661c4586fb0073d040418a284f5067b867b3f1e80808f30dbb22a9b054"
+    },
+    "json_output_identity": {
+      "kind": "json-output",
+      "b3": "b3:44a72061abc40f805df323c99d0bb0a54fff9eb2ac3b46c3783393c1ee2ef3e1"
+    },
+    "json_projection_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "44a72061abc40f805df323c99d0bb0a54fff9eb2ac3b46c3783393c1ee2ef3e1"
+    },
+    "mapping_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "6d062ccf5b7eb2c246938bcc158fd984a41c6f1133f100f6fdcf3a153df05425"
+    },
+    "canonical_codec_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3c8d99aab5f881c9683bac3b1b1e2ace0005455a546804b02178e64b086a9621"
+    },
+    "packed_preserves_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "fbc55d87ef2cac6c56e8ce47d6d33f860e8eed9e218b167fbe43918ed569326d"
+    },
+    "packed_output_bytes": 487,
+    "review_text_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "f373028ac7af01340be10be003c2d5abbf48c759f493f0baea5cf19842073781"
+    },
+    "checked_laws": [
+      "exact-admitted-json-bytes-bound",
+      "closed-json-alternatives",
+      "deterministic-object-order",
+      "one-typed-value-owns-canonical-output",
+      "packed-and-text-value-equivalence"
+    ],
+    "diagnostics": [],
+    "upstream_non_claim": "Nickel export success proves only exact declared input and output identities under the recorded evaluator descriptor; the declared input identity is not proof of a complete dependency closure or a safe cache key; the receipt does not prove deployability, product-policy conformance, evaluator equivalence, build success, or release eligibility",
+    "non_claims": [
+      "preserves only the decoded JSON-compatible export value",
+      "not arbitrary Nickel source losslessness or semantic equivalence",
+      "not evaluator correctness or import-closure completeness",
+      "not authorization, runtime behavior, or release eligibility",
+      "review text is non-authoritative and Markdown/AsciiDoc are outside this adapter"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "eab2f69b93ae56da5925d398fa7d3b42749aa1207f4d258a9d595644ec24cb30"
+  }
+}
