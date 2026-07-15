@@ -1206,29 +1206,60 @@ fn validate_canonical_input(
     descriptor: &WasmComponentDescriptor,
     input: &[u8],
 ) -> Result<Identity, WasmComponentDiagnostic> {
-    let mut limits = PreservesLimits::default();
-    let input_limit = usize::try_from(profile.runtime.profile.resources.max_hostcall_bytes)
-        .map_err(|error| {
-            WasmComponentDiagnostic::new("limit", "canonical_input", error.to_string())
-        })?;
-    limits.max_input_bytes = input_limit;
-    limits.max_output_bytes = input_limit;
-    let artifact = canonicalize_preserves(
+    validate_canonical_value(
+        profile,
+        &descriptor.input_schema,
         input,
+        "canonical_input",
+        "invalid-canonical-input",
+    )
+}
+
+pub fn validate_wasm_component_canonical_output(
+    request: &WasmComponentStaticRequest<'_>,
+    output: &[u8],
+) -> Result<Identity, WasmComponentValidationError> {
+    validate_wasm_component_static(request)?;
+    let profile =
+        serde_json::from_slice::<WasmComponentProfile>(request.profile_bytes).map_err(|error| {
+            single_error(WasmComponentDiagnostic::new(
+                "decode",
+                "profile",
+                error.to_string(),
+            ))
+        })?;
+    validate_canonical_value(
+        &profile,
+        &request.descriptor.output_schema,
+        output,
+        "canonical_output",
+        "invalid-canonical-output",
+    )
+    .map_err(single_error)
+}
+
+fn validate_canonical_value(
+    profile: &WasmComponentProfile,
+    schema: &WasmComponentSchemaRef,
+    bytes: &[u8],
+    field: &'static str,
+    error_code: &'static str,
+) -> Result<Identity, WasmComponentDiagnostic> {
+    let mut limits = PreservesLimits::default();
+    let byte_limit = usize::try_from(profile.runtime.profile.resources.max_hostcall_bytes)
+        .map_err(|error| WasmComponentDiagnostic::new("limit", field, error.to_string()))?;
+    limits.max_input_bytes = byte_limit;
+    limits.max_output_bytes = byte_limit;
+    let artifact = canonicalize_preserves(
+        bytes,
         PreservesSyntax::Packed,
         PreservesSchema {
-            schema_version: &descriptor.input_schema.schema_version,
-            root_label: &descriptor.input_schema.root_label,
+            schema_version: &schema.schema_version,
+            root_label: &schema.root_label,
         },
         limits,
     )
-    .map_err(|error| {
-        WasmComponentDiagnostic::new(
-            "invalid-canonical-input",
-            "canonical_input",
-            error.to_string(),
-        )
-    })?;
+    .map_err(|error| WasmComponentDiagnostic::new(error_code, field, error.to_string()))?;
     Ok(compute_identity(
         IdentityDomain::CanonicalValue,
         &artifact.packed_bytes,
@@ -1797,6 +1828,11 @@ mod tests {
                     crate::SourceSpanSet::Present { .. }
                 ));
             }
+            let output_identity = validate_wasm_component_canonical_output(&exact_request, &input)?;
+            assert_eq!(output_identity.domain, IdentityDomain::CanonicalValue);
+            assert!(
+                validate_wasm_component_canonical_output(&exact_request, b"malformed").is_err()
+            );
             let mut stale = receipt;
             stale.body.source_revision = "substituted".to_string();
             assert!(validate_wasm_component_static_receipt(&exact_request, &stale).is_err());

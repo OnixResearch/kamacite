@@ -192,7 +192,8 @@ pub use wasm_component::{
     WasmComponentSchemaRef, WasmComponentStaticReceipt, WasmComponentStaticReceiptBody,
     WasmComponentStaticRequest, WasmComponentStaticValidation, WasmComponentToolchain,
     WasmComponentValidationError, WasmComponentWitCohort, build_wasm_component_static_receipt,
-    validate_wasm_component_static, validate_wasm_component_static_receipt,
+    validate_wasm_component_canonical_output, validate_wasm_component_static,
+    validate_wasm_component_static_receipt,
 };
 pub use wasm_component_valence::{
     WASM_COMPONENT_VALENCE_PROJECTION_SCHEMA, WasmComponentValenceArtifact,

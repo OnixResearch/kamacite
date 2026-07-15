@@ -31,7 +31,7 @@ Live execution is intentionally unavailable. Mantle does not yet expose a real W
 
 A static-only decision can be encoded as `kamacite.wasm-component-static-receipt.v1`. Receipt construction reruns validation over the exact request rather than trusting a caller-assembled decision, binds optional component and inspection identities when materialization bytes exist, requires nonempty execution blockers, and cannot contain an execution plan or passing output claim. Component or inspection bytes without a materialization manifest fail as orphan artifacts.
 
-The deterministic Valence-friendly projection assigns only `recorded-only` or `boundary` verification classes, preserves typed descriptor parent edges and non-claims, records exact byte spans for byte-owning artifacts, and uses explicit absent-span reasons for identity-only layers. Projection linkage does not transfer Kamacite, Mantle, Aspen/Molten, Wasmtime, or Valence trust.
+The pure core can validate candidate output bytes against the exact static request's output schema and byte bound, but that check does not imply execution and cannot remove a blocker. The deterministic Valence-friendly projection assigns only `recorded-only` or `boundary` verification classes, preserves typed descriptor parent edges and non-claims, records exact byte spans for byte-owning artifacts, and uses explicit absent-span reasons for identity-only layers. Projection linkage does not transfer Kamacite, Mantle, Aspen/Molten, Wasmtime, or Valence trust.
 
 Until those exact external artifacts exist, Kamacite must not add a production component build fallback, relabel loose test bytes as Mantle output, instantiate Wasmtime, or issue a passing execution receipt.
 
