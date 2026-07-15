@@ -1,6 +1,6 @@
 # Packaging and Validation Rails Specification Delta
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Canonical Clippy restriction profile
 

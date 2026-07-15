@@ -107,6 +107,14 @@
           '';
           valenceConformanceIdentity = "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830";
           staleProjectionIdentity = "0000000000000000000000000000000000000000000000000000000000000000";
+          canonicalDeterminismClippyFlags = pkgs.lib.concatStringsSep " " [
+            "-D clippy::dbg_macro"
+            "-D clippy::mem_forget"
+            "-D clippy::undocumented_unsafe_blocks"
+            "-D clippy::multiple_unsafe_ops_per_block"
+            "-D clippy::host_endian_bytes"
+            "-D clippy::iter_over_hash_type"
+          ];
         in
         {
           package = self.packages.${system}.kamacite;
@@ -152,7 +160,7 @@
             nativeBuildInputs = [ pkgs.clippy ];
             buildPhase = ''
               runHook preBuild
-              cargo clippy --workspace --all-targets -- -D warnings
+              cargo clippy --workspace --all-targets -- -D warnings ${canonicalDeterminismClippyFlags}
               runHook postBuild
             '';
             installPhase = ''
@@ -174,11 +182,12 @@
               }
               ''
                 ${copySource}
-                if cargo clippy --manifest-path fixtures/clippy-negative/Cargo.toml -- -D warnings >clippy-negative.out 2>&1; then
-                  echo "expected forbidden hidden panic fixture to fail Clippy" >&2
+                if cargo clippy --manifest-path fixtures/clippy-negative/Cargo.toml -- -D warnings ${canonicalDeterminismClippyFlags} >clippy-negative.out 2>&1; then
+                  echo "expected hidden panic and restriction violations to fail Clippy" >&2
                   exit 1
                 fi
                 grep -q "expect_used" clippy-negative.out
+                grep -q "dbg_macro" clippy-negative.out
                 touch $out
               '';
 

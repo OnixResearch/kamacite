@@ -1,0 +1,13 @@
+--- octet evidence rail summary ---
+Rail: clippy-co-reporting
+Checker: clippy
+Status: passed
+Mode: run
+Workspace scope: .
+Input identity: b3:a4639915a4d58326a16e4bc17081314154ba0223a54b1e965f0e1738409b4a5a
+Finding counts:
+Non-claims:
+  - Clippy findings are complementary external hygiene evidence, not Octet source lint replacements
+  - source severity is preserved separately from Octet gate outcome
+Octet command: /home/brittonr/.cargo-target/debug/cargo-octet evidence collect --rail clippy-co-reporting --run --profile canonical-determinism --workspace-root . --artifact-dir cairn/changes/adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical --output-format human
+---

@@ -1,0 +1,70 @@
+{
+  "schema_version": "octet-evidence-rail-receipt/v1",
+  "rail_id": "clippy-co-reporting",
+  "checker_id": "clippy",
+  "mode": "run",
+  "command_argv": [
+    "cargo",
+    "clippy",
+    "--quiet",
+    "--workspace",
+    "--all-targets",
+    "--message-format=json",
+    "--",
+    "-D",
+    "clippy::dbg_macro",
+    "-D",
+    "clippy::mem_forget",
+    "-D",
+    "clippy::undocumented_unsafe_blocks",
+    "-D",
+    "clippy::multiple_unsafe_ops_per_block",
+    "-D",
+    "clippy::host_endian_bytes",
+    "-D",
+    "clippy::iter_over_hash_type"
+  ],
+  "workspace_scope": ".",
+  "config_path": "embedded:standards/clippy-restrictions/generated/profiles.json",
+  "config_identity": "b3:125e578fa37bfcb314108c80992df302b3dd2647df0f0d042c3ac205b82010cd",
+  "lockfile_identity": "b3:0adcdc0e9d1790afed249508c3d0a46a4b3a06eb4192a56d276ad2e774b8b9f8",
+  "checked_rule_families": [
+    "clippy-diagnostics",
+    "source-severity",
+    "octet-gate-outcome"
+  ],
+  "status": "passed",
+  "finding_counts": {},
+  "bounded_log_identity": "b3:a4639915a4d58326a16e4bc17081314154ba0223a54b1e965f0e1738409b4a5a",
+  "imported_input_identity": "b3:a4639915a4d58326a16e4bc17081314154ba0223a54b1e965f0e1738409b4a5a",
+  "profile": "canonical-determinism",
+  "tool_exit_code": 0,
+  "non_claims": [
+    "Clippy findings are complementary external hygiene evidence, not Octet source lint replacements",
+    "source severity is preserved separately from Octet gate outcome"
+  ],
+  "diagnostics": [],
+  "findings": [],
+  "parent_artifacts": [],
+  "clippy_restrictions": {
+    "profile": {
+      "profile_id": "canonical-determinism",
+      "summary": "Apply production restrictions plus explicit byte order and deterministic hash-collection iteration requirements.",
+      "lint_level": "deny",
+      "lints": [
+        "dbg_macro",
+        "mem_forget",
+        "undocumented_unsafe_blocks",
+        "multiple_unsafe_ops_per_block",
+        "host_endian_bytes",
+        "iter_over_hash_type"
+      ],
+      "claim_scope": "clippy-restriction-diagnostics",
+      "non_claims": [
+        "Clippy restriction diagnostics are compiler lint evidence and do not prove behavioral correctness, panic freedom, memory safety, runtime determinism, compiler correctness, formal proof, whole-program correctness, or release eligibility.",
+        "The profile checks direct compiled targets under the recorded command and toolchain; it does not establish transitive dependency behavior or targets omitted from that command."
+      ]
+    },
+    "profile_identity": "b3:359239a1d9a1f5081fba4515b4b0ca4ab01a3484ae222a85e07754563674d968"
+  }
+}
