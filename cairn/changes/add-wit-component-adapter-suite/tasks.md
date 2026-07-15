@@ -9,3 +9,7 @@
 - [ ] [parallel] Add deterministic Valence-friendly projection/conformance fixtures retaining layer identities, roles, spans, parent edges, and non-claims. r[kamacite.wasm_adapter.valence_export]
 - [ ] [parallel] Add positive Mantle-materialized Rust component round-trip/hostcall fixtures and negative incomplete/mismatched bundle, local production build, malformed/stale WIT, wrong-world, component-tamper, undeclared import/effect, missing authority, over-resource, invalid canonical input/output, stale receipt, and equivalence-overclaim fixtures. r[kamacite.wasm_adapter.materialization] r[kamacite.wasm_adapter.fixtures]
 - [ ] [depends:wasm-adapter-fixtures] Run focused core/shell tests, manifest freshness, positive/negative adapter validation, Valence export conformance, Octet checks, lifecycle validation, Cairn proposal/design/tasks gates, and the relevant flake checks. r[kamacite.wasm_adapter.validation]
+
+## Current external blocker
+
+The exact Aspen WIT/runtime cohort is pinned, but no Mantle producer or verifier currently supplies the required component materialization bundle. Test-only and caller-labeled production manifests remain `static-only`; production labels carry `external-materialization-verifier-unavailable`. Tasks requiring an executable plan, Wasmtime shell, execution receipts, production fixtures, or closeout remain blocked until Mantle publishes that verified handoff.

@@ -55,6 +55,12 @@ The first profile is experimental. Passing fixtures cannot make SpaceWasm the de
 - Runtime success cannot prove canonical source transformation or arbitrary adapter semantics.
 - Optional cross-stack evidence may be unavailable initially; missing evidence must remain a typed blocker, not a fabricated pass.
 
+## Current implementation boundary
+
+Mantle commit `a141fcbaafe41f9a413a81275a33fe915bfca370` now provides a complete, independently verifiable SpaceWasm reference bundle, and Octet commit `4367300e10740ecc99ba4b2171ace561b4787327` now provides a matching execution-free `spacewasm-mvp` report over the exact Mantle fixture module. Those external prerequisites are real but narrower than Kamacite's ABI: the module exports only hostless `run`, has no memory, and Octet's profile permits no imports or Kamacite allocation/invocation exports.
+
+Kamacite therefore admits the exact evidence only as static denial evidence. The pure core validates profile, descriptor, source, canonical input/output, typed parent identities, external bytes, canonical denial receipts, and bounded Valence projections, but it constructs no execution plan. The remaining materialization, runtime shell, execution-receipt, execution-fixture, and closeout tasks are blocked until Mantle materializes a Kamacite ABI guest module and Octet emits a matching exact-byte report under a profile that admits that ABI without weakening its reviewed SpaceWasm boundary.
+
 ## Non-Goals
 
 - No replacement for the WIT Component Model adapter suite.

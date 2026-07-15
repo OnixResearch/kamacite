@@ -70,6 +70,12 @@ The first suite should be deliberately narrow: a component consumes bounded cano
 - Wasmtime isolation is not complete authority or sandbox proof. Keep host functions deny-by-default and authority external.
 - Direct sibling crate dependencies can couple release cadence. Begin with profile/receipt fixtures and add direct dependencies only when stable APIs are required.
 
+## Current implementation boundary
+
+The exact Molten WIT/runtime profile at Aspen commit `62b02a3435a7000a85bbb6988a88f8afe5effbbb` is pinned and statically validated. Kamacite now validates descriptor/profile/WIT identities, parent edges, imports, canonical input, resource facts, optional materialization manifests, and canonical static-denial receipts without executing Wasmtime.
+
+No Mantle producer currently supplies the required WIT binding/component materialization bundle or an external verifier API for such a bundle. Test-only and caller-labeled production manifests remain `static-only`; the latter carries `external-materialization-verifier-unavailable`. Execution-plan construction, component-shell work, execution receipts, production fixtures, and closeout remain blocked until Mantle publishes and verifies that exact component handoff.
+
 ## Non-Goals
 
 - No Wasm canonical IR, arbitrary source translation, or Nickel/Rust/Steel semantic-equivalence claim.
