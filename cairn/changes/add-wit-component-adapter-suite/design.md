@@ -76,6 +76,8 @@ The exact Molten WIT/runtime profile at Aspen commit `62b02a3435a7000a85bbb6988a
 
 No Mantle producer currently supplies the required WIT binding/component materialization bundle or an external verifier API for such a bundle. Test-only and caller-labeled production manifests remain `static-only`; the latter carries `external-materialization-verifier-unavailable`. Execution-plan construction, component-shell work, execution receipts, production fixtures, and closeout remain blocked until Mantle publishes and verifies that exact component handoff.
 
+The cross-portfolio extraction review is recorded in `extraction-feasibility.md`. It classifies a smaller product-neutral static facts/admission vocabulary as **incubate / blocked for extraction** until two direct consumers, lossless mappings, an acyclic dependency shape, cross-consumer fixtures, independent release value, and explicit licensing authorization are proven.
+
 ## Non-Goals
 
 - No Wasm canonical IR, arbitrary source translation, or Nickel/Rust/Steel semantic-equivalence claim.
