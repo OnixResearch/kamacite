@@ -1,6 +1,7 @@
 use crate::{
-    Identity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema,
-    PreservesSyntax, canonicalize_preserves, compute_identity, encode_typed_preserves,
+    Blake3Hex, Identity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits,
+    PreservesSchema, PreservesSyntax, canonicalize_preserves, compute_identity,
+    encode_typed_preserves,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -10,7 +11,7 @@ pub const WASM_COMPONENT_PROFILE_SCHEMA: &str = "kamacite.wasm-component-static-
 pub const WASM_COMPONENT_PROFILE_ID: &str = "kamacite.wit-component-adapter.v1";
 pub const WASM_COMPONENT_DESCRIPTOR_SCHEMA: &str = "kamacite.wasm-component-descriptor.v1";
 pub const WASM_COMPONENT_MATERIALIZATION_SCHEMA: &str =
-    "mantle.component-materialization-bundle.v1";
+    "mantle-wasm-component-materialization-bundle-v1";
 pub const WASM_COMPONENT_RUNTIME_PROFILE_ID: &str = "molten.wasm.component.v1";
 pub const WASM_COMPONENT_STATIC_RECEIPT_SCHEMA: &str = "kamacite.wasm-component-static-receipt.v1";
 pub const WASM_COMPONENT_WIT_PACKAGE: &str = "molten:component-runtime@1.0.0";
@@ -37,8 +38,13 @@ const WASM_COMPONENT_MOLTEN_PROFILE_SCHEMA_VERSION: u32 = 1;
 const WASM_COMPONENT_PROFILE_SOURCE_LANGUAGE: &str = "nickel";
 const WASM_COMPONENT_RUNTIME_STRATEGY: &str = "portable-component";
 const WASM_COMPONENT_EVIDENCE_SCOPE: &str = "production";
-const WASM_COMPONENT_PRODUCER: &str = "mantle";
 const WASM_COMPONENT_STATIC_RECEIPT_ROOT: &str = "WasmComponentStaticReceiptBody";
+const WASM_COMPONENT_REQUIRED_RUNTIME_AUTHORITY_NON_CLAIM: &str = "not-runtime-authority";
+const WASM_COMPONENT_REQUIRED_RELEASE_ELIGIBILITY_NON_CLAIM: &str = "not-release-eligibility";
+const WASM_COMPONENT_MAX_WIT_INPUTS: usize = 256;
+const WASM_COMPONENT_MAX_PACKAGE_INPUTS: usize = 4_096;
+const WASM_COMPONENT_MAX_STAGE_RECEIPTS: usize = 64;
+const WASM_COMPONENT_MAX_MATERIALIZATION_NON_CLAIMS: usize = 64;
 const WASM_COMPONENT_FIXED_GROWTH: &str = "fixed";
 const WASM_COMPONENT_RECORDED_INPUTS: &str = "recorded-effects-only";
 const WASM_COMPONENT_BLAKE3_PREFIX: &str = "blake3:";
@@ -50,6 +56,16 @@ const WASM_COMPONENT_REQUIRED_FEATURES: &[&str] = &[
     "multi-value",
     "reference-types",
     "simd",
+];
+const WASM_COMPONENT_REQUIRED_MANTLE_STAGES: &[&str] = &[
+    "package-resolution",
+    "lock",
+    "binding-generation",
+    "compilation",
+    "composition",
+    "virtualization",
+    "build-validation",
+    "octet-validation",
 ];
 const WASM_COMPONENT_CHECKED_LAWS: &[&str] = &[
     "wit-source-identity-bound",
@@ -287,20 +303,70 @@ pub enum WasmComponentEvidenceScope {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct WasmComponentMantleStoreObject {
+    pub logical_path: String,
+    pub digest_blake3: String,
+    pub size_bytes: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct WasmComponentMantlePackageInput {
+    pub package: String,
+    pub version: String,
+    pub registry: String,
+    pub protocol_digest: String,
+    pub object: WasmComponentMantleStoreObject,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct WasmComponentMantleStageReceipt {
+    pub stage_key: String,
+    pub kind: String,
+    pub receipt_blake3: String,
+    pub receipt: WasmComponentMantleStoreObject,
+    pub artifact: Option<WasmComponentMantleStoreObject>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct WasmComponentMaterializationBundle {
-    pub schema_version: String,
-    pub producer: String,
-    pub evidence_scope: WasmComponentEvidenceScope,
-    pub component_identity: Identity,
-    pub component_byte_length: u64,
-    pub wit_identity: Identity,
-    pub wit_byte_length: u64,
-    pub runtime_profile_identity: Identity,
-    pub toolchain_cohort_identity: Identity,
-    pub octet_report_identity: Identity,
-    pub stage_receipt_identities: Vec<Identity>,
-    pub portable_component: bool,
-    pub contains_precompiled_bytes: bool,
+    pub schema: String,
+    pub name: String,
+    pub manifest_blake3: String,
+    pub cohort_blake3: String,
+    pub wit_inputs: Vec<WasmComponentMantleStoreObject>,
+    pub package_inputs: Vec<WasmComponentMantlePackageInput>,
+    pub source_closure: WasmComponentMantleStoreObject,
+    pub lock: WasmComponentMantleStoreObject,
+    pub final_portable: WasmComponentMantleStoreObject,
+    pub expected_octet_profile_blake3: String,
+    pub expected_runtime_profile_blake3: String,
+    pub stage_receipts: Vec<WasmComponentMantleStageReceipt>,
+    pub wizer: Option<serde_json::Value>,
+    pub aot: Option<serde_json::Value>,
+    pub non_claims: Vec<String>,
+    pub bundle_identity_blake3: String,
+}
+
+#[derive(Serialize)]
+struct WasmComponentMaterializationIdentityInput<'a> {
+    schema: &'a str,
+    name: &'a str,
+    manifest_blake3: &'a str,
+    cohort_blake3: &'a str,
+    wit_inputs: &'a [WasmComponentMantleStoreObject],
+    package_inputs: &'a [WasmComponentMantlePackageInput],
+    source_closure: &'a WasmComponentMantleStoreObject,
+    lock: &'a WasmComponentMantleStoreObject,
+    final_portable: &'a WasmComponentMantleStoreObject,
+    expected_octet_profile_blake3: &'a str,
+    expected_runtime_profile_blake3: &'a str,
+    stage_receipts: &'a [WasmComponentMantleStageReceipt],
+    wizer: &'a Option<serde_json::Value>,
+    aot: &'a Option<serde_json::Value>,
+    non_claims: &'a [String],
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -333,6 +399,26 @@ pub struct WasmComponentStaticRequest<'a> {
     pub materialization_manifest_bytes: Option<&'a [u8]>,
     pub component_bytes: Option<&'a [u8]>,
     pub inspection: Option<&'a WasmComponentInspection>,
+}
+
+#[derive(Clone, Debug)]
+pub struct WasmComponentMantleHandoffRequest<'a> {
+    pub bundle_bytes: &'a [u8],
+    pub selected_wit_bytes: &'a [u8],
+    pub portable_component_bytes: &'a [u8],
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct WasmComponentMantleHandoff {
+    pub bundle_identity: Identity,
+    pub manifest_identity: Identity,
+    pub cohort_identity: Identity,
+    pub selected_wit_identity: Identity,
+    pub portable_component_identity: Identity,
+    pub expected_octet_profile_identity: Identity,
+    pub expected_runtime_profile_identity: Identity,
+    pub stage_receipt_identities: Vec<Identity>,
+    pub non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -468,6 +554,67 @@ struct AdmittedProfile {
     wit_byte_length: u64,
 }
 
+// r[impl kamacite.wasm_adapter.materialization]
+// r[impl kamacite.wasm_adapter.functional_core]
+pub fn validate_wasm_component_mantle_handoff(
+    request: &WasmComponentMantleHandoffRequest<'_>,
+) -> Result<WasmComponentMantleHandoff, WasmComponentValidationError> {
+    let (bundle, bundle_identity) = parse_materialization(request.bundle_bytes)?;
+    let diagnostics = validate_mantle_handoff_objects(
+        &bundle,
+        request.selected_wit_bytes,
+        request.portable_component_bytes,
+    );
+    if !diagnostics.is_empty() {
+        return Err(validation_error(diagnostics));
+    }
+    let manifest_identity = identity_from_mantle_digest(
+        IdentityDomain::DependencyClosure,
+        "materialization.manifest_blake3",
+        &bundle.manifest_blake3,
+    )?;
+    let cohort_identity = identity_from_mantle_digest(
+        IdentityDomain::Compiler,
+        "materialization.cohort_blake3",
+        &bundle.cohort_blake3,
+    )?;
+    let expected_octet_profile_identity = identity_from_mantle_digest(
+        IdentityDomain::Adapter,
+        "materialization.expected_octet_profile_blake3",
+        &bundle.expected_octet_profile_blake3,
+    )?;
+    let expected_runtime_profile_identity = identity_from_mantle_digest(
+        IdentityDomain::Evaluator,
+        "materialization.expected_runtime_profile_blake3",
+        &bundle.expected_runtime_profile_blake3,
+    )?;
+    let stage_receipt_identities = bundle
+        .stage_receipts
+        .iter()
+        .map(|stage| {
+            identity_from_mantle_digest(
+                IdentityDomain::Receipt,
+                "materialization.stage_receipts.receipt_blake3",
+                &stage.receipt_blake3,
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(WasmComponentMantleHandoff {
+        bundle_identity,
+        manifest_identity,
+        cohort_identity,
+        selected_wit_identity: compute_identity(IdentityDomain::Source, request.selected_wit_bytes),
+        portable_component_identity: compute_identity(
+            IdentityDomain::TargetArtifact,
+            request.portable_component_bytes,
+        ),
+        expected_octet_profile_identity,
+        expected_runtime_profile_identity,
+        stage_receipt_identities,
+        non_claims: bundle.non_claims,
+    })
+}
+
 // r[impl kamacite.wasm_adapter.boundary]
 // r[impl kamacite.wasm_adapter.wit_identity]
 // r[impl kamacite.wasm_adapter.descriptor]
@@ -515,9 +662,7 @@ pub fn validate_wasm_component_static(
             }
         }
         Some(manifest_bytes) => {
-            let bundle = parse_materialization(manifest_bytes)?;
-            let bundle_identity =
-                compute_identity(IdentityDomain::DependencyClosure, manifest_bytes);
+            let (bundle, bundle_identity) = parse_materialization(manifest_bytes)?;
             materialization_bundle_identity = Some(bundle_identity.clone());
             diagnostics.extend(validate_materialization(
                 &admitted,
@@ -532,9 +677,6 @@ pub fn validate_wasm_component_static(
             if request.inspection.is_none() {
                 blockers.push(WasmComponentBlocker::MissingInspection);
             }
-            if bundle.evidence_scope == WasmComponentEvidenceScope::TestOnly {
-                blockers.push(WasmComponentBlocker::TestOnlyMaterialization);
-            }
             if let (Some(component_bytes), Some(inspection)) =
                 (request.component_bytes, request.inspection)
             {
@@ -545,9 +687,7 @@ pub fn validate_wasm_component_static(
                     component_bytes,
                     inspection,
                 ));
-                if diagnostics.is_empty()
-                    && bundle.evidence_scope == WasmComponentEvidenceScope::Production
-                {
+                if diagnostics.is_empty() {
                     blockers.push(WasmComponentBlocker::ExternalMaterializationVerifierUnavailable);
                 }
             }
@@ -1268,14 +1408,430 @@ fn validate_canonical_value(
 
 fn parse_materialization(
     bytes: &[u8],
-) -> Result<WasmComponentMaterializationBundle, WasmComponentValidationError> {
-    serde_json::from_slice(bytes).map_err(|error| {
-        single_error(WasmComponentDiagnostic::new(
-            "decode",
-            "materialization_bundle",
+) -> Result<(WasmComponentMaterializationBundle, Identity), WasmComponentValidationError> {
+    let bundle =
+        serde_json::from_slice::<WasmComponentMaterializationBundle>(bytes).map_err(|error| {
+            single_error(WasmComponentDiagnostic::new(
+                "decode",
+                "materialization_bundle",
+                error.to_string(),
+            ))
+        })?;
+    let mut diagnostics = validate_mantle_materialization_structure(&bundle);
+    let identity = materialization_bundle_identity(&bundle).map_err(single_error)?;
+    if bundle.bundle_identity_blake3 != identity.hex.as_str() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "stale-identity",
+            "materialization.bundle_identity_blake3",
+            "Mantle bundle identity differs from its canonical fields",
+        ));
+    }
+    if diagnostics.is_empty() {
+        Ok((bundle, identity))
+    } else {
+        Err(validation_error(diagnostics))
+    }
+}
+
+fn materialization_bundle_identity(
+    bundle: &WasmComponentMaterializationBundle,
+) -> Result<Identity, WasmComponentDiagnostic> {
+    let input = WasmComponentMaterializationIdentityInput {
+        schema: &bundle.schema,
+        name: &bundle.name,
+        manifest_blake3: &bundle.manifest_blake3,
+        cohort_blake3: &bundle.cohort_blake3,
+        wit_inputs: &bundle.wit_inputs,
+        package_inputs: &bundle.package_inputs,
+        source_closure: &bundle.source_closure,
+        lock: &bundle.lock,
+        final_portable: &bundle.final_portable,
+        expected_octet_profile_blake3: &bundle.expected_octet_profile_blake3,
+        expected_runtime_profile_blake3: &bundle.expected_runtime_profile_blake3,
+        stage_receipts: &bundle.stage_receipts,
+        wizer: &bundle.wizer,
+        aot: &bundle.aot,
+        non_claims: &bundle.non_claims,
+    };
+    let bytes = serde_json::to_vec(&input).map_err(|error| {
+        WasmComponentDiagnostic::new(
+            "encoding",
+            "materialization.bundle_identity_blake3",
             error.to_string(),
-        ))
-    })
+        )
+    })?;
+    Ok(compute_identity(IdentityDomain::DependencyClosure, &bytes))
+}
+
+fn validate_mantle_materialization_structure(
+    bundle: &WasmComponentMaterializationBundle,
+) -> Vec<WasmComponentDiagnostic> {
+    let mut diagnostics = Vec::new();
+    check_equal(
+        &mut diagnostics,
+        "materialization.schema",
+        bundle.schema.as_str(),
+        WASM_COMPONENT_MATERIALIZATION_SCHEMA,
+    );
+    if bundle.name.trim().is_empty() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "missing-field",
+            "materialization.name",
+            "Mantle bundle name must be nonempty",
+        ));
+    }
+    for (field, digest) in [
+        ("materialization.manifest_blake3", &bundle.manifest_blake3),
+        ("materialization.cohort_blake3", &bundle.cohort_blake3),
+        (
+            "materialization.expected_octet_profile_blake3",
+            &bundle.expected_octet_profile_blake3,
+        ),
+        (
+            "materialization.expected_runtime_profile_blake3",
+            &bundle.expected_runtime_profile_blake3,
+        ),
+        (
+            "materialization.bundle_identity_blake3",
+            &bundle.bundle_identity_blake3,
+        ),
+    ] {
+        validate_mantle_blake3(&mut diagnostics, field, digest);
+    }
+    validate_materialization_collection_bounds(bundle, &mut diagnostics);
+    validate_mantle_store_object(
+        &mut diagnostics,
+        "materialization.source_closure",
+        &bundle.source_closure,
+    );
+    validate_mantle_store_object(&mut diagnostics, "materialization.lock", &bundle.lock);
+    validate_mantle_store_object(
+        &mut diagnostics,
+        "materialization.final_portable",
+        &bundle.final_portable,
+    );
+    validate_mantle_inputs(bundle, &mut diagnostics);
+    validate_mantle_stage_receipts(bundle, &mut diagnostics);
+    validate_mantle_non_claims(bundle, &mut diagnostics);
+    for (field, optional) in [
+        ("materialization.wizer", &bundle.wizer),
+        ("materialization.aot", &bundle.aot),
+    ] {
+        if optional.as_ref().is_some_and(|value| !value.is_object()) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "malformed-field",
+                field,
+                "optional Mantle admission evidence must be an object",
+            ));
+        }
+    }
+    diagnostics
+}
+
+fn validate_materialization_collection_bounds(
+    bundle: &WasmComponentMaterializationBundle,
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+) {
+    let exceeds_bound = bundle.wit_inputs.len() > WASM_COMPONENT_MAX_WIT_INPUTS
+        || bundle.package_inputs.len() > WASM_COMPONENT_MAX_PACKAGE_INPUTS
+        || bundle.stage_receipts.len() > WASM_COMPONENT_MAX_STAGE_RECEIPTS
+        || bundle.non_claims.len() > WASM_COMPONENT_MAX_MATERIALIZATION_NON_CLAIMS;
+    if exceeds_bound {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "limit",
+            "materialization",
+            "Mantle bundle collection exceeds the admitted fixed bound",
+        ));
+    }
+    if bundle.wit_inputs.is_empty() || bundle.stage_receipts.is_empty() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "incomplete-materialization",
+            "materialization",
+            "Mantle bundle requires WIT inputs and stage receipts",
+        ));
+    }
+}
+
+fn validate_mantle_inputs(
+    bundle: &WasmComponentMaterializationBundle,
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+) {
+    if bundle.wit_inputs.len() <= WASM_COMPONENT_MAX_WIT_INPUTS {
+        for input in &bundle.wit_inputs {
+            validate_mantle_store_object(diagnostics, "materialization.wit_inputs", input);
+        }
+        if !bundle
+            .wit_inputs
+            .windows(2)
+            .all(|pair| pair[0].digest_blake3 <= pair[1].digest_blake3)
+        {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "unordered-collection",
+                "materialization.wit_inputs",
+                "Mantle WIT inputs must use canonical digest order",
+            ));
+        }
+    }
+    if bundle.package_inputs.len() <= WASM_COMPONENT_MAX_PACKAGE_INPUTS {
+        for input in &bundle.package_inputs {
+            if input.package.trim().is_empty()
+                || input.version.trim().is_empty()
+                || input.registry.trim().is_empty()
+            {
+                diagnostics.push(WasmComponentDiagnostic::new(
+                    "missing-field",
+                    "materialization.package_inputs",
+                    "Mantle package inputs require package, version, and registry",
+                ));
+            }
+            validate_mantle_sha256(
+                diagnostics,
+                "materialization.package_inputs.protocol_digest",
+                &input.protocol_digest,
+            );
+            validate_mantle_store_object(
+                diagnostics,
+                "materialization.package_inputs.object",
+                &input.object,
+            );
+        }
+        if !bundle.package_inputs.windows(2).all(|pair| {
+            (
+                &pair[0].package,
+                &pair[0].version,
+                &pair[0].object.digest_blake3,
+            ) <= (
+                &pair[1].package,
+                &pair[1].version,
+                &pair[1].object.digest_blake3,
+            )
+        }) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "unordered-collection",
+                "materialization.package_inputs",
+                "Mantle package inputs must use canonical package/version/digest order",
+            ));
+        }
+    }
+}
+
+fn validate_mantle_stage_receipts(
+    bundle: &WasmComponentMaterializationBundle,
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+) {
+    if bundle.stage_receipts.len() > WASM_COMPONENT_MAX_STAGE_RECEIPTS {
+        return;
+    }
+    let mut stage_keys = BTreeSet::new();
+    let mut receipt_identities = BTreeSet::new();
+    let mut stage_kinds = BTreeSet::new();
+    let mut previous_key: Option<&str> = None;
+    for stage in &bundle.stage_receipts {
+        if stage.stage_key.trim().is_empty() || !stage_keys.insert(stage.stage_key.as_str()) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "duplicate-or-empty-stage",
+                "materialization.stage_receipts",
+                "Mantle stage keys must be nonempty and unique",
+            ));
+        }
+        if previous_key.is_some_and(|previous| previous > stage.stage_key.as_str()) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "unordered-collection",
+                "materialization.stage_receipts",
+                "Mantle stage receipts must use canonical stage-key order",
+            ));
+        }
+        previous_key = Some(stage.stage_key.as_str());
+        if !receipt_identities.insert(stage.receipt_blake3.as_str()) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "duplicate-stage-receipt",
+                "materialization.stage_receipts",
+                "Mantle stage receipt identities must be unique",
+            ));
+        }
+        validate_mantle_blake3(
+            diagnostics,
+            "materialization.stage_receipts.receipt_blake3",
+            &stage.receipt_blake3,
+        );
+        validate_mantle_store_object(
+            diagnostics,
+            "materialization.stage_receipts.receipt",
+            &stage.receipt,
+        );
+        if stage.receipt.digest_blake3 != stage.receipt_blake3 {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "stale-identity",
+                "materialization.stage_receipts.receipt",
+                "Mantle receipt object digest differs from the declared receipt identity",
+            ));
+        }
+        if let Some(artifact) = &stage.artifact {
+            validate_mantle_store_object(
+                diagnostics,
+                "materialization.stage_receipts.artifact",
+                artifact,
+            );
+        }
+        stage_kinds.insert(stage.kind.as_str());
+    }
+    for required in WASM_COMPONENT_REQUIRED_MANTLE_STAGES {
+        if !stage_kinds.contains(required) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "missing-stage-receipt",
+                "materialization.stage_receipts",
+                format!("Mantle bundle omits required stage kind {required}"),
+            ));
+        }
+    }
+}
+
+fn validate_mantle_non_claims(
+    bundle: &WasmComponentMaterializationBundle,
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+) {
+    if bundle.non_claims.len() > WASM_COMPONENT_MAX_MATERIALIZATION_NON_CLAIMS {
+        return;
+    }
+    if sorted_unique(&bundle.non_claims) != bundle.non_claims {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "unordered-collection",
+            "materialization.non_claims",
+            "Mantle bundle non-claims must be sorted and unique",
+        ));
+    }
+    for required in [
+        WASM_COMPONENT_REQUIRED_RUNTIME_AUTHORITY_NON_CLAIM,
+        WASM_COMPONENT_REQUIRED_RELEASE_ELIGIBILITY_NON_CLAIM,
+    ] {
+        if !bundle.non_claims.iter().any(|value| value == required) {
+            diagnostics.push(WasmComponentDiagnostic::new(
+                "missing-non-claim",
+                "materialization.non_claims",
+                format!("Mantle bundle omits required non-claim {required}"),
+            ));
+        }
+    }
+}
+
+fn validate_mantle_store_object(
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+    field: &'static str,
+    object: &WasmComponentMantleStoreObject,
+) {
+    validate_mantle_blake3(diagnostics, field, &object.digest_blake3);
+    if !object.logical_path.starts_with('/') || object.size_bytes == 0 {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "invalid-materialization-object",
+            field,
+            "Mantle object requires an absolute locator and positive byte size",
+        ));
+    }
+}
+
+fn validate_mantle_blake3(
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+    field: &'static str,
+    digest: &str,
+) {
+    if let Err(error) = Blake3Hex::parse(digest) {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "invalid-blake3",
+            field,
+            error.to_string(),
+        ));
+    }
+}
+
+fn validate_mantle_sha256(
+    diagnostics: &mut Vec<WasmComponentDiagnostic>,
+    field: &'static str,
+    digest: &str,
+) {
+    const SHA256_PREFIX: &str = "sha256:";
+    let Some(hex) = digest.strip_prefix(SHA256_PREFIX) else {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "invalid-sha256",
+            field,
+            "Mantle package digest must use the sha256:<lowercase-hex> form",
+        ));
+        return;
+    };
+    if Blake3Hex::parse(hex).is_err() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "invalid-sha256",
+            field,
+            "Mantle package digest must use the sha256:<lowercase-hex> form",
+        ));
+    }
+}
+
+fn identity_from_mantle_digest(
+    domain: IdentityDomain,
+    field: &'static str,
+    digest: &str,
+) -> Result<Identity, WasmComponentValidationError> {
+    Blake3Hex::parse(digest)
+        .map(|hex| Identity::new(domain, hex))
+        .map_err(|error| {
+            single_error(WasmComponentDiagnostic::new(
+                "invalid-blake3",
+                field,
+                error.to_string(),
+            ))
+        })
+}
+
+fn validate_mantle_handoff_objects(
+    bundle: &WasmComponentMaterializationBundle,
+    selected_wit_bytes: &[u8],
+    portable_component_bytes: &[u8],
+) -> Vec<WasmComponentDiagnostic> {
+    let mut diagnostics = validate_mantle_wit_object(bundle, selected_wit_bytes);
+    diagnostics.extend(validate_mantle_portable_object(
+        bundle,
+        portable_component_bytes,
+    ));
+    diagnostics
+}
+
+fn validate_mantle_wit_object(
+    bundle: &WasmComponentMaterializationBundle,
+    selected_wit_bytes: &[u8],
+) -> Vec<WasmComponentDiagnostic> {
+    let measured = compute_identity(IdentityDomain::Source, selected_wit_bytes);
+    let measured_length = u64::try_from(selected_wit_bytes.len());
+    let matches = bundle.wit_inputs.iter().any(|input| {
+        input.digest_blake3 == measured.hex.as_str() && measured_length == Ok(input.size_bytes)
+    });
+    if matches {
+        Vec::new()
+    } else {
+        vec![WasmComponentDiagnostic::new(
+            "stale-identity",
+            "materialization.wit_inputs",
+            "selected WIT bytes and length do not match a Mantle WIT input",
+        )]
+    }
+}
+
+fn validate_mantle_portable_object(
+    bundle: &WasmComponentMaterializationBundle,
+    portable_component_bytes: &[u8],
+) -> Vec<WasmComponentDiagnostic> {
+    let measured = compute_identity(IdentityDomain::TargetArtifact, portable_component_bytes);
+    let measured_length = u64::try_from(portable_component_bytes.len());
+    if measured.hex.as_str() == bundle.final_portable.digest_blake3
+        && measured_length == Ok(bundle.final_portable.size_bytes)
+    {
+        Vec::new()
+    } else {
+        vec![WasmComponentDiagnostic::new(
+            "stale-identity",
+            "materialization.final_portable",
+            "portable component bytes and length differ from the Mantle final object",
+        )]
+    }
 }
 
 fn validate_materialization(
@@ -1286,97 +1842,41 @@ fn validate_materialization(
     component_bytes: Option<&[u8]>,
 ) -> Vec<WasmComponentDiagnostic> {
     let mut diagnostics = Vec::new();
-    check_equal(
-        &mut diagnostics,
-        "materialization.schema_version",
-        bundle.schema_version.as_str(),
-        WASM_COMPONENT_MATERIALIZATION_SCHEMA,
-    );
-    check_equal(
-        &mut diagnostics,
-        "materialization.producer",
-        bundle.producer.as_str(),
-        WASM_COMPONENT_PRODUCER,
-    );
-    validate_identity(
-        &mut diagnostics,
-        "materialization.component_identity",
-        &bundle.component_identity,
-        IdentityDomain::TargetArtifact,
-        Some(&descriptor.component_identity),
-    );
-    validate_identity(
-        &mut diagnostics,
-        "materialization.wit_identity",
-        &bundle.wit_identity,
-        IdentityDomain::Source,
-        Some(&admitted.wit_identity),
-    );
-    validate_identity(
-        &mut diagnostics,
-        "materialization.runtime_profile_identity",
-        &bundle.runtime_profile_identity,
-        IdentityDomain::Evaluator,
-        Some(&admitted.runtime_profile_identity),
-    );
-    validate_identity(
-        &mut diagnostics,
-        "materialization.toolchain_cohort_identity",
-        &bundle.toolchain_cohort_identity,
-        IdentityDomain::Compiler,
-        Some(&descriptor.toolchain_cohort_identity),
-    );
-    validate_identity(
-        &mut diagnostics,
-        "materialization.octet_report_identity",
-        &bundle.octet_report_identity,
-        IdentityDomain::Receipt,
-        None,
-    );
-    if bundle.stage_receipt_identities.is_empty()
-        || sorted_unique(&bundle.stage_receipt_identities) != bundle.stage_receipt_identities
-    {
-        diagnostics.push(WasmComponentDiagnostic::new(
-            "evidence-collection",
-            "materialization.stage_receipt_identities",
-            "Mantle stage receipt identities must be nonempty, sorted, and unique",
-        ));
-    }
-    for identity in &bundle.stage_receipt_identities {
-        validate_identity(
-            &mut diagnostics,
-            "materialization.stage_receipt_identities",
-            identity,
-            IdentityDomain::Receipt,
-            None,
-        );
-    }
-    if !bundle.portable_component || bundle.contains_precompiled_bytes {
-        diagnostics.push(WasmComponentDiagnostic::new(
-            "unsupported-artifact",
-            "materialization.portable_component",
-            "initial cohort requires portable component bytes and rejects precompiled bytes",
-        ));
-    }
     if descriptor.materialization_bundle_identity.as_ref() != Some(bundle_identity) {
         diagnostics.push(WasmComponentDiagnostic::new(
             "stale-identity",
             "descriptor.materialization_bundle_identity",
-            "descriptor does not bind the exact materialization manifest bytes",
+            "descriptor does not bind the canonical Mantle bundle identity",
+        ));
+    }
+    if bundle.final_portable.digest_blake3 != descriptor.component_identity.hex.as_str() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "stale-identity",
+            "materialization.final_portable",
+            "Mantle portable component identity differs from the descriptor",
+        ));
+    }
+    if bundle.expected_runtime_profile_blake3 != admitted.runtime_profile_identity.hex.as_str() {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "profile-mismatch",
+            "materialization.expected_runtime_profile_blake3",
+            "Mantle runtime profile identity differs from the admitted profile",
+        ));
+    }
+    let wit_matches = bundle.wit_inputs.iter().any(|input| {
+        input.digest_blake3 == admitted.wit_identity.hex.as_str()
+            && input.size_bytes == admitted.wit_byte_length
+    });
+    if !wit_matches {
+        diagnostics.push(WasmComponentDiagnostic::new(
+            "stale-identity",
+            "materialization.wit_inputs",
+            "Mantle WIT inputs do not include the admitted source bytes and length",
         ));
     }
     if let Some(component_bytes) = component_bytes {
-        let measured_identity = compute_identity(IdentityDomain::TargetArtifact, component_bytes);
+        diagnostics.extend(validate_mantle_portable_object(bundle, component_bytes));
         let measured_length = u64::try_from(component_bytes.len());
-        if measured_identity != bundle.component_identity
-            || measured_length != Ok(bundle.component_byte_length)
-        {
-            diagnostics.push(WasmComponentDiagnostic::new(
-                "stale-identity",
-                "component_bytes",
-                "component bytes differ from the materialization identity or length",
-            ));
-        }
         if measured_length
             .map(|length| {
                 length
@@ -1395,13 +1895,6 @@ fn validate_materialization(
                 "component bytes exceed the admitted profile bound",
             ));
         }
-    }
-    if bundle.wit_byte_length != admitted.wit_byte_length {
-        diagnostics.push(WasmComponentDiagnostic::new(
-            "stale-identity",
-            "materialization.wit_byte_length",
-            "WIT byte length differs from the admitted source bytes",
-        ));
     }
     diagnostics
 }
@@ -1422,7 +1915,7 @@ fn validate_inspection(
         IdentityDomain::TargetArtifact,
         Some(&measured),
     );
-    if inspection.component_identity != bundle.component_identity
+    if inspection.component_identity.hex.as_str() != bundle.final_portable.digest_blake3
         || inspection.component_identity != descriptor.component_identity
     {
         diagnostics.push(WasmComponentDiagnostic::new(
@@ -1645,6 +2138,14 @@ mod tests {
         include_bytes!("../../../adapters/wasm-component/upstream/molten-profile.json");
     const WIT_BYTES: &[u8] =
         include_bytes!("../../../adapters/wasm-component/upstream/runtime.wit");
+    const MANTLE_HELLO_BUNDLE_BYTES: &[u8] =
+        include_bytes!("../../../fixtures/wasm-component/mantle-hello/materialization-bundle.json");
+    const MANTLE_HELLO_WIT_BYTES: &[u8] =
+        include_bytes!("../../../fixtures/wasm-component/mantle-hello/selected-world.wit");
+    const MANTLE_HELLO_COMPONENT_BYTES: &[u8] =
+        include_bytes!("../../../fixtures/wasm-component/mantle-hello/normalized.wasm");
+    const MANTLE_HELLO_BUNDLE_BLAKE3: &str =
+        "604321e963f859feff992ae6f97ad37e506ec7c16af8e1101876835cbba12b65";
     const TEST_SCHEMA_VERSION: &str = "kamacite.wasm-component-test-value.v1";
     const TEST_ROOT_LABEL: &str = "TestValue";
 
@@ -1904,43 +2405,170 @@ mod tests {
         Ok(())
     }
 
+    // r[verify kamacite.wasm_adapter.materialization]
+    // r[verify kamacite.wasm_adapter.fixtures]
     #[test]
-    fn test_only_materialization_never_yields_an_executable_plan()
+    fn real_mantle_hello_bundle_crosses_the_schema_and_byte_boundary()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let request = WasmComponentMantleHandoffRequest {
+            bundle_bytes: MANTLE_HELLO_BUNDLE_BYTES,
+            selected_wit_bytes: MANTLE_HELLO_WIT_BYTES,
+            portable_component_bytes: MANTLE_HELLO_COMPONENT_BYTES,
+        };
+        let handoff = validate_wasm_component_mantle_handoff(&request)?;
+        assert_eq!(
+            handoff.bundle_identity.hex.as_str(),
+            MANTLE_HELLO_BUNDLE_BLAKE3
+        );
+        assert_eq!(
+            handoff.selected_wit_identity,
+            compute_identity(IdentityDomain::Source, MANTLE_HELLO_WIT_BYTES)
+        );
+        assert_eq!(
+            handoff.portable_component_identity,
+            compute_identity(IdentityDomain::TargetArtifact, MANTLE_HELLO_COMPONENT_BYTES)
+        );
+        assert!(
+            handoff
+                .non_claims
+                .iter()
+                .any(|value| value == WASM_COMPONENT_REQUIRED_RUNTIME_AUTHORITY_NON_CLAIM)
+        );
+
+        let mut tampered_component = MANTLE_HELLO_COMPONENT_BYTES.to_vec();
+        assert!(!tampered_component.is_empty());
+        tampered_component[0] ^= 1;
+        let tampered = validate_wasm_component_mantle_handoff(&WasmComponentMantleHandoffRequest {
+            bundle_bytes: MANTLE_HELLO_BUNDLE_BYTES,
+            selected_wit_bytes: MANTLE_HELLO_WIT_BYTES,
+            portable_component_bytes: &tampered_component,
+        });
+        assert!(tampered.is_err());
+        Ok(())
+    }
+
+    fn mantle_digest(bytes: &[u8]) -> String {
+        compute_identity(IdentityDomain::DependencyClosure, bytes)
+            .hex
+            .as_str()
+            .to_string()
+    }
+
+    fn mantle_object(
+        logical_path: &str,
+        bytes: &[u8],
+    ) -> Result<WasmComponentMantleStoreObject, std::num::TryFromIntError> {
+        Ok(WasmComponentMantleStoreObject {
+            logical_path: logical_path.to_string(),
+            digest_blake3: mantle_digest(bytes),
+            size_bytes: u64::try_from(bytes.len())?,
+        })
+    }
+
+    fn mantle_stage_receipts()
+    -> Result<Vec<WasmComponentMantleStageReceipt>, std::num::TryFromIntError> {
+        let mut receipts = WASM_COMPONENT_REQUIRED_MANTLE_STAGES
+            .iter()
+            .map(|kind| {
+                let receipt_bytes = format!("{kind}-receipt");
+                let receipt = mantle_object(
+                    &format!("/mantle/evidence/{kind}.json"),
+                    receipt_bytes.as_bytes(),
+                )?;
+                Ok(WasmComponentMantleStageReceipt {
+                    stage_key: (*kind).to_string(),
+                    kind: (*kind).to_string(),
+                    receipt_blake3: receipt.digest_blake3.clone(),
+                    receipt,
+                    artifact: None,
+                })
+            })
+            .collect::<Result<Vec<_>, std::num::TryFromIntError>>()?;
+        receipts.sort_by(|left, right| left.stage_key.cmp(&right.stage_key));
+        Ok(receipts)
+    }
+
+    fn mantle_bundle(
+        component_bytes: &[u8],
+    ) -> Result<WasmComponentMaterializationBundle, Box<dyn std::error::Error>> {
+        let mut bundle = WasmComponentMaterializationBundle {
+            schema: WASM_COMPONENT_MATERIALIZATION_SCHEMA.to_string(),
+            name: "kamacite-component-fixture".to_string(),
+            manifest_blake3: mantle_digest(b"manifest"),
+            cohort_blake3: mantle_digest(b"cohort"),
+            wit_inputs: vec![mantle_object(
+                "/mantle/inputs/selected-world.wit",
+                WIT_BYTES,
+            )?],
+            package_inputs: Vec::new(),
+            source_closure: mantle_object("/mantle/inputs/source", b"source closure")?,
+            lock: mantle_object("/mantle/inputs/wkg.lock", b"lock")?,
+            final_portable: mantle_object("/mantle/artifacts/normalized.wasm", component_bytes)?,
+            expected_octet_profile_blake3: mantle_digest(b"octet profile"),
+            expected_runtime_profile_blake3: mantle_digest(RUNTIME_PROFILE_BYTES),
+            stage_receipts: mantle_stage_receipts()?,
+            wizer: None,
+            aot: None,
+            non_claims: vec![
+                WASM_COMPONENT_REQUIRED_RELEASE_ELIGIBILITY_NON_CLAIM.to_string(),
+                WASM_COMPONENT_REQUIRED_RUNTIME_AUTHORITY_NON_CLAIM.to_string(),
+            ],
+            bundle_identity_blake3: mantle_digest(b"pending bundle identity"),
+        };
+        let identity = materialization_bundle_identity(&bundle)
+            .map_err(|diagnostic| std::io::Error::other(diagnostic.message))?;
+        bundle.bundle_identity_blake3 = identity.hex.as_str().to_string();
+        Ok(bundle)
+    }
+
+    fn materialized_request<'a>(
+        descriptor: &'a WasmComponentDescriptor,
+        input: &'a [u8],
+        bundle_bytes: &'a [u8],
+        component_bytes: &'a [u8],
+        inspection: &'a WasmComponentInspection,
+    ) -> WasmComponentStaticRequest<'a> {
+        WasmComponentStaticRequest {
+            profile_bytes: PROFILE_BYTES,
+            runtime_profile_bytes: RUNTIME_PROFILE_BYTES,
+            wit_bytes: WIT_BYTES,
+            descriptor,
+            canonical_input_bytes: input,
+            materialization_manifest_bytes: Some(bundle_bytes),
+            component_bytes: Some(component_bytes),
+            inspection: Some(inspection),
+        }
+    }
+
+    // r[verify kamacite.wasm_adapter.materialization]
+    // r[verify kamacite.wasm_adapter.fixtures]
+    #[test]
+    fn canonical_mantle_bundle_is_remeasured_but_remains_static_only()
     -> Result<(), Box<dyn std::error::Error>> {
         let input = canonical_input()?;
-        let component_bytes = b"test-only component bytes";
+        let component_bytes = b"portable component bytes";
         let component_identity = compute_identity(IdentityDomain::TargetArtifact, component_bytes);
-        let mut descriptor = descriptor(None)?;
+        let bundle = mantle_bundle(component_bytes)?;
+        let bundle_identity = materialization_bundle_identity(&bundle)
+            .map_err(|diagnostic| std::io::Error::other(diagnostic.message))?;
+        let bundle_bytes = serde_json::to_vec(&bundle)?;
+        let handoff = validate_wasm_component_mantle_handoff(&WasmComponentMantleHandoffRequest {
+            bundle_bytes: &bundle_bytes,
+            selected_wit_bytes: WIT_BYTES,
+            portable_component_bytes: component_bytes,
+        })?;
+        assert_eq!(handoff.bundle_identity, bundle_identity);
+        assert_eq!(
+            handoff.portable_component_identity.domain,
+            IdentityDomain::TargetArtifact
+        );
+        assert_eq!(
+            handoff.stage_receipt_identities.len(),
+            WASM_COMPONENT_REQUIRED_MANTLE_STAGES.len()
+        );
+        let mut descriptor = descriptor(Some(bundle_identity))?;
         descriptor.component_identity = component_identity.clone();
         descriptor.parent_edges = expected_edges(&descriptor);
-        let profile = runtime_profile()?.profile;
-        let toolchain = serde_json::to_vec(&profile.toolchain)?;
-        let bundle = WasmComponentMaterializationBundle {
-            schema_version: WASM_COMPONENT_MATERIALIZATION_SCHEMA.to_string(),
-            producer: WASM_COMPONENT_PRODUCER.to_string(),
-            evidence_scope: WasmComponentEvidenceScope::TestOnly,
-            component_identity: component_identity.clone(),
-            component_byte_length: u64::try_from(component_bytes.len())?,
-            wit_identity: compute_identity(IdentityDomain::Source, WIT_BYTES),
-            wit_byte_length: u64::try_from(WIT_BYTES.len())?,
-            runtime_profile_identity: compute_identity(
-                IdentityDomain::Evaluator,
-                RUNTIME_PROFILE_BYTES,
-            ),
-            toolchain_cohort_identity: compute_identity(IdentityDomain::Compiler, &toolchain),
-            octet_report_identity: compute_identity(IdentityDomain::Receipt, b"octet report"),
-            stage_receipt_identities: vec![compute_identity(
-                IdentityDomain::Receipt,
-                b"mantle stage",
-            )],
-            portable_component: true,
-            contains_precompiled_bytes: false,
-        };
-        let bundle_bytes = serde_json::to_vec(&bundle)?;
-        let bundle_identity = compute_identity(IdentityDomain::DependencyClosure, &bundle_bytes);
-        descriptor.materialization_bundle_identity = Some(bundle_identity);
-        descriptor.parent_edges = expected_edges(&descriptor);
-
         let inspection = WasmComponentInspection {
             artifact_kind: WASM_COMPONENT_ARTIFACT_KIND.to_string(),
             component_identity,
@@ -1958,78 +2586,123 @@ mod tests {
             memories: 1,
             tables: 0,
         };
-        let request = WasmComponentStaticRequest {
-            profile_bytes: PROFILE_BYTES,
-            runtime_profile_bytes: RUNTIME_PROFILE_BYTES,
-            wit_bytes: WIT_BYTES,
-            descriptor: &descriptor,
-            canonical_input_bytes: &input,
-            materialization_manifest_bytes: Some(&bundle_bytes),
-            component_bytes: Some(component_bytes),
-            inspection: Some(&inspection),
-        };
+        let request = materialized_request(
+            &descriptor,
+            &input,
+            &bundle_bytes,
+            component_bytes,
+            &inspection,
+        );
         let result = validate_wasm_component_static(&request);
         assert!(result.is_ok(), "{result:?}");
         if let Ok(result) = result {
             assert_eq!(result.state, WasmComponentPlanningState::StaticOnly);
             assert_eq!(
                 result.blockers,
-                vec![WasmComponentBlocker::TestOnlyMaterialization]
+                vec![WasmComponentBlocker::ExternalMaterializationVerifierUnavailable]
             );
             assert!(result.execution_plan.is_none());
             assert!(result.component_identity.is_some());
             assert!(result.inspection_identity.is_some());
         }
-        let test_receipt = build_wasm_component_static_receipt(&request)?;
-        assert!(test_receipt.body.component_identity.is_some());
-        assert!(test_receipt.body.inspection_identity.is_some());
-        let test_projection = crate::project_wasm_component_static_to_valence(&request)?;
+        let receipt = build_wasm_component_static_receipt(&request)?;
+        assert!(receipt.body.component_identity.is_some());
+        assert!(receipt.body.inspection_identity.is_some());
+        let projection = crate::project_wasm_component_static_to_valence(&request)?;
         assert!(
-            test_projection
+            projection
                 .body
                 .artifacts
                 .iter()
                 .any(|artifact| artifact.role == "portable-component")
         );
         assert!(
-            test_projection
+            projection
                 .body
                 .artifacts
                 .iter()
                 .any(|artifact| artifact.role == "component-inspection")
         );
+        Ok(())
+    }
 
-        let mut production_bundle = bundle;
-        production_bundle.evidence_scope = WasmComponentEvidenceScope::Production;
-        let production_bytes = serde_json::to_vec(&production_bundle)?;
-        let production_identity =
-            compute_identity(IdentityDomain::DependencyClosure, &production_bytes);
-        let mut production_descriptor = descriptor;
-        production_descriptor.materialization_bundle_identity = Some(production_identity);
-        production_descriptor.parent_edges = expected_edges(&production_descriptor);
-        let production_request = WasmComponentStaticRequest {
-            profile_bytes: PROFILE_BYTES,
-            runtime_profile_bytes: RUNTIME_PROFILE_BYTES,
-            wit_bytes: WIT_BYTES,
-            descriptor: &production_descriptor,
-            canonical_input_bytes: &input,
-            materialization_manifest_bytes: Some(&production_bytes),
-            component_bytes: Some(component_bytes),
-            inspection: Some(&inspection),
+    // r[verify kamacite.wasm_adapter.materialization]
+    // r[verify kamacite.wasm_adapter.fixtures]
+    #[test]
+    fn mantle_bundle_identity_receipt_links_and_portable_bytes_fail_closed()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let input = canonical_input()?;
+        let component_bytes = b"portable component bytes";
+        let component_identity = compute_identity(IdentityDomain::TargetArtifact, component_bytes);
+        let mut bundle = mantle_bundle(component_bytes)?;
+        let valid_identity = materialization_bundle_identity(&bundle)
+            .map_err(|diagnostic| std::io::Error::other(diagnostic.message))?;
+        let mut descriptor = descriptor(Some(valid_identity))?;
+        descriptor.component_identity = component_identity.clone();
+        descriptor.parent_edges = expected_edges(&descriptor);
+        let inspection = WasmComponentInspection {
+            artifact_kind: WASM_COMPONENT_ARTIFACT_KIND.to_string(),
+            component_identity,
+            wit_world: WASM_COMPONENT_WIT_WORLD.to_string(),
+            imports: Vec::new(),
+            exports: vec![WASM_COMPONENT_INVOKE_EXPORT.to_string()],
+            enabled_features: string_values(WASM_COMPONENT_REQUIRED_FEATURES),
+            fixed_memory: true,
+            initial_memory_bytes: 1,
+            maximum_memory_bytes: 1,
+            fixed_table: true,
+            initial_table_elements: 0,
+            maximum_table_elements: 0,
+            instances: 1,
+            memories: 1,
+            tables: 0,
         };
-        let production_result = validate_wasm_component_static(&production_request);
-        assert!(production_result.is_ok(), "{production_result:?}");
-        if let Ok(production_result) = production_result {
-            assert_eq!(
-                production_result.state,
-                WasmComponentPlanningState::StaticOnly
-            );
-            assert_eq!(
-                production_result.blockers,
-                vec![WasmComponentBlocker::ExternalMaterializationVerifierUnavailable]
-            );
-            assert!(production_result.execution_plan.is_none());
-        }
+
+        bundle.bundle_identity_blake3 = mantle_digest(b"tampered identity");
+        let stale_identity_bytes = serde_json::to_vec(&bundle)?;
+        let stale_identity_request = materialized_request(
+            &descriptor,
+            &input,
+            &stale_identity_bytes,
+            component_bytes,
+            &inspection,
+        );
+        assert!(validate_wasm_component_static(&stale_identity_request).is_err());
+
+        let mut broken_receipt_bundle = mantle_bundle(component_bytes)?;
+        broken_receipt_bundle.stage_receipts[0]
+            .receipt
+            .digest_blake3 = mantle_digest(b"different receipt bytes");
+        let rebuilt_identity = materialization_bundle_identity(&broken_receipt_bundle)
+            .map_err(|diagnostic| std::io::Error::other(diagnostic.message))?;
+        broken_receipt_bundle.bundle_identity_blake3 = rebuilt_identity.hex.as_str().to_string();
+        let broken_receipt_bytes = serde_json::to_vec(&broken_receipt_bundle)?;
+        let broken_receipt_request = materialized_request(
+            &descriptor,
+            &input,
+            &broken_receipt_bytes,
+            component_bytes,
+            &inspection,
+        );
+        assert!(validate_wasm_component_static(&broken_receipt_request).is_err());
+
+        let valid_bundle = mantle_bundle(component_bytes)?;
+        let valid_bytes = serde_json::to_vec(&valid_bundle)?;
+        let tampered_component_request = materialized_request(
+            &descriptor,
+            &input,
+            &valid_bytes,
+            b"tampered portable bytes",
+            &inspection,
+        );
+        assert!(validate_wasm_component_static(&tampered_component_request).is_err());
+        let tampered_handoff =
+            validate_wasm_component_mantle_handoff(&WasmComponentMantleHandoffRequest {
+                bundle_bytes: &valid_bytes,
+                selected_wit_bytes: WIT_BYTES,
+                portable_component_bytes: b"tampered portable bytes",
+            });
+        assert!(tampered_handoff.is_err());
         Ok(())
     }
 

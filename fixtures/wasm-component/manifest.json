@@ -11,23 +11,7 @@
       "fixture_id": "wasm-component.static.valid-without-materialization",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
-        "not Wasmtime correctness or sandbox completeness",
-        "not behavioral correctness or semantic equivalence",
-        "not release eligibility"
-      ]
-    },
-    {
-      "class": "positive-denial",
-      "expected_blockers": [
-        "test-only-materialization"
-      ],
-      "expected_diagnostic_codes": [],
-      "expected_state": "static-only",
-      "fixture_id": "wasm-component.static.test-only-materialization",
-      "non_claims": [
-        "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"
@@ -40,10 +24,26 @@
       ],
       "expected_diagnostic_codes": [],
       "expected_state": "static-only",
-      "fixture_id": "wasm-component.static.self-authored-production",
+      "fixture_id": "wasm-component.static.canonical-mantle-bundle",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
+        "not Wasmtime correctness or sandbox completeness",
+        "not behavioral correctness or semantic equivalence",
+        "not release eligibility"
+      ]
+    },
+    {
+      "class": "negative",
+      "expected_blockers": [],
+      "expected_diagnostic_codes": [
+        "stale-identity"
+      ],
+      "expected_state": "rejected",
+      "fixture_id": "wasm-component.negative.tampered-mantle-bundle-identity",
+      "non_claims": [
+        "not component execution",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"
@@ -59,7 +59,7 @@
       "fixture_id": "wasm-component.negative.stale-wit",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"
@@ -75,7 +75,7 @@
       "fixture_id": "wasm-component.negative.stale-runtime-profile",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"
@@ -92,7 +92,7 @@
       "fixture_id": "wasm-component.negative.ambient-wasi",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"
@@ -108,7 +108,7 @@
       "fixture_id": "wasm-component.negative.noncanonical-input",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"
@@ -124,7 +124,7 @@
       "fixture_id": "wasm-component.negative.semantic-overclaim",
       "non_claims": [
         "not component execution",
-        "not Mantle materialization evidence",
+        "not Mantle build correctness or stage-file verification",
         "not Wasmtime correctness or sandbox completeness",
         "not behavioral correctness or semantic equivalence",
         "not release eligibility"

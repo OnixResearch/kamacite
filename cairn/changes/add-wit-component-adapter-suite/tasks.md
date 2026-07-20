@@ -12,4 +12,4 @@
 
 ## Current external blocker
 
-The exact Aspen WIT/runtime cohort is pinned, but no Mantle producer or verifier currently supplies the required component materialization bundle. Test-only and caller-labeled production manifests remain `static-only`; production labels carry `external-materialization-verifier-unavailable`. Tasks requiring an executable plan, Wasmtime shell, execution receipts, production fixtures, or closeout remain blocked until Mantle publishes that verified handoff.
+Mantle now publishes the canonical `mantle-wasm-component-materialization-bundle-v1`, and Kamacite's pure handoff core validates its canonical identity and required links while remeasuring selected WIT and final portable bytes. The real Mantle hello fixture proves that bounded producer/consumer handoff but does not match the pinned Aspen/Molten WIT world or runtime profile. No independent Mantle file/verifier API or matching Molten adapter bundle exists yet, so execution plans, the Wasmtime shell, execution receipts, a positive adapter round trip, and closeout remain blocked with `external-materialization-verifier-unavailable`.

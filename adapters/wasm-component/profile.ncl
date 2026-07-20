@@ -105,7 +105,7 @@ let Profile = {
   },
   adapter = {
     descriptor_schema = "kamacite.wasm-component-descriptor.v1",
-    materialization_schema = "mantle.component-materialization-bundle.v1",
+    materialization_schema = "mantle-wasm-component-materialization-bundle-v1",
     artifact_kind = "component",
     invoke_export = "invoke",
     input_carrier = "canonical-preserves-bytes",

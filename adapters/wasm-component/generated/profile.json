@@ -16,7 +16,7 @@
     "initial_import_policy": "deny-all",
     "input_carrier": "canonical-preserves-bytes",
     "invoke_export": "invoke",
-    "materialization_schema": "mantle.component-materialization-bundle.v1",
+    "materialization_schema": "mantle-wasm-component-materialization-bundle-v1",
     "non_claims": [
       "WIT and WebAssembly are target artifacts, not Kamacite canonical IR",
       "static validation is not component execution or behavioral correctness",

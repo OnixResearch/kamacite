@@ -1,7 +1,7 @@
 let Contracts = import "contracts.ncl" in
 let NonClaims = [
   "not component execution",
-  "not Mantle materialization evidence",
+  "not Mantle build correctness or stage-file verification",
   "not Wasmtime correctness or sandbox completeness",
   "not behavioral correctness or semantic equivalence",
   "not release eligibility",
@@ -20,19 +20,19 @@ let Manifest = {
       non_claims = NonClaims,
     },
     {
-      fixture_id = "wasm-component.static.test-only-materialization",
-      class = "positive-denial",
-      expected_state = "static-only",
-      expected_blockers = ["test-only-materialization"],
-      expected_diagnostic_codes = [],
-      non_claims = NonClaims,
-    },
-    {
-      fixture_id = "wasm-component.static.self-authored-production",
+      fixture_id = "wasm-component.static.canonical-mantle-bundle",
       class = "positive-denial",
       expected_state = "static-only",
       expected_blockers = ["external-materialization-verifier-unavailable"],
       expected_diagnostic_codes = [],
+      non_claims = NonClaims,
+    },
+    {
+      fixture_id = "wasm-component.negative.tampered-mantle-bundle-identity",
+      class = "negative",
+      expected_state = "rejected",
+      expected_blockers = [],
+      expected_diagnostic_codes = ["stale-identity"],
       non_claims = NonClaims,
     },
     {
