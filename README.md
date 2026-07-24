@@ -1,169 +1,263 @@
 # Kamacite
 
-Kamacite is an OnixResearch repo for lossless interchange boundaries across Nickel, Rust, and Steel Scheme.
+Kamacite defines lossless interchange boundaries for Nickel, Rust, and Steel Scheme.
 
-The name comes from kamacite, a naturally occurring NiFe alloy found in meteoric iron: a compact metaphor for Nickel/Steel-adjacent materials sharing one stable interchange boundary.
+The name refers to a nickel and iron alloy. The project uses that name for a stable boundary between Nickel and Steel data.
 
-Kamacite is not a new programming language at this stage. Call it an interchange IR, source-envelope format, receipt contract, and constrained policy vocabulary. If Kamacite later grows a human-authored syntax with its own grammar, evaluator, type rules, and semantics, that bounded surface can be named a DSL; until then, calling Kamacite a language would overclaim what it proves.
+Kamacite is not a programming language. It currently provides these surfaces:
 
-Yes: Kamacite should use Preserves too. Preserves is the canonical encoded IR candidate for value-level interchange and source envelopes because plain JSON cannot preserve enough identity for this problem. Nickel exports, Rust Serde DTOs, and Steel data can all project through the Kamacite IR, but the IR must keep original source bytes and hashes when source fidelity matters.
+- an interchange IR
+- a source-envelope format
+- receipt contracts
+- constrained policy vocabularies
 
-## Losslessness classes
+A future human-authored syntax can be a DSL only after it defines a grammar, evaluator, type rules, and semantics.
+
+## Core model
+
+Preserves is the canonical encoded IR for values and source envelopes. Plain JSON cannot preserve enough identity for this boundary.
+
+Nickel exports, Rust Serde DTOs, and Steel data can project through Kamacite IR. When source fidelity matters, the IR retains source bytes and hashes.
+
+### Losslessness classes
 
 | Class | Claim | Boundary |
 |---|---|---|
-| Source envelope | Original Nickel/Rust/Steel bytes are preserved with BLAKE3 identity and parser metadata. | No arbitrary semantic equivalence claim. |
-| Canonical value | A Kamacite IR value round-trips through Preserves bytes and adapters. | Preserves bytes are authoritative; JSON is compatibility output. |
-| Constrained policy DSL | A policy authored in the Kamacite schema can render to Nickel/Rust/Steel adapters and round-trip back to the same IR. | Only for the constrained schema, not arbitrary host-language code. |
-| Unsupported source translation | Arbitrary Nickel, Rust, or Steel source is translated into another language. | Out of scope unless represented as preserved source plus explicit non-claims. |
+| Source envelope | Preserves original Nickel, Rust, or Steel bytes with BLAKE3 identity and parser metadata | Does not claim arbitrary semantic equivalence |
+| Canonical value | Round-trips one Kamacite IR value through Preserves bytes and adapters | Preserves bytes are authoritative, and JSON is a compatibility output |
+| Constrained policy DSL | Renders a schema-bound policy to adapters and returns the same IR | Applies only to the constrained schema |
+| Unsupported source translation | Translates arbitrary host-language source | Out of scope unless the source remains an envelope with explicit non-claims |
 
-## Reference IR hierarchy
+## Canonical authority
 
-Kamacite should use Preserves as the actual canonical IR/encoding authority and MLIR only as an architecture reference.
+Kamacite uses Preserves as its canonical IR and encoding authority. It uses MLIR only as an architecture reference.
 
-Adopt or adapt these MLIR ideas:
+Kamacite adapts these MLIR ideas:
 
-- dialect-like vocabularies for artifact classes and adapter surfaces;
-- verifier-style deterministic validation;
-- attributes/types as schema-bound metadata, not ambient state;
-- locations as source-envelope spans;
-- passes as receipt-producing transformations with explicit checked laws.
+- dialect-like vocabularies for artifact and adapter classes
+- deterministic verifier-style checks
+- schema-bound attributes and types
+- source-envelope spans as locations
+- receipt-producing transformations as passes
 
-Keep the roles explicit:
+The layers have separate roles:
 
-- Preserves: canonical Kamacite value, source-envelope, and receipt identity.
-- MLIR: architecture reference only; no MLIR textual or bytecode authority.
-- Valence Evidence IR: downstream evidence/export shape.
-- Unison: content-addressed identity discipline.
-- Kamacite-owned layered pipeline: source envelopes, canonical Preserves values, adapter descriptors, target artifacts, and receipts are separate layers with separate identities.
-- LLVM IR, WASM, GHC Core/STG, Rust MIR, bytecode, object files, and compiler reports: target/provenance evidence only.
+- **Preserves:** canonical value, source-envelope, and receipt identity
+- **MLIR:** architecture reference only
+- **Valence Evidence IR:** downstream evidence projection
+- **Unison:** content-identity design reference
+- **Kamacite pipeline:** envelopes, values, adapters, targets, and receipts
+- **Compiler artifacts:** target and provenance evidence only
 
-Kamacite should use that layered pattern directly rather than borrowing another language's IR. Human-authored sources stay source envelopes; canonical machine identity is Preserves; transformations are receipt-producing adapter steps; backend/compiler outputs are target artifacts with non-claims.
+Compiler artifacts include LLVM IR, WASM, GHC Core, STG, Rust MIR, bytecode, object files, and reports.
 
-## Canonical Preserves authority
+Human-authored source remains in source envelopes. Preserves owns canonical machine identity.
 
-Rust-owned canonical values, function-address receipts, evidence-chain envelopes, Trellis proof profiles, FSM artifacts, algebraic-effect artifacts, and documentation artifacts use the official `preserves` crate rather than labeled JSON. The canonical codec is `kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7`: supported text and packed transfer syntaxes decode through a bounded explicit-frame core, then identity is computed from canonical packed bytes.
+Adapter steps produce receipts. Compiler outputs remain target artifacts with explicit non-claims.
 
-Typed validation and canonical identity share one value. Fixture validators reject malformed input, unsupported root schemas, non-canonical packed input, hostile depth/collection/atom/value limits, and canonical bytes that disagree with the supplied typed artifact. Legacy prefixed-JSON identities are never reinterpreted as Preserves; they remain caveated compatibility evidence only.
+## Canonical Preserves codec
 
-The reviewed migration evidence is in `fixtures/preserves/migration-v1-real-codec.json`, with golden receipt changes in `fixtures/preserves/golden-update-v1-real-codec.json`. `migrate-preserves` is dry-run by default; `--update` performs bounded convergence passes so dependent receipt identities are regenerated after their canonical dependencies change.
+Rust-owned values and receipts use the official `preserves` crate. They do not use labeled JSON as canonical data.
 
-## Haskell-inspired discipline
+The canonical codec is:
 
-Kamacite should adapt Haskell's design discipline, not Haskell as a runtime or IR.
+```text
+kamacite-preserves-packed-canonical-v2-preserves-rs-5.0.0-rc.7
+```
 
-Adopt or adapt these principles:
+Supported text and packed syntaxes decode through a bounded explicit-frame core. Kamacite computes identity from canonical packed bytes.
 
-- Pure functional cores with thin effectful shells for IO, evaluators, compilers, clocks, randomness, credentials, and presentation.
-- Algebraic artifact modeling: source envelopes, canonical values, constrained policies, target artifacts, and unsupported claims are explicit alternatives.
-- Explicit effect/capability data instead of ambient authority.
-- Lawful adapter interfaces with positive, negative, and property-style fixtures.
-- Newtype-style identity separation for source, canonical value, projection, target artifact, adapter, evaluator, compiler, and receipt identities.
-- Total diagnostics instead of panics, silent defaults, truncation, or cross-domain coercions.
+Typed checks and canonical identity use the same value. Fixture checks reject these inputs:
 
-Do not adopt these by default:
+- malformed data
+- unsupported root schemas
+- noncanonical packed data
+- excessive depth, collection, atom, or value sizes
+- canonical bytes that disagree with the typed artifact
 
-- Haskell source, GHC Core, STG, bytecode, interface files, or generated Haskell artifacts as Kamacite canonical IR.
-- Lazy evaluation as a Kamacite semantic promise.
-- Typeclass-style implicit resolution across adapter boundaries.
-- Monad terminology in receipts unless it maps to explicit effect/capability claims.
+Legacy prefixed-JSON identities remain compatibility evidence. Kamacite never reinterprets them as Preserves identities.
 
-## Algebraic effect boundary
+Migration evidence is in these files:
 
-Kamacite should own algebraic effects as canonical data and receipts, not as a runtime.
+- `fixtures/preserves/migration-v1-real-codec.json`
+- `fixtures/preserves/golden-update-v1-real-codec.json`
 
-Owned surfaces:
+`migrate-preserves` uses dry-run mode by default. `--update` runs bounded convergence passes after canonical dependency identities change.
 
-- effect signatures with operation identities, parameter/result schemas, and replay class;
-- effect rows and summaries with discharged and residual operations;
-- handler descriptors with continuation policy, checked laws, replay profile, and non-claims;
-- handler-application receipts and effect-log projections with BLAKE3 identity.
+## Functional design
 
-Declaring an algebraic operation does not grant host authority. Filesystem, process, network, clock, random, device, credential, compiler, evaluator, and mutation access still require separate adapter/capability admission and fail closed when undeclared. Runtime systems such as the Aspen/Molten sibling may consume Kamacite effect descriptors and logs, but they do not own Kamacite's canonical effect model.
+Kamacite uses a pure functional core and thin effect shells. Shells own I/O, evaluators, compilers, clocks, randomness, credentials, and presentation.
 
-## WASM boundary
+The design uses these rules:
 
-Kamacite should not use WebAssembly as its canonical IR. Preserves remains the authority for canonical values, source envelopes, and receipt identity.
+- model artifact classes as explicit alternatives
+- represent effects and capabilities as data
+- give each identity domain a separate type
+- require positive, negative, and property fixtures
+- return complete diagnostics instead of panics or silent defaults
 
-WASM is a good later target for sandboxed adapters and portable validators. A WASM adapter should accept Kamacite IR or source-envelope bytes, run with declared capabilities only, and return a deterministic Kamacite receipt. WIT components and SpaceWasm core modules are distinct fail-closed profiles: neither may silently fall back to the other. Their ABIs do not replace the Preserves schema as the source of truth.
+Kamacite does not adopt Haskell source, GHC artifacts, lazy evaluation, implicit typeclass resolution, or monad terminology as IR authority.
 
-## LLVM boundary
+## Algebraic effects
 
-Kamacite should not use LLVM IR as its canonical IR. LLVM is a compiler target/provenance artifact, not a source-preserving interchange format.
+Kamacite stores algebraic effects as canonical data and receipts. It does not provide an effect runtime.
 
-LLVM can be useful later for compiled Rust or adapter evidence: record LLVM IR, bitcode, target triple, optimization level, compiler version, pass pipeline, debug-info availability, and BLAKE3 hashes as target-artifact receipts. Those receipts can help explain lowering/provenance, but they must not claim Nickel/Rust/Steel semantic equivalence or source losslessness. LLVM `poison`, `undef`, target-specific behavior, optimization instability, and toolchain-version sensitivity make it unsuitable as Kamacite's cross-language identity layer.
+Owned data includes these items:
 
-## Octet and Valence boundary
+- effect signatures and operation identities
+- parameter and result schemas
+- replay classes
+- effect rows and summaries
+- handler descriptors and checked laws
+- continuation and replay policy
+- handler receipts and effect-log projections
 
-Kamacite should use Valence closely at the evidence layer. Kamacite receipts should be easy to wrap as Valence Evidence IR artifacts with stable IDs, spans, roles, BLAKE3 hashes, and explicit non-claims. Valence remains the stack evidence/linkage authority; Kamacite owns source preservation, value interchange, adapter classification, and round-trip receipts.
+An operation declaration does not grant host authority. Every host capability requires separate adapter admission.
 
-Kamacite should use Octet closely as the checked Rust path once Rust crates exist. Octet should lint and collect provenance for Kamacite's Rust validators, adapters, fixture runners, and receipt code. Octet does not define Kamacite's IR, and Octet findings do not prove Nickel/Rust/Steel semantic equivalence.
+Undeclared capabilities fail closed. This rule covers files, processes, networks, clocks, randomness, devices, credentials, compilers, evaluators, and mutation.
 
-Initial coupling should be by exported receipts and fixtures, not hard dependencies. Add direct crate dependencies only after the receipt schemas stabilize and the integration needs tested APIs rather than reference behavior.
+Aspen or Molten can consume effect descriptors and logs. Those runtimes do not own the canonical Kamacite effect model.
 
-## Nickel integration boundary
+## Target boundaries
 
-Kamacite should integrate Nickel as a source language and adapter, not fork or reimplement Nickel semantics.
+### WebAssembly
 
-- Use the Nickel CLI or reference crates for checked export/evaluation fixtures.
-- Use Nickel source envelopes to preserve original `.ncl` bytes, parser identity, spans, and BLAKE3 source hashes.
-- Treat `nickel export` results as derived projections into Kamacite IR or compatibility JSON, not as source identity.
-- Adapt schema-to-Nickel-contract generation ideas for Kamacite's constrained policy vocabulary, while preserving non-claims when strict predicates are required.
-- Use tree-sitter Nickel for syntax/spans and editor-grade source indexing; do not treat syntax parsing as evaluation.
-- Use generated contract corpora, such as SchemaStore-derived contracts, as stress fixtures rather than as Kamacite-owned schema authority.
+WebAssembly is an optional adapter and validator target. It is not the canonical IR.
 
-## Steel integration boundary
+A WASM adapter accepts Kamacite IR or source-envelope bytes. It runs with declared capabilities and returns a deterministic Kamacite receipt.
 
-Kamacite should integrate Steel as a bounded adapter/probe language, not as the canonical IR and not as an ambient scripting environment.
+WIT components and SpaceWasm core modules are separate fail-closed profiles. Neither profile can fall back to the other.
 
-Adopt or adapt these Steel patterns:
+Their ABIs do not replace Preserves schemas.
 
-- `Engine` embedding for controlled evaluation fixtures, with evaluator/version identity recorded in receipts.
-- Rust `register_fn` / `IntoSteelVal` / `FromSteelVal` style typed host-function boundaries for Kamacite adapter ABIs.
-- Built-in module registration for explicitly declared Kamacite host functions.
-- Steel `provide`/`require` and contract exports as the model for module-boundary claims.
-- Higher-order contracts only when callables are descriptor-bound, hash-bound, and receipt-bound.
+### LLVM
 
-Do not adopt these by default:
+LLVM is a compiler target and provenance artifact. It is not a source-preserving interchange format.
 
-- Ambient filesystem, process, TCP, random, time, package, or dylib loading authority.
-- Steel bytecode as Kamacite IR.
-- Opaque Steel closures as portable values across Kamacite boundaries.
-- JSON serialization as anything more than a compatibility projection.
+An LLVM receipt binds these facts:
 
-A Steel adapter should consume Kamacite IR/source-envelope bytes or declared DTO values and emit a deterministic Kamacite receipt. Any host capability must be declared before evaluation and denied by default.
+- compiler version
+- target triple
+- optimization level
+- pass pipeline
+- debug-information availability
+- BLAKE3 artifact hashes
 
-## Unison-inspired identity boundary
+The receipt does not prove source losslessness or semantic equivalence. LLVM toolchain and target behavior prevent that broader claim.
 
-Kamacite should adapt Unison's content-addressed codebase ideas without becoming Unison or storing executable code as the source of truth.
+## Evidence boundaries
 
-Adopt or adapt these Unison patterns:
+Valence can wrap Kamacite receipts as Evidence IR. Valence owns stack evidence identity and linkage.
 
-- Content-addressed definitions: canonical Kamacite IR values and source envelopes get stable BLAKE3 identities over canonical content.
-- Names as metadata: human names, paths, aliases, and labels are review metadata, not identity.
-- Dependency-closure identity: receipts should bind dependency hashes and adapter/evaluator identities when a projection depends on other artifacts.
-- Ability/effect labels: adapter receipts should classify required effects/capabilities explicitly, like Unison abilities classify effectful computations.
-- Structured refactoring sessions: alias/name/schema migrations should be dry-run-first plans over identities, not text rewrites that imply semantic equivalence.
-- Typed durable storage envelopes: persisted Kamacite values should bind schema, codec, content hash, and non-claims before decoding.
+Kamacite retains source preservation, value interchange, adapter classes, and round-trip claims.
 
-Do not adopt these by default:
+Octet checks Kamacite Rust code and collects provenance. Octet does not define the IR or prove cross-language equivalence.
 
-- Unison's syntax tree hash as Kamacite's hash algorithm; Kamacite defaults to BLAKE3 over its own canonical bytes.
-- Unison's codebase database as Kamacite's storage model.
-- Unison Cloud/distributed execution or arbitrary computation shipping.
-- Typed serialization of arbitrary functions as a Kamacite promise.
+Initial integration uses exported receipts and fixtures. Direct crate dependencies require stable receipt schemas and tested API needs.
 
-## Current status
+## Nickel integration
 
-Kamacite has a first walking-skeleton validation harness and Rust core profile implementation:
+Kamacite treats Nickel as a source language and adapter. It does not reimplement Nickel semantics.
 
-- `crates/kamacite-core/` is the pure deterministic core for typed identities, source-envelope validation, canonical/target/adapter boundary checks, admitted Nickel JSON-to-Preserves mapping, fail-closed WIT component and SpaceWasm MVP static planning, canonical Mantle component-bundle handoff validation with a frozen real producer fixture, Steel DTO adapter profile checks, algebraic-effect artifact checks, FSM spec/receipt checks, documentation IR/output/cell/receipt checks, deterministic diagnostics, and receipt construction.
-- `crates/kamacite-cli/` is the thin fixture runner shell for manifest/file IO, explicit Nickel export adaptation plus Nickel and Steel execution modes, documentation fixture materialization, golden receipt comparison, and explicit update workflows. Every `--root` path is enforced through one Linux `openat2` directory capability with beneath/no-symlink resolution and handle-relative atomic replacement; unsupported platforms fail closed.
-- `schemas/preserves/` contains Kamacite-owned Preserves boundary schema artifacts for source envelopes, canonical values, adapter descriptors, Nickel export, WIT component, SpaceWasm core-MVP, and Steel adapter profiles, target artifacts, receipts, function-address receipts, generic evidence-chain envelopes, Trellis proof evidence profiles, dialect roundtrip reference profiles, Valence receipt exports, algebraic-effect artifacts, FSM spec/trace/exhaustiveness receipt artifacts, documentation IR/output/cell/receipt artifacts, language documentation facts, collection receipts, and WASM docs runner/receipt artifacts.
-- `fixtures/` contains the Nickel source manifest, its closed payload contract, the exact runtime JSON projection, a content-bound generation receipt, positive and negative fixture materials, admitted Nickel export manifests plus canonical Preserves outputs, bounded Steel adapter DTO/module/output fixtures, Valence export conformance/projection fixtures, FSM canonical bytes and checked receipts, documentation fixture materials, and checked golden receipts.
-- `docs/validation-harness.md`, `docs/rust-core-profile.md`, `docs/nickel-preserves-adapter.md`, `docs/wasm-component-adapter.md`, `docs/spacewasm-mvp-adapter.md`, `docs/deferred-adapter-suites.md`, `docs/function-address-receipts.md`, `docs/valence-receipt-export.md`, `docs/algebraic-effects-stack-roles.md`, `docs/fsm-spec-receipts.md`, `docs/runnable-docs-pipeline.md`, and `docs/autogenerated-docs-pipeline.md` describe the current executable boundary, Nickel export value adapter, function-address/proof evidence-chain boundary, Valence export profile, Steel DTO admission slice, FSM fixture slice, autogenerated documentation pipeline slice, and deferred integration suites.
+The integration follows these rules:
 
-Run normal validation through Kamacite's repo-owned package and development shell. The canonical Clippy gate adopts Octet's cherry-picked `canonical-determinism` restriction profile in addition to ordinary warnings; it never enables the blanket `clippy::restriction` group.
+- use the Nickel CLI or reference crates for evaluation fixtures
+- preserve `.ncl` bytes, parser identity, spans, and BLAKE3 hashes
+- treat `nickel export` output as a derived projection
+- generate contracts only for constrained policy vocabularies
+- use tree-sitter Nickel for syntax and spans, not evaluation
+- use generated contract corpora as stress fixtures, not schema authority
+
+## Steel integration
+
+Kamacite treats Steel as a bounded adapter and probe language. Steel is not the canonical IR or an ambient scripting environment.
+
+The integration can use these patterns:
+
+- controlled `Engine` fixtures with evaluator identity
+- typed Rust host-function registration
+- declared built-in modules
+- `provide`, `require`, and contract exports
+- descriptor-bound and hash-bound higher-order contracts
+
+By default, Steel receives no file, process, TCP, random, clock, package, or dynamic-library authority.
+
+Steel bytecode and opaque closures are not portable Kamacite values. JSON remains a compatibility projection.
+
+A Steel adapter consumes declared values or canonical bytes. It emits a deterministic receipt.
+
+## Identity discipline
+
+Canonical content owns identity. Names, paths, aliases, and labels are metadata.
+
+Kamacite uses BLAKE3 over its own canonical bytes. It does not adopt another language hash format or codebase database.
+
+Receipts bind dependency hashes and adapter identities. They also bind evaluator identities when a projection depends on evaluation.
+
+Schema and name migrations use dry-run-first plans over identities. Persisted values bind their schema, codec, hash, and non-claims.
+
+Kamacite does not promise distributed code execution or serialization of arbitrary functions.
+
+## Current implementation
+
+Kamacite has a validation harness and a Rust core profile.
+
+### `crates/kamacite-core/`
+
+The pure core provides these functions:
+
+- typed identities and source-envelope checks
+- canonical, target, and adapter boundary checks
+- admitted Nickel JSON-to-Preserves mapping
+- fail-closed WIT and SpaceWasm planning
+- Mantle component-bundle handoff checks
+- Steel DTO adapter checks
+- algebraic-effect and FSM artifact checks
+- documentation artifact checks
+- deterministic diagnostics and receipts
+
+### `crates/kamacite-cli/`
+
+The shell provides manifest and file I/O, evaluator execution, fixture materialization, receipt comparison, and explicit update workflows.
+
+On Linux, each `--root` uses one `openat2` directory capability. Child access stays beneath that root and rejects symlinks.
+
+Mutation uses handle-relative atomic replacement. Unsupported platforms fail closed.
+
+### `schemas/preserves/`
+
+This directory contains Kamacite-owned schemas for source envelopes, values, adapters, targets, receipts, effects, FSM artifacts, and documentation artifacts.
+
+It also contains schemas for function addresses, evidence chains, Trellis profiles, Valence exports, WIT, SpaceWasm, Steel, and WASM documentation artifacts.
+
+### `fixtures/`
+
+This directory contains Nickel sources, contracts, runtime projections, generation receipts, positive fixtures, and negative fixtures.
+
+It also contains Preserves outputs, Steel adapter data, Valence exports, FSM artifacts, documentation data, and checked golden receipts.
+
+### Documentation
+
+Read these documents for the implemented boundaries:
+
+- `docs/validation-harness.md`
+- `docs/rust-core-profile.md`
+- `docs/nickel-preserves-adapter.md`
+- `docs/wasm-component-adapter.md`
+- `docs/spacewasm-mvp-adapter.md`
+- `docs/deferred-adapter-suites.md`
+- `docs/function-address-receipts.md`
+- `docs/valence-receipt-export.md`
+- `docs/algebraic-effects-stack-roles.md`
+- `docs/fsm-spec-receipts.md`
+- `docs/runnable-docs-pipeline.md`
+- `docs/autogenerated-docs-pipeline.md`
+
+## Checks
+
+Run checks through the repository package and development shell. The Clippy gate adds Octet's selected canonical-determinism restrictions.
+
+It does not enable the full `clippy::restriction` group.
 
 ```bash
 nix develop . -c cargo test --workspace
@@ -194,7 +288,7 @@ nix flake check
 # The Clippy restriction profile is compiler source-shape evidence only; passing does not prove canonical semantics, runtime determinism, panic freedom, memory safety, compiler correctness, formal proof, whole-program correctness, or release eligibility.
 ```
 
-Run lifecycle validation through the packaged Cairn lifecycle tool input:
+Run lifecycle checks through the packaged Cairn input:
 
 ```bash
 nix run .#lifecycle-validate -- --root .
@@ -202,62 +296,75 @@ nix run .#lifecycle-validate -- --root .
 
 ## Non-claims
 
-Kamacite validation does not prove compiler correctness, evaluator soundness, verifier soundness, runtime behavior, authorization, or semantic equivalence of arbitrary programs. It proves only the bounded claim named by the artifact class and receipt.
+Kamacite checks do not prove these properties:
+
+- compiler or evaluator correctness
+- verifier correctness
+- runtime behavior
+- authorization
+- semantic equivalence of arbitrary programs
+
+Each result proves only the bounded claim that its artifact class and receipt name.
 
 ## License
 
-`kamacite-core` is `MIT OR Apache-2.0`; the `kamacite-cli` executable shell is `AGPL-3.0-or-later`. Complete texts are in [LICENSES](LICENSES), and the package map is [docs/licensing.md](docs/licensing.md).
+`kamacite-core` uses `MIT OR Apache-2.0`. The `kamacite-cli` shell uses `AGPL-3.0-or-later`.
 
-The split does not relicense third-party dependencies or generated artifacts, revoke prior grants, or change canonical envelope/value/receipt identity. A core receipt does not grant execution, evaluator, filesystem, or network authority.
+Complete texts are in [LICENSES](LICENSES). The package map is in [docs/licensing.md](docs/licensing.md).
+
+The split does not change third-party licenses, generated artifacts, prior grants, or canonical identities. A core receipt does not grant host authority.
 
 ## References
 
-- [`../valence/`](../valence/) — sibling evidence identity layer that should consume or wrap Kamacite receipts without owning Kamacite's source/value interchange semantics.
-- [`../octet/`](../octet/) — sibling checked path whose pinned `spacewasm-mvp` rail supplies execution-free exact-byte and interface evidence without transferring runtime correctness.
-- [`../aspen/`](../aspen/) — sibling Molten runtime that supplies the pinned WIT/Wasmtime component cohort and may consume Kamacite algebraic-effect descriptors, handler profiles, and effect logs without owning Kamacite's canonical value or effect schemas.
-- [`../mantle/`](../mantle/) — sibling build/evidence layer whose pinned SpaceWasm reference bundle supplies exact runtime, module, profile, fixture, and materialization evidence without granting Kamacite execution authority.
-- [nasa/spacewasm](https://github.com/nasa/spacewasm) at `e24cf09355a90497148eb5029fdb8e3400bd63e3` — exact experimental core-MVP interpreter cohort; Kamacite does not transfer correctness, memory-safety, conformance, flight, sandbox, production, or release claims.
-- [OnixResearch/nickel-export](https://github.com/OnixResearch/nickel-export) — pinned producer and admission API for versioned Nickel export manifests and exact artifact evidence; Kamacite composes with its receipts rather than reimplementing Nickel evaluation.
-- [nickel-lang/nickel](https://github.com/nickel-lang/nickel) — reference implementation and CLI for Nickel evaluation/export, formatting, contracts, and source-language semantics.
-- [nickel-lang/json-schema-to-nickel](https://github.com/nickel-lang/json-schema-to-nickel) — reference for converting schema predicates into Nickel contracts and distinguishing lazy/inspectable contracts from strict predicate fallbacks.
-- [nickel-lang/tree-sitter-nickel](https://github.com/nickel-lang/tree-sitter-nickel) — reference parser for Nickel syntax, spans, and source-envelope indexing without claiming evaluation semantics.
-- [nickel-lang/json-scanner](https://github.com/nickel-lang/json-scanner) — reference for JSON projection parsing with byte positions and number lexeme preservation.
-- [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated Nickel contract corpus suitable for stress fixtures and schema-conversion regression cases.
-- [mattwparas/steel](https://github.com/mattwparas/steel) — reference implementation for embedded Steel evaluation, typed Rust host-function registration, module boundaries, and higher-order contract patterns used only as bounded adapter/probe surfaces.
-- [unisonweb/unison](https://github.com/unisonweb/unison) — reference for content-addressed definitions, names-as-metadata, dependency-closure identity, abilities/effect labels, structured refactoring, and typed durable storage boundaries.
-- [dhall-lang/dhall-lang](https://github.com/dhall-lang/dhall-lang) — reference for typed configuration, import integrity, and semantic hashing; Kamacite preserves source envelopes separately rather than treating normalized configuration as source identity.
-- [cue-lang/cue](https://github.com/cue-lang/cue) — reference for constraint-oriented configuration and validation; Kamacite may adapt constraint vocabulary patterns without adopting CUE as its source or canonical IR.
-- [open-policy-agent/opa](https://github.com/open-policy-agent/opa) — reference for policy evaluation, partial evaluation, and WASM policy targets; Kamacite receipts can classify policy-adapter behavior without becoming a policy runtime.
-- [in-toto/in-toto](https://github.com/in-toto/in-toto) — reference for supply-chain attestations and link metadata; Kamacite receipts should make similarly bounded provenance claims over source envelopes, adapters, and target artifacts.
-- [slsa-framework/slsa](https://github.com/slsa-framework/slsa) — reference for supply-chain provenance levels and build attestation vocabulary; Kamacite uses it only as receipt/provenance prior art, not as its artifact schema.
-- [sigstore/rekor](https://github.com/sigstore/rekor) — reference for transparency-log-backed attestations and artifact inclusion evidence; Kamacite may export compatible evidence without making transparency logging part of canonical IR.
-- [ipld/specs](https://github.com/ipld/specs) — reference for content-addressed structured data, codecs such as DAG-CBOR, and typed data-model boundaries; Kamacite still uses BLAKE3 over Kamacite-owned canonical Preserves bytes for identity.
-- [koka-lang/koka](https://github.com/koka-lang/koka) — reference for algebraic effects, effect rows, and handlers as language features; Kamacite models effect signatures and receipts as data rather than adopting Koka semantics.
-- [effekt-lang/effekt](https://github.com/effekt-lang/effekt) — reference for effect handlers and capability-style control boundaries; Kamacite uses it only to inform effect vocabulary and continuation-policy receipts.
-- [OxCaml](https://oxcaml.org/) — reference for evolving an existing typed language with pay-as-you-go, type-level control over performance, concurrency, layout, and allocation; Kamacite may adapt the explicit-control discipline without treating OCaml/OxCaml compiler artifacts or extensions as Kamacite IR.
-- [WebAssembly/WASI](https://github.com/WebAssembly/WASI) — reference for sandboxed capability interfaces; Kamacite may target WASI adapters while keeping Preserves source/value identity authoritative.
-- [WebAssembly/component-model](https://github.com/WebAssembly/component-model) — reference for WIT/component adapter ABIs; Kamacite may use component interfaces for adapter shells without replacing Kamacite schemas or receipts.
-- [ghc/ghc](https://gitlab.haskell.org/ghc/ghc) — reference for Haskell/GHC concepts used only to bound what Kamacite does not adopt as IR: Core, STG, bytecode, interface files, laziness, and typeclass resolution.
-- [llvm/llvm-project](https://github.com/llvm/llvm-project) — reference for MLIR architecture concepts and LLVM compiled target artifacts; neither MLIR nor LLVM IR is Kamacite's canonical IR.
-- [joweeba/tMIR](https://github.com/joweeba/tMIR) — dialect roundtrip, proof-lineage sidecar, and semantic-diff reference for adapter vocabulary fixtures; Kamacite keeps Preserves as canonical authority and does not adopt tMIR as its IR.
-- [rust-lang/rust](https://github.com/rust-lang/rust) — reference for Rust MIR and rustc compiler reports as Rust provenance evidence only, not Kamacite IR.
-- [rust-lang/rustc-dev-guide](https://github.com/rust-lang/rustc-dev-guide/tree/main) — primary reference for rustc architecture, especially [HIR](https://github.com/rust-lang/rustc-dev-guide/tree/main/src/hir), [MIR](https://github.com/rust-lang/rustc-dev-guide/tree/main/src/mir), and [backend lowering](https://github.com/rust-lang/rustc-dev-guide/tree/main/src/backend); Kamacite uses it to shape Rust adapter/provenance receipts while keeping rustc internals as target/provenance evidence, not Kamacite IR.
-- [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — reference for schema-to-Rust generation limits, `x-rust-type` identity, and honest non-lossless schema translation language.
-- [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — reference for rejecting schema shapes that are valid but poor interchange surfaces.
-- [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — reference for classifying compatibility changes and explicitly naming unhandled comparisons.
-- [oxidecomputer/dropshot-api-manager](https://github.com/oxidecomputer/dropshot-api-manager) — reference for generated artifact freshness, versioned boundary management, and jj/git-aware validation workflows.
-- [oxidecomputer/json-schema-tools](https://github.com/oxidecomputer/json-schema-tools) — reference for shared schema traversal used by multiple renderers without duplicating interpretation logic.
-- [oxidecomputer/daft](https://github.com/oxidecomputer/daft) — reference for typed structural diffs of Rust values and leaf-vs-recursive diff boundaries.
-- [oxidecomputer/hif](https://github.com/oxidecomputer/hif) — reference for a bounded no-std interchange machine with explicit host-provided functions and runtime limits.
-- [oxidecomputer/iddqd](https://github.com/oxidecomputer/iddqd) — reference for Rust identity maps where keys are borrowed from values, duplicate keys fail closed during serde, and multi-key bijective/trijective indexes preserve value-owned identity.
-- [Ferrocene](https://ferrocene.dev/) and [Sealed Rust](https://github.com/ferrous-systems/sealed-rust) — reference for naming and governing restricted/qualified Rust profiles; Kamacite adapts profile discipline only and does not claim compiler qualification or certification.
-- [verus-lang/verus](https://github.com/verus-lang/verus) — reference for a verification-oriented Rust subset and specification discipline; Kamacite may use verifier evidence as bounded support without treating Verus syntax or proof artifacts as Kamacite IR.
-- [bytecodealliance/cap-std](https://github.com/bytecodealliance/cap-std) — reference for capability-oriented Rust APIs and avoiding ambient filesystem/network authority in shells and adapters, not in Kamacite's pure core.
-- [bytecodealliance/wasmtime](https://github.com/bytecodealliance/wasmtime) — reference for deterministic WebAssembly execution controls and explicit import/capability boundaries used only for adapter-target guidance.
-- [bytecodealliance/WASI-Virt](https://github.com/bytecodealliance/WASI-Virt) — reference for deny-by-default WASI subsystem virtualization and explicit allow/deny configuration for adapter shells.
-- [rust-lang/rust-clippy](https://github.com/rust-lang/rust-clippy) — reference for configurable Rust lints and restriction-lint practice used as source-shape evidence, not receipt validation.
-- [trailofbits/dylint](https://github.com/trailofbits/dylint) — reference for project-owned Rust lint libraries suitable for Kamacite/Octet-specific implementation-profile checks.
-- [geiger-rs/cargo-geiger](https://github.com/geiger-rs/cargo-geiger) and [rust-secure-code/safety-dance](https://github.com/rust-secure-code/safety-dance) — references for measuring and reducing unsafe Rust usage; Kamacite treats these as implementation evidence only.
-- [mozilla/cargo-vet](https://github.com/mozilla/cargo-vet), [EmbarkStudios/cargo-deny](https://github.com/EmbarkStudios/cargo-deny), and [rust-secure-code/cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) — references for Rust dependency review, policy checks, and auditable build metadata; these support provenance but do not prove Kamacite semantics.
-- [model-checking/kani](https://github.com/model-checking/kani), [viperproject/prusti-dev](https://github.com/viperproject/prusti-dev), and [creusot-rs/creusot](https://github.com/creusot-rs/creusot) — references for Rust model-checking and deductive verification rails that may support bounded core properties without replacing Kamacite fixtures or receipts.
-- [zkat/miette](https://github.com/zkat/miette), [mitsuhiko/insta](https://github.com/mitsuhiko/insta), [assert-rs/snapbox](https://github.com/assert-rs/snapbox), and [assert-rs/trycmd](https://github.com/assert-rs/trycmd) — references for human diagnostics and deterministic snapshot/CLI testing; Kamacite canonical diagnostics and receipt identity remain data-first and presentation-independent.
+- [PsychoLlama/ambient](https://github.com/PsychoLlama/ambient) — nominal ability and immutable identity reference.
+- [`../valence/`](../valence/) — evidence identity and linkage layer.
+- [`../octet/`](../octet/) — checked Rust and provenance layer.
+- [`../aspen/`](../aspen/) — Molten runtime and component cohort.
+- [`../mantle/`](../mantle/) — build evidence and SpaceWasm reference bundle.
+- [nasa/spacewasm](https://github.com/nasa/spacewasm) at `e24cf09355a90497148eb5029fdb8e3400bd63e3` — experimental core-MVP interpreter cohort.
+- [OnixResearch/nickel-export](https://github.com/OnixResearch/nickel-export) — Nickel export manifests and exact artifact evidence.
+- [nickel-lang/nickel](https://github.com/nickel-lang/nickel) — Nickel evaluator and CLI.
+- [nickel-lang/json-schema-to-nickel](https://github.com/nickel-lang/json-schema-to-nickel) — schema-to-contract conversion reference.
+- [nickel-lang/tree-sitter-nickel](https://github.com/nickel-lang/tree-sitter-nickel) — Nickel syntax and span parser.
+- [nickel-lang/json-scanner](https://github.com/nickel-lang/json-scanner) — JSON byte-position and number-lexeme reference.
+- [nickel-lang/nickel-schemastore](https://github.com/nickel-lang/nickel-schemastore) — generated contract stress corpus.
+- [mattwparas/steel](https://github.com/mattwparas/steel) — embedded Steel and typed host-function reference.
+- [unisonweb/unison](https://github.com/unisonweb/unison) — content identity and structured migration reference.
+- [dhall-lang/dhall-lang](https://github.com/dhall-lang/dhall-lang) — typed configuration and import-integrity reference.
+- [cue-lang/cue](https://github.com/cue-lang/cue) — constraint-oriented configuration reference.
+- [open-policy-agent/opa](https://github.com/open-policy-agent/opa) — policy and WASM target reference.
+- [in-toto/in-toto](https://github.com/in-toto/in-toto) — bounded attestation reference.
+- [slsa-framework/slsa](https://github.com/slsa-framework/slsa) — provenance vocabulary reference.
+- [sigstore/rekor](https://github.com/sigstore/rekor) — transparency evidence reference.
+- [ipld/specs](https://github.com/ipld/specs) — content-addressed data and codec reference.
+- [koka-lang/koka](https://github.com/koka-lang/koka) — algebraic effect reference.
+- [effekt-lang/effekt](https://github.com/effekt-lang/effekt) — effect-handler and capability reference.
+- [OxCaml](https://oxcaml.org/) — explicit typed control reference.
+- [WebAssembly/WASI](https://github.com/WebAssembly/WASI) — sandboxed capability-interface reference.
+- [WebAssembly/component-model](https://github.com/WebAssembly/component-model) — WIT and component ABI reference.
+- [ghc/ghc](https://gitlab.haskell.org/ghc/ghc) — Haskell compiler artifact reference.
+- [llvm/llvm-project](https://github.com/llvm/llvm-project) — MLIR architecture and LLVM target reference.
+- [joweeba/tMIR](https://github.com/joweeba/tMIR) — dialect round-trip and proof-lineage reference.
+- [rust-lang/rust](https://github.com/rust-lang/rust) — Rust MIR and compiler report reference.
+- [rust-lang/rustc-dev-guide](https://github.com/rust-lang/rustc-dev-guide/tree/main) — rustc architecture reference.
+- [oxidecomputer/typify](https://github.com/oxidecomputer/typify) — schema-to-Rust translation reference.
+- [oxidecomputer/openapi-lint](https://github.com/oxidecomputer/openapi-lint) — interchange-shape lint reference.
+- [oxidecomputer/drift](https://github.com/oxidecomputer/drift) — compatibility classification reference.
+- [oxidecomputer/dropshot-api-manager](https://github.com/oxidecomputer/dropshot-api-manager) — generated artifact freshness reference.
+- [oxidecomputer/json-schema-tools](https://github.com/oxidecomputer/json-schema-tools) — shared schema traversal reference.
+- [oxidecomputer/daft](https://github.com/oxidecomputer/daft) — typed structural difference reference.
+- [oxidecomputer/hif](https://github.com/oxidecomputer/hif) — bounded `no_std` interchange machine reference.
+- [oxidecomputer/iddqd](https://github.com/oxidecomputer/iddqd) — value-owned identity-map reference.
+- [Ferrocene](https://ferrocene.dev/) and [Sealed Rust](https://github.com/ferrous-systems/sealed-rust) — restricted Rust profile references.
+- [verus-lang/verus](https://github.com/verus-lang/verus) — Rust verification reference.
+- [bytecodealliance/cap-std](https://github.com/bytecodealliance/cap-std) — capability-oriented Rust API reference.
+- [bytecodealliance/wasmtime](https://github.com/bytecodealliance/wasmtime) — WebAssembly execution-control reference.
+- [bytecodealliance/WASI-Virt](https://github.com/bytecodealliance/WASI-Virt) — deny-by-default WASI reference.
+- [rust-lang/rust-clippy](https://github.com/rust-lang/rust-clippy) — Rust lint reference.
+- [trailofbits/dylint](https://github.com/trailofbits/dylint) — project-owned lint reference.
+- [geiger-rs/cargo-geiger](https://github.com/geiger-rs/cargo-geiger) and [rust-secure-code/safety-dance](https://github.com/rust-secure-code/safety-dance) — unsafe-code evidence references.
+- [mozilla/cargo-vet](https://github.com/mozilla/cargo-vet), [EmbarkStudios/cargo-deny](https://github.com/EmbarkStudios/cargo-deny), and [rust-secure-code/cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) — dependency and provenance references.
+- [model-checking/kani](https://github.com/model-checking/kani), [viperproject/prusti-dev](https://github.com/viperproject/prusti-dev), and [creusot-rs/creusot](https://github.com/creusot-rs/creusot) — Rust verification references.
+- [zkat/miette](https://github.com/zkat/miette), [mitsuhiko/insta](https://github.com/mitsuhiko/insta), [assert-rs/snapbox](https://github.com/assert-rs/snapbox), and [assert-rs/trycmd](https://github.com/assert-rs/trycmd) — diagnostics and fixture-test references.
+
+These references do not transfer runtime, compiler, security, semantic, production, or release claims into Kamacite.
