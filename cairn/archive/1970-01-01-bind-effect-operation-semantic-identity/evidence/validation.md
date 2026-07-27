@@ -31,7 +31,7 @@ The focused profile covers 11 of 11 requirements. Its receipt is `2b8ba3897da2d6
 
 The repository-wide default traceability profile remains unavailable evidence because Kamacite adopted a native policy during this change, while historical accepted specifications do not yet have complete default-profile evidence markers. This change does not claim that migration.
 
-The archive receipt is recorded after the archive command completes.
+Archive execution passed with receipt `5967df03814cf575d262a3be0280e502d17693ef9b9f405c0ed0a2b4a1f35e2c`.
 
 ## Downstream evidence blocker
 
