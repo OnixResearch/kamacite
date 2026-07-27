@@ -53,6 +53,19 @@ pub struct SemanticOperationDescriptor {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SemanticOperationDescriptorInput {
+    pub schema_version: u32,
+    pub effect_family_identity: Identity,
+    pub parameter_schema_identity: Identity,
+    pub result_schema_identity: Identity,
+    pub continuation_contract: ContinuationContract,
+    pub replay_class: ReplayClass,
+    pub dependency_identities: Vec<Identity>,
+    pub default_behavior_identity: Option<Identity>,
+    pub abstract_operation: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationMetadata {
     pub semantic_operation_identity: Identity,
     pub display_name: String,
@@ -120,6 +133,8 @@ pub enum SemanticOperationError {
     EmptyCollection {
         field: &'static str,
     },
+    MissingImplementation,
+    ConflictingImplementation,
     SameCompatibilityIdentity,
     UnsupportedCompatibilityUse {
         context: CompatibilityContext,
@@ -155,6 +170,12 @@ impl Display for SemanticOperationError {
             ),
             Self::DuplicateItem { field } => write!(formatter, "{field} contains a duplicate item"),
             Self::EmptyCollection { field } => write!(formatter, "{field} must not be empty"),
+            Self::MissingImplementation => formatter.write_str(
+                "semantic operation requires a default behavior identity or an abstract marker",
+            ),
+            Self::ConflictingImplementation => formatter.write_str(
+                "semantic operation cannot have both a default behavior identity and an abstract marker",
+            ),
             Self::SameCompatibilityIdentity => formatter.write_str(
                 "semantic operation compatibility source and target identities must differ",
             ),
@@ -205,6 +226,27 @@ struct CanonicalSemanticOperationCompatibility {
     supporting_refs: Vec<Identity>,
     diagnostics: Vec<String>,
     non_claims: Vec<String>,
+}
+
+pub fn semantic_operation_descriptor(
+    input: &SemanticOperationDescriptorInput,
+) -> Result<SemanticOperationDescriptor, SemanticOperationError> {
+    let implementation = match (&input.default_behavior_identity, input.abstract_operation) {
+        (Some(identity), false) => OperationImplementation::DefaultBehavior(identity.clone()),
+        (None, true) => OperationImplementation::Abstract,
+        (None, false) => return Err(SemanticOperationError::MissingImplementation),
+        (Some(_), true) => return Err(SemanticOperationError::ConflictingImplementation),
+    };
+    normalize_and_validate_descriptor(&SemanticOperationDescriptor {
+        schema_version: input.schema_version,
+        effect_family_identity: input.effect_family_identity.clone(),
+        parameter_schema_identity: input.parameter_schema_identity.clone(),
+        result_schema_identity: input.result_schema_identity.clone(),
+        continuation_contract: input.continuation_contract.clone(),
+        replay_class: input.replay_class.clone(),
+        dependency_identities: input.dependency_identities.clone(),
+        implementation,
+    })
 }
 
 pub fn identify_semantic_operation(
@@ -547,6 +589,35 @@ mod tests {
         abstract_descriptor.implementation = OperationImplementation::Abstract;
         let result = identify_semantic_operation(&abstract_descriptor);
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn descriptor_input_rejects_missing_or_conflicting_implementation() {
+        let descriptor = descriptor();
+        let mut input = SemanticOperationDescriptorInput {
+            schema_version: descriptor.schema_version,
+            effect_family_identity: descriptor.effect_family_identity,
+            parameter_schema_identity: descriptor.parameter_schema_identity,
+            result_schema_identity: descriptor.result_schema_identity,
+            continuation_contract: descriptor.continuation_contract,
+            replay_class: descriptor.replay_class,
+            dependency_identities: descriptor.dependency_identities,
+            default_behavior_identity: None,
+            abstract_operation: false,
+        };
+        assert_eq!(
+            semantic_operation_descriptor(&input),
+            Err(SemanticOperationError::MissingImplementation)
+        );
+        input.default_behavior_identity = Some(compute_identity(
+            IdentityDomain::CanonicalValue,
+            BEHAVIOR_BYTES,
+        ));
+        input.abstract_operation = true;
+        assert_eq!(
+            semantic_operation_descriptor(&input),
+            Err(SemanticOperationError::ConflictingImplementation)
+        );
     }
 
     #[test]

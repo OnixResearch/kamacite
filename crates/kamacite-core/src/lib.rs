@@ -145,11 +145,13 @@ pub use semantic_operation::{
     CompatibilityContext, ContinuationContract, IdentifiedSemanticOperation,
     IdentifiedSemanticOperationCompatibility, MAX_COMPATIBILITY_CONTEXTS, MAX_NON_CLAIMS,
     MAX_OPERATION_DEPENDENCIES, MAX_SUPPORTING_REFS, OperationImplementation, ReplayClass,
-    SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL, SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION,
+    SEMANTIC_OPERATION_COMPATIBILITY_PRESERVES_SCHEMA, SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL,
+    SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION, SEMANTIC_OPERATION_PRESERVES_SCHEMA,
     SEMANTIC_OPERATION_ROOT_LABEL, SEMANTIC_OPERATION_SCHEMA_VERSION,
-    SemanticOperationCompatibility, SemanticOperationDescriptor, SemanticOperationError,
-    SemanticOperationMetadata, admit_semantic_operation_compatibility, identify_semantic_operation,
-    identify_semantic_operation_compatibility, require_exact_semantic_operation,
+    SemanticOperationCompatibility, SemanticOperationDescriptor, SemanticOperationDescriptorInput,
+    SemanticOperationError, SemanticOperationMetadata, admit_semantic_operation_compatibility,
+    identify_semantic_operation, identify_semantic_operation_compatibility,
+    require_exact_semantic_operation, semantic_operation_descriptor,
 };
 pub use spacewasm::{
     SPACEWASM_ABI_PROFILE_ID, SPACEWASM_ADAPTER_KIND, SPACEWASM_ARTIFACT_KIND,
