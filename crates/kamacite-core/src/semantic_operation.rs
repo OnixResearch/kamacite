@@ -584,6 +584,65 @@ mod tests {
     }
 
     #[test]
+    fn every_semantic_field_change_rekeys_operation() {
+        let base = descriptor();
+        let identified_base = identify_semantic_operation(&base);
+        assert!(identified_base.is_ok());
+        let Ok(identified_base) = identified_base else {
+            return;
+        };
+        let mut variants = Vec::new();
+        let mut changed = base.clone();
+        changed.effect_family_identity =
+            compute_identity(IdentityDomain::AlgebraicEffect, b"other-family");
+        variants.push(changed);
+        let mut changed = base.clone();
+        changed.parameter_schema_identity =
+            compute_identity(IdentityDomain::CanonicalValue, b"other-parameter");
+        variants.push(changed);
+        let mut changed = base.clone();
+        changed.result_schema_identity =
+            compute_identity(IdentityDomain::CanonicalValue, b"other-result");
+        variants.push(changed);
+        let mut changed = base.clone();
+        changed.continuation_contract = ContinuationContract::MultiUse;
+        variants.push(changed);
+        let mut changed = base.clone();
+        changed.replay_class = ReplayClass::NonReplayable;
+        variants.push(changed);
+        let mut changed = base.clone();
+        changed.dependency_identities =
+            vec![compute_identity(IdentityDomain::Source, b"dependency")];
+        variants.push(changed);
+        let mut changed = base.clone();
+        changed.implementation = OperationImplementation::Abstract;
+        variants.push(changed);
+        for variant in variants {
+            let identified = identify_semantic_operation(&variant);
+            assert!(identified.is_ok());
+            if let Ok(identified) = identified {
+                assert_ne!(identified_base.identity, identified.identity);
+            }
+        }
+    }
+
+    #[test]
+    fn canonical_preserves_and_identity_are_deterministic() {
+        let first = identify_semantic_operation(&descriptor());
+        let second = identify_semantic_operation(&descriptor());
+        assert!(first.is_ok());
+        assert!(second.is_ok());
+        if let (Ok(first), Ok(second)) = (first, second) {
+            assert_eq!(first.canonical_bytes, second.canonical_bytes);
+            assert_eq!(first.identity, second.identity);
+            assert_eq!(
+                first.identity,
+                compute_identity(IdentityDomain::EffectOperation, &first.canonical_bytes)
+            );
+        }
+    }
+
+    #[test]
     fn abstract_operation_has_canonical_identity() {
         let mut abstract_descriptor = descriptor();
         abstract_descriptor.implementation = OperationImplementation::Abstract;
