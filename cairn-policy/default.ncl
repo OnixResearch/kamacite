@@ -224,13 +224,19 @@ let PolicyFieldSetDigest = "cdbe3adf5778872343f8576e0304e3748dcaf7fb58f59c489599
       {
         id = "bind-effect-operation-semantic-identity",
         requirement_sources = [
-          { root = "cairn/specs/algebraic-effect-model", source_kind = "accepted_specs", extensions = ["md"] },
-          { root = "cairn/specs/algebraic-effect-fixtures-and-stack", source_kind = "accepted_specs", extensions = ["md"] },
+          { root = "cairn/specs/semantic-effect-operation-identity", source_kind = "accepted_specs", extensions = ["md"] },
+          { root = "cairn/specs/semantic-effect-operation-stack", source_kind = "accepted_specs", extensions = ["md"] },
         ],
         evidence_sources = [
           { root = "crates/kamacite-core/src/semantic_operation.rs", source_kind = "rust_source", extensions = ["rs"] },
+          { root = "crates/kamacite-core/src/semantic_operation_valence.rs", source_kind = "rust_source", extensions = ["rs"] },
+          { root = "crates/kamacite-cli/src/semantic_operation_cli.rs", source_kind = "rust_source", extensions = ["rs"] },
+          { root = "crates/kamacite-cli/tests/semantic_operation_cli.rs", source_kind = "rust_source", extensions = ["rs"] },
           { root = "schemas/preserves", source_kind = "tool_source", extensions = ["preserves"] },
           { root = "docs/semantic-effect-operation-identity.md", source_kind = "tool_source", extensions = ["md"] },
+          { root = "docs/algebraic-effects-stack-roles.md", source_kind = "tool_source", extensions = ["md"] },
+          { root = "docs/wasm-component-adapter.md", source_kind = "tool_source", extensions = ["md"] },
+          { root = "docs/valence-receipt-export.md", source_kind = "tool_source", extensions = ["md"] },
         ],
         marker_verbs = ["impl", "verify", "depends", "related"],
       },

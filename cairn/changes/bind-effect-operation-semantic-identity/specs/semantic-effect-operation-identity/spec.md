@@ -4,7 +4,7 @@
 
 Strengthen Kamacite effect-operation identity so handlers, logs, caches, runtimes, and compatibility decisions bind exact declared semantics rather than names or signature shape alone.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Semantic operation descriptors are canonical
 

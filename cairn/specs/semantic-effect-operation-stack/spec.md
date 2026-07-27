@@ -1,8 +1,8 @@
-# Algebraic Effect Fixtures and Stack Boundary Specification Delta
+# Semantic Effect Operation Stack Specification
 
 ## Purpose
 
-Define how strengthened semantic effect-operation identities cross Kamacite, Valence, Molten, Trellis, and Octet boundaries without transferring canonical ownership or authority.
+Defines the `semantic-effect-operation-stack` capability.
 
 ## Requirements
 

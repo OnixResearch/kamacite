@@ -25,7 +25,13 @@ The capability-rooted `kamacite-semantic-operation` CLI supports identification 
 - The focused semantic CLI suite passed positive identification and migration cases plus negative incomplete descriptor and unbounded update cases.
 - The core suite passed semantic re-keying, exact matching, abstract operation, malformed identity, wrong role, stale reference, compatibility direction, and host-context boundary cases.
 
-The final Nix flake result, accepted-spec synchronization receipt, traceability receipt, and archive receipt are recorded after those commands complete.
+Accepted specification synchronization passed with receipt `e47c07b5c82e9d37a23afe8e27a6b58f84410de554501dc0b14d56fa7f37d49e`.
+
+The focused profile covers 11 of 11 requirements. Its receipt is `2b8ba3897da2d6c572a18e82e85917a2900920d1559308166da7f27acdaa17a9`.
+
+The repository-wide default traceability profile remains unavailable evidence because Kamacite adopted a native policy during this change, while historical accepted specifications do not yet have complete default-profile evidence markers. This change does not claim that migration.
+
+The archive receipt is recorded after the archive command completes.
 
 ## Downstream evidence blocker
 

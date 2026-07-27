@@ -665,6 +665,7 @@ where
     Ok(normalized.into_iter().collect())
 }
 
+// r[verify kamacite.algebraic_effects.semantic_identity_fixtures]
 #[cfg(test)]
 mod tests {
     use super::*;
