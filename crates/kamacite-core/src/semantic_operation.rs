@@ -144,6 +144,9 @@ pub enum SemanticOperationError {
         field: &'static str,
         expected: IdentityDomain,
     },
+    InvalidIdentity {
+        field: &'static str,
+    },
     TooManyItems {
         field: &'static str,
         actual: usize,
@@ -188,6 +191,9 @@ impl Display for SemanticOperationError {
             }
             Self::WrongIdentityDomain { field, expected } => {
                 write!(formatter, "{field} must use the {expected} identity domain")
+            }
+            Self::InvalidIdentity { field } => {
+                write!(formatter, "{field} contains an invalid identity")
             }
             Self::TooManyItems {
                 field,
@@ -533,6 +539,9 @@ fn normalize_identities(
     maximum: usize,
     require_non_empty: bool,
 ) -> Result<Vec<Identity>, SemanticOperationError> {
+    if values.iter().any(|identity| identity.validate().is_err()) {
+        return Err(SemanticOperationError::InvalidIdentity { field });
+    }
     normalize_values(values, field, maximum, require_non_empty)
 }
 
@@ -897,5 +906,14 @@ mod tests {
                 field: "dependency_identities"
             })
         ));
+        let mut invalid_dependency = compute_identity(IdentityDomain::Source, b"invalid");
+        invalid_dependency.algorithm = "sha256".to_string();
+        second.dependency_identities = vec![invalid_dependency];
+        assert_eq!(
+            identify_semantic_operation(&second),
+            Err(SemanticOperationError::InvalidIdentity {
+                field: "dependency_identities"
+            })
+        );
     }
 }

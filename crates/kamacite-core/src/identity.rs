@@ -157,12 +157,17 @@ impl Identity {
         }
     }
 
-    pub fn validate_domain(&self, expected: IdentityDomain) -> Result<(), IdentityError> {
+    pub fn validate(&self) -> Result<(), IdentityError> {
         if self.algorithm != BLAKE3_ALGORITHM {
             return Err(IdentityError::WrongAlgorithm {
                 actual: self.algorithm.clone(),
             });
         }
+        Ok(())
+    }
+
+    pub fn validate_domain(&self, expected: IdentityDomain) -> Result<(), IdentityError> {
+        self.validate()?;
         if self.domain != expected {
             return Err(IdentityError::WrongDomain {
                 actual: self.domain.clone(),
