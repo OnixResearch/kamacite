@@ -16,6 +16,8 @@ pub const MAX_OPERATION_DEPENDENCIES: usize = 128;
 pub const MAX_COMPATIBILITY_CONTEXTS: usize = 32;
 pub const MAX_SUPPORTING_REFS: usize = 128;
 pub const MAX_NON_CLAIMS: usize = 32;
+pub const LEGACY_EFFECT_OPERATION_SCHEMA_VERSION: u32 = 1;
+pub const MAX_MIGRATION_CHANGED_FIELDS: usize = 32;
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -110,6 +112,22 @@ pub struct IdentifiedSemanticOperationCompatibility {
     pub identity: Identity,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct LegacyEffectOperationReference {
+    pub schema_version: u32,
+    pub operation_id: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct SemanticOperationMigrationPreview {
+    pub legacy: LegacyEffectOperationReference,
+    pub semantic_operation_identity: Identity,
+    pub semantic_descriptor: SemanticOperationDescriptor,
+    pub changed_fields: Vec<String>,
+    pub mutation_performed: bool,
+    pub non_claims: Vec<String>,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SemanticOperationError {
     UnsupportedDescriptorVersion {
@@ -118,6 +136,10 @@ pub enum SemanticOperationError {
     UnsupportedCompatibilityVersion {
         actual: u32,
     },
+    UnsupportedLegacyVersion {
+        actual: u32,
+    },
+    EmptyLegacyOperationId,
     WrongIdentityDomain {
         field: &'static str,
         expected: IdentityDomain,
@@ -157,6 +179,13 @@ impl Display for SemanticOperationError {
                 formatter,
                 "semantic operation compatibility version {actual} is unsupported"
             ),
+            Self::UnsupportedLegacyVersion { actual } => write!(
+                formatter,
+                "legacy effect operation version {actual} is unsupported"
+            ),
+            Self::EmptyLegacyOperationId => {
+                formatter.write_str("legacy effect operation id must not be empty")
+            }
             Self::WrongIdentityDomain { field, expected } => {
                 write!(formatter, "{field} must use the {expected} identity domain")
             }
@@ -309,6 +338,40 @@ pub fn identify_semantic_operation_compatibility(
         compatibility,
         canonical_bytes,
         identity,
+    })
+}
+
+pub fn preview_semantic_operation_migration(
+    legacy: &LegacyEffectOperationReference,
+    descriptor: &SemanticOperationDescriptor,
+    changed_fields: &[String],
+) -> Result<SemanticOperationMigrationPreview, SemanticOperationError> {
+    if legacy.schema_version != LEGACY_EFFECT_OPERATION_SCHEMA_VERSION {
+        return Err(SemanticOperationError::UnsupportedLegacyVersion {
+            actual: legacy.schema_version,
+        });
+    }
+    if legacy.operation_id.is_empty() {
+        return Err(SemanticOperationError::EmptyLegacyOperationId);
+    }
+    let identified = identify_semantic_operation(descriptor)?;
+    let changed_fields = normalize_strings(
+        changed_fields,
+        "changed_fields",
+        MAX_MIGRATION_CHANGED_FIELDS,
+        true,
+    )?;
+    Ok(SemanticOperationMigrationPreview {
+        legacy: legacy.clone(),
+        semantic_operation_identity: identified.identity,
+        semantic_descriptor: identified.descriptor,
+        changed_fields,
+        mutation_performed: false,
+        non_claims: vec![
+            "legacy identity was not reinterpreted".to_string(),
+            "preview does not mutate governed fixtures".to_string(),
+            "mapping does not prove semantic equivalence".to_string(),
+        ],
     })
 }
 
@@ -676,6 +739,59 @@ mod tests {
         assert_eq!(
             semantic_operation_descriptor(&input),
             Err(SemanticOperationError::ConflictingImplementation)
+        );
+    }
+
+    #[test]
+    fn migration_preview_keeps_legacy_and_semantic_identities_separate() {
+        let legacy = LegacyEffectOperationReference {
+            schema_version: LEGACY_EFFECT_OPERATION_SCHEMA_VERSION,
+            operation_id: "op.read-config".to_string(),
+        };
+        let changed_fields = vec!["identity-domain".to_string(), "nominal-family".to_string()];
+        let preview = preview_semantic_operation_migration(&legacy, &descriptor(), &changed_fields);
+        assert!(preview.is_ok());
+        if let Ok(preview) = preview {
+            assert_eq!(preview.legacy, legacy);
+            assert!(!preview.mutation_performed);
+            assert_eq!(
+                preview.semantic_operation_identity.domain,
+                IdentityDomain::EffectOperation
+            );
+            assert!(
+                preview
+                    .non_claims
+                    .iter()
+                    .any(|claim| { claim == "legacy identity was not reinterpreted" })
+            );
+        }
+    }
+
+    #[test]
+    fn migration_preview_rejects_unknown_legacy_version_and_empty_id() {
+        let unknown = LegacyEffectOperationReference {
+            schema_version: SEMANTIC_OPERATION_SCHEMA_VERSION,
+            operation_id: "op.read-config".to_string(),
+        };
+        assert!(matches!(
+            preview_semantic_operation_migration(
+                &unknown,
+                &descriptor(),
+                &["identity-domain".to_string()],
+            ),
+            Err(SemanticOperationError::UnsupportedLegacyVersion { .. })
+        ));
+        let empty = LegacyEffectOperationReference {
+            schema_version: LEGACY_EFFECT_OPERATION_SCHEMA_VERSION,
+            operation_id: String::new(),
+        };
+        assert_eq!(
+            preview_semantic_operation_migration(
+                &empty,
+                &descriptor(),
+                &["identity-domain".to_string()],
+            ),
+            Err(SemanticOperationError::EmptyLegacyOperationId)
         );
     }
 
