@@ -1,5 +1,9 @@
 # Function-address receipts
 
+<!-- r[related kamacite.algebraic_effects.semantic_operation_migration] -->
+
+Function-address identities can support a behavior review. They do not replace a semantic operation descriptor or prove behavior correctness.
+
 Kamacite owns the portable `function-address-receipt` interchange layer for Octet-produced function inventories.
 
 The current canonical identity input is canonical packed Preserves produced by the official `preserves` codec (`function-address-receipt-v3.preserves`). Version 3 binds a content-addressed producer profile covering producer kind, tool version or build identity, canonicalizer profile/version, normative options, and producer non-claims. JSON is a deterministic compatibility/debug projection that binds back to both producer-profile and receipt identities; projection drift or JSON-only authority fails validation.

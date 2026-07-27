@@ -21,6 +21,7 @@ mod preserves_codec;
 mod proof_evidence;
 mod receipt;
 mod semantic_operation;
+mod semantic_operation_valence;
 mod spacewasm;
 mod spacewasm_valence;
 mod steel_execution;
@@ -145,16 +146,23 @@ pub use semantic_operation::{
     CompatibilityContext, ContinuationContract, IdentifiedSemanticOperation,
     IdentifiedSemanticOperationCompatibility, LEGACY_EFFECT_OPERATION_SCHEMA_VERSION,
     LegacyEffectOperationReference, MAX_COMPATIBILITY_CONTEXTS, MAX_MIGRATION_CHANGED_FIELDS,
-    MAX_NON_CLAIMS, MAX_OPERATION_DEPENDENCIES, MAX_SUPPORTING_REFS, OperationImplementation,
-    ReplayClass, SEMANTIC_OPERATION_COMPATIBILITY_PRESERVES_SCHEMA,
-    SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL, SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION,
-    SEMANTIC_OPERATION_PRESERVES_SCHEMA, SEMANTIC_OPERATION_ROOT_LABEL,
-    SEMANTIC_OPERATION_SCHEMA_VERSION, SemanticOperationCompatibility, SemanticOperationDescriptor,
-    SemanticOperationDescriptorInput, SemanticOperationError, SemanticOperationMetadata,
-    SemanticOperationMigrationPreview, admit_semantic_operation_compatibility,
+    MAX_NON_CLAIMS, MAX_OPERATION_DEPENDENCIES, MAX_OPERATION_REFERENCES_PER_SURFACE,
+    MAX_SUPPORTING_REFS, OperationImplementation, ReplayClass,
+    SEMANTIC_OPERATION_COMPATIBILITY_PRESERVES_SCHEMA, SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL,
+    SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION, SEMANTIC_OPERATION_PRESERVES_SCHEMA,
+    SEMANTIC_OPERATION_ROOT_LABEL, SEMANTIC_OPERATION_SCHEMA_VERSION,
+    SemanticOperationCompatibility, SemanticOperationDescriptor, SemanticOperationDescriptorInput,
+    SemanticOperationError, SemanticOperationMetadata, SemanticOperationMigrationPreview,
+    SemanticOperationReferenceBundle, admit_semantic_operation_compatibility,
     identify_semantic_operation, identify_semantic_operation_compatibility,
     preview_semantic_operation_migration, require_exact_semantic_operation,
-    semantic_operation_descriptor,
+    semantic_operation_descriptor, validate_semantic_operation_reference_bundle,
+};
+pub use semantic_operation_valence::{
+    SEMANTIC_OPERATION_VALENCE_SCHEMA, SemanticOperationValenceArtifact,
+    SemanticOperationValenceEdge, SemanticOperationValenceInput,
+    SemanticOperationValenceProjection, SemanticOperationValenceProjectionBody,
+    SemanticOperationValenceRole, project_semantic_operation_to_valence,
 };
 pub use spacewasm::{
     SPACEWASM_ABI_PROFILE_ID, SPACEWASM_ADAPTER_KIND, SPACEWASM_ARTIFACT_KIND,

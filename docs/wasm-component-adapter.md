@@ -1,5 +1,9 @@
 # WIT component adapter boundary
 
+<!-- r[impl kamacite.algebraic_effects.semantic_handler_matching] -->
+
+Version 2 imports use exact Kamacite semantic operation identities. A local WIT name cannot replace the typed `effect-operation` identity.
+
 Kamacite's Component Model adapter is a layered, fail-closed target boundary. WIT and WebAssembly remain target artifacts; canonical packed Preserves bytes remain authoritative for values and receipts.
 
 ## Reviewed static cohort

@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "effect_family_identity": {"domain":"algebraic-effect","algorithm":"blake3","hex":"1111111111111111111111111111111111111111111111111111111111111111"},
+  "parameter_schema_identity": {"domain":"canonical-value","algorithm":"blake3","hex":"2222222222222222222222222222222222222222222222222222222222222222"},
+  "result_schema_identity": {"domain":"canonical-value","algorithm":"blake3","hex":"3333333333333333333333333333333333333333333333333333333333333333"},
+  "continuation_contract": "single-use",
+  "replay_class": "recorded",
+  "dependency_identities": [],
+  "default_behavior_identity": null,
+  "abstract_operation": true
+}

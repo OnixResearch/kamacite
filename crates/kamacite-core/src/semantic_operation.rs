@@ -18,6 +18,7 @@ pub const MAX_SUPPORTING_REFS: usize = 128;
 pub const MAX_NON_CLAIMS: usize = 32;
 pub const LEGACY_EFFECT_OPERATION_SCHEMA_VERSION: u32 = 1;
 pub const MAX_MIGRATION_CHANGED_FIELDS: usize = 32;
+pub const MAX_OPERATION_REFERENCES_PER_SURFACE: usize = 256;
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -118,6 +119,19 @@ pub struct LegacyEffectOperationReference {
     pub operation_id: String,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SemanticOperationReferenceBundle {
+    pub declared_operations: Vec<Identity>,
+    pub effect_row: Vec<Identity>,
+    pub effect_summary: Vec<Identity>,
+    pub handler_descriptor: Vec<Identity>,
+    pub handler_receipt: Vec<Identity>,
+    pub effect_log: Vec<Identity>,
+    pub adapter_bindings: Vec<Identity>,
+    pub target_imports: Vec<Identity>,
+    pub wasm_imports: Vec<Identity>,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationMigrationPreview {
     pub legacy: LegacyEffectOperationReference,
@@ -167,6 +181,10 @@ pub enum SemanticOperationError {
     OperationMismatch {
         requested: Identity,
         handled: Identity,
+    },
+    UndeclaredOperation {
+        surface: &'static str,
+        identity: Identity,
     },
     Canonicalization(String),
 }
@@ -225,6 +243,11 @@ impl Display for SemanticOperationError {
                 "semantic operation mismatch: requested {} but handler provides {}",
                 requested.hex.as_str(),
                 handled.hex.as_str()
+            ),
+            Self::UndeclaredOperation { surface, identity } => write!(
+                formatter,
+                "{surface} references undeclared semantic operation {}",
+                identity.hex.as_str()
             ),
             Self::Canonicalization(message) => {
                 write!(
@@ -344,6 +367,49 @@ pub fn identify_semantic_operation_compatibility(
         compatibility,
         canonical_bytes,
         identity,
+    })
+}
+
+pub fn validate_semantic_operation_reference_bundle(
+    bundle: &SemanticOperationReferenceBundle,
+) -> Result<SemanticOperationReferenceBundle, SemanticOperationError> {
+    let declared_operations =
+        normalize_operation_references(&bundle.declared_operations, "declared_operations", true)?;
+    let surfaces = [
+        ("effect_row", &bundle.effect_row),
+        ("effect_summary", &bundle.effect_summary),
+        ("handler_descriptor", &bundle.handler_descriptor),
+        ("handler_receipt", &bundle.handler_receipt),
+        ("effect_log", &bundle.effect_log),
+        ("adapter_bindings", &bundle.adapter_bindings),
+        ("target_imports", &bundle.target_imports),
+        ("wasm_imports", &bundle.wasm_imports),
+    ];
+    let mut normalized = Vec::with_capacity(surfaces.len());
+    for (surface, references) in surfaces {
+        let references = normalize_operation_references(references, surface, false)?;
+        if let Some(identity) = references
+            .iter()
+            .find(|identity| !declared_operations.contains(identity))
+        {
+            return Err(SemanticOperationError::UndeclaredOperation {
+                surface,
+                identity: identity.clone(),
+            });
+        }
+        normalized.push(references);
+    }
+    let mut normalized = normalized.into_iter();
+    Ok(SemanticOperationReferenceBundle {
+        declared_operations,
+        effect_row: normalized.next().unwrap_or_default(),
+        effect_summary: normalized.next().unwrap_or_default(),
+        handler_descriptor: normalized.next().unwrap_or_default(),
+        handler_receipt: normalized.next().unwrap_or_default(),
+        effect_log: normalized.next().unwrap_or_default(),
+        adapter_bindings: normalized.next().unwrap_or_default(),
+        target_imports: normalized.next().unwrap_or_default(),
+        wasm_imports: normalized.next().unwrap_or_default(),
     })
 }
 
@@ -543,6 +609,22 @@ fn normalize_identities(
         return Err(SemanticOperationError::InvalidIdentity { field });
     }
     normalize_values(values, field, maximum, require_non_empty)
+}
+
+fn normalize_operation_references(
+    values: &[Identity],
+    field: &'static str,
+    require_non_empty: bool,
+) -> Result<Vec<Identity>, SemanticOperationError> {
+    for identity in values {
+        validate_domain(identity, IdentityDomain::EffectOperation, field)?;
+    }
+    normalize_identities(
+        values,
+        field,
+        MAX_OPERATION_REFERENCES_PER_SURFACE,
+        require_non_empty,
+    )
 }
 
 fn normalize_strings(
@@ -818,6 +900,56 @@ mod tests {
             require_exact_semantic_operation(&requested, &stale),
             Err(SemanticOperationError::OperationMismatch { .. })
         ));
+    }
+
+    #[test]
+    fn exact_operation_references_cover_all_artifact_surfaces() {
+        let operation = identify_semantic_operation(&descriptor());
+        assert!(operation.is_ok());
+        let Ok(operation) = operation else {
+            return;
+        };
+        let references = vec![operation.identity.clone()];
+        let bundle = SemanticOperationReferenceBundle {
+            declared_operations: references.clone(),
+            effect_row: references.clone(),
+            effect_summary: references.clone(),
+            handler_descriptor: references.clone(),
+            handler_receipt: references.clone(),
+            effect_log: references.clone(),
+            adapter_bindings: references.clone(),
+            target_imports: references.clone(),
+            wasm_imports: references,
+        };
+        assert!(validate_semantic_operation_reference_bundle(&bundle).is_ok());
+    }
+
+    #[test]
+    fn stale_operation_reference_fails_before_artifact_use() {
+        let declared = identify_semantic_operation(&descriptor());
+        assert!(declared.is_ok());
+        let Ok(declared) = declared else {
+            return;
+        };
+        let stale = compute_identity(IdentityDomain::EffectOperation, b"stale-reference");
+        let bundle = SemanticOperationReferenceBundle {
+            declared_operations: vec![declared.identity],
+            effect_row: vec![stale.clone()],
+            effect_summary: Vec::new(),
+            handler_descriptor: Vec::new(),
+            handler_receipt: Vec::new(),
+            effect_log: Vec::new(),
+            adapter_bindings: Vec::new(),
+            target_imports: Vec::new(),
+            wasm_imports: Vec::new(),
+        };
+        assert_eq!(
+            validate_semantic_operation_reference_bundle(&bundle),
+            Err(SemanticOperationError::UndeclaredOperation {
+                surface: "effect_row",
+                identity: stale,
+            })
+        );
     }
 
     #[test]

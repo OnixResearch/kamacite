@@ -1,0 +1,50 @@
+{
+  "legacy": {
+    "schema_version": 1,
+    "operation_id": "op.read-config"
+  },
+  "semantic_operation_identity": {
+    "domain": "effect-operation",
+    "algorithm": "blake3",
+    "hex": "e89d7b8bf84b4c9c8564ec745109dcef80838bc99ca887edbbfd0d78e72e952b"
+  },
+  "semantic_descriptor": {
+    "schema_version": 2,
+    "effect_family_identity": {
+      "domain": "algebraic-effect",
+      "algorithm": "blake3",
+      "hex": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "parameter_schema_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "result_schema_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "continuation_contract": "single-use",
+    "replay_class": "recorded",
+    "dependency_identities": [],
+    "implementation": {
+      "default-behavior": {
+        "domain": "canonical-value",
+        "algorithm": "blake3",
+        "hex": "4444444444444444444444444444444444444444444444444444444444444444"
+      }
+    }
+  },
+  "changed_fields": [
+    "default-behavior",
+    "identity-domain",
+    "nominal-family"
+  ],
+  "mutation_performed": false,
+  "non_claims": [
+    "legacy identity was not reinterpreted",
+    "preview does not mutate governed fixtures",
+    "mapping does not prove semantic equivalence"
+  ]
+}

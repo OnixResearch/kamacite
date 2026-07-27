@@ -1,0 +1,9 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "semantic-effect-operation-valence-projection"
+  version: "v1"
+  schema-id: "kamacite.semantic-effect-operation-valence.v1"
+  fields: ["subject-identity" "artifacts" "parent-edges" "non-claims" "projection-identity"]
+  artifact-roles: ["semantic-operation-descriptor" "default-behavior" "compatibility-artifact" "handler-descriptor" "runtime-receipt" "supporting-evidence"]
+  identity-domain: "projection"
+  non-claims: ["not semantic equivalence" "not handler correctness" "not host authorization" "not runtime authority" "not release eligibility"]
+}>

@@ -1,5 +1,9 @@
 # Valence receipt export profile
 
+<!-- r[impl kamacite.algebraic_effects.semantic_valence_export] -->
+
+Semantic operation projections preserve separate descriptor, behavior, compatibility, handler, runtime-receipt, and supporting-evidence roles. They do not promote boundary evidence into correctness or authority evidence.
+
 Kamacite Valence receipt export is a derived evidence projection from a validated Kamacite receipt. It is not canonical Kamacite IR, not Valence ownership of Kamacite semantics, not a live Valence ingestion test, and not a semantic-equivalence, evaluator-soundness, compiler-correctness, runtime-authorization, or runtime-correctness claim.
 
 ## Profile

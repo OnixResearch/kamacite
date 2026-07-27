@@ -10,6 +10,10 @@ rust-version.workspace = true
 name = "kamacite-validate"
 path = "src/main.rs"
 
+[[bin]]
+name = "kamacite-semantic-operation"
+path = "src/semantic_operation_cli.rs"
+
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
