@@ -1,0 +1,655 @@
+use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeSet;
+use std::fmt::{Display, Formatter};
+
+pub const SEMANTIC_OPERATION_SCHEMA_VERSION: u32 = 2;
+pub const SEMANTIC_OPERATION_PRESERVES_SCHEMA: &str = "kamacite.semantic-effect-operation.v2";
+pub const SEMANTIC_OPERATION_ROOT_LABEL: &str = "kamacite-semantic-effect-operation-v2";
+pub const SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION: u32 = 1;
+pub const SEMANTIC_OPERATION_COMPATIBILITY_PRESERVES_SCHEMA: &str =
+    "kamacite.semantic-effect-operation-compatibility.v1";
+pub const SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL: &str =
+    "kamacite-semantic-effect-operation-compatibility-v1";
+pub const MAX_OPERATION_DEPENDENCIES: usize = 128;
+pub const MAX_COMPATIBILITY_CONTEXTS: usize = 32;
+pub const MAX_SUPPORTING_REFS: usize = 128;
+pub const MAX_NON_CLAIMS: usize = 32;
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ContinuationContract {
+    None,
+    SingleUse,
+    MultiUse,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ReplayClass {
+    Deterministic,
+    Recorded,
+    NonReplayable,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum OperationImplementation {
+    DefaultBehavior(Identity),
+    Abstract,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SemanticOperationDescriptor {
+    pub schema_version: u32,
+    pub effect_family_identity: Identity,
+    pub parameter_schema_identity: Identity,
+    pub result_schema_identity: Identity,
+    pub continuation_contract: ContinuationContract,
+    pub replay_class: ReplayClass,
+    pub dependency_identities: Vec<Identity>,
+    pub implementation: OperationImplementation,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SemanticOperationMetadata {
+    pub semantic_operation_identity: Identity,
+    pub display_name: String,
+    pub aliases: Vec<String>,
+    pub path: Option<String>,
+    pub source_span: Option<String>,
+    pub documentation: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CompatibilityContext {
+    Replay,
+    CacheRead,
+    RemoteRequest,
+    LiveHostExecution,
+    Upgrade,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct SemanticOperationCompatibility {
+    pub schema_version: u32,
+    pub source_operation_identity: Identity,
+    pub target_operation_identity: Identity,
+    pub allowed_contexts: Vec<CompatibilityContext>,
+    pub supporting_refs: Vec<Identity>,
+    pub diagnostics: Vec<String>,
+    pub non_claims: Vec<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IdentifiedSemanticOperation {
+    pub descriptor: SemanticOperationDescriptor,
+    pub canonical_bytes: Vec<u8>,
+    pub identity: Identity,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IdentifiedSemanticOperationCompatibility {
+    pub compatibility: SemanticOperationCompatibility,
+    pub canonical_bytes: Vec<u8>,
+    pub identity: Identity,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SemanticOperationError {
+    UnsupportedDescriptorVersion {
+        actual: u32,
+    },
+    UnsupportedCompatibilityVersion {
+        actual: u32,
+    },
+    WrongIdentityDomain {
+        field: &'static str,
+        expected: IdentityDomain,
+    },
+    TooManyItems {
+        field: &'static str,
+        actual: usize,
+        maximum: usize,
+    },
+    DuplicateItem {
+        field: &'static str,
+    },
+    EmptyCollection {
+        field: &'static str,
+    },
+    SameCompatibilityIdentity,
+    UnsupportedCompatibilityUse {
+        context: CompatibilityContext,
+    },
+    OperationMismatch {
+        requested: Identity,
+        handled: Identity,
+    },
+    Canonicalization(String),
+}
+
+impl Display for SemanticOperationError {
+    fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::UnsupportedDescriptorVersion { actual } => write!(
+                formatter,
+                "semantic operation descriptor version {actual} is unsupported"
+            ),
+            Self::UnsupportedCompatibilityVersion { actual } => write!(
+                formatter,
+                "semantic operation compatibility version {actual} is unsupported"
+            ),
+            Self::WrongIdentityDomain { field, expected } => {
+                write!(formatter, "{field} must use the {expected} identity domain")
+            }
+            Self::TooManyItems {
+                field,
+                actual,
+                maximum,
+            } => write!(
+                formatter,
+                "{field} has {actual} items; maximum is {maximum}"
+            ),
+            Self::DuplicateItem { field } => write!(formatter, "{field} contains a duplicate item"),
+            Self::EmptyCollection { field } => write!(formatter, "{field} must not be empty"),
+            Self::SameCompatibilityIdentity => formatter.write_str(
+                "semantic operation compatibility source and target identities must differ",
+            ),
+            Self::UnsupportedCompatibilityUse { context } => {
+                write!(
+                    formatter,
+                    "semantic operation compatibility does not admit {context:?}"
+                )
+            }
+            Self::OperationMismatch { requested, handled } => write!(
+                formatter,
+                "semantic operation mismatch: requested {} but handler provides {}",
+                requested.hex.as_str(),
+                handled.hex.as_str()
+            ),
+            Self::Canonicalization(message) => {
+                write!(
+                    formatter,
+                    "semantic operation canonicalization failed: {message}"
+                )
+            }
+        }
+    }
+}
+
+impl std::error::Error for SemanticOperationError {}
+
+#[derive(Serialize)]
+#[serde(rename = "kamacite-semantic-effect-operation-v2")]
+struct CanonicalSemanticOperation {
+    schema_version: u32,
+    effect_family_identity: Identity,
+    parameter_schema_identity: Identity,
+    result_schema_identity: Identity,
+    continuation_contract: ContinuationContract,
+    replay_class: ReplayClass,
+    dependency_identities: Vec<Identity>,
+    implementation: OperationImplementation,
+}
+
+#[derive(Serialize)]
+#[serde(rename = "kamacite-semantic-effect-operation-compatibility-v1")]
+struct CanonicalSemanticOperationCompatibility {
+    schema_version: u32,
+    source_operation_identity: Identity,
+    target_operation_identity: Identity,
+    allowed_contexts: Vec<CompatibilityContext>,
+    supporting_refs: Vec<Identity>,
+    diagnostics: Vec<String>,
+    non_claims: Vec<String>,
+}
+
+pub fn identify_semantic_operation(
+    descriptor: &SemanticOperationDescriptor,
+) -> Result<IdentifiedSemanticOperation, SemanticOperationError> {
+    let descriptor = normalize_and_validate_descriptor(descriptor)?;
+    let body = CanonicalSemanticOperation {
+        schema_version: descriptor.schema_version,
+        effect_family_identity: descriptor.effect_family_identity.clone(),
+        parameter_schema_identity: descriptor.parameter_schema_identity.clone(),
+        result_schema_identity: descriptor.result_schema_identity.clone(),
+        continuation_contract: descriptor.continuation_contract.clone(),
+        replay_class: descriptor.replay_class.clone(),
+        dependency_identities: descriptor.dependency_identities.clone(),
+        implementation: descriptor.implementation.clone(),
+    };
+    let canonical_bytes = encode_typed_preserves(
+        &body,
+        PreservesSchema {
+            schema_version: SEMANTIC_OPERATION_PRESERVES_SCHEMA,
+            root_label: SEMANTIC_OPERATION_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| SemanticOperationError::Canonicalization(error.to_string()))?;
+    let identity = compute_identity(IdentityDomain::EffectOperation, &canonical_bytes);
+    Ok(IdentifiedSemanticOperation {
+        descriptor,
+        canonical_bytes,
+        identity,
+    })
+}
+
+pub fn identify_semantic_operation_compatibility(
+    compatibility: &SemanticOperationCompatibility,
+) -> Result<IdentifiedSemanticOperationCompatibility, SemanticOperationError> {
+    let compatibility = normalize_and_validate_compatibility(compatibility)?;
+    let body = CanonicalSemanticOperationCompatibility {
+        schema_version: compatibility.schema_version,
+        source_operation_identity: compatibility.source_operation_identity.clone(),
+        target_operation_identity: compatibility.target_operation_identity.clone(),
+        allowed_contexts: compatibility.allowed_contexts.clone(),
+        supporting_refs: compatibility.supporting_refs.clone(),
+        diagnostics: compatibility.diagnostics.clone(),
+        non_claims: compatibility.non_claims.clone(),
+    };
+    let canonical_bytes = encode_typed_preserves(
+        &body,
+        PreservesSchema {
+            schema_version: SEMANTIC_OPERATION_COMPATIBILITY_PRESERVES_SCHEMA,
+            root_label: SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL,
+        },
+        PreservesLimits::default(),
+    )
+    .map(|artifact| artifact.packed_bytes)
+    .map_err(|error| SemanticOperationError::Canonicalization(error.to_string()))?;
+    let identity = compute_identity(IdentityDomain::EvidenceChain, &canonical_bytes);
+    Ok(IdentifiedSemanticOperationCompatibility {
+        compatibility,
+        canonical_bytes,
+        identity,
+    })
+}
+
+pub fn require_exact_semantic_operation(
+    requested: &Identity,
+    handled: &Identity,
+) -> Result<(), SemanticOperationError> {
+    validate_domain(
+        requested,
+        IdentityDomain::EffectOperation,
+        "requested_operation_identity",
+    )?;
+    validate_domain(
+        handled,
+        IdentityDomain::EffectOperation,
+        "handled_operation_identity",
+    )?;
+    if requested != handled {
+        return Err(SemanticOperationError::OperationMismatch {
+            requested: requested.clone(),
+            handled: handled.clone(),
+        });
+    }
+    Ok(())
+}
+
+pub fn admit_semantic_operation_compatibility(
+    compatibility: &SemanticOperationCompatibility,
+    source: &Identity,
+    target: &Identity,
+    context: CompatibilityContext,
+) -> Result<(), SemanticOperationError> {
+    let compatibility = normalize_and_validate_compatibility(compatibility)?;
+    require_exact_semantic_operation(source, &compatibility.source_operation_identity)?;
+    require_exact_semantic_operation(target, &compatibility.target_operation_identity)?;
+    if !compatibility.allowed_contexts.contains(&context) {
+        return Err(SemanticOperationError::UnsupportedCompatibilityUse { context });
+    }
+    Ok(())
+}
+
+fn normalize_and_validate_descriptor(
+    descriptor: &SemanticOperationDescriptor,
+) -> Result<SemanticOperationDescriptor, SemanticOperationError> {
+    if descriptor.schema_version != SEMANTIC_OPERATION_SCHEMA_VERSION {
+        return Err(SemanticOperationError::UnsupportedDescriptorVersion {
+            actual: descriptor.schema_version,
+        });
+    }
+    validate_domain(
+        &descriptor.effect_family_identity,
+        IdentityDomain::AlgebraicEffect,
+        "effect_family_identity",
+    )?;
+    validate_domain(
+        &descriptor.parameter_schema_identity,
+        IdentityDomain::CanonicalValue,
+        "parameter_schema_identity",
+    )?;
+    validate_domain(
+        &descriptor.result_schema_identity,
+        IdentityDomain::CanonicalValue,
+        "result_schema_identity",
+    )?;
+    if let OperationImplementation::DefaultBehavior(identity) = &descriptor.implementation {
+        validate_domain(
+            identity,
+            IdentityDomain::CanonicalValue,
+            "default_behavior_identity",
+        )?;
+    }
+    let dependency_identities = normalize_identities(
+        &descriptor.dependency_identities,
+        "dependency_identities",
+        MAX_OPERATION_DEPENDENCIES,
+        false,
+    )?;
+    Ok(SemanticOperationDescriptor {
+        schema_version: descriptor.schema_version,
+        effect_family_identity: descriptor.effect_family_identity.clone(),
+        parameter_schema_identity: descriptor.parameter_schema_identity.clone(),
+        result_schema_identity: descriptor.result_schema_identity.clone(),
+        continuation_contract: descriptor.continuation_contract.clone(),
+        replay_class: descriptor.replay_class.clone(),
+        dependency_identities,
+        implementation: descriptor.implementation.clone(),
+    })
+}
+
+fn normalize_and_validate_compatibility(
+    compatibility: &SemanticOperationCompatibility,
+) -> Result<SemanticOperationCompatibility, SemanticOperationError> {
+    if compatibility.schema_version != SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION {
+        return Err(SemanticOperationError::UnsupportedCompatibilityVersion {
+            actual: compatibility.schema_version,
+        });
+    }
+    validate_domain(
+        &compatibility.source_operation_identity,
+        IdentityDomain::EffectOperation,
+        "source_operation_identity",
+    )?;
+    validate_domain(
+        &compatibility.target_operation_identity,
+        IdentityDomain::EffectOperation,
+        "target_operation_identity",
+    )?;
+    if compatibility.source_operation_identity == compatibility.target_operation_identity {
+        return Err(SemanticOperationError::SameCompatibilityIdentity);
+    }
+    let allowed_contexts = normalize_values(
+        &compatibility.allowed_contexts,
+        "allowed_contexts",
+        MAX_COMPATIBILITY_CONTEXTS,
+        true,
+    )?;
+    let supporting_refs = normalize_identities(
+        &compatibility.supporting_refs,
+        "supporting_refs",
+        MAX_SUPPORTING_REFS,
+        true,
+    )?;
+    let diagnostics = normalize_strings(
+        &compatibility.diagnostics,
+        "diagnostics",
+        MAX_SUPPORTING_REFS,
+        false,
+    )?;
+    let non_claims = normalize_strings(
+        &compatibility.non_claims,
+        "non_claims",
+        MAX_NON_CLAIMS,
+        true,
+    )?;
+    Ok(SemanticOperationCompatibility {
+        schema_version: compatibility.schema_version,
+        source_operation_identity: compatibility.source_operation_identity.clone(),
+        target_operation_identity: compatibility.target_operation_identity.clone(),
+        allowed_contexts,
+        supporting_refs,
+        diagnostics,
+        non_claims,
+    })
+}
+
+fn validate_domain(
+    identity: &Identity,
+    expected: IdentityDomain,
+    field: &'static str,
+) -> Result<(), SemanticOperationError> {
+    identity
+        .validate_domain(expected.clone())
+        .map_err(|_| SemanticOperationError::WrongIdentityDomain { field, expected })
+}
+
+fn normalize_identities(
+    values: &[Identity],
+    field: &'static str,
+    maximum: usize,
+    require_non_empty: bool,
+) -> Result<Vec<Identity>, SemanticOperationError> {
+    normalize_values(values, field, maximum, require_non_empty)
+}
+
+fn normalize_strings(
+    values: &[String],
+    field: &'static str,
+    maximum: usize,
+    require_non_empty: bool,
+) -> Result<Vec<String>, SemanticOperationError> {
+    if values.iter().any(String::is_empty) {
+        return Err(SemanticOperationError::EmptyCollection { field });
+    }
+    normalize_values(values, field, maximum, require_non_empty)
+}
+
+fn normalize_values<T>(
+    values: &[T],
+    field: &'static str,
+    maximum: usize,
+    require_non_empty: bool,
+) -> Result<Vec<T>, SemanticOperationError>
+where
+    T: Clone + Ord,
+{
+    if require_non_empty && values.is_empty() {
+        return Err(SemanticOperationError::EmptyCollection { field });
+    }
+    if values.len() > maximum {
+        return Err(SemanticOperationError::TooManyItems {
+            field,
+            actual: values.len(),
+            maximum,
+        });
+    }
+    let normalized = values.iter().cloned().collect::<BTreeSet<_>>();
+    if normalized.len() != values.len() {
+        return Err(SemanticOperationError::DuplicateItem { field });
+    }
+    Ok(normalized.into_iter().collect())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const FAMILY_BYTES: &[u8] = b"family";
+    const PARAMETER_BYTES: &[u8] = b"parameter";
+    const RESULT_BYTES: &[u8] = b"result";
+    const BEHAVIOR_BYTES: &[u8] = b"behavior";
+    const OTHER_BEHAVIOR_BYTES: &[u8] = b"other-behavior";
+    const SUPPORT_BYTES: &[u8] = b"support";
+
+    fn descriptor() -> SemanticOperationDescriptor {
+        SemanticOperationDescriptor {
+            schema_version: SEMANTIC_OPERATION_SCHEMA_VERSION,
+            effect_family_identity: compute_identity(IdentityDomain::AlgebraicEffect, FAMILY_BYTES),
+            parameter_schema_identity: compute_identity(
+                IdentityDomain::CanonicalValue,
+                PARAMETER_BYTES,
+            ),
+            result_schema_identity: compute_identity(IdentityDomain::CanonicalValue, RESULT_BYTES),
+            continuation_contract: ContinuationContract::SingleUse,
+            replay_class: ReplayClass::Recorded,
+            dependency_identities: Vec::new(),
+            implementation: OperationImplementation::DefaultBehavior(compute_identity(
+                IdentityDomain::CanonicalValue,
+                BEHAVIOR_BYTES,
+            )),
+        }
+    }
+
+    #[test]
+    fn metadata_rename_does_not_change_semantic_identity() {
+        let result = identify_semantic_operation(&descriptor());
+        assert!(result.is_ok());
+        let Ok(identified) = result else {
+            return;
+        };
+        let first = SemanticOperationMetadata {
+            semantic_operation_identity: identified.identity.clone(),
+            display_name: "ReadConfig".to_string(),
+            aliases: Vec::new(),
+            path: None,
+            source_span: None,
+            documentation: None,
+        };
+        let mut renamed = first.clone();
+        renamed.display_name = "LoadConfig".to_string();
+        assert_eq!(
+            first.semantic_operation_identity,
+            renamed.semantic_operation_identity
+        );
+    }
+
+    #[test]
+    fn behavior_change_rekeys_operation() {
+        let first = identify_semantic_operation(&descriptor());
+        assert!(first.is_ok());
+        let Ok(first) = first else {
+            return;
+        };
+        let mut changed = descriptor();
+        changed.implementation = OperationImplementation::DefaultBehavior(compute_identity(
+            IdentityDomain::CanonicalValue,
+            OTHER_BEHAVIOR_BYTES,
+        ));
+        let second = identify_semantic_operation(&changed);
+        assert!(second.is_ok());
+        if let Ok(second) = second {
+            assert_ne!(first.identity, second.identity);
+        }
+    }
+
+    #[test]
+    fn abstract_operation_has_canonical_identity() {
+        let mut abstract_descriptor = descriptor();
+        abstract_descriptor.implementation = OperationImplementation::Abstract;
+        let result = identify_semantic_operation(&abstract_descriptor);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn exact_handler_match_passes_and_stale_match_fails() {
+        let requested = identify_semantic_operation(&descriptor());
+        assert!(requested.is_ok());
+        let Ok(requested) = requested else {
+            return;
+        };
+        let requested = requested.identity;
+        assert!(require_exact_semantic_operation(&requested, &requested).is_ok());
+        let stale = compute_identity(IdentityDomain::EffectOperation, b"stale");
+        assert!(matches!(
+            require_exact_semantic_operation(&requested, &stale),
+            Err(SemanticOperationError::OperationMismatch { .. })
+        ));
+    }
+
+    #[test]
+    fn directional_replay_compatibility_does_not_admit_live_execution() {
+        let source = compute_identity(IdentityDomain::EffectOperation, b"old");
+        let target = identify_semantic_operation(&descriptor());
+        assert!(target.is_ok());
+        let Ok(target) = target else {
+            return;
+        };
+        let target = target.identity;
+        let compatibility = SemanticOperationCompatibility {
+            schema_version: SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION,
+            source_operation_identity: source.clone(),
+            target_operation_identity: target.clone(),
+            allowed_contexts: vec![CompatibilityContext::Replay],
+            supporting_refs: vec![compute_identity(
+                IdentityDomain::EvidenceChain,
+                SUPPORT_BYTES,
+            )],
+            diagnostics: vec!["reviewed replay substitution".to_string()],
+            non_claims: vec!["not host authority".to_string()],
+        };
+        assert!(identify_semantic_operation_compatibility(&compatibility).is_ok());
+        assert!(
+            admit_semantic_operation_compatibility(
+                &compatibility,
+                &source,
+                &target,
+                CompatibilityContext::Replay,
+            )
+            .is_ok()
+        );
+        assert!(matches!(
+            admit_semantic_operation_compatibility(
+                &compatibility,
+                &source,
+                &target,
+                CompatibilityContext::LiveHostExecution,
+            ),
+            Err(SemanticOperationError::UnsupportedCompatibilityUse { .. })
+        ));
+        assert!(matches!(
+            admit_semantic_operation_compatibility(
+                &compatibility,
+                &target,
+                &source,
+                CompatibilityContext::Replay,
+            ),
+            Err(SemanticOperationError::OperationMismatch { .. })
+        ));
+    }
+
+    #[test]
+    fn rejects_wrong_nominal_family_domain() {
+        let mut invalid = descriptor();
+        invalid.effect_family_identity = compute_identity(IdentityDomain::CanonicalValue, b"wrong");
+        assert!(matches!(
+            identify_semantic_operation(&invalid),
+            Err(SemanticOperationError::WrongIdentityDomain {
+                field: "effect_family_identity",
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn dependency_order_is_canonical_and_duplicates_fail() {
+        let first_dependency = compute_identity(IdentityDomain::Source, b"a");
+        let second_dependency = compute_identity(IdentityDomain::Source, b"b");
+        let mut first = descriptor();
+        first.dependency_identities = vec![second_dependency.clone(), first_dependency.clone()];
+        let mut second = descriptor();
+        second.dependency_identities = vec![first_dependency.clone(), second_dependency];
+        let first_identity = identify_semantic_operation(&first);
+        let second_identity = identify_semantic_operation(&second);
+        assert!(first_identity.is_ok());
+        assert!(second_identity.is_ok());
+        if let (Ok(first_identity), Ok(second_identity)) = (first_identity, second_identity) {
+            assert_eq!(first_identity.identity, second_identity.identity);
+        }
+        second.dependency_identities = vec![first_dependency.clone(), first_dependency];
+        assert!(matches!(
+            identify_semantic_operation(&second),
+            Err(SemanticOperationError::DuplicateItem {
+                field: "dependency_identities"
+            })
+        ));
+    }
+}

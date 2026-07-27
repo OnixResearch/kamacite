@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "semantic-effect-operation-compatibility"
+  version: "v1"
+  schema-id: "kamacite.semantic-effect-operation-compatibility.v1"
+  record-label: "kamacite-semantic-effect-operation-compatibility-v1"
+  fields: ["schema-version" "source-operation-identity" "target-operation-identity" "allowed-contexts" "supporting-refs" "diagnostics" "non-claims"]
+  identity-domain: "evidence-chain"
+  identity: "blake3(canonical packed Preserves compatibility bytes)"
+  direction: "source-to-target only"
+  non-claims: ["not bidirectional equivalence" "not handler correctness" "not host capability" "not runtime authority" "not replay truth" "not release eligibility"]
+}>

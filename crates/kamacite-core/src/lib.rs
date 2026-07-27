@@ -20,6 +20,7 @@ mod nickel_sandbox;
 mod preserves_codec;
 mod proof_evidence;
 mod receipt;
+mod semantic_operation;
 mod spacewasm;
 mod spacewasm_valence;
 mod steel_execution;
@@ -140,6 +141,16 @@ pub use proof_evidence::{
     validate_trellis_proof_evidence_json_projection,
 };
 pub use receipt::{ReceiptBody, ReceiptEnvelope, ReceiptError, canonical_json_bytes, receipt_json};
+pub use semantic_operation::{
+    CompatibilityContext, ContinuationContract, IdentifiedSemanticOperation,
+    IdentifiedSemanticOperationCompatibility, MAX_COMPATIBILITY_CONTEXTS, MAX_NON_CLAIMS,
+    MAX_OPERATION_DEPENDENCIES, MAX_SUPPORTING_REFS, OperationImplementation, ReplayClass,
+    SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL, SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION,
+    SEMANTIC_OPERATION_ROOT_LABEL, SEMANTIC_OPERATION_SCHEMA_VERSION,
+    SemanticOperationCompatibility, SemanticOperationDescriptor, SemanticOperationError,
+    SemanticOperationMetadata, admit_semantic_operation_compatibility, identify_semantic_operation,
+    identify_semantic_operation_compatibility, require_exact_semantic_operation,
+};
 pub use spacewasm::{
     SPACEWASM_ABI_PROFILE_ID, SPACEWASM_ADAPTER_KIND, SPACEWASM_ARTIFACT_KIND,
     SPACEWASM_DESCRIPTOR_SCHEMA, SPACEWASM_MANTLE_BUNDLE_ID, SPACEWASM_MANTLE_REVISION,

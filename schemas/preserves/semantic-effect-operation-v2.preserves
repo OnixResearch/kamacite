@@ -1,0 +1,12 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "semantic-effect-operation"
+  version: "v2"
+  schema-id: "kamacite.semantic-effect-operation.v2"
+  record-label: "kamacite-semantic-effect-operation-v2"
+  fields: ["schema-version" "effect-family-identity" "parameter-schema-identity" "result-schema-identity" "continuation-contract" "replay-class" "dependency-identities" "implementation"]
+  identity-domain: "effect-operation"
+  identity: "blake3(canonical packed Preserves descriptor bytes)"
+  implementation-alternatives: ["default-behavior identity" "explicit abstract marker"]
+  excluded-metadata: ["display name" "aliases" "path" "source span" "documentation"]
+  non-claims: ["not handler correctness" "not default-behavior correctness" "not semantic equivalence" "not host capability" "not runtime authority" "not release eligibility"]
+}>

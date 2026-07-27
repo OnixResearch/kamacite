@@ -212,6 +212,7 @@ The split does not relicense third-party dependencies or generated artifacts, re
 
 ## References
 
+- [PsychoLlama/ambient](https://github.com/PsychoLlama/ambient) — design reference for nominal ability identity, semantic operation keys that include default behavior, names as metadata, and fail-loud handler drift. Kamacite adopts only bounded canonical-data identity ideas, not Ambient syntax, VM/runtime semantics, mobile code, live deployment, or trust claims.
 - [`../valence/`](../valence/) — sibling evidence identity layer that should consume or wrap Kamacite receipts without owning Kamacite's source/value interchange semantics.
 - [`../octet/`](../octet/) — sibling checked path whose pinned `spacewasm-mvp` rail supplies execution-free exact-byte and interface evidence without transferring runtime correctness.
 - [`../aspen/`](../aspen/) — sibling Molten runtime that supplies the pinned WIT/Wasmtime component cohort and may consume Kamacite algebraic-effect descriptors, handler profiles, and effect logs without owning Kamacite's canonical value or effect schemas.
