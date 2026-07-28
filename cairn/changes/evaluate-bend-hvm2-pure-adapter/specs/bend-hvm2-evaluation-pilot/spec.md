@@ -40,39 +40,55 @@ r[kamacite.bend_hvm2_pilot.cohort] The pilot MUST bind Bend 0.2.38 at revision `
 
 ### Requirement: The workload is pure and numerically explicit
 
-r[kamacite.bend_hvm2_pilot.workload] The first pilot MUST use one finite recursive tree reduction or bounded state-search workload. The Bend source MUST include public type annotations, MUST reject explicit `Any`, MUST declare `u24` modulo semantics, and MUST receive no I/O or host authority.
+r[kamacite.bend_hvm2_pilot.workload] The first pilot MUST reduce one ordered non-empty power-of-two leaf vector through a finite balanced binary tree using declared `u24` wrapping addition. The vector MUST fit a caller-declared leaf limit. The Bend source MUST include public type annotations, MUST reject explicit `Any`, and MUST receive no I/O or host authority.
 
-#### Scenario: Pure workload is admitted
+#### Scenario: Pure balanced workload is admitted
 
-- GIVEN the source, workload descriptor, inputs, bounds, annotations, and numeric policy match the reviewed profile
+- GIVEN the source, ordered leaves, power-of-two length, leaf limit, annotations, and `u24` policy match the reviewed profile
 - WHEN workload admission runs
 - THEN Kamacite MAY construct an evaluation plan without granting host capabilities.
 
-#### Scenario: Source requests an unsupported feature
+#### Scenario: Source or input violates the profile
 
-- GIVEN the source omits a required annotation, uses explicit `Any`, changes numeric semantics, requests I/O, or requests host authority
+- GIVEN the source omits a required annotation, uses explicit `Any`, changes numeric semantics, requests I/O or host authority, or receives empty, non-power-of-two, over-limit, or out-of-domain input
 - WHEN workload admission runs
 - THEN Kamacite MUST deny before Bend execution.
 
 ### Requirement: An independent Rust oracle participates
 
-r[kamacite.bend_hvm2_pilot.oracle] The pilot MUST implement the admitted workload in an optimized pure Rust oracle that does not call Bend or HVM2. A passing result MUST require canonical equality between the Rust oracle, `bend run-rs`, and the executable produced through `bend gen-c` and the pinned C compiler.
+r[kamacite.bend_hvm2_pilot.oracle] The pilot MUST execute the exact Trellis optimized iterative `u24` sum oracle over the same canonical leaf vector used by both Bend routes. The oracle MUST NOT call Bend or HVM2. A passing result MUST require canonical equality between the Trellis oracle, `bend run-rs`, and the executable produced through `bend gen-c` and the pinned C compiler.
 
 #### Scenario: All three routes agree
 
-- GIVEN the Rust oracle and both Bend routes receive the same admitted input and numeric policy
+- GIVEN the Trellis oracle and both Bend routes receive the same admitted canonical leaf vector and numeric policy
 - WHEN result comparison runs
 - THEN Kamacite MAY continue only if all canonical outputs are equal.
 
-#### Scenario: Bend routes agree but Rust differs
+#### Scenario: Bend routes agree but the oracle differs
 
-- GIVEN `bend run-rs` and generated C return the same value while the independent Rust oracle returns a different value
+- GIVEN `bend run-rs` and generated C return the same value while the Trellis oracle returns a different value
 - WHEN result comparison runs
 - THEN Kamacite MUST deny a passing receipt and record the disagreement.
 
+### Requirement: Trellis oracle evidence is exact and locally validated
+
+r[kamacite.bend_hvm2_pilot.trellis_oracle_evidence] The pilot MUST bind the exact Trellis source revision, algorithm profile, executable oracle symbol, requirement and proof set, verifier, proof-gap references, BLAKE3 proof-evidence identity, claims, and non-claims. Kamacite MUST validate or rerun the required proof receipt through its pinned Nix environment before assigning a verified-oracle role.
+
+#### Scenario: Exact proof handoff passes
+
+- GIVEN every Trellis source, profile, symbol, proof, verifier, proof-gap, identity, non-claim, and downstream receipt fact matches
+- WHEN proof-handoff admission runs
+- THEN Kamacite MAY mark the Rust path as a verified Trellis-local oracle.
+
+#### Scenario: Proof handoff drifts or overclaims
+
+- GIVEN a required Trellis fact is missing or different, the proof rerun fails, or metadata promotes the local theorem to Bend or HVM correctness
+- WHEN proof-handoff admission runs
+- THEN Kamacite MUST deny verified-oracle status and MUST deny an `adopt` decision.
+
 ### Requirement: Pilot decisions use a functional core
 
-r[kamacite.bend_hvm2_pilot.functional_core] Cohort, profile, source metadata, annotation policy, numeric semantics, artifact links, resource facts, observations, backend equality, benchmark policy, decision, receipt, and Valence projection validation MUST be pure deterministic logic over explicit inputs.
+r[kamacite.bend_hvm2_pilot.functional_core] Cohort, Trellis proof-handoff, profile, source metadata, annotation policy, numeric semantics, artifact links, resource facts, observations, backend equality, benchmark policy, decision, receipt, and Valence projection validation MUST be pure deterministic logic over explicit inputs.
 
 #### Scenario: Equal facts produce equal decisions
 
@@ -88,7 +104,7 @@ r[kamacite.bend_hvm2_pilot.functional_core] Cohort, profile, source metadata, an
 
 ### Requirement: Pilot evidence binds execution and non-claims
 
-r[kamacite.bend_hvm2_pilot.evidence] Each run and decision receipt MUST bind the exact cohort, source envelope, workload and numeric policy, input, command profile, generated artifacts, compiler and target, executable, bounded stdout and stderr, exit class, canonical output, resource observations, interaction counts when available, parent identities, checked laws, and explicit non-claims.
+r[kamacite.bend_hvm2_pilot.evidence] Each run and decision receipt MUST bind the exact cohort, Trellis proof artifact and downstream receipt, source envelope, workload and numeric policy, canonical leaf input, command profile, generated artifacts, compiler and target, executable, bounded stdout and stderr, exit class, canonical output, resource observations, interaction counts when available, parent identities, checked laws, and explicit non-claims.
 
 #### Scenario: Complete run evidence is recorded
 
@@ -104,7 +120,7 @@ r[kamacite.bend_hvm2_pilot.evidence] Each run and decision receipt MUST bind the
 
 ### Requirement: Benchmark admission is declared before execution
 
-r[kamacite.bend_hvm2_pilot.benchmark] A typed Nickel policy MUST declare the workload, host profile, repetition policy, warm-up handling, summary statistic, variance limit, resource limits, and performance target against optimized Rust before measured Bend execution. Benchmark admission MUST treat wall time, memory, and interaction counts as observations for the exact cohort only.
+r[kamacite.bend_hvm2_pilot.benchmark] A typed Nickel policy MUST declare the workload, host profile, repetition policy, warm-up handling, summary statistic, variance limit, resource limits, and performance target against the verified optimized Rust oracle before measured Bend execution. Benchmark admission MUST treat wall time, memory, and interaction counts as observations for the exact cohort only.
 
 #### Scenario: Stable measurements meet the policy
 
@@ -120,7 +136,7 @@ r[kamacite.bend_hvm2_pilot.benchmark] A typed Nickel policy MUST declare the wor
 
 ### Requirement: The pilot has positive and negative fixtures
 
-r[kamacite.bend_hvm2_pilot.fixtures] The pilot MUST include positive fixtures for the admitted workload and exact three-route equality. It MUST include negative fixtures for cohort drift, license or attribution omission, annotation and `Any` violations, numeric-policy drift, forbidden authority, malformed artifacts, tool failures, resource limits, output disagreement, unstable measurements, stale receipts, and semantic overclaims.
+r[kamacite.bend_hvm2_pilot.fixtures] The pilot MUST include positive fixtures for exact Trellis proof handoff, admitted workload, canonical input mapping, and three-route equality. It MUST include negative fixtures for cohort or proof drift, failed proof rerun, license or attribution omission, input-mapping drift, empty or non-power-of-two input, leaf-limit or `u24` violation, annotation and `Any` violations, forbidden authority, malformed artifacts, tool failures, resource limits, output disagreement, unstable measurements, stale receipts, and semantic overclaims.
 
 #### Scenario: Positive fixture completes
 
@@ -140,7 +156,7 @@ r[kamacite.bend_hvm2_pilot.promotion] The completed pilot MUST emit exactly one 
 
 #### Scenario: Pilot reaches adopt
 
-- GIVEN equality, fixture, resource, stability, performance, lifecycle, and evidence gates pass
+- GIVEN Trellis proof-handoff, equality, fixture, resource, stability, performance, lifecycle, and evidence gates pass
 - WHEN the final decision is constructed
 - THEN Kamacite MAY emit `adopt` as evaluation evidence without changing a consumer runtime.
 
@@ -152,7 +168,7 @@ r[kamacite.bend_hvm2_pilot.promotion] The completed pilot MUST emit exactly one 
 
 ### Requirement: Pilot validation is reviewable
 
-r[kamacite.bend_hvm2_pilot.validation] Changes to pilot schemas, profiles, source admission, pure decisions, shell execution, observations, receipts, fixtures, projections, packaging, or policy MUST run focused positive and negative tests, manifest freshness, adapter validation, Valence projection conformance, Clippy and Octet policy, lifecycle validation, Cairn gates, and relevant Nix checks.
+r[kamacite.bend_hvm2_pilot.validation] Changes to pilot schemas, profiles, Trellis proof handoff, source admission, pure decisions, shell execution, observations, receipts, fixtures, projections, packaging, or policy MUST run focused positive and negative tests, the pinned Trellis proof validation or rerun, manifest freshness, adapter validation, Valence projection conformance, Clippy and Octet policy, lifecycle validation, Cairn gates, and relevant Nix checks.
 
 #### Scenario: Pilot evidence is assembled
 
