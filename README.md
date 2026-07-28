@@ -366,5 +366,7 @@ The split does not change third-party licenses, generated artifacts, prior grant
 - [mozilla/cargo-vet](https://github.com/mozilla/cargo-vet), [EmbarkStudios/cargo-deny](https://github.com/EmbarkStudios/cargo-deny), and [rust-secure-code/cargo-auditable](https://github.com/rust-secure-code/cargo-auditable) — dependency and provenance references.
 - [model-checking/kani](https://github.com/model-checking/kani), [viperproject/prusti-dev](https://github.com/viperproject/prusti-dev), and [creusot-rs/creusot](https://github.com/creusot-rs/creusot) — Rust verification references.
 - [zkat/miette](https://github.com/zkat/miette), [mitsuhiko/insta](https://github.com/mitsuhiko/insta), [assert-rs/snapbox](https://github.com/assert-rs/snapbox), and [assert-rs/trycmd](https://github.com/assert-rs/trycmd) — diagnostics and fixture-test references.
+- [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — evaluation-only pure parallel-language and source-envelope reference.
+- [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — evaluation-only CPU runtime and generated-C target reference.
 
 These references do not transfer runtime, compiler, security, semantic, production, or release claims into Kamacite.
