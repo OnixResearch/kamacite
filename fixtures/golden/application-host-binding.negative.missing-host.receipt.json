@@ -1,0 +1,49 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "application-host-binding.negative.missing-host",
+    "artifact_class": "application-host-binding",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.application_host_binding.fixtures]",
+      "r[kamacite.application_host_binding.host_selection]"
+    ],
+    "input_identities": {},
+    "output_identities": {
+      "application-host-binding-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "6d3df90d9f78b49488f6ce59db26d1b27c132f4c4acd2aa2ad13f4cefaddd776"
+      }
+    },
+    "checked_laws": [
+      "missing-host-fails-closed",
+      "r[kamacite.application_host_binding.artifact]",
+      "r[kamacite.application_host_binding.boundary]",
+      "r[kamacite.application_host_binding.cohorts]",
+      "r[kamacite.application_host_binding.effects]",
+      "r[kamacite.application_host_binding.host_selection]",
+      "r[kamacite.application_host_binding.projection]",
+      "r[kamacite.application_host_binding.receipt]"
+    ],
+    "diagnostics": [
+      {
+        "code": "missing-input",
+        "requirement_id": "r[kamacite.application_host_binding.host_selection]",
+        "field": "binding.host_profile_identities",
+        "message": "one explicit host profile is required",
+        "details": {}
+      }
+    ],
+    "non_claims": [
+      "missing host selection cannot execute",
+      "not host authorization"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "d18d6405ecabd8ed8081cf6550eb00ab56fbec108f63c5fd1535ae9450d8b078"
+  }
+}

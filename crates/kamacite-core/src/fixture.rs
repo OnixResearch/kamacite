@@ -1,3 +1,7 @@
+use crate::application_host_binding::{
+    ApplicationHostBindingIssueCode, ApplicationHostBindingValidationInput,
+    build_application_host_binding_receipt, project_application_host_binding_to_valence,
+};
 use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
@@ -299,6 +303,7 @@ pub enum ArtifactClass {
     DocumentationOutput,
     DocumentationCell,
     DocumentationReceipt,
+    ApplicationHostBinding,
 }
 
 impl ArtifactClass {
@@ -321,6 +326,7 @@ impl ArtifactClass {
             Self::DocumentationOutput => "documentation-output",
             Self::DocumentationCell => "documentation-cell",
             Self::DocumentationReceipt => "documentation-receipt",
+            Self::ApplicationHostBinding => "application-host-binding",
         }
     }
 }
@@ -359,6 +365,7 @@ pub enum FixturePayload {
     DocumentationOutput(Box<DocumentationOutputInput>),
     DocumentationCell(Box<DocumentationCellInput>),
     DocumentationReceipt(Box<DocumentationReceiptInput>),
+    ApplicationHostBinding(Box<ApplicationHostBindingValidationInput>),
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -1421,12 +1428,102 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         FixturePayload::DocumentationReceipt(input) => {
             validate_documentation_receipt(input, &mut accumulator)
         }
+        FixturePayload::ApplicationHostBinding(input) => {
+            validate_application_host_binding_fixture(input, &mut accumulator)
+        }
     }
 
     accumulator
         .checked_laws
         .extend(fixture.checked_laws.clone());
     finish_result(fixture, accumulator)
+}
+
+fn validate_application_host_binding_fixture(
+    input: &ApplicationHostBindingValidationInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let result = build_application_host_binding_receipt(input);
+    let Ok((validation, receipt)) = result else {
+        accumulator.diagnostics.push(Diagnostic::new(
+            DiagnosticCode::CanonicalContentMismatch,
+            "r[kamacite.application_host_binding.receipt]",
+            "application_host_binding.receipt",
+            "application-host binding receipt canonicalization failed",
+        ));
+        return;
+    };
+    accumulator
+        .checked_laws
+        .extend(validation.checked_rules.clone());
+    if let Some(binding) = &validation.binding {
+        accumulator.output_identities.insert(
+            "application-host-binding".to_string(),
+            binding.identity.clone(),
+        );
+    }
+    accumulator.output_identities.insert(
+        "application-host-binding-receipt".to_string(),
+        receipt.receipt_identity.clone(),
+    );
+    for diagnostic in validation.diagnostics {
+        accumulator.diagnostics.push(Diagnostic::new(
+            binding_fixture_diagnostic_code(&diagnostic.code),
+            diagnostic.requirement_id,
+            diagnostic.field,
+            diagnostic.message,
+        ));
+    }
+    if validation.binding.is_some() {
+        match project_application_host_binding_to_valence(&receipt) {
+            Ok(projection) => {
+                accumulator.output_identities.insert(
+                    "application-host-binding-valence-projection".to_string(),
+                    projection.projection_identity,
+                );
+            }
+            Err(_) => accumulator.diagnostics.push(Diagnostic::new(
+                DiagnosticCode::CanonicalContentMismatch,
+                "r[kamacite.application_host_binding.projection]",
+                "application_host_binding.valence_projection",
+                "accepted application-host binding projection failed",
+            )),
+        }
+    }
+}
+
+fn binding_fixture_diagnostic_code(code: &ApplicationHostBindingIssueCode) -> DiagnosticCode {
+    match code {
+        ApplicationHostBindingIssueCode::UnsupportedSchemaVersion => {
+            DiagnosticCode::UnsupportedSchemaVersion
+        }
+        ApplicationHostBindingIssueCode::WrongIdentityDomain
+        | ApplicationHostBindingIssueCode::InvalidIdentity => {
+            DiagnosticCode::IdentityDomainMismatch
+        }
+        ApplicationHostBindingIssueCode::HostSelectionMissing => DiagnosticCode::MissingInput,
+        ApplicationHostBindingIssueCode::HostSelectionAmbiguous => DiagnosticCode::AmbiguousClaim,
+        ApplicationHostBindingIssueCode::EffectSummaryOpen => DiagnosticCode::OpenRowNotPure,
+        ApplicationHostBindingIssueCode::EffectSummaryUnknown => {
+            DiagnosticCode::UnknownEffectOperation
+        }
+        ApplicationHostBindingIssueCode::EffectOperationUndeclared => {
+            DiagnosticCode::UndeclaredEffectOperation
+        }
+        ApplicationHostBindingIssueCode::CohortMismatch => DiagnosticCode::StaleIdentity,
+        ApplicationHostBindingIssueCode::DuplicateItem => DiagnosticCode::DuplicateArtifactIdentity,
+        ApplicationHostBindingIssueCode::ItemLimitExceeded => DiagnosticCode::ResourceLimitExceeded,
+        ApplicationHostBindingIssueCode::MissingNonClaim => DiagnosticCode::MissingNonClaim,
+        ApplicationHostBindingIssueCode::UnsafeDiagnostic => {
+            DiagnosticCode::MalformedProjectionOutput
+        }
+        ApplicationHostBindingIssueCode::AuthorityOverclaim => {
+            DiagnosticCode::HostCapabilityConfusion
+        }
+        ApplicationHostBindingIssueCode::CanonicalizationFailed => {
+            DiagnosticCode::CanonicalContentMismatch
+        }
+    }
 }
 
 fn validate_common_metadata(fixture: &FixtureCase, accumulator: &mut ValidationAccumulator) {

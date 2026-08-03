@@ -1,0 +1,150 @@
+{
+  "binding": {
+    "schema_version": 1,
+    "application_artifact_identity": {
+      "domain": "target-artifact",
+      "algorithm": "blake3",
+      "hex": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "entrypoint_identity": {
+      "domain": "function-address",
+      "algorithm": "blake3",
+      "hex": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "input_schema_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "output_schema_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "effect_summary": {
+      "identity": {
+        "domain": "algebraic-effect",
+        "algorithm": "blake3",
+        "hex": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "closed": true,
+      "unknown": false,
+      "operation_identities": [
+        {
+          "domain": "effect-operation",
+          "algorithm": "blake3",
+          "hex": "6666666666666666666666666666666666666666666666666666666666666666"
+        }
+      ],
+      "declared_operation_identities": [
+        {
+          "domain": "effect-operation",
+          "algorithm": "blake3",
+          "hex": "6666666666666666666666666666666666666666666666666666666666666666"
+        }
+      ]
+    },
+    "host_profile_identities": [],
+    "adapter_cohort_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "8888888888888888888888888888888888888888888888888888888888888888"
+    },
+    "resource_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    "policy_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "compatibility_identities": [
+      {
+        "domain": "evidence-chain",
+        "algorithm": "blake3",
+        "hex": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "non_claims": [
+      "not application correctness",
+      "not effect completeness beyond supplied evidence",
+      "not host authorization",
+      "not host behavior",
+      "not release eligibility",
+      "not resource enforcement",
+      "not runtime success",
+      "not sandbox enforcement"
+    ]
+  },
+  "reviewed_cohort": {
+    "application_artifact_identity": {
+      "domain": "target-artifact",
+      "algorithm": "blake3",
+      "hex": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "entrypoint_identity": {
+      "domain": "function-address",
+      "algorithm": "blake3",
+      "hex": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "input_schema_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "output_schema_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "effect_summary_identity": {
+      "domain": "algebraic-effect",
+      "algorithm": "blake3",
+      "hex": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "effect_operation_identities": [
+      {
+        "domain": "effect-operation",
+        "algorithm": "blake3",
+        "hex": "6666666666666666666666666666666666666666666666666666666666666666"
+      }
+    ],
+    "host_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "7777777777777777777777777777777777777777777777777777777777777777"
+    },
+    "adapter_cohort_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "8888888888888888888888888888888888888888888888888888888888888888"
+    },
+    "resource_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "9999999999999999999999999999999999999999999999999999999999999999"
+    },
+    "policy_identity": {
+      "domain": "canonical-value",
+      "algorithm": "blake3",
+      "hex": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "compatibility_identities": [
+      {
+        "domain": "evidence-chain",
+        "algorithm": "blake3",
+        "hex": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ]
+  },
+  "metadata": {
+    "display_name": "Deterministic fake-backed headless entrypoint",
+    "aliases": ["headless"],
+    "help_text": "Runs one deterministic fixture-backed turn.",
+    "source_spans": ["animus:fixture"],
+    "diagnostics": ["producer fixture is frozen"]
+  },
+  "claimed_authorities": []
+}

@@ -108,6 +108,7 @@ const DOMAIN_DOCUMENTATION_OUTPUT: &str = "documentation-output";
 const DOMAIN_DOCUMENTATION_FACTS: &str = "documentation-facts";
 const DOMAIN_DIALECT_PAYLOAD: &str = "dialect-payload";
 const DOMAIN_EVIDENCE_CHAIN: &str = "evidence-chain";
+const DOMAIN_APPLICATION_HOST_BINDING: &str = "application-host-binding";
 const DEFAULT_NICKEL_EVALUATOR_COMMAND: &str = "nickel";
 const DEFAULT_NICKEL_SANDBOX_COMMAND: &str = "bwrap";
 const DEFAULT_NICKEL_LIMIT_COMMAND: &str = "prlimit";
@@ -649,6 +650,9 @@ enum PayloadProjection {
         source_spans_path: Option<String>,
         semantic_claims: Vec<String>,
         declared_export_identity: Option<Identity>,
+    },
+    ApplicationHostBinding {
+        input_path: String,
     },
     AlgebraicEffect {
         schema_version: u32,
@@ -1439,6 +1443,7 @@ fn parse_domain(value: &str) -> CliResult<IdentityDomain> {
         DOMAIN_DOCUMENTATION_FACTS => Ok(IdentityDomain::DocumentationFacts),
         DOMAIN_DIALECT_PAYLOAD => Ok(IdentityDomain::DialectPayload),
         DOMAIN_EVIDENCE_CHAIN => Ok(IdentityDomain::EvidenceChain),
+        DOMAIN_APPLICATION_HOST_BINDING => Ok(IdentityDomain::ApplicationHostBinding),
         unknown => Err(CliError(format!("unknown identity domain: {unknown}"))),
     }
 }
@@ -3296,6 +3301,13 @@ fn materialize_fixture(
         PayloadProjection::IdentityUse(input) => FixturePayload::IdentityUse(input.clone()),
         PayloadProjection::CapabilityShell(input) => FixturePayload::CapabilityShell(input.clone()),
         PayloadProjection::StackEvidence(input) => FixturePayload::StackEvidence(input.clone()),
+        PayloadProjection::ApplicationHostBinding { input_path } => {
+            FixturePayload::ApplicationHostBinding(Box::new(read_manifest_json(
+                root,
+                input_path,
+                "application-host binding input",
+            )?))
+        }
         PayloadProjection::FsmSpec { .. } => {
             let descriptor = fsm_descriptors.get(&projection.id).ok_or_else(|| {
                 CliError(format!(

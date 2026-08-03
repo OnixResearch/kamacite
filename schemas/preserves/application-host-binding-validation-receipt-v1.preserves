@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "application-host-binding-validation-receipt"
+  version: "v1"
+  schema-id: "kamacite.application-host-binding-validation-receipt.v1"
+  record-label: "kamacite-application-host-binding-validation-receipt-v1"
+  fields: ["input-identities" "binding-identity" "verdict" "diagnostics" "checked-rules" "policy-identity" "source-spans" "non-claims"]
+  identity-domain: "receipt"
+  identity: "blake3(canonical packed Preserves receipt bytes)"
+  diagnostic-posture: "deterministic safe field and issue codes"
+  non-claims: ["not execution evidence" "not host authorization" "not application correctness" "not runtime correctness" "not release eligibility"]
+}>

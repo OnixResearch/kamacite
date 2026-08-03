@@ -61,6 +61,7 @@ let IdentityDomain = OneOf [
   "documentation-facts",
   "dialect-payload",
   "evidence-chain",
+  "application-host-binding",
 ] in
 
 let Identity = {
@@ -559,6 +560,11 @@ let AlgebraicEffect = Tagged {
   admitted_host_capabilities | StringArray,
 } in
 
+let ApplicationHostBinding = Tagged {
+  kind = "application-host-binding",
+  input_path | String,
+} in
+
 let Payload = std.contract.any_of [
   SourceEnvelope,
   CanonicalValue,
@@ -579,6 +585,7 @@ let Payload = std.contract.any_of [
   DocumentationReceipt,
   ValenceReceiptExport,
   AlgebraicEffect,
+  ApplicationHostBinding,
 ] in
 
 let Fixture = {
@@ -602,6 +609,7 @@ let Fixture = {
     "documentation-output",
     "documentation-cell",
     "documentation-receipt",
+    "application-host-binding",
   ],
   requirement_ids | StringArray,
   non_claims | StringArray,

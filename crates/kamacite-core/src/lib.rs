@@ -6,6 +6,7 @@
 #![deny(clippy::unreachable)]
 #![deny(clippy::unwrap_used)]
 
+mod application_host_binding;
 mod ast_grep_audit;
 mod diagnostic;
 mod dialect_roundtrip;
@@ -29,6 +30,25 @@ mod valence_export;
 mod wasm_component;
 mod wasm_component_valence;
 
+pub use application_host_binding::{
+    APPLICATION_HOST_BINDING_PRESERVES_SCHEMA, APPLICATION_HOST_BINDING_RECEIPT_ROOT_LABEL,
+    APPLICATION_HOST_BINDING_RECEIPT_SCHEMA, APPLICATION_HOST_BINDING_REQUIRED_NON_CLAIMS,
+    APPLICATION_HOST_BINDING_ROOT_LABEL, APPLICATION_HOST_BINDING_SCHEMA_VERSION,
+    APPLICATION_HOST_BINDING_VALENCE_ROOT_LABEL, APPLICATION_HOST_BINDING_VALENCE_SCHEMA,
+    ApplicationEffectSummaryInput, ApplicationHostBinding, ApplicationHostBindingCohort,
+    ApplicationHostBindingDiagnostic, ApplicationHostBindingDraft, ApplicationHostBindingError,
+    ApplicationHostBindingIdentityRef, ApplicationHostBindingIssueCode,
+    ApplicationHostBindingMetadata, ApplicationHostBindingReceipt,
+    ApplicationHostBindingReceiptBody, ApplicationHostBindingRole,
+    ApplicationHostBindingValenceArtifact, ApplicationHostBindingValenceProjection,
+    ApplicationHostBindingValenceProjectionBody, ApplicationHostBindingValidation,
+    ApplicationHostBindingValidationInput, ApplicationHostBindingVerdict,
+    IdentifiedApplicationHostBinding, MAX_BINDING_COMPATIBILITY_IDENTITIES,
+    MAX_BINDING_DIAGNOSTIC_BYTES, MAX_BINDING_HOST_PROFILES, MAX_BINDING_METADATA_ITEMS,
+    MAX_BINDING_NON_CLAIMS, MAX_BINDING_OPERATIONS, build_application_host_binding_receipt,
+    project_application_host_binding_to_valence, validate_application_host_binding,
+    verify_application_host_binding_receipt,
+};
 pub use ast_grep_audit::{
     AST_GREP_AUDIT_SCHEMA_VERSION, AST_GREP_BOUNDARY_ROLE, AST_GREP_RECORDED_ONLY_ROLE,
     AST_GREP_VALENCE_SCHEMA_VERSION, AstGrepAuditInput, AstGrepCodemodArtifact, AstGrepFinding,

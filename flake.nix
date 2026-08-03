@@ -85,6 +85,11 @@
             program = "${self.packages.${system}.kamacite}/bin/kamacite-validate";
             meta.description = "Run the Kamacite validation CLI by its Cargo binary name";
           };
+          kamacite-application-host-binding = {
+            type = "app";
+            program = "${self.packages.${system}.kamacite}/bin/kamacite-application-host-binding";
+            meta.description = "Validate one canonical application-host binding";
+          };
           lifecycle-validate = {
             type = "app";
             program = "${self.packages.${system}.lifecycle-validate}/bin/kamacite-lifecycle-validate";

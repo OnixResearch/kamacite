@@ -8260,6 +8260,62 @@
         "r[kamacite.ast_grep_adapter_audits.fixtures]",
         "r[kamacite.ast_grep_adapter_audits.valence_export]"
       ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "canonical-identity",
+        "closed-effect-summary",
+        "exact-host-selection",
+        "exact-reviewed-cohort",
+        "authority-free-binding",
+        "valence-role-projection"
+      ],
+      "expected_verdict": "accepted",
+      "fixture_class": "positive",
+      "golden_receipt": "fixtures/golden/application-host-binding.positive.closed-effect.receipt.json",
+      "id": "application-host-binding.positive.closed-effect",
+      "non_claims": [
+        "not application correctness",
+        "not host authorization",
+        "not runtime success"
+      ],
+      "payload": {
+        "input_path": "fixtures/application-host-binding/valid-closed-effect.json",
+        "kind": "application-host-binding"
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.artifact]",
+        "r[kamacite.application_host_binding.host_selection]",
+        "r[kamacite.application_host_binding.effects]",
+        "r[kamacite.application_host_binding.cohorts]",
+        "r[kamacite.application_host_binding.boundary]",
+        "r[kamacite.application_host_binding.receipt]",
+        "r[kamacite.application_host_binding.projection]",
+        "r[kamacite.application_host_binding.fixtures]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "missing-host-fails-closed"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.missing-host.receipt.json",
+      "id": "application-host-binding.negative.missing-host",
+      "non_claims": [
+        "missing host selection cannot execute",
+        "not host authorization"
+      ],
+      "payload": {
+        "input_path": "fixtures/application-host-binding/missing-host.json",
+        "kind": "application-host-binding"
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.host_selection]",
+        "r[kamacite.application_host_binding.fixtures]"
+      ]
     }
   ],
   "schema_version": 2

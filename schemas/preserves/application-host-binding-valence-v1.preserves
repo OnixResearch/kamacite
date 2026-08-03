@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "application-host-binding-valence-projection"
+  version: "v1"
+  schema-id: "kamacite.application-host-binding-valence.v1"
+  record-label: "kamacite-application-host-binding-valence-v1"
+  fields: ["subject-identity" "artifacts" "diagnostic-role" "diagnostics" "non-claim-role" "non-claims" "source-spans"]
+  artifact-roles: ["application" "entrypoint" "input-schema" "output-schema" "effect-summary" "effect-operation" "host-profile" "adapter-cohort" "resource-profile" "policy" "compatibility" "binding" "validation-receipt"]
+  identity-domain: "projection"
+  identity: "blake3(canonical packed Preserves projection bytes)"
+  non-claims: ["not semantic equivalence" "not application correctness" "not host authorization" "not runtime authority" "not release eligibility"]
+}>

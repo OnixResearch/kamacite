@@ -1,0 +1,63 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "application-host-binding.positive.closed-effect",
+    "artifact_class": "application-host-binding",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.application_host_binding.artifact]",
+      "r[kamacite.application_host_binding.boundary]",
+      "r[kamacite.application_host_binding.cohorts]",
+      "r[kamacite.application_host_binding.effects]",
+      "r[kamacite.application_host_binding.fixtures]",
+      "r[kamacite.application_host_binding.host_selection]",
+      "r[kamacite.application_host_binding.projection]",
+      "r[kamacite.application_host_binding.receipt]"
+    ],
+    "input_identities": {},
+    "output_identities": {
+      "application-host-binding": {
+        "domain": "application-host-binding",
+        "algorithm": "blake3",
+        "hex": "c0e9134dd289ba44c0573f1472408da7e98fdf7fa26a42e58231d6a2e450c25b"
+      },
+      "application-host-binding-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "6df8302b028ddfa3fa51de8bad55e4df758e72e8f40f2b7b054ec84e0df1b671"
+      },
+      "application-host-binding-valence-projection": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "a0359f0ad606476559d52fadbc48dd3b91349cbab58bec9cc0b00995d1cc82d7"
+      }
+    },
+    "checked_laws": [
+      "authority-free-binding",
+      "canonical-identity",
+      "closed-effect-summary",
+      "exact-host-selection",
+      "exact-reviewed-cohort",
+      "r[kamacite.application_host_binding.artifact]",
+      "r[kamacite.application_host_binding.boundary]",
+      "r[kamacite.application_host_binding.cohorts]",
+      "r[kamacite.application_host_binding.effects]",
+      "r[kamacite.application_host_binding.host_selection]",
+      "r[kamacite.application_host_binding.projection]",
+      "r[kamacite.application_host_binding.receipt]",
+      "valence-role-projection"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "not application correctness",
+      "not host authorization",
+      "not runtime success"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "8754fe31cd119d130dfda6d653d725f687f59cdd75cc0a1ccdd3f07a58acb1b3"
+  }
+}
