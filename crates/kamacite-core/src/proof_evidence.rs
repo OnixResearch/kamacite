@@ -6,8 +6,8 @@ use crate::evidence_chain::{
     validate_evidence_chain_json_projection,
 };
 use crate::identity::{
-    EvidenceChainIdentity, Identity, IdentityDomainMarker, ReceiptIdentity, SourceIdentity,
-    WireIdentity, IdentityDomain,
+    EvidenceChainIdentity, Identity, IdentityDomain, IdentityDomainMarker, ReceiptIdentity,
+    SourceIdentity, WireIdentity,
 };
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
@@ -621,8 +621,12 @@ mod tests {
             proof_ir_identity: compute_identity(IdentityDomain::EvidenceChain, b"proof-ir"),
             verifier_receipt_identity: compute_identity(IdentityDomain::Receipt, b"verifier"),
             verifier_passed: true,
-            declared_assumptions_root: trellis_proof_assumptions_root(&assumptions).ok().map(|typed| typed.to_wire()),
-            declared_dependency_root: trellis_proof_dependency_root(&dependencies).ok().map(|typed| typed.to_wire()),
+            declared_assumptions_root: trellis_proof_assumptions_root(&assumptions)
+                .ok()
+                .map(|typed| typed.to_wire()),
+            declared_dependency_root: trellis_proof_dependency_root(&dependencies)
+                .ok()
+                .map(|typed| typed.to_wire()),
             assumptions,
             dependency_identities: dependencies,
             property_ids: vec![PROPERTY_ID.to_string()],

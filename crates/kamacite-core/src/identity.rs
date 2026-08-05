@@ -328,6 +328,70 @@ declare_identity_domain!(
 /// The zero-sized marker separates domains at compile time. Canonical wire
 /// bytes stay authoritative; this type only stops wrong-domain values from
 /// crossing internal Rust APIs.
+///
+/// Compile-pass fixture: same-domain owned, borrowed, and wire flows
+/// compile and round trip.
+///
+/// ```
+/// use kamacite_core::{ReceiptIdentity, SourceIdentity};
+///
+/// let owned = SourceIdentity::compute(b"source bytes");
+/// let borrowed = owned.as_ref();
+/// assert_eq!(borrowed.to_owned(), owned);
+/// let wire = owned.to_wire();
+/// assert_eq!(SourceIdentity::from_wire(wire), Ok(owned.clone()));
+/// let _ = ReceiptIdentity::compute(b"receipt bytes");
+/// ```
+///
+/// Compile-fail fixture: a receipt identity cannot stand in for a source
+/// identity.
+///
+/// ```compile_fail
+/// use kamacite_core::{ReceiptIdentity, SourceIdentity};
+///
+/// let receipt = ReceiptIdentity::compute(b"receipt bytes");
+/// let source: SourceIdentity = receipt;
+/// ```
+///
+/// Compile-fail fixture: an adapter identity cannot stand in for a target
+/// artifact identity.
+///
+/// ```compile_fail
+/// use kamacite_core::{AdapterIdentity, TargetArtifactIdentity};
+///
+/// fn needs_target(identity: TargetArtifactIdentity) {}
+/// needs_target(AdapterIdentity::compute(b"adapter bytes"));
+/// ```
+///
+/// Compile-fail fixture: an evaluator identity cannot stand in for a
+/// compiler identity.
+///
+/// ```compile_fail
+/// use kamacite_core::{CompilerIdentity, EvaluatorIdentity};
+///
+/// fn needs_compiler(identity: CompilerIdentity) {}
+/// needs_compiler(EvaluatorIdentity::compute(b"evaluator bytes"));
+/// ```
+///
+/// Compile-fail fixture: a canonical-value identity cannot stand in for a
+/// projection identity.
+///
+/// ```compile_fail
+/// use kamacite_core::{CanonicalValueIdentity, ProjectionIdentity};
+///
+/// let value = CanonicalValueIdentity::compute(b"value bytes");
+/// let projection: ProjectionIdentity = value;
+/// ```
+///
+/// Compile-fail fixture: an effect-family identity cannot stand in for an
+/// effect-operation identity.
+///
+/// ```compile_fail
+/// use kamacite_core::{EffectFamilyIdentity, EffectOperationIdentity};
+///
+/// fn needs_operation(identity: EffectOperationIdentity) {}
+/// needs_operation(EffectFamilyIdentity::compute(b"family bytes"));
+/// ```
 pub struct Identity<D: IdentityDomainMarker> {
     hex: Blake3Hex,
     marker: PhantomData<fn() -> D>,
@@ -454,7 +518,12 @@ impl<D: IdentityDomainMarker> Copy for IdentityRef<'_, D> {}
 
 impl<D: IdentityDomainMarker> std::fmt::Debug for IdentityRef<'_, D> {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(formatter, "IdentityRef<{}>({})", D::DOMAIN, self.hex.as_str())
+        write!(
+            formatter,
+            "IdentityRef<{}>({})",
+            D::DOMAIN,
+            self.hex.as_str()
+        )
     }
 }
 
@@ -468,9 +537,28 @@ impl<D: IdentityDomainMarker> Eq for IdentityRef<'_, D> {}
 
 macro_rules! declare_any_identity {
     ($( { $variant:ident, $alias:ident } )*) => {
-        /// Closed heterogeneous identity for manifests and receipts that
-        /// carry several domains. Admission from a wire record is checked;
-        /// unknown domains fail closed.
+/// Closed heterogeneous identity for manifests and receipts that
+/// carry several domains. Admission from a wire record is checked;
+/// unknown domains fail closed.
+///
+/// Compile-pass fixture: heterogeneous flows admit and pattern-match.
+///
+/// ```
+/// use kamacite_core::{AnyIdentity, compute_identity};
+/// use kamacite_core::IdentityDomain;
+///
+/// let wire = compute_identity(IdentityDomain::Receipt, b"receipt bytes");
+/// let admitted = AnyIdentity::admit(wire);
+/// assert!(matches!(admitted, Ok(AnyIdentity::Receipt(_))));
+/// ```
+///
+/// Compile-fail fixture: a closed enum cannot hold an undeclared domain.
+///
+/// ```compile_fail
+/// use kamacite_core::AnyIdentity;
+///
+/// let forged = AnyIdentity::Custom(String::new());
+/// ```
         #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
         pub enum AnyIdentity {
             $( $variant($alias), )*
@@ -567,10 +655,8 @@ mod tests {
         ));
     }
 
-    const UPPERCASE_HEX: &str =
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-    const NON_HEX: &str =
-        "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+    const UPPERCASE_HEX: &str = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    const NON_HEX: &str = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
 
     fn valid_wire(domain: IdentityDomain) -> WireIdentity {
         compute_identity(domain, b"domain-test-bytes")
@@ -713,6 +799,20 @@ mod tests {
             return;
         };
         assert_eq!(json, rendered);
+    }
+
+    #[test]
+    fn any_identity_rejects_unknown_domain_json() {
+        let json = serde_json::json!({
+            "domain": "hyperdrive-core",
+            "algorithm": "blake3",
+            "hex": compute_identity(IdentityDomain::Source, b"bytes").hex.as_str(),
+        });
+        let Ok(text) = serde_json::to_string(&json) else {
+            return;
+        };
+        let result: Result<AnyIdentity, _> = serde_json::from_str(&text);
+        assert!(result.is_err());
     }
 
     #[test]

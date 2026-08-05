@@ -9,21 +9,21 @@
 
 ## Phase 2: Staged core migration
 
-- [ ] [serial] I3 Migrate source-envelope and canonical-value APIs to exact identity aliases. r[kamacite.lossless_ir.nominal_identity_migration]
-- [ ] [serial] I4 Migrate projection, adapter, evaluator, compiler, and target-artifact APIs. r[kamacite.lossless_ir.nominal_identity_migration]
-- [ ] [serial] I5 Migrate receipt, effect-family, effect-operation, handler, documentation, and compatibility identity APIs. r[kamacite.lossless_ir.nominal_identity_migration]
-- [ ] [serial] I6 Update Valence-friendly projections and stack adapters without role promotion or direct live dependencies. r[kamacite.lossless_ir.nominal_identity_stack]
+- [x] [serial] I3 Migrate source-envelope and canonical-value APIs to exact identity aliases. r[kamacite.lossless_ir.nominal_identity_migration]
+- [x] [serial] I4 Migrate projection, adapter, evaluator, compiler, and target-artifact APIs. r[kamacite.lossless_ir.nominal_identity_migration]
+- [x] [serial] I5 Migrate receipt, effect-family, effect-operation, handler, documentation, and compatibility identity APIs. r[kamacite.lossless_ir.nominal_identity_migration]
+- [x] [serial] I6 Update Valence-friendly projections and stack adapters without role promotion or direct live dependencies. r[kamacite.lossless_ir.nominal_identity_stack]
 
 ## Phase 3: Compiler and compatibility evidence
 
-- [ ] [parallel] V3 Add compile-pass fixtures for same-domain flows and compile-fail fixtures for cross-domain substitutions. r[kamacite.lossless_ir.nominal_identity_compile_time]
-- [ ] [parallel] V4 Add `AnyIdentity` positive and negative fixtures for unsupported domains, conflicting metadata, stale versions, and wrong artifact roles. r[kamacite.lossless_ir.nominal_identity_wire.validation]
-- [ ] [parallel] V5 Prove canonical Preserves bytes, JSON projections, manifest identities, and existing golden receipts remain stable. r[kamacite.lossless_ir.nominal_identity.compatibility]
-- [ ] [parallel] V6 Run source, Nickel, Steel, Wasm, effect, FSM, documentation, Valence export, and migration fixture suites. r[kamacite.lossless_ir.nominal_identity_migration]
+- [x] [parallel] V3 Add compile-pass fixtures for same-domain flows and compile-fail fixtures for cross-domain substitutions. r[kamacite.lossless_ir.nominal_identity_compile_time]
+- [x] [parallel] V4 Add `AnyIdentity` positive and negative fixtures for unsupported domains, conflicting metadata, stale versions, and wrong artifact roles. r[kamacite.lossless_ir.nominal_identity_wire.validation]
+- [x] [parallel] V5 Prove canonical Preserves bytes, JSON projections, manifest identities, and existing golden receipts remain stable. r[kamacite.lossless_ir.nominal_identity.compatibility]
+- [x] [parallel] V6 Run source, Nickel, Steel, Wasm, effect, FSM, documentation, Valence export, and migration fixture suites. r[kamacite.lossless_ir.nominal_identity_migration]
 
 ## Phase 4: Closeout
 
-- [ ] [serial] I7 Document domain aliases, wire admission, semantic-operation ownership, consumer migration, and non-claims. r[kamacite.lossless_ir.nominal_identity_docs]
+- [x] [serial] I7 Document domain aliases, wire admission, semantic-operation ownership, consumer migration, and non-claims. r[kamacite.lossless_ir.nominal_identity_docs]
 - [ ] [serial] V7 Run workspace tests, Clippy, manifest freshness, canonical migration checks, lifecycle validation, Cairn gates, and relevant Nix checks. r[kamacite.lossless_ir.nominal_identity_final_checks]
 
 ## Verification coverage

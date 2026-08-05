@@ -1139,8 +1139,14 @@ fn fsm_coverage_evidence(input: &FsmSpecInput) -> Result<FsmCoverageEvidence, Di
             transitions,
         )?,
         denial_coverage_identity: fsm_material_identity(FSM_DENIAL_COVERAGE_KIND, denials)?,
-        exclusion_coverage_identity: fsm_material_identity(FSM_EXCLUSION_COVERAGE_KIND, exclusions)?,
-        missing_cells_identity: fsm_material_identity(FSM_MISSING_CELLS_KIND, missing_cells.clone())?,
+        exclusion_coverage_identity: fsm_material_identity(
+            FSM_EXCLUSION_COVERAGE_KIND,
+            exclusions,
+        )?,
+        missing_cells_identity: fsm_material_identity(
+            FSM_MISSING_CELLS_KIND,
+            missing_cells.clone(),
+        )?,
         missing_cells,
     })
 }
@@ -2531,12 +2537,12 @@ fn validate_executed_steel_evidence(
         && input.module_identity.as_ref() == Some(&evidence.module_identity)
         && input.input_identity.as_ref() == Some(&evidence.input_identity)
         && input.output_projection_identity.as_ref() == Some(&evidence.output_identity)
-        && input_contract
-            .as_ref()
-            .is_some_and(|contract| contract.identity.to_wire() == evidence.input_contract_identity)
-        && output_contract
-            .as_ref()
-            .is_some_and(|contract| contract.identity.to_wire() == evidence.output_contract_identity);
+        && input_contract.as_ref().is_some_and(|contract| {
+            contract.identity.to_wire() == evidence.input_contract_identity
+        })
+        && output_contract.as_ref().is_some_and(|contract| {
+            contract.identity.to_wire() == evidence.output_contract_identity
+        });
     let runner_matches = evidence.runner_profile == input.evaluator_profile
         && evidence.runner_descriptor == input.evaluator_descriptor
         && evidence.runner_identity == runner_identity
@@ -6172,7 +6178,10 @@ mod tests {
             spec_identity: spec.declared_identity.clone(),
             state_universe_identity: descriptor.coverage.state_universe_identity.to_wire(),
             event_universe_identity: descriptor.coverage.event_universe_identity.to_wire(),
-            transition_coverage_identity: descriptor.coverage.transition_coverage_identity.to_wire(),
+            transition_coverage_identity: descriptor
+                .coverage
+                .transition_coverage_identity
+                .to_wire(),
             denial_coverage_identity: descriptor.coverage.denial_coverage_identity.to_wire(),
             adapter_identity: compute_identity(IdentityDomain::Adapter, b"fsm-adapter"),
             dependency_identities: Vec::new(),
@@ -6202,7 +6211,9 @@ mod tests {
     fn test_transition_identity(input: &FsmReceiptInput, index: usize) -> Option<WireIdentity> {
         let descriptor = input.descriptor.as_deref()?;
         let transition = descriptor.transitions.get(index)?;
-        fsm_transition_identity(transition).ok().map(|typed| typed.to_wire())
+        fsm_transition_identity(transition)
+            .ok()
+            .map(|typed| typed.to_wire())
     }
 
     fn fsm_receipt_fixture(

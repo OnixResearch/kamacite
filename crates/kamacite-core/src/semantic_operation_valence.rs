@@ -1,6 +1,6 @@
 use crate::{
-    AnyIdentity, EffectOperationIdentity, ProjectionIdentity, WireIdentity, IdentityDomain,
-    SemanticOperationError,
+    AnyIdentity, EffectOperationIdentity, IdentityDomain, ProjectionIdentity,
+    SemanticOperationError, WireIdentity,
 };
 use serde::{Deserialize, Serialize};
 

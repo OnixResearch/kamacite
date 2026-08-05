@@ -1,7 +1,7 @@
 use crate::{
-    AdapterIdentity, CanonicalPreservesArtifact, CanonicalValueIdentity, ProjectionIdentity,
-    ReceiptIdentity, WireIdentity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits,
-    PreservesSchema, encode_typed_preserves,
+    AdapterIdentity, CanonicalPreservesArtifact, CanonicalValueIdentity, IdentityDomain,
+    PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, ProjectionIdentity,
+    ReceiptIdentity, WireIdentity, encode_typed_preserves,
 };
 use serde::de::{Error as DeserializeError, MapAccess, SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
@@ -458,12 +458,12 @@ pub fn adapt_admitted_nickel_json_export(
     let body = NickelPreservesReceiptBody {
         schema_version: NICKEL_PRESERVES_RECEIPT_SCHEMA.to_string(),
         manifest_identity: admitted.manifest_identity.clone(),
-        manifest_wire_identity: AdapterIdentity::from_wire(
-            admitted.manifest_wire_identity.clone(),
-        )
-        .map_err(|_| {
-            NickelPreservesError::UnsupportedProfile("manifest wire identity domain".to_string())
-        })?,
+        manifest_wire_identity: AdapterIdentity::from_wire(admitted.manifest_wire_identity.clone())
+            .map_err(|_| {
+                NickelPreservesError::UnsupportedProfile(
+                    "manifest wire identity domain".to_string(),
+                )
+            })?,
         export_receipt_identity: admitted.export_receipt_identity.clone(),
         declared_input_identity: admitted.declared_input_identity.clone(),
         source_identity: admitted.source_identity.clone(),

@@ -1,10 +1,10 @@
 use crate::{
-    AdapterIdentity, AdapterDomain, Blake3Hex, CanonicalValueIdentity, CompilerDomain,
+    AdapterDomain, AdapterIdentity, Blake3Hex, CanonicalValueIdentity, CompilerDomain,
     CompilerIdentity, DependencyClosureDomain, DependencyClosureIdentity, EffectFamilyIdentity,
-    EffectOperationIdentity, EvaluatorIdentity, Identity, IdentityDomainMarker, ReceiptIdentity,
-    SourceIdentity, TargetArtifactIdentity, WireIdentity, IdentityDomain,
-    PRESERVES_CANONICAL_CODEC, PreservesLimits,
-    PreservesSchema, PreservesSyntax, canonicalize_preserves, encode_typed_preserves,
+    EffectOperationIdentity, EvaluatorIdentity, Identity, IdentityDomain, IdentityDomainMarker,
+    PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, PreservesSyntax, ReceiptIdentity,
+    SourceIdentity, TargetArtifactIdentity, WireIdentity, canonicalize_preserves,
+    encode_typed_preserves,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -571,14 +571,10 @@ pub fn validate_wasm_component_mantle_handoff(
     if !diagnostics.is_empty() {
         return Err(validation_error(diagnostics));
     }
-    let manifest_identity = identity_from_mantle_digest(
-        "materialization.manifest_blake3",
-        &bundle.manifest_blake3,
-    )?;
-    let cohort_identity = identity_from_mantle_digest(
-        "materialization.cohort_blake3",
-        &bundle.cohort_blake3,
-    )?;
+    let manifest_identity =
+        identity_from_mantle_digest("materialization.manifest_blake3", &bundle.manifest_blake3)?;
+    let cohort_identity =
+        identity_from_mantle_digest("materialization.cohort_blake3", &bundle.cohort_blake3)?;
     let expected_octet_profile_identity = identity_from_mantle_digest(
         "materialization.expected_octet_profile_blake3",
         &bundle.expected_octet_profile_blake3,
@@ -638,9 +634,7 @@ pub fn validate_wasm_component_static(
 
     let mut blockers = Vec::new();
     let mut materialization_bundle_identity = None;
-    let component_identity = request
-        .component_bytes
-        .map(TargetArtifactIdentity::compute);
+    let component_identity = request.component_bytes.map(TargetArtifactIdentity::compute);
     let inspection_identity = request
         .inspection
         .map(|inspection| serialized_identity("inspection", inspection))
@@ -794,8 +788,7 @@ fn admit_profile(
                 ))
             })?;
     let profile_identity = AdapterIdentity::compute(request.profile_bytes);
-    let runtime_profile_identity =
-        EvaluatorIdentity::compute(request.runtime_profile_bytes);
+    let runtime_profile_identity = EvaluatorIdentity::compute(request.runtime_profile_bytes);
     let wit_identity = SourceIdentity::compute(request.wit_bytes);
     let wit_byte_length = u64::try_from(request.wit_bytes.len()).map_err(|error| {
         single_error(WasmComponentDiagnostic::new(
@@ -1396,7 +1389,10 @@ fn validate_canonical_value(
 fn parse_materialization(
     bytes: &[u8],
 ) -> Result<
-    (WasmComponentMaterializationBundle, DependencyClosureIdentity),
+    (
+        WasmComponentMaterializationBundle,
+        DependencyClosureIdentity,
+    ),
     WasmComponentValidationError,
 > {
     let bundle =

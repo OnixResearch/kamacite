@@ -3,7 +3,7 @@
 // r[impl kamacite.findings.nickel_sandbox.enforced_evidence]
 // r[impl kamacite.findings.nickel_sandbox.resource_limits]
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{AdapterIdentity, WireIdentity, IdentityDomain};
+use crate::identity::{AdapterIdentity, IdentityDomain, WireIdentity};
 use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};

@@ -4,8 +4,8 @@ use crate::fixture::{
     DocumentationSectionInput,
 };
 use crate::identity::{
-    AdapterIdentity, DocumentationFactsIdentity, DocumentationOutputIdentity, WireIdentity,
-    IdentityDomain, compute_identity,
+    AdapterIdentity, DocumentationFactsIdentity, DocumentationOutputIdentity, IdentityDomain,
+    WireIdentity, compute_identity,
 };
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use crate::receipt::{ReceiptError, canonical_json_bytes};

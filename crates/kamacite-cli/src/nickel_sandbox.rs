@@ -3,8 +3,8 @@
 // r[impl kamacite.findings.nickel_sandbox.enforced_evidence]
 // r[impl kamacite.findings.nickel_sandbox.resource_limits]
 use kamacite_core::{
-    WireIdentity, IdentityDomain, NICKEL_SANDBOX_IMPORT_ROOT, NICKEL_SANDBOX_SOURCE_PATH,
-    NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile, compute_identity,
+    IdentityDomain, NICKEL_SANDBOX_IMPORT_ROOT, NICKEL_SANDBOX_SOURCE_PATH, NickelSandboxEvidence,
+    NickelSandboxOutcome, NickelSandboxProfile, WireIdentity, compute_identity,
     nickel_sandbox_observed_facts, validate_nickel_sandbox_profile,
 };
 use rustix::fs::{MemfdFlags, memfd_create};

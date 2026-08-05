@@ -1,8 +1,8 @@
 use crate::root_io::RootCapability;
 use kamacite_core::{
-    AdapterIdentity, AdmittedNickelJsonExport, CanonicalValueIdentity, ProjectionIdentity,
-    ReceiptIdentity, WireIdentity, IdentityDomain, NickelExportIdentity,
-    NickelExportIdentityKind, NickelPreservesReceipt, PRESERVES_CANONICAL_CODEC,
+    AdapterIdentity, AdmittedNickelJsonExport, CanonicalValueIdentity, IdentityDomain,
+    NickelExportIdentity, NickelExportIdentityKind, NickelPreservesReceipt,
+    PRESERVES_CANONICAL_CODEC, ProjectionIdentity, ReceiptIdentity, WireIdentity,
     adapt_admitted_nickel_json_export, compute_identity,
 };
 use nickel_export_core::{

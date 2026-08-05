@@ -170,14 +170,16 @@ fn artifacts(
         )?,
         artifact_without_span(
             "input-schema",
-            AnyIdentity::admit(request.descriptor.input_schema.identity.clone())
-                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
+            AnyIdentity::admit(request.descriptor.input_schema.identity.clone()).map_err(
+                |error| WasmComponentValenceProjectionError::Encoding(error.to_string()),
+            )?,
             WasmComponentValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             "output-schema",
-            AnyIdentity::admit(request.descriptor.output_schema.identity.clone())
-                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
+            AnyIdentity::admit(request.descriptor.output_schema.identity.clone()).map_err(
+                |error| WasmComponentValenceProjectionError::Encoding(error.to_string()),
+            )?,
             WasmComponentValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
@@ -221,26 +223,30 @@ fn artifacts(
     for binding in &request.descriptor.imports {
         artifacts.push(artifact_without_span(
             &format!("capability:{}", binding.import),
-            AnyIdentity::admit(binding.capability_identity.clone())
-                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
+            AnyIdentity::admit(binding.capability_identity.clone()).map_err(|error| {
+                WasmComponentValenceProjectionError::Encoding(error.to_string())
+            })?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
         artifacts.push(artifact_without_span(
             &format!("effect-operation:{}", binding.import),
-            AnyIdentity::admit(binding.effect_operation_identity.clone())
-                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
+            AnyIdentity::admit(binding.effect_operation_identity.clone()).map_err(|error| {
+                WasmComponentValenceProjectionError::Encoding(error.to_string())
+            })?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
         artifacts.push(artifact_without_span(
             &format!("authority:{}", binding.import),
-            AnyIdentity::admit(binding.authority_identity.clone())
-                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
+            AnyIdentity::admit(binding.authority_identity.clone()).map_err(|error| {
+                WasmComponentValenceProjectionError::Encoding(error.to_string())
+            })?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
         artifacts.push(artifact_without_span(
             &format!("resource:{}", binding.import),
-            AnyIdentity::admit(binding.resource_identity.clone())
-                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
+            AnyIdentity::admit(binding.resource_identity.clone()).map_err(|error| {
+                WasmComponentValenceProjectionError::Encoding(error.to_string())
+            })?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
     }

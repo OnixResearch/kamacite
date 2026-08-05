@@ -1,7 +1,7 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{
-    AdapterIdentity, AnyIdentity, ProjectionIdentity, ReceiptIdentity, WireIdentity,
-    IdentityDomain, compute_identity,
+    AdapterIdentity, AnyIdentity, IdentityDomain, ProjectionIdentity, ReceiptIdentity,
+    WireIdentity, compute_identity,
 };
 use crate::receipt::WireReceiptEnvelope;
 use crate::receipt::{RECEIPT_SCHEMA_VERSION, ReceiptEnvelope, ReceiptError, canonical_json_bytes};
@@ -318,7 +318,10 @@ fn validate_source_receipt_hash(receipt: &WireReceiptEnvelope, diagnostics: &mut
     }
 }
 
-fn validate_artifact_identity_keys(receipt: &WireReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
+fn validate_artifact_identity_keys(
+    receipt: &WireReceiptEnvelope,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
     if receipt.body.input_identities.is_empty() && receipt.body.output_identities.is_empty() {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
@@ -708,10 +711,8 @@ fn build_export(
         source_fixture_id: source_receipt.body.fixture_id.clone(),
         source_artifact_class: source_receipt.body.artifact_class.clone(),
         source_verdict: source_receipt.body.verdict.clone(),
-        conformance_identity: AdapterIdentity::from_wire(
-            conformance.conformance_identity.clone(),
-        )
-        .ok()?,
+        conformance_identity: AdapterIdentity::from_wire(conformance.conformance_identity.clone())
+            .ok()?,
         artifact_identities: collect_artifact_identities(source_receipt, conformance)?,
         checked_laws: sorted_unique(
             source_receipt
@@ -917,8 +918,8 @@ mod tests {
     fn rejects_missing_source_non_claims() -> Result<(), crate::receipt::ReceiptError> {
         let mut input = valid_input()?;
         input.source_receipt.body.non_claims = Vec::new();
-        input.source_receipt = ReceiptEnvelope::finalize(input.source_receipt.body)?
-            .to_wire_envelope();
+        input.source_receipt =
+            ReceiptEnvelope::finalize(input.source_receipt.body)?.to_wire_envelope();
 
         let result = export_valence_receipt(&input);
 

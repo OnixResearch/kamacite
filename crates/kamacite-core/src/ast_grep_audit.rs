@@ -5,7 +5,7 @@
 // r[impl kamacite.ast_grep_adapter_audits.codemods]
 // r[impl kamacite.ast_grep_adapter_audits.valence_export]
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{IdentityDomain, WireIdentity, compute_identity};
 use crate::receipt::canonical_json_bytes;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;

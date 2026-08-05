@@ -6,10 +6,10 @@ use serde_json::Value;
 
 use crate::{
     AdapterIdentity, CanonicalValueIdentity, DependencyClosureIdentity, EffectFamilyIdentity,
-    EvaluatorIdentity, Identity, IdentityDomainMarker, ProjectionIdentity, ReceiptIdentity,
-    SourceIdentity, TargetArtifactIdentity, WireIdentity, IdentityDomain, PreservesLimits,
-    PreservesSchema, PreservesSyntax,
-    canonicalize_preserves, compute_identity, encode_typed_preserves,
+    EvaluatorIdentity, Identity, IdentityDomain, IdentityDomainMarker, PreservesLimits,
+    PreservesSchema, PreservesSyntax, ProjectionIdentity, ReceiptIdentity, SourceIdentity,
+    TargetArtifactIdentity, WireIdentity, canonicalize_preserves, compute_identity,
+    encode_typed_preserves,
 };
 
 pub const SPACEWASM_PROFILE_SCHEMA: &str = "kamacite.spacewasm-mvp-profile.v1";
@@ -1984,7 +1984,10 @@ mod tests {
                     SpaceWasmBlocker::ConsumerSpacewasmShellUnavailable,
                 ]
             );
-            assert_eq!(result.module_identity.hex().as_str(), SPACEWASM_MODULE_BLAKE3);
+            assert_eq!(
+                result.module_identity.hex().as_str(),
+                SPACEWASM_MODULE_BLAKE3
+            );
         }
 
         let exact_request = request(&descriptor, &input);

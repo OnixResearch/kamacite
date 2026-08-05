@@ -1,7 +1,7 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{
-    DialectPayloadIdentity, Identity, IdentityDomainMarker, ProjectionIdentity, ReceiptIdentity,
-    SourceIdentity, WireIdentity, IdentityDomain,
+    DialectPayloadIdentity, Identity, IdentityDomain, IdentityDomainMarker, ProjectionIdentity,
+    ReceiptIdentity, SourceIdentity, WireIdentity,
 };
 use serde::{Deserialize, Serialize};
 
@@ -141,7 +141,8 @@ pub fn validate_dialect_roundtrip_input(input: &DialectRoundtripInput) -> Vec<Di
             "declared_payload_identity",
             &mut diagnostics,
         );
-        if declared.domain == IdentityDomain::DialectPayload && declared.hex != *computed_payload.hex()
+        if declared.domain == IdentityDomain::DialectPayload
+            && declared.hex != *computed_payload.hex()
         {
             diagnostics.push(
                 Diagnostic::new(

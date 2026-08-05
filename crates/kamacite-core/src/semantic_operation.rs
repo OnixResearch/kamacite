@@ -1,5 +1,5 @@
 use crate::identity::{
-    EffectOperationIdentity, EvidenceChainIdentity, WireIdentity, IdentityDomain,
+    EffectOperationIdentity, EvidenceChainIdentity, IdentityDomain, WireIdentity,
 };
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use serde::{Deserialize, Serialize};

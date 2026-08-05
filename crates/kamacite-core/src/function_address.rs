@@ -1,6 +1,6 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{
-    AdapterIdentity, AnyIdentity, ReceiptIdentity, WireIdentity, IdentityDomain, compute_identity,
+    AdapterIdentity, AnyIdentity, IdentityDomain, ReceiptIdentity, WireIdentity, compute_identity,
 };
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
@@ -1221,7 +1221,9 @@ fn validate_identity_domain(
     }
 }
 
-fn source_identity_map(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<String, WireIdentity> {
+fn source_identity_map(
+    sources: &[FunctionAddressSourceEnvelope],
+) -> BTreeMap<String, WireIdentity> {
     sources
         .iter()
         .map(|source| (source.key.clone(), source.source_identity.clone()))

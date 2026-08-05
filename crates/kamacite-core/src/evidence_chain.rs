@@ -1,6 +1,6 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::function_address::FunctionAddressReceiptEnvelope;
-use crate::identity::{EvidenceChainIdentity, WireIdentity, IdentityDomain};
+use crate::identity::{EvidenceChainIdentity, IdentityDomain, WireIdentity};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -542,13 +542,13 @@ fn validate_identity_domain(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::identity::{ReceiptIdentity, compute_identity};
     use crate::function_address::{
         FUNCTION_ADDRESS_CANONICAL_CODEC, FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
         FunctionAddressProducer, FunctionAddressReceiptBody, FunctionAddressReceiptEnvelope,
         FunctionAddressRecord, FunctionAddressSourceEnvelope, FunctionAddressSpan,
         function_address_producer_profile,
     };
+    use crate::identity::{ReceiptIdentity, compute_identity};
     use std::collections::BTreeMap;
 
     const NON_CLAIM_FUNCTION_SEMANTICS: &str = "not host-language semantic correctness";
