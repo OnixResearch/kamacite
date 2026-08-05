@@ -1,0 +1,57 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "application-host-binding.negative.authority-overclaim",
+    "artifact_class": "application-host-binding",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.application_host_binding.boundary]"
+    ],
+    "input_identities": {
+      "adapter-cohort": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+      },
+      "application": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+      },
+      "host-profile": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+      },
+      "resource-profile": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "authority-overclaim-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "semantic-overclaim",
+        "requirement_id": "r[kamacite.application_host_binding.boundary]",
+        "field": "semantic_claims",
+        "message": "binding must not claim authority, execution, correctness, or release status",
+        "details": {
+          "claim": "binding grants host authorization"
+        }
+      }
+    ],
+    "non_claims": [
+      "authority overclaims fail closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "ea47dd949e642de7cb4882337ca5871d213e262c7c7a693f54402f5108fd1bb7"
+  }
+}

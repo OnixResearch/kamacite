@@ -8260,6 +8260,1117 @@
         "r[kamacite.ast_grep_adapter_audits.fixtures]",
         "r[kamacite.ast_grep_adapter_audits.valence_export]"
       ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "canonical-identity-stable",
+        "exactly-one-host"
+      ],
+      "expected_verdict": "accepted",
+      "fixture_class": "positive",
+      "golden_receipt": "fixtures/golden/application-host-binding.positive.capability-free.receipt.json",
+      "id": "application-host-binding.positive.capability-free",
+      "non_claims": [
+        "not host capability or authorization",
+        "not sandbox admission",
+        "not resource enforcement",
+        "not runtime correctness",
+        "not application correctness",
+        "not release eligibility"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.artifact]",
+        "r[kamacite.application_host_binding.fixtures]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "closed-effect-summary",
+        "exact-cohort"
+      ],
+      "expected_verdict": "accepted",
+      "fixture_class": "positive",
+      "golden_receipt": "fixtures/golden/application-host-binding.positive.closed-effects.receipt.json",
+      "id": "application-host-binding.positive.closed-effects",
+      "non_claims": [
+        "not host capability or authorization",
+        "not sandbox admission",
+        "not resource enforcement",
+        "not runtime correctness",
+        "not application correctness",
+        "not release eligibility"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": {
+          "algorithm": "blake3",
+          "domain": "evidence-chain",
+          "hex": "b98834dc6a41e505e6b8e014f8af8f7f4a8d8d48fe5981105c4da00a178782eb"
+        },
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "expected_host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "expected_resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "d84d4c47052a957e8e4cab94a9352349d2c11b68b105acfd3d6ee4be64150555"
+        },
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.effects]",
+        "r[kamacite.application_host_binding.cohorts]",
+        "r[kamacite.application_host_binding.fixtures]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "metadata-excluded-from-identity"
+      ],
+      "expected_verdict": "accepted",
+      "fixture_class": "positive",
+      "golden_receipt": "fixtures/golden/application-host-binding.positive.metadata-rename.receipt.json",
+      "id": "application-host-binding.positive.metadata-rename",
+      "non_claims": [
+        "not host capability or authorization",
+        "not sandbox admission",
+        "not resource enforcement",
+        "not runtime correctness",
+        "not application correctness",
+        "not release eligibility"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [
+            "renamed-binding"
+          ],
+          "display_name": "Renamed application binding",
+          "documentation": "review metadata never enters canonical identity material",
+          "path": "src/renamed.rs",
+          "source_span": "0:128"
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.artifact]",
+        "r[kamacite.application_host_binding.projection]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "missing-host-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.missing-host.receipt.json",
+      "id": "application-host-binding.negative.missing-host",
+      "non_claims": [
+        "missing host selection fails closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": null,
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.host_selection]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "ambiguous-host-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.alternative-hosts.receipt.json",
+      "id": "application-host-binding.negative.alternative-hosts",
+      "non_claims": [
+        "alternative host selections fail closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "evaluator",
+            "hex": "affeb681f4525f30e2acd8fab612a914c249e99f03080fa4d7af29fa831169aa"
+          }
+        ],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "66199034795f03d88ed1f634405759cf5e36a331b6bb538953f400fe8fd1201c"
+        },
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.host_selection]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "open-effect-summary-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.open-effect-summary.receipt.json",
+      "id": "application-host-binding.negative.open-effect-summary",
+      "non_claims": [
+        "open effect summaries cannot admit executable bindings"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": false,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.effects]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "undeclared-operation-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.undeclared-operation.receipt.json",
+      "id": "application-host-binding.negative.undeclared-operation",
+      "non_claims": [
+        "wrong-domain operations fail closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "source",
+            "hex": "219bfba503cce8390619632f8116d3d805c60bd9122f02cbf6eea22e8971af1f"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.effects]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "stale-cohort-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.stale-cohort.receipt.json",
+      "id": "application-host-binding.negative.stale-cohort",
+      "non_claims": [
+        "stale cohorts fail closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "fca1f44896bd6468aec24033d3cf70826d178a33539efa3569427d1b7337d5e8"
+        },
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.cohorts]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "unsupported-version-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.unsupported-version.receipt.json",
+      "id": "application-host-binding.negative.unsupported-version",
+      "non_claims": [
+        "unsupported schema versions fail closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v0",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.artifact]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "authority-overclaim-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.authority-overclaim.receipt.json",
+      "id": "application-host-binding.negative.authority-overclaim",
+      "non_claims": [
+        "authority overclaims fail closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization",
+          "not sandbox admission",
+          "not resource enforcement",
+          "not runtime correctness",
+          "not application correctness",
+          "not release eligibility"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": [
+          "binding grants host authorization"
+        ]
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.boundary]"
+      ]
+    },
+    {
+      "artifact_class": "application-host-binding",
+      "checked_laws": [
+        "missing-non-claims-rejected"
+      ],
+      "expected_verdict": "rejected",
+      "fixture_class": "negative",
+      "golden_receipt": "fixtures/golden/application-host-binding.negative.missing-non-claims.receipt.json",
+      "id": "application-host-binding.negative.missing-non-claims",
+      "non_claims": [
+        "incomplete non-claims fail closed"
+      ],
+      "payload": {
+        "adapter_cohort_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+        },
+        "alternative_host_profile_identities": [],
+        "application_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+        },
+        "compatibility_identity": null,
+        "effect_operation_identities": [
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063"
+          },
+          {
+            "algorithm": "blake3",
+            "domain": "effect-operation",
+            "hex": "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45"
+          }
+        ],
+        "effect_summary_closed": true,
+        "effect_summary_identity": {
+          "algorithm": "blake3",
+          "domain": "algebraic-effect",
+          "hex": "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e"
+        },
+        "entrypoint_identity": {
+          "algorithm": "blake3",
+          "domain": "target-artifact",
+          "hex": "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01"
+        },
+        "expected_adapter_cohort_identity": null,
+        "expected_host_profile_identity": null,
+        "expected_resource_profile_identity": null,
+        "fallback_host_profile_identity": null,
+        "host_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "evaluator",
+          "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+        },
+        "input_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396"
+        },
+        "kind": "application-host-binding",
+        "metadata": {
+          "aliases": [],
+          "display_name": null,
+          "documentation": null,
+          "path": null,
+          "source_span": null
+        },
+        "non_claims": [
+          "not host capability or authorization"
+        ],
+        "output_schema_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785"
+        },
+        "policy_identity": null,
+        "resource_profile_identity": {
+          "algorithm": "blake3",
+          "domain": "adapter",
+          "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+        },
+        "schema_version": "kamacite.application-host-binding.v1",
+        "semantic_claims": []
+      },
+      "requirement_ids": [
+        "r[kamacite.application_host_binding.boundary]"
+      ]
     }
   ],
   "schema_version": 2

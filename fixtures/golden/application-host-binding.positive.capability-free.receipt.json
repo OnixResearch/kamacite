@@ -1,0 +1,68 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "application-host-binding.positive.capability-free",
+    "artifact_class": "application-host-binding",
+    "verdict": "accepted",
+    "requirement_ids": [
+      "r[kamacite.application_host_binding.artifact]",
+      "r[kamacite.application_host_binding.fixtures]"
+    ],
+    "input_identities": {
+      "adapter-cohort": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+      },
+      "application": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+      },
+      "host-profile": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+      },
+      "resource-profile": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+      }
+    },
+    "output_identities": {
+      "application-host-binding": {
+        "domain": "application-host-binding",
+        "algorithm": "blake3",
+        "hex": "4d93c4b6ca20031aa2fe665119f423d773351072e94a9975a8284e968e24b886"
+      },
+      "application-host-binding-receipt": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "a7170eab51cd6057f22739cda3ded4fc20274cc64af716cb2ccfe9037496f362"
+      }
+    },
+    "checked_laws": [
+      "canonical-identity-stable",
+      "closed-effect-summary",
+      "exact-cohort",
+      "exactly-one-host",
+      "no-authority-transfer"
+    ],
+    "diagnostics": [],
+    "non_claims": [
+      "not application correctness",
+      "not host capability or authorization",
+      "not release eligibility",
+      "not resource enforcement",
+      "not runtime correctness",
+      "not sandbox admission"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "b08b68a58793940d0ba005399e58107e7160876fd41859da53d56fa205d15261"
+  }
+}

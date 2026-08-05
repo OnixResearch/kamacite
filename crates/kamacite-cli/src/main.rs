@@ -6,14 +6,14 @@ mod root_io;
 mod steel_runner;
 
 use kamacite_core::{
-    AdapterReceiptInput, AlgebraicEffectInput, ArtifactClass, AstGrepAuditInput,
-    AstGrepCodemodArtifact, AstGrepFinding, AstGrepLanguageProfile, AstGrepRuleCoverage,
-    AstGrepSourceEnvelope, Blake3Hex, CanonicalValueInput, CapabilityShellInput,
-    DocsActionEvidenceInput, DocsActionKind, DocsActionOutcome, DocsCompletionState,
-    DocsConfigProjection, DocumentationCellInput, DocumentationFactsIdentity, DocumentationIrInput,
-    DocumentationOutputIdentity, DocumentationOutputInput, DocumentationPageInput,
-    DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass, FixturePayload,
-    FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
+    AdapterReceiptInput, AlgebraicEffectInput, ApplicationHostBindingInput, ArtifactClass,
+    AstGrepAuditInput, AstGrepCodemodArtifact, AstGrepFinding, AstGrepLanguageProfile,
+    AstGrepRuleCoverage, AstGrepSourceEnvelope, Blake3Hex, CanonicalValueInput,
+    CapabilityShellInput, DocsActionEvidenceInput, DocsActionKind, DocsActionOutcome,
+    DocsCompletionState, DocsConfigProjection, DocumentationCellInput, DocumentationFactsIdentity,
+    DocumentationIrInput, DocumentationOutputIdentity, DocumentationOutputInput,
+    DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
+    FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
     FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
     FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressDependencyIdentityKind,
     FunctionAddressProducer, FunctionAddressReceiptInput, FunctionAddressRecord,
@@ -541,6 +541,7 @@ enum PayloadProjection {
     },
     UnsupportedClaim(UnsupportedClaimInput),
     IdentityUse(IdentityUseInput),
+    ApplicationHostBinding(Box<ApplicationHostBindingInput>),
     CapabilityShell(CapabilityShellInput),
     StackEvidence(StackEvidenceInput),
     FsmSpec {
@@ -3296,6 +3297,9 @@ fn materialize_fixture(
             FixturePayload::UnsupportedClaim(input.clone())
         }
         PayloadProjection::IdentityUse(input) => FixturePayload::IdentityUse(input.clone()),
+        PayloadProjection::ApplicationHostBinding(input) => {
+            FixturePayload::ApplicationHostBinding(input.clone())
+        }
         PayloadProjection::CapabilityShell(input) => FixturePayload::CapabilityShell(input.clone()),
         PayloadProjection::StackEvidence(input) => FixturePayload::StackEvidence(input.clone()),
         PayloadProjection::FsmSpec { .. } => {

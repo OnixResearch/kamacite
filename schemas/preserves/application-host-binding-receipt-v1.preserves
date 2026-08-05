@@ -1,0 +1,12 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "application-host-binding-receipt"
+  version: "v1"
+  schema-id: "kamacite.application-host-binding-receipt.v1"
+  record-label: "kamacite-application-host-binding-receipt-v1"
+  fields: ["schema-version" "verdict" "binding-identity" "application-identity" "entrypoint-identity" "input-schema-identity" "output-schema-identity" "effect-summary-identity" "effect-operation-identities" "host-profile-identity" "adapter-cohort-identity" "resource-profile-identity" "policy-identity" "compatibility-identity" "checked-laws" "diagnostics" "non-claims"]
+  identity-domain: "receipt"
+  identity: "blake3(canonical JSON receipt body bytes)"
+  implementation-alternatives: ["accepted verdict only after full admission"]
+  excluded-metadata: ["display name" "aliases" "path" "source span" "documentation"]
+  non-claims: ["not host capability or authorization" "not sandbox admission" "not resource enforcement" "not runtime correctness" "not application correctness" "not release eligibility"]
+}>

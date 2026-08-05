@@ -115,6 +115,53 @@ let ast_grep_codemod = {
   ],
   non_claims = ["the rewrite proposal does not prove semantic equivalence"],
 } in
+let ahb_required_non_claims = [
+  "not host capability or authorization",
+  "not sandbox admission",
+  "not resource enforcement",
+  "not runtime correctness",
+  "not application correctness",
+  "not release eligibility",
+] in
+let ahb_empty_metadata = {
+  display_name = null,
+  aliases = [],
+  path = null,
+  source_span = null,
+  documentation = null,
+} in
+let ahb_identity = fun domain_value hex_value => {
+  algorithm = "blake3",
+  domain = domain_value,
+  hex = hex_value,
+} in
+let ahb_base_payload = {
+  kind = "application-host-binding",
+  schema_version = "kamacite.application-host-binding.v1",
+  application_identity = ahb_identity "target-artifact" "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228",
+  entrypoint_identity = ahb_identity "target-artifact" "1d3ef4c1636eaa8e447a8f44e6837c25f4433bd924929ba4dd9282d03d69dd01",
+  input_schema_identity = ahb_identity "adapter" "497027c98ba56782ddeb1f334082f5db2f52ccb993689db57c2d444fed5e1396",
+  output_schema_identity = ahb_identity "adapter" "16589b99411e76a180fd747b73089203f4d6f549192bac6f7e6213e7bcb3e785",
+  effect_summary_identity = ahb_identity "algebraic-effect" "a82fe292271b6fd99413231c2dc5718f7391cfe6e753b93426cc8fe9f07b3d6e",
+  effect_summary_closed = true,
+  effect_operation_identities = [
+    ahb_identity "effect-operation" "a3007e263daab76335bf515e1b88b237335097a8de7104ccfa4ae38aa0d49063",
+    ahb_identity "effect-operation" "7bde87c5223afc4641c618a9b1c64df17c83a43f4e3df7cb06e0673feb7b1e45",
+  ],
+  host_profile_identity = ahb_identity "evaluator" "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989",
+  alternative_host_profile_identities = [],
+  fallback_host_profile_identity = null,
+  adapter_cohort_identity = ahb_identity "adapter" "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210",
+  resource_profile_identity = ahb_identity "adapter" "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4",
+  policy_identity = null,
+  compatibility_identity = null,
+  expected_adapter_cohort_identity = null,
+  expected_resource_profile_identity = null,
+  expected_host_profile_identity = null,
+  metadata = ahb_empty_metadata,
+  semantic_claims = [],
+  non_claims = ahb_required_non_claims,
+} in
 {
   "authority_non_claims" = [
     "manifest source is review authority",
@@ -7322,6 +7369,188 @@ let ast_grep_codemod = {
       "requirement_ids" = [
         "r[kamacite.ast_grep_adapter_audits.fixtures]",
         "r[kamacite.ast_grep_adapter_audits.valence_export]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["canonical-identity-stable", "exactly-one-host"],
+      "expected_verdict" = "accepted",
+      "fixture_class" = "positive",
+      "golden_receipt" = "fixtures/golden/application-host-binding.positive.capability-free.receipt.json",
+      "id" = "application-host-binding.positive.capability-free",
+      "non_claims" = ahb_required_non_claims,
+      "payload" = ahb_base_payload,
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.artifact]",
+        "r[kamacite.application_host_binding.fixtures]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["closed-effect-summary", "exact-cohort"],
+      "expected_verdict" = "accepted",
+      "fixture_class" = "positive",
+      "golden_receipt" = "fixtures/golden/application-host-binding.positive.closed-effects.receipt.json",
+      "id" = "application-host-binding.positive.closed-effects",
+      "non_claims" = ahb_required_non_claims,
+      "payload" = ahb_base_payload & {
+        policy_identity | force = ahb_identity "adapter" "d84d4c47052a957e8e4cab94a9352349d2c11b68b105acfd3d6ee4be64150555",
+        compatibility_identity | force = ahb_identity "evidence-chain" "b98834dc6a41e505e6b8e014f8af8f7f4a8d8d48fe5981105c4da00a178782eb",
+        expected_adapter_cohort_identity | force = ahb_base_payload.adapter_cohort_identity,
+        expected_resource_profile_identity | force = ahb_base_payload.resource_profile_identity,
+        expected_host_profile_identity | force = ahb_base_payload.host_profile_identity,
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.effects]",
+        "r[kamacite.application_host_binding.cohorts]",
+        "r[kamacite.application_host_binding.fixtures]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["metadata-excluded-from-identity"],
+      "expected_verdict" = "accepted",
+      "fixture_class" = "positive",
+      "golden_receipt" = "fixtures/golden/application-host-binding.positive.metadata-rename.receipt.json",
+      "id" = "application-host-binding.positive.metadata-rename",
+      "non_claims" = ahb_required_non_claims,
+      "payload" = ahb_base_payload & {
+        metadata | force = {
+          display_name = "Renamed application binding",
+          aliases = ["renamed-binding"],
+          path = "src/renamed.rs",
+          source_span = "0:128",
+          documentation = "review metadata never enters canonical identity material",
+        },
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.artifact]",
+        "r[kamacite.application_host_binding.projection]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["missing-host-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.missing-host.receipt.json",
+      "id" = "application-host-binding.negative.missing-host",
+      "non_claims" = ["missing host selection fails closed"],
+      "payload" = ahb_base_payload & {
+        host_profile_identity | force = null,
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.host_selection]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["ambiguous-host-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.alternative-hosts.receipt.json",
+      "id" = "application-host-binding.negative.alternative-hosts",
+      "non_claims" = ["alternative host selections fail closed"],
+      "payload" = ahb_base_payload & {
+        alternative_host_profile_identities | force = [
+          ahb_identity "evaluator" "affeb681f4525f30e2acd8fab612a914c249e99f03080fa4d7af29fa831169aa",
+        ],
+        fallback_host_profile_identity | force = ahb_identity "evaluator" "66199034795f03d88ed1f634405759cf5e36a331b6bb538953f400fe8fd1201c",
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.host_selection]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["open-effect-summary-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.open-effect-summary.receipt.json",
+      "id" = "application-host-binding.negative.open-effect-summary",
+      "non_claims" = ["open effect summaries cannot admit executable bindings"],
+      "payload" = ahb_base_payload & {
+        effect_summary_closed | force = false,
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.effects]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["undeclared-operation-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.undeclared-operation.receipt.json",
+      "id" = "application-host-binding.negative.undeclared-operation",
+      "non_claims" = ["wrong-domain operations fail closed"],
+      "payload" = ahb_base_payload & {
+        effect_operation_identities | force = ahb_base_payload.effect_operation_identities @ [
+          ahb_identity "source" "219bfba503cce8390619632f8116d3d805c60bd9122f02cbf6eea22e8971af1f",
+        ],
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.effects]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["stale-cohort-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.stale-cohort.receipt.json",
+      "id" = "application-host-binding.negative.stale-cohort",
+      "non_claims" = ["stale cohorts fail closed"],
+      "payload" = ahb_base_payload & {
+        expected_adapter_cohort_identity | force = ahb_identity "adapter" "fca1f44896bd6468aec24033d3cf70826d178a33539efa3569427d1b7337d5e8",
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.cohorts]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["unsupported-version-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.unsupported-version.receipt.json",
+      "id" = "application-host-binding.negative.unsupported-version",
+      "non_claims" = ["unsupported schema versions fail closed"],
+      "payload" = ahb_base_payload & {
+        schema_version | force = "kamacite.application-host-binding.v0",
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.artifact]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["authority-overclaim-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.authority-overclaim.receipt.json",
+      "id" = "application-host-binding.negative.authority-overclaim",
+      "non_claims" = ["authority overclaims fail closed"],
+      "payload" = ahb_base_payload & {
+        semantic_claims | force = ["binding grants host authorization"],
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.boundary]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["missing-non-claims-rejected"],
+      "expected_verdict" = "rejected",
+      "fixture_class" = "negative",
+      "golden_receipt" = "fixtures/golden/application-host-binding.negative.missing-non-claims.receipt.json",
+      "id" = "application-host-binding.negative.missing-non-claims",
+      "non_claims" = ["incomplete non-claims fail closed"],
+      "payload" = ahb_base_payload & {
+        non_claims | force = ["not host capability or authorization"],
+      },
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.boundary]",
       ],
     },
   ],

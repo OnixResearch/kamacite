@@ -1,0 +1,12 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "application-host-binding"
+  version: "v1"
+  schema-id: "kamacite.application-host-binding.v1"
+  record-label: "kamacite-application-host-binding-v1"
+  fields: ["schema-version" "application-identity" "entrypoint-identity" "input-schema-identity" "output-schema-identity" "effect-summary-identity" "effect-operation-identities" "host-profile-identity" "adapter-cohort-identity" "resource-profile-identity" "policy-identity" "compatibility-identity" "non-claims"]
+  identity-domain: "application-host-binding"
+  identity: "blake3(canonical packed Preserves binding bytes)"
+  implementation-alternatives: ["single host profile only"]
+  excluded-metadata: ["display name" "aliases" "path" "source span" "documentation"]
+  non-claims: ["not host capability or authorization" "not sandbox admission" "not resource enforcement" "not runtime correctness" "not application correctness" "not release eligibility"]
+}>

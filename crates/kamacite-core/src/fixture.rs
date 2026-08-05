@@ -1,3 +1,4 @@
+use crate::application_host_binding::ApplicationHostBindingInput;
 use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{
@@ -302,6 +303,7 @@ pub enum ArtifactClass {
     DocumentationOutput,
     DocumentationCell,
     DocumentationReceipt,
+    ApplicationHostBinding,
 }
 
 impl ArtifactClass {
@@ -324,6 +326,7 @@ impl ArtifactClass {
             Self::DocumentationOutput => "documentation-output",
             Self::DocumentationCell => "documentation-cell",
             Self::DocumentationReceipt => "documentation-receipt",
+            Self::ApplicationHostBinding => "application-host-binding",
         }
     }
 }
@@ -362,6 +365,7 @@ pub enum FixturePayload {
     DocumentationOutput(Box<DocumentationOutputInput>),
     DocumentationCell(Box<DocumentationCellInput>),
     DocumentationReceipt(Box<DocumentationReceiptInput>),
+    ApplicationHostBinding(Box<ApplicationHostBindingInput>),
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -1414,6 +1418,9 @@ pub fn validate_fixture(fixture: &FixtureCase) -> FixtureResult {
         }
         FixturePayload::DocumentationReceipt(input) => {
             validate_documentation_receipt(input, &mut accumulator)
+        }
+        FixturePayload::ApplicationHostBinding(input) => {
+            validate_application_host_binding_fixture(input, &mut accumulator)
         }
     }
 
@@ -2699,6 +2706,46 @@ fn validate_unsupported_claim(
             "claim.preserve_source_only",
             "unsupported source translation must remain source-envelope-only evidence",
         ));
+    }
+}
+
+fn validate_application_host_binding_fixture(
+    input: &ApplicationHostBindingInput,
+    accumulator: &mut ValidationAccumulator,
+) {
+    let result = crate::application_host_binding::validate_application_host_binding(input);
+    accumulator
+        .diagnostics
+        .extend(result.diagnostics.iter().cloned());
+    accumulator.input_identities.insert(
+        "application".to_string(),
+        input.application_identity.clone(),
+    );
+    if let Some(host) = &input.host_profile_identity {
+        accumulator
+            .input_identities
+            .insert("host-profile".to_string(), host.clone());
+    }
+    accumulator.input_identities.insert(
+        "adapter-cohort".to_string(),
+        input.adapter_cohort_identity.clone(),
+    );
+    accumulator.input_identities.insert(
+        "resource-profile".to_string(),
+        input.resource_profile_identity.clone(),
+    );
+    if let Some(receipt) = &result.receipt {
+        accumulator.output_identities.insert(
+            "application-host-binding".to_string(),
+            receipt.body.binding_identity.to_wire(),
+        );
+        accumulator.output_identities.insert(
+            "application-host-binding-receipt".to_string(),
+            receipt.receipt_identity.to_wire(),
+        );
+        accumulator
+            .checked_laws
+            .extend(receipt.body.checked_laws.iter().cloned());
     }
 }
 

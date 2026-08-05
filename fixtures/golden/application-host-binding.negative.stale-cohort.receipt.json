@@ -1,0 +1,58 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "application-host-binding.negative.stale-cohort",
+    "artifact_class": "application-host-binding",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.application_host_binding.cohorts]"
+    ],
+    "input_identities": {
+      "adapter-cohort": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+      },
+      "application": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+      },
+      "host-profile": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+      },
+      "resource-profile": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "stale-cohort-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "stale-identity",
+        "requirement_id": "r[kamacite.application_host_binding.cohorts]",
+        "field": "adapter_cohort_identity",
+        "message": "binding cohort identity differs from the expected compatible cohort",
+        "details": {
+          "declared": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210",
+          "expected": "fca1f44896bd6468aec24033d3cf70826d178a33539efa3569427d1b7337d5e8"
+        }
+      }
+    ],
+    "non_claims": [
+      "stale cohorts fail closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "0f506ece85d24af4a5acfaa507823db0931d13a7188e812a7e96357864c3faf2"
+  }
+}

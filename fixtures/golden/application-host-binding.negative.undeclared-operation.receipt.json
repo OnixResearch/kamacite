@@ -1,0 +1,58 @@
+{
+  "body": {
+    "schema_version": "kamacite.receipt.v1",
+    "canonical_codec": "kamacite-deterministic-json-receipt-projection-v1",
+    "fixture_id": "application-host-binding.negative.undeclared-operation",
+    "artifact_class": "application-host-binding",
+    "verdict": "rejected",
+    "requirement_ids": [
+      "r[kamacite.application_host_binding.effects]"
+    ],
+    "input_identities": {
+      "adapter-cohort": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "06afa4477b70db84ea9ae8a4e90c954ed687b52f5ba0dc3c3751bd1586536210"
+      },
+      "application": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "1fadd6a5c4841b7e5a68b83ff1faef189d785f775d87ca301e82b2058ae0d228"
+      },
+      "host-profile": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "ccbe18b932f33d3c86ca55104958ec5855d0408371849b3960e344109e9bf989"
+      },
+      "resource-profile": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "bb662261c01b9a95dbede5db4c93713d61d2de330cf0529a73cbc8ffbef3faf4"
+      }
+    },
+    "output_identities": {},
+    "checked_laws": [
+      "undeclared-operation-rejected"
+    ],
+    "diagnostics": [
+      {
+        "code": "identity-domain-mismatch",
+        "requirement_id": "r[kamacite.application_host_binding.effects]",
+        "field": "effect_operation_identities",
+        "message": "application-host binding identity uses the wrong domain",
+        "details": {
+          "actual": "source",
+          "expected": "effect-operation"
+        }
+      }
+    ],
+    "non_claims": [
+      "wrong-domain operations fail closed"
+    ]
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "30bd665d8d31c1dff54fd8a630e269855d6634a292a4bd7f3c403e0a49f088d0"
+  }
+}

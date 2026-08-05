@@ -6,6 +6,7 @@
 #![deny(clippy::unreachable)]
 #![deny(clippy::unwrap_used)]
 
+mod application_host_binding;
 mod ast_grep_audit;
 mod diagnostic;
 mod dialect_roundtrip;
@@ -29,6 +30,17 @@ mod valence_export;
 mod wasm_component;
 mod wasm_component_valence;
 
+pub use application_host_binding::{
+    APPLICATION_HOST_BINDING_RECEIPT_ROOT_LABEL, APPLICATION_HOST_BINDING_RECEIPT_SCHEMA,
+    APPLICATION_HOST_BINDING_ROOT_LABEL, APPLICATION_HOST_BINDING_SCHEMA_VERSION,
+    APPLICATION_HOST_BINDING_VALENCE_SCHEMA, ApplicationHostBindingInput,
+    ApplicationHostBindingMetadata, ApplicationHostBindingReceipt,
+    ApplicationHostBindingReceiptBody, ApplicationHostBindingValenceArtifact,
+    ApplicationHostBindingValenceProjection, ApplicationHostBindingValenceProjectionBody,
+    ApplicationHostBindingValidation, ValidatedApplicationHostBinding,
+    application_host_binding_canonical_bytes, application_host_binding_valence_projection,
+    validate_application_host_binding,
+};
 pub use ast_grep_audit::{
     AST_GREP_AUDIT_SCHEMA_VERSION, AST_GREP_BOUNDARY_ROLE, AST_GREP_RECORDED_ONLY_ROLE,
     AST_GREP_VALENCE_SCHEMA_VERSION, AstGrepAuditInput, AstGrepCodemodArtifact, AstGrepFinding,
@@ -100,15 +112,16 @@ pub use function_address::{
 };
 pub use identity::{
     AdapterDomain, AdapterIdentity, AdapterIdentityRef, AlgebraicEffectDomain, AnyIdentity,
-    BLAKE3_HEX_LENGTH, Blake3Hex, CanonicalValueDomain, CanonicalValueIdentity,
-    CanonicalValueIdentityRef, CompilerDomain, CompilerIdentity, CompilerIdentityRef,
-    DependencyClosureDomain, DependencyClosureIdentity, DependencyClosureIdentityRef,
-    DialectPayloadDomain, DialectPayloadIdentity, DialectPayloadIdentityRef,
-    DocumentationFactsDomain, DocumentationFactsIdentity, DocumentationFactsIdentityRef,
-    DocumentationIrDomain, DocumentationIrIdentity, DocumentationIrIdentityRef,
-    DocumentationOutputDomain, DocumentationOutputIdentity, DocumentationOutputIdentityRef,
-    EffectFamilyIdentity, EffectFamilyIdentityRef, EffectLogDomain, EffectLogIdentity,
-    EffectLogIdentityRef, EffectOperationDomain, EffectOperationIdentity,
+    ApplicationHostBindingDomain, ApplicationHostBindingIdentity,
+    ApplicationHostBindingIdentityRef, BLAKE3_HEX_LENGTH, Blake3Hex, CanonicalValueDomain,
+    CanonicalValueIdentity, CanonicalValueIdentityRef, CompilerDomain, CompilerIdentity,
+    CompilerIdentityRef, DependencyClosureDomain, DependencyClosureIdentity,
+    DependencyClosureIdentityRef, DialectPayloadDomain, DialectPayloadIdentity,
+    DialectPayloadIdentityRef, DocumentationFactsDomain, DocumentationFactsIdentity,
+    DocumentationFactsIdentityRef, DocumentationIrDomain, DocumentationIrIdentity,
+    DocumentationIrIdentityRef, DocumentationOutputDomain, DocumentationOutputIdentity,
+    DocumentationOutputIdentityRef, EffectFamilyIdentity, EffectFamilyIdentityRef, EffectLogDomain,
+    EffectLogIdentity, EffectLogIdentityRef, EffectOperationDomain, EffectOperationIdentity,
     EffectOperationIdentityRef, EvaluatorDomain, EvaluatorIdentity, EvaluatorIdentityRef,
     EvidenceChainDomain, EvidenceChainIdentity, EvidenceChainIdentityRef, FsmCoverageDomain,
     FsmCoverageIdentity, FsmCoverageIdentityRef, FsmSpecDomain, FsmSpecIdentity,
