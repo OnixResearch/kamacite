@@ -1,4 +1,4 @@
-use crate::{WireIdentity, IdentityDomain, compute_identity};
+use crate::{AdapterIdentity, WireIdentity};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -39,7 +39,7 @@ pub struct SteelDtoContractBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SteelDtoContract {
     pub body: SteelDtoContractBody,
-    pub identity: WireIdentity,
+    pub identity: AdapterIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -147,7 +147,7 @@ pub fn resolve_steel_dto_contract(schema_id: &str) -> Result<SteelDtoContract, S
     };
     let bytes = serde_json::to_vec(&body)
         .map_err(|error| SteelDtoViolation::MalformedJson(error.to_string()))?;
-    let identity = compute_identity(IdentityDomain::Adapter, &bytes);
+    let identity = AdapterIdentity::compute(&bytes);
     Ok(SteelDtoContract { body, identity })
 }
 
@@ -308,7 +308,7 @@ mod tests {
         assert!(module.is_ok());
         if let (Ok(integer), Ok(module)) = (integer, module) {
             assert_ne!(integer.identity, module.identity);
-            assert_eq!(integer.identity.domain, IdentityDomain::Adapter);
+            assert_eq!(integer.identity.domain(), crate::IdentityDomain::Adapter);
         }
     }
 }

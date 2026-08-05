@@ -1,4 +1,7 @@
-use crate::{WireIdentity, IdentityDomain, SemanticOperationError, compute_identity};
+use crate::{
+    AnyIdentity, EffectOperationIdentity, ProjectionIdentity, WireIdentity, IdentityDomain,
+    SemanticOperationError,
+};
 use serde::{Deserialize, Serialize};
 
 pub const SEMANTIC_OPERATION_VALENCE_SCHEMA: &str = "kamacite.semantic-effect-operation-valence.v1";
@@ -18,22 +21,22 @@ pub enum SemanticOperationValenceRole {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceArtifact {
     pub role: SemanticOperationValenceRole,
-    pub identity: WireIdentity,
+    pub identity: AnyIdentity,
     pub checked_claim: String,
     pub non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceEdge {
-    pub parent_identity: WireIdentity,
-    pub child_identity: WireIdentity,
+    pub parent_identity: AnyIdentity,
+    pub child_identity: AnyIdentity,
     pub relation: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceProjectionBody {
     pub schema_version: String,
-    pub subject_identity: WireIdentity,
+    pub subject_identity: EffectOperationIdentity,
     pub artifacts: Vec<SemanticOperationValenceArtifact>,
     pub parent_edges: Vec<SemanticOperationValenceEdge>,
     pub non_claims: Vec<String>,
@@ -42,7 +45,7 @@ pub struct SemanticOperationValenceProjectionBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceProjection {
     pub body: SemanticOperationValenceProjectionBody,
-    pub projection_identity: WireIdentity,
+    pub projection_identity: ProjectionIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -63,9 +66,13 @@ pub fn project_semantic_operation_to_valence(
         IdentityDomain::EffectOperation,
         "descriptor_identity",
     )?;
+    let descriptor = EffectOperationIdentity::from_wire(input.descriptor_identity.clone())
+        .map_err(|_| SemanticOperationError::InvalidIdentity {
+            field: "descriptor_identity",
+        })?;
     let mut artifacts = vec![artifact(
         SemanticOperationValenceRole::SemanticOperationDescriptor,
-        input.descriptor_identity.clone(),
+        AnyIdentity::EffectOperation(descriptor.clone()),
         "canonical semantic operation identity",
         &["not behavior correctness", "not host authority"],
     )];
@@ -105,7 +112,11 @@ pub fn project_semantic_operation_to_valence(
             })?;
         artifacts.push(artifact(
             SemanticOperationValenceRole::SupportingEvidence,
-            identity.clone(),
+            AnyIdentity::admit(identity.clone()).map_err(|_| {
+                SemanticOperationError::InvalidIdentity {
+                    field: "supporting_evidence_identities",
+                }
+            })?,
             "supporting source or proof evidence",
             &["does not replace the Kamacite descriptor"],
         ));
@@ -116,18 +127,19 @@ pub fn project_semantic_operation_to_valence(
             .then_with(|| left.identity.cmp(&right.identity))
     });
     artifacts.dedup_by(|left, right| left.role == right.role && left.identity == right.identity);
+    let descriptor_any = AnyIdentity::EffectOperation(descriptor.clone());
     let parent_edges = artifacts
         .iter()
-        .filter(|artifact| artifact.identity != input.descriptor_identity)
+        .filter(|artifact| artifact.identity != descriptor_any)
         .map(|artifact| SemanticOperationValenceEdge {
-            parent_identity: input.descriptor_identity.clone(),
+            parent_identity: descriptor_any.clone(),
             child_identity: artifact.identity.clone(),
             relation: PARENT_RELATION.to_string(),
         })
         .collect();
     let body = SemanticOperationValenceProjectionBody {
         schema_version: SEMANTIC_OPERATION_VALENCE_SCHEMA.to_string(),
-        subject_identity: input.descriptor_identity.clone(),
+        subject_identity: descriptor,
         artifacts,
         parent_edges,
         non_claims: vec![
@@ -142,7 +154,7 @@ pub fn project_semantic_operation_to_valence(
         .map_err(|error| SemanticOperationError::Canonicalization(error.to_string()))?;
     Ok(SemanticOperationValenceProjection {
         body,
-        projection_identity: compute_identity(IdentityDomain::Projection, &bytes),
+        projection_identity: ProjectionIdentity::compute(&bytes),
     })
 }
 
@@ -157,7 +169,11 @@ fn append_typed_artifacts<'a>(
         require_domain(identity, expected.clone(), "valence_role_identity")?;
         artifacts.push(artifact(
             role.clone(),
-            identity.clone(),
+            AnyIdentity::admit(identity.clone()).map_err(|_| {
+                SemanticOperationError::InvalidIdentity {
+                    field: "valence_role_identity",
+                }
+            })?,
             checked_claim,
             &["not correctness or authority"],
         ));
@@ -167,7 +183,7 @@ fn append_typed_artifacts<'a>(
 
 fn artifact(
     role: SemanticOperationValenceRole,
-    identity: WireIdentity,
+    identity: AnyIdentity,
     checked_claim: &str,
     non_claims: &[&str],
 ) -> SemanticOperationValenceArtifact {
@@ -195,6 +211,7 @@ fn require_domain(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::compute_identity;
 
     #[test]
     fn projection_preserves_roles_and_non_claims() {

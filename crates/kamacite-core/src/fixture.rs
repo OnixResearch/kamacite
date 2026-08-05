@@ -1930,13 +1930,13 @@ fn validate_nickel_sandbox_evidence(
     };
     accumulator.input_identities.insert(
         "nickel-sandbox-profile".to_string(),
-        profile.profile_identity.clone(),
+        profile.profile_identity.to_wire(),
     );
     match nickel_sandbox_evidence_identity(evidence) {
         Ok(identity) => {
             accumulator
                 .input_identities
-                .insert("nickel-sandbox-evidence".to_string(), identity);
+                .insert("nickel-sandbox-evidence".to_string(), identity.to_wire());
         }
         Err(error) => accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::MalformedProjectionOutput,
@@ -2168,7 +2168,7 @@ fn validate_steel_dto_schemas(
         Ok(contract) => {
             accumulator.input_identities.insert(
                 "steel-input-contract".to_string(),
-                contract.identity.clone(),
+                contract.identity.to_wire(),
             );
         }
         Err(error) => accumulator.diagnostics.push(
@@ -2185,7 +2185,7 @@ fn validate_steel_dto_schemas(
         Ok(contract) => {
             accumulator.input_identities.insert(
                 "steel-output-contract".to_string(),
-                contract.identity.clone(),
+                contract.identity.to_wire(),
             );
         }
         Err(error) => accumulator.diagnostics.push(
@@ -2533,10 +2533,10 @@ fn validate_executed_steel_evidence(
         && input.output_projection_identity.as_ref() == Some(&evidence.output_identity)
         && input_contract
             .as_ref()
-            .is_some_and(|contract| contract.identity == evidence.input_contract_identity)
+            .is_some_and(|contract| contract.identity.to_wire() == evidence.input_contract_identity)
         && output_contract
             .as_ref()
-            .is_some_and(|contract| contract.identity == evidence.output_contract_identity);
+            .is_some_and(|contract| contract.identity.to_wire() == evidence.output_contract_identity);
     let runner_matches = evidence.runner_profile == input.evaluator_profile
         && evidence.runner_descriptor == input.evaluator_descriptor
         && evidence.runner_identity == runner_identity
@@ -5412,7 +5412,7 @@ mod tests {
             compute_identity(IdentityDomain::Source, VALID_SOURCE),
         );
         let evidence = NickelSandboxEvidence {
-            profile_identity: profile.profile_identity.clone(),
+            profile_identity: profile.profile_identity.to_wire(),
             evaluator_identity: compute_identity(
                 IdentityDomain::Evaluator,
                 NICKEL_EVALUATOR_DESCRIPTOR.as_bytes(),

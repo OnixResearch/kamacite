@@ -520,7 +520,7 @@ fn sandbox_evidence(
         (!stdout.is_empty()).then(|| compute_identity(IdentityDomain::Projection, stdout));
     let diagnostic_bytes = normalized_diagnostic_bytes(&outcome, stderr);
     NickelSandboxEvidence {
-        profile_identity: request.profile.profile_identity.clone(),
+        profile_identity: request.profile.profile_identity.to_wire(),
         evaluator_identity: request.evaluator_identity.clone(),
         import_identities,
         requested_capabilities: request.requested_capabilities.clone(),

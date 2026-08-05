@@ -5,7 +5,10 @@ use crate::evidence_chain::{
     ParentLinkDomain, build_evidence_chain_envelope, evidence_chain_json_projection,
     validate_evidence_chain_json_projection,
 };
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    EvidenceChainIdentity, Identity, IdentityDomainMarker, ReceiptIdentity, SourceIdentity,
+    WireIdentity, IdentityDomain,
+};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -81,22 +84,22 @@ pub struct TrellisProofEvidenceProfile {
     pub canonical_codec: String,
     pub producer: String,
     pub role: TrellisProofEvidenceRole,
-    pub source_identity: WireIdentity,
-    pub proof_ir_identity: WireIdentity,
-    pub verifier_receipt_identity: WireIdentity,
+    pub source_identity: SourceIdentity,
+    pub proof_ir_identity: EvidenceChainIdentity,
+    pub verifier_receipt_identity: ReceiptIdentity,
     pub verifier_passed: bool,
-    pub assumptions_root: WireIdentity,
-    pub dependency_root: WireIdentity,
+    pub assumptions_root: EvidenceChainIdentity,
+    pub dependency_root: EvidenceChainIdentity,
     pub property_ids: Vec<String>,
     pub requirement_ids: Vec<String>,
-    pub non_claim_boundary_hash: WireIdentity,
+    pub non_claim_boundary_hash: EvidenceChainIdentity,
     pub non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct TrellisProofEvidenceEnvelope {
     pub profile: TrellisProofEvidenceProfile,
-    pub profile_identity: WireIdentity,
+    pub profile_identity: EvidenceChainIdentity,
     pub evidence_chain: EvidenceChainEnvelope,
 }
 
@@ -105,7 +108,7 @@ pub struct TrellisProofEvidenceJsonProjection {
     pub schema_version: String,
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub profile_identity: WireIdentity,
+    pub profile_identity: EvidenceChainIdentity,
     pub evidence_chain_projection: EvidenceChainJsonProjection,
     pub profile: TrellisProofEvidenceProfile,
 }
@@ -166,7 +169,7 @@ pub fn build_trellis_proof_evidence_envelope(
         diagnostics.dedup();
         return Err(diagnostics);
     }
-    let profile = trellis_proof_evidence_profile(input).map_err(canonicalization_diagnostics)?;
+    let profile = trellis_proof_evidence_profile(input)?;
     let profile_identity =
         trellis_proof_profile_identity(&profile).map_err(canonicalization_diagnostics)?;
     let evidence_chain_input = EvidenceChainEnvelopeInput {
@@ -186,7 +189,7 @@ pub fn build_trellis_proof_evidence_envelope(
         profile_payload_roots: vec![EvidenceChainProfileRoot {
             evidence_kind: EvidenceKind::Proof,
             schema_version: TRELLIS_PROOF_PROFILE_SCHEMA_VERSION.to_string(),
-            root_identity: profile_identity.clone(),
+            root_identity: profile_identity.to_wire(),
         }],
         projections: Vec::new(),
         non_claims: input.non_claims.clone(),
@@ -251,8 +254,8 @@ pub fn validate_trellis_proof_evidence_json_projection(
                 "profile_identity",
                 "Trellis proof profile identity does not match canonical profile bytes",
             )
-            .with_detail("declared", projection.profile_identity.hex.as_str())
-            .with_detail("computed", identity.hex.as_str()),
+            .with_detail("declared", projection.profile_identity.hex().as_str())
+            .with_detail("computed", identity.hex().as_str()),
         ),
         Err(error) => diagnostics.push(Diagnostic::new(
             DiagnosticCode::MalformedProjectionOutput,
@@ -266,7 +269,7 @@ pub fn validate_trellis_proof_evidence_json_projection(
         .envelope
         .profile_payload_roots
         .iter()
-        .any(|root| root.root_identity == projection.profile_identity)
+        .any(|root| root.root_identity == projection.profile_identity.to_wire())
     {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -293,36 +296,34 @@ pub fn trellis_proof_profile_canonical_bytes(
     )
 }
 
-pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Result<WireIdentity, ReceiptError> {
+pub fn trellis_proof_assumptions_root(
+    assumptions: &[String],
+) -> Result<EvidenceChainIdentity, ReceiptError> {
     let root = CanonicalProofCollection {
         kind: ASSUMPTIONS_ROOT_KIND,
         values: sorted_strings(assumptions),
     };
-    Ok(compute_identity(
-        IdentityDomain::EvidenceChain,
-        &typed_proof_bytes(
-            &root,
-            TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
-            TRELLIS_PROOF_COLLECTION_ROOT_LABEL,
-        )?,
-    ))
+    Ok(EvidenceChainIdentity::compute(&typed_proof_bytes(
+        &root,
+        TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
+        TRELLIS_PROOF_COLLECTION_ROOT_LABEL,
+    )?))
 }
 
-pub fn trellis_proof_dependency_root(dependencies: &[WireIdentity]) -> Result<WireIdentity, ReceiptError> {
+pub fn trellis_proof_dependency_root(
+    dependencies: &[WireIdentity],
+) -> Result<EvidenceChainIdentity, ReceiptError> {
     let mut dependencies = dependencies.to_vec();
     dependencies.sort();
     let root = CanonicalProofCollection {
         kind: DEPENDENCIES_ROOT_KIND,
         values: dependencies,
     };
-    Ok(compute_identity(
-        IdentityDomain::EvidenceChain,
-        &typed_proof_bytes(
-            &root,
-            TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
-            TRELLIS_PROOF_COLLECTION_ROOT_LABEL,
-        )?,
-    ))
+    Ok(EvidenceChainIdentity::compute(&typed_proof_bytes(
+        &root,
+        TRELLIS_PROOF_PROFILE_SCHEMA_VERSION,
+        TRELLIS_PROOF_COLLECTION_ROOT_LABEL,
+    )?))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -334,22 +335,42 @@ struct CanonicalProofCollection<T> {
 
 fn trellis_proof_evidence_profile(
     input: &TrellisProofEvidenceInput,
-) -> Result<TrellisProofEvidenceProfile, ReceiptError> {
+) -> Result<TrellisProofEvidenceProfile, Vec<Diagnostic>> {
     Ok(TrellisProofEvidenceProfile {
         schema_version: TRELLIS_PROOF_PROFILE_SCHEMA_VERSION.to_string(),
         canonical_codec: TRELLIS_PROOF_PROFILE_CANONICAL_CODEC.to_string(),
         producer: input.producer.clone(),
         role: input.role.clone(),
-        source_identity: input.source_identity.clone(),
-        proof_ir_identity: input.proof_ir_identity.clone(),
-        verifier_receipt_identity: input.verifier_receipt_identity.clone(),
+        source_identity: admit_typed(&input.source_identity, "source_identity")?,
+        proof_ir_identity: admit_typed(&input.proof_ir_identity, "proof_ir_identity")?,
+        verifier_receipt_identity: admit_typed(
+            &input.verifier_receipt_identity,
+            "verifier_receipt_identity",
+        )?,
         verifier_passed: input.verifier_passed,
-        assumptions_root: trellis_proof_assumptions_root(&input.assumptions)?,
-        dependency_root: trellis_proof_dependency_root(&input.dependency_identities)?,
+        assumptions_root: trellis_proof_assumptions_root(&input.assumptions)
+            .map_err(canonicalization_diagnostics)?,
+        dependency_root: trellis_proof_dependency_root(&input.dependency_identities)
+            .map_err(canonicalization_diagnostics)?,
         property_ids: sorted_strings(&input.property_ids),
         requirement_ids: sorted_strings(&input.requirement_ids),
-        non_claim_boundary_hash: trellis_proof_assumptions_root(&input.non_claims)?,
+        non_claim_boundary_hash: trellis_proof_assumptions_root(&input.non_claims)
+            .map_err(canonicalization_diagnostics)?,
         non_claims: sorted_strings(&input.non_claims),
+    })
+}
+
+fn admit_typed<D: IdentityDomainMarker>(
+    wire: &WireIdentity,
+    field: &str,
+) -> Result<Identity<D>, Vec<Diagnostic>> {
+    Identity::from_wire(wire.clone()).map_err(|error| {
+        vec![Diagnostic::new(
+            DiagnosticCode::IdentityDomainMismatch,
+            REQUIREMENT_SCHEMA,
+            field,
+            format!("Trellis proof evidence identity admission failed: {error}"),
+        )]
     })
 }
 
@@ -364,9 +385,8 @@ fn canonicalization_diagnostics(error: ReceiptError) -> Vec<Diagnostic> {
 
 fn trellis_proof_profile_identity(
     profile: &TrellisProofEvidenceProfile,
-) -> Result<WireIdentity, ReceiptError> {
-    Ok(compute_identity(
-        IdentityDomain::EvidenceChain,
+) -> Result<EvidenceChainIdentity, ReceiptError> {
+    Ok(EvidenceChainIdentity::compute(
         &trellis_proof_profile_canonical_bytes(profile)?,
     ))
 }
@@ -429,7 +449,7 @@ fn validate_dependencies(input: &TrellisProofEvidenceInput, diagnostics: &mut Ve
 
 fn validate_declared_root_result(
     declared: Option<&WireIdentity>,
-    computed: Result<WireIdentity, ReceiptError>,
+    computed: Result<EvidenceChainIdentity, ReceiptError>,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
@@ -446,12 +466,12 @@ fn validate_declared_root_result(
 
 fn validate_declared_root(
     declared: Option<&WireIdentity>,
-    computed: WireIdentity,
+    computed: EvidenceChainIdentity,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     match declared {
-        Some(identity) if identity == &computed => {}
+        Some(identity) if identity == &computed.to_wire() => {}
         Some(identity) => diagnostics.push(
             Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -460,7 +480,7 @@ fn validate_declared_root(
                 "declared Trellis proof evidence root does not match canonical profile content",
             )
             .with_detail("declared", identity.hex.as_str())
-            .with_detail("computed", computed.hex.as_str()),
+            .with_detail("computed", computed.hex().as_str()),
         ),
         None => diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
@@ -581,6 +601,7 @@ fn typed_proof_bytes<T: Serialize>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
 
     const PRODUCER: &str = "trellis";
     const NO_EXTRA_ASSUMPTIONS: &str = "no extra assumptions declared";
@@ -600,8 +621,8 @@ mod tests {
             proof_ir_identity: compute_identity(IdentityDomain::EvidenceChain, b"proof-ir"),
             verifier_receipt_identity: compute_identity(IdentityDomain::Receipt, b"verifier"),
             verifier_passed: true,
-            declared_assumptions_root: trellis_proof_assumptions_root(&assumptions).ok(),
-            declared_dependency_root: trellis_proof_dependency_root(&dependencies).ok(),
+            declared_assumptions_root: trellis_proof_assumptions_root(&assumptions).ok().map(|typed| typed.to_wire()),
+            declared_dependency_root: trellis_proof_dependency_root(&dependencies).ok().map(|typed| typed.to_wire()),
             assumptions,
             dependency_identities: dependencies,
             property_ids: vec![PROPERTY_ID.to_string()],

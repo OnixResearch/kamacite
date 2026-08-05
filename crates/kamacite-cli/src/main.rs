@@ -3794,8 +3794,8 @@ fn materialize_steel_adapter_receipt(
                     source_identity,
                     module_identity,
                     input_identity: verified_input_identity,
-                    input_contract_identity: input_contract.identity,
-                    output_contract_identity: output_contract.identity,
+                    input_contract_identity: input_contract.identity.to_wire(),
+                    output_contract_identity: output_contract.identity.to_wire(),
                     output_identity,
                     declared_builtin_modules: parts.declared_builtin_modules.to_vec(),
                     registered_host_functions: parts

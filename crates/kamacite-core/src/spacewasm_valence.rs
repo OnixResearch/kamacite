@@ -3,9 +3,9 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    WireIdentity, IdentityDomain, SourceSpan, SourceSpanSet, SpaceWasmParentRole,
-    SpaceWasmStaticRequest, SpaceWasmValidationError, build_spacewasm_static_receipt,
-    compute_identity,
+    AnyIdentity, ProjectionIdentity, ReceiptIdentity, SourceSpan, SourceSpanSet,
+    SpaceWasmParentRole, SpaceWasmStaticRequest, SpaceWasmValidationError,
+    build_spacewasm_static_receipt,
 };
 
 pub const SPACEWASM_VALENCE_PROJECTION_SCHEMA: &str = "kamacite.spacewasm-valence-projection.v1";
@@ -29,7 +29,7 @@ pub enum SpaceWasmValenceVerificationClass {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceArtifact {
     pub role: String,
-    pub identity: WireIdentity,
+    pub identity: AnyIdentity,
     pub verification_class: SpaceWasmValenceVerificationClass,
     pub spans: SourceSpanSet,
 }
@@ -38,9 +38,9 @@ pub struct SpaceWasmValenceArtifact {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceEdge {
     pub parent_role: String,
-    pub parent_identity: WireIdentity,
+    pub parent_identity: AnyIdentity,
     pub child_role: String,
-    pub child_identity: WireIdentity,
+    pub child_identity: AnyIdentity,
     pub relation: String,
 }
 
@@ -48,7 +48,7 @@ pub struct SpaceWasmValenceEdge {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceProjectionBody {
     pub schema_version: String,
-    pub subject_receipt_identity: WireIdentity,
+    pub subject_receipt_identity: ReceiptIdentity,
     pub artifacts: Vec<SpaceWasmValenceArtifact>,
     pub parent_edges: Vec<SpaceWasmValenceEdge>,
     pub checked_laws: Vec<String>,
@@ -60,7 +60,7 @@ pub struct SpaceWasmValenceProjectionBody {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceProjection {
     pub body: SpaceWasmValenceProjectionBody,
-    pub projection_identity: WireIdentity,
+    pub projection_identity: ProjectionIdentity,
 }
 
 #[derive(Debug)]
@@ -106,7 +106,7 @@ pub fn project_spacewasm_static_to_valence(
         schema_version: SPACEWASM_VALENCE_PROJECTION_SCHEMA.to_string(),
         subject_receipt_identity: receipt.receipt_identity.clone(),
         artifacts: artifacts(request, &receipt, &descriptor_bytes)?,
-        parent_edges: parent_edges(request, &receipt),
+        parent_edges: parent_edges(request, &receipt)?,
         checked_laws: receipt.body.checked_laws.clone(),
         non_claims: receipt.body.non_claims.clone(),
         coupling_boundary: SPACEWASM_VALENCE_COUPLING_BOUNDARY.to_string(),
@@ -115,7 +115,7 @@ pub fn project_spacewasm_static_to_valence(
         .map_err(|error| SpaceWasmValenceProjectionError::Encoding(error.to_string()))?;
     Ok(SpaceWasmValenceProjection {
         body,
-        projection_identity: compute_identity(IdentityDomain::Projection, &projection_bytes),
+        projection_identity: ProjectionIdentity::compute(&projection_bytes),
     })
 }
 
@@ -127,91 +127,91 @@ fn artifacts(
     let mut artifacts = vec![
         artifact_with_span(
             "source-envelope",
-            receipt.body.source_identity.clone(),
+            AnyIdentity::Source(receipt.body.source_identity.clone()),
             SpaceWasmValenceVerificationClass::RecordedOnly,
             "source-envelope",
             request.source_envelope_bytes.len(),
         )?,
         artifact_with_span(
             "canonical-input",
-            receipt.body.canonical_input_identity.clone(),
+            AnyIdentity::CanonicalValue(receipt.body.canonical_input_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
             "canonical-input",
             request.canonical_input_bytes.len(),
         )?,
         artifact_without_span(
             "input-schema",
-            receipt.body.input_schema_identity.clone(),
+            AnyIdentity::Projection(receipt.body.input_schema_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             "output-schema",
-            receipt.body.output_schema_identity.clone(),
+            AnyIdentity::Projection(receipt.body.output_schema_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
         artifact_with_span(
             "adapter-profile",
-            receipt.body.profile_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.profile_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
             "adapters/spacewasm-mvp/generated/profile.json",
             request.profile_bytes.len(),
         )?,
         artifact_without_span(
             "abi-profile",
-            receipt.body.abi_profile_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.abi_profile_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             "capability-plan",
-            receipt.body.capability_plan_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.capability_plan_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             "effect-plan",
-            receipt.body.effect_plan_identity.clone(),
+            AnyIdentity::AlgebraicEffect(receipt.body.effect_plan_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             "resource-plan",
-            receipt.body.resource_plan_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.resource_plan_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
         artifact_with_span(
             SPACEWASM_DESCRIPTOR_ROLE,
-            receipt.body.descriptor_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
             "descriptor-json",
             descriptor_bytes.len(),
         )?,
         artifact_with_span(
             "core-module",
-            receipt.body.module_identity.clone(),
+            AnyIdentity::TargetArtifact(receipt.body.module_identity.clone()),
             SpaceWasmValenceVerificationClass::RecordedOnly,
             "adapters/spacewasm-mvp/upstream/mantle/mvp-positive.wasm",
             request.module_bytes.len(),
         )?,
         artifact_with_span(
             "spacewasm-runtime-profile",
-            receipt.body.runtime_identity.clone(),
+            AnyIdentity::Evaluator(receipt.body.runtime_identity.clone()),
             SpaceWasmValenceVerificationClass::RecordedOnly,
             "adapters/spacewasm-mvp/upstream/mantle/profile.json",
             request.mantle_profile_bytes.len(),
         )?,
         artifact_without_span(
             "mantle-bundle",
-            receipt.body.mantle_bundle_identity.clone(),
+            AnyIdentity::DependencyClosure(receipt.body.mantle_bundle_identity.clone()),
             SpaceWasmValenceVerificationClass::RecordedOnly,
         ),
         artifact_with_span(
             "octet-static-report",
-            receipt.body.octet_report_identity.clone(),
+            AnyIdentity::Projection(receipt.body.octet_report_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
             "adapters/spacewasm-mvp/upstream/octet/evidence-rail-receipt.json",
             request.octet_report_bytes.len(),
         )?,
         artifact_without_span(
             SPACEWASM_RECEIPT_ROLE,
-            receipt.receipt_identity.clone(),
+            AnyIdentity::Receipt(receipt.receipt_identity.clone()),
             SpaceWasmValenceVerificationClass::Boundary,
         ),
     ];
@@ -222,33 +222,36 @@ fn artifacts(
 fn parent_edges(
     request: &SpaceWasmStaticRequest<'_>,
     receipt: &crate::SpaceWasmStaticReceipt,
-) -> Vec<SpaceWasmValenceEdge> {
+) -> Result<Vec<SpaceWasmValenceEdge>, SpaceWasmValenceProjectionError> {
     let mut edges = request
         .descriptor
         .parent_edges
         .iter()
-        .map(|edge| SpaceWasmValenceEdge {
-            parent_role: parent_role_label(&edge.role).to_string(),
-            parent_identity: edge.parent_identity.clone(),
-            child_role: SPACEWASM_DESCRIPTOR_ROLE.to_string(),
-            child_identity: receipt.body.descriptor_identity.clone(),
-            relation: SPACEWASM_PARENT_RELATION.to_string(),
+        .map(|edge| {
+            AnyIdentity::admit(edge.parent_identity.clone()).map(|parent| SpaceWasmValenceEdge {
+                parent_role: parent_role_label(&edge.role).to_string(),
+                parent_identity: parent,
+                child_role: SPACEWASM_DESCRIPTOR_ROLE.to_string(),
+                child_identity: AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
+                relation: SPACEWASM_PARENT_RELATION.to_string(),
+            })
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| SpaceWasmValenceProjectionError::Encoding(error.to_string()))?;
     edges.push(SpaceWasmValenceEdge {
         parent_role: SPACEWASM_DESCRIPTOR_ROLE.to_string(),
-        parent_identity: receipt.body.descriptor_identity.clone(),
+        parent_identity: AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
         child_role: SPACEWASM_RECEIPT_ROLE.to_string(),
-        child_identity: receipt.receipt_identity.clone(),
+        child_identity: AnyIdentity::Receipt(receipt.receipt_identity.clone()),
         relation: SPACEWASM_PARENT_RELATION.to_string(),
     });
     edges.sort();
-    edges
+    Ok(edges)
 }
 
 fn artifact_with_span(
     role: &str,
-    identity: WireIdentity,
+    identity: AnyIdentity,
     verification_class: SpaceWasmValenceVerificationClass,
     artifact_key: &str,
     byte_len: usize,
@@ -273,7 +276,7 @@ fn artifact_with_span(
 
 fn artifact_without_span(
     role: &str,
-    identity: WireIdentity,
+    identity: AnyIdentity,
     verification_class: SpaceWasmValenceVerificationClass,
 ) -> SpaceWasmValenceArtifact {
     SpaceWasmValenceArtifact {

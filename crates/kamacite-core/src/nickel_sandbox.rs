@@ -3,7 +3,7 @@
 // r[impl kamacite.findings.nickel_sandbox.enforced_evidence]
 // r[impl kamacite.findings.nickel_sandbox.resource_limits]
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{AdapterIdentity, WireIdentity, IdentityDomain};
 use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -58,7 +58,7 @@ pub struct NickelSandboxProfile {
     pub writable_paths: Vec<String>,
     pub admitted_capabilities: Vec<String>,
     pub limits: NickelSandboxLimits,
-    pub profile_identity: WireIdentity,
+    pub profile_identity: AdapterIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -136,7 +136,7 @@ pub fn nickel_sandbox_profile() -> Result<NickelSandboxProfile, ReceiptError> {
         admitted_capabilities: &admitted_capabilities,
         limits: &limits,
     };
-    let profile_identity = compute_identity(IdentityDomain::Adapter, &canonical_json_bytes(&body)?);
+    let profile_identity = AdapterIdentity::compute(&canonical_json_bytes(&body)?);
     Ok(NickelSandboxProfile {
         schema_version: NICKEL_SANDBOX_SCHEMA_VERSION.to_string(),
         sandbox_kind: NICKEL_SANDBOX_KIND.to_string(),
@@ -155,11 +155,8 @@ pub fn nickel_sandbox_profile() -> Result<NickelSandboxProfile, ReceiptError> {
 
 pub fn nickel_sandbox_evidence_identity(
     evidence: &NickelSandboxEvidence,
-) -> Result<WireIdentity, ReceiptError> {
-    Ok(compute_identity(
-        IdentityDomain::Adapter,
-        &canonical_json_bytes(evidence)?,
-    ))
+) -> Result<AdapterIdentity, ReceiptError> {
+    Ok(AdapterIdentity::compute(&canonical_json_bytes(evidence)?))
 }
 
 #[must_use]
@@ -182,7 +179,7 @@ pub fn validate_nickel_sandbox(
     evaluator_identity: Option<&WireIdentity>,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = validate_nickel_sandbox_profile(profile);
-    if evidence.profile_identity != profile.profile_identity {
+    if evidence.profile_identity != profile.profile_identity.to_wire() {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_PROFILE,
@@ -422,6 +419,7 @@ fn validate_sandbox_outcome(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
 
     fn valid_evidence(profile: &NickelSandboxProfile) -> NickelSandboxEvidence {
         let output = b"{\"accepted\":true}";
@@ -431,7 +429,7 @@ mod tests {
             compute_identity(IdentityDomain::Source, b"{ accepted = true }"),
         );
         NickelSandboxEvidence {
-            profile_identity: profile.profile_identity.clone(),
+            profile_identity: profile.profile_identity.to_wire(),
             evaluator_identity: compute_identity(
                 IdentityDomain::Evaluator,
                 b"nickel-reference-cli:test",

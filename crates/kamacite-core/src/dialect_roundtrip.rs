@@ -1,5 +1,8 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    DialectPayloadIdentity, Identity, IdentityDomainMarker, ProjectionIdentity, ReceiptIdentity,
+    SourceIdentity, WireIdentity, IdentityDomain,
+};
 use serde::{Deserialize, Serialize};
 
 pub const DIALECT_ROUNDTRIP_PROFILE_SCHEMA_VERSION: u32 = 1;
@@ -64,11 +67,11 @@ pub struct DialectRoundtripProfile {
     pub namespace: String,
     pub operation_name: String,
     pub payload_version: u32,
-    pub payload_identity: WireIdentity,
-    pub source_identity: WireIdentity,
+    pub payload_identity: DialectPayloadIdentity,
+    pub source_identity: SourceIdentity,
     pub source_spans: Vec<DialectSourceSpan>,
-    pub lowering_receipt_identities: Vec<WireIdentity>,
-    pub compatibility_projection_identity: Option<WireIdentity>,
+    pub lowering_receipt_identities: Vec<ReceiptIdentity>,
+    pub compatibility_projection_identity: Option<ProjectionIdentity>,
     pub opaque_unknown_namespace: bool,
     pub non_claims: Vec<String>,
 }
@@ -77,16 +80,16 @@ pub struct DialectRoundtripProfile {
 pub struct DialectRoundtripJsonProjection {
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub payload_identity: WireIdentity,
+    pub payload_identity: DialectPayloadIdentity,
     pub profile: DialectRoundtripProfile,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DialectRoundtripValenceProjection {
     pub role: String,
-    pub payload_identity: WireIdentity,
-    pub source_identity: WireIdentity,
-    pub lowering_receipt_identities: Vec<WireIdentity>,
+    pub payload_identity: DialectPayloadIdentity,
+    pub source_identity: SourceIdentity,
+    pub lowering_receipt_identities: Vec<ReceiptIdentity>,
     pub non_claims: Vec<String>,
 }
 
@@ -138,7 +141,7 @@ pub fn validate_dialect_roundtrip_input(input: &DialectRoundtripInput) -> Vec<Di
             "declared_payload_identity",
             &mut diagnostics,
         );
-        if declared.domain == IdentityDomain::DialectPayload && declared.hex != computed_payload.hex
+        if declared.domain == IdentityDomain::DialectPayload && declared.hex != *computed_payload.hex()
         {
             diagnostics.push(
                 Diagnostic::new(
@@ -148,7 +151,7 @@ pub fn validate_dialect_roundtrip_input(input: &DialectRoundtripInput) -> Vec<Di
                     "dialect roundtrip declared payload identity is stale",
                 )
                 .with_detail("declared", declared.hex.as_str())
-                .with_detail("computed", computed_payload.hex.as_str()),
+                .with_detail("computed", computed_payload.hex().as_str()),
             );
         }
     }
@@ -194,12 +197,46 @@ pub fn dialect_roundtrip_profile(
         operation_name: input.operation_name.clone(),
         payload_version: input.payload_version,
         payload_identity: dialect_payload_identity(&input.canonical_payload_bytes),
-        source_identity: input.source_identity.clone(),
+        source_identity: admit_identity(&input.source_identity, "source_identity")?,
         source_spans: sorted_source_spans(&input.source_spans),
-        lowering_receipt_identities: sorted_identities(&input.lowering_receipt_identities),
-        compatibility_projection_identity: input.compatibility_projection_identity.clone(),
+        lowering_receipt_identities: sorted_typed_identities(
+            &input.lowering_receipt_identities,
+            "lowering_receipt_identities",
+        )?,
+        compatibility_projection_identity: input
+            .compatibility_projection_identity
+            .as_ref()
+            .map(|identity| admit_identity(identity, "compatibility_projection_identity"))
+            .transpose()?,
         opaque_unknown_namespace: is_unknown_namespace(&input.namespace),
         non_claims: sorted_strings(&input.non_claims),
+    })
+}
+
+fn sorted_typed_identities<D: IdentityDomainMarker>(
+    wires: &[WireIdentity],
+    field: &str,
+) -> Result<Vec<Identity<D>>, Vec<Diagnostic>> {
+    let mut admitted = wires
+        .iter()
+        .map(|identity| admit_identity(identity, field))
+        .collect::<Result<Vec<_>, _>>()?;
+    admitted.sort();
+    admitted.dedup();
+    Ok(admitted)
+}
+
+fn admit_identity<D: IdentityDomainMarker>(
+    wire: &WireIdentity,
+    field: &str,
+) -> Result<Identity<D>, Vec<Diagnostic>> {
+    Identity::from_wire(wire.clone()).map_err(|error| {
+        vec![Diagnostic::new(
+            DiagnosticCode::IdentityDomainMismatch,
+            REQUIREMENT_PROFILE,
+            field,
+            format!("dialect roundtrip identity admission failed: {error}"),
+        )]
     })
 }
 
@@ -268,8 +305,8 @@ pub fn dialect_roundtrip_valence_projection(
 }
 
 #[must_use]
-pub fn dialect_payload_identity(canonical_payload_bytes: &[u8]) -> WireIdentity {
-    compute_identity(IdentityDomain::DialectPayload, canonical_payload_bytes)
+pub fn dialect_payload_identity(canonical_payload_bytes: &[u8]) -> DialectPayloadIdentity {
+    DialectPayloadIdentity::compute(canonical_payload_bytes)
 }
 
 fn validate_source_spans(input: &DialectRoundtripInput, diagnostics: &mut Vec<Diagnostic>) {
@@ -392,13 +429,6 @@ fn sorted_source_spans(spans: &[DialectSourceSpan]) -> Vec<DialectSourceSpan> {
     spans
 }
 
-fn sorted_identities(identities: &[WireIdentity]) -> Vec<WireIdentity> {
-    let mut identities = identities.to_vec();
-    identities.sort();
-    identities.dedup();
-    identities
-}
-
 fn sorted_strings(values: &[String]) -> Vec<String> {
     let mut values = values.to_vec();
     values.sort();
@@ -409,6 +439,7 @@ fn sorted_strings(values: &[String]) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
 
     const KNOWN_NAMESPACE: &str = "kamacite.example.adapter";
     const UNKNOWN_NAMESPACE: &str = "foreign.adapter";
@@ -435,7 +466,7 @@ mod tests {
             namespace: namespace.to_string(),
             operation_name: OPERATION_NAME.to_string(),
             payload_version: SUPPORTED_PAYLOAD_VERSION,
-            declared_payload_identity: Some(dialect_payload_identity(&payload)),
+            declared_payload_identity: Some(dialect_payload_identity(&payload).to_wire()),
             canonical_payload_bytes: payload,
             source_identity: source_identity(),
             source_len: SOURCE_LEN,
@@ -476,7 +507,7 @@ mod tests {
         assert!(!known.opaque_unknown_namespace);
         assert!(unknown.opaque_unknown_namespace);
         assert_eq!(
-            known.payload_identity.domain,
+            known.payload_identity.domain(),
             IdentityDomain::DialectPayload
         );
         assert_eq!(
@@ -573,7 +604,7 @@ mod tests {
         };
         let mut projection = dialect_roundtrip_json_projection(&profile);
         projection.canonical_identity_owner = "json-only".to_string();
-        projection.payload_identity = compute_identity(IdentityDomain::DialectPayload, b"other");
+        projection.payload_identity = DialectPayloadIdentity::compute(b"other");
         projection.profile.non_claims.clear();
 
         let diagnostics = validate_dialect_roundtrip_json_projection(&projection);
