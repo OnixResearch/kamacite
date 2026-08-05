@@ -22,12 +22,12 @@ use kamacite_core::{
     ManifestGenerationReceipt, ManifestGenerationValidation, NICKEL_SANDBOX_SOURCE_PATH,
     NickelAdapterReceiptInput, NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile,
     PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION,
-    PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope, ReceiptIdentity, ReplayProfileInput,
-    SourceEnvelopeInput,
+    PRESERVES_SPEC_VERSION, ProjectionIdentity, ReceiptBody, ReceiptEnvelope, ReceiptIdentity,
+    ReplayProfileInput, SourceEnvelopeInput,
     SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelExecutedProbeEvidence,
     SteelExecutionEvidence, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
     UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
-    ValenceReceiptExportInput, ValidationVerdict, admit_valence_conformance,
+    ValenceReceiptExportInput, ValidationVerdict, WireReceiptEnvelope, admit_valence_conformance,
     build_manifest_generation_receipt, compute_identity, docs_config_identity,
     evaluate_docs_action, export_function_address_valence_projection, export_valence_receipt,
     fixture_expected_canonical_artifact, function_address_projection_json, nickel_sandbox_profile,
@@ -831,7 +831,7 @@ struct ValenceExportCommandReport {
     passed: bool,
     validation_passed: bool,
     diagnostics: Vec<kamacite_core::Diagnostic>,
-    export_identity: Option<WireIdentity>,
+    export_identity: Option<ProjectionIdentity>,
     golden_result: Option<ValenceExportGoldenResult>,
     export: Option<ValenceReceiptExportEnvelope>,
 }
@@ -840,8 +840,8 @@ struct ValenceExportCommandReport {
 struct ValenceExportGoldenResult {
     path: String,
     status: String,
-    old_export_identity: Option<WireIdentity>,
-    new_export_identity: Option<WireIdentity>,
+    old_export_identity: Option<ProjectionIdentity>,
+    new_export_identity: Option<ProjectionIdentity>,
 }
 
 #[derive(Debug, Serialize)]
@@ -852,9 +852,9 @@ struct ValenceExportUpdateReport {
 #[derive(Debug, Serialize)]
 struct ValenceExportUpdate {
     path: String,
-    source_receipt_identity: WireIdentity,
-    old_export_identity: Option<WireIdentity>,
-    new_export_identity: WireIdentity,
+    source_receipt_identity: ReceiptIdentity,
+    old_export_identity: Option<ProjectionIdentity>,
+    new_export_identity: ProjectionIdentity,
     checked_laws: Vec<String>,
     non_claims: Vec<String>,
 }
@@ -2032,7 +2032,7 @@ fn run_nickel_manifest_export(
 
 fn run_export_valence_receipt(args: ValenceExportArgs) -> CliResult<i32> {
     let root = RootCapability::open(&args.root)?;
-    let source_receipt: ReceiptEnvelope =
+    let source_receipt: WireReceiptEnvelope =
         read_root_json(&root, &args.receipt, "Valence source receipt")?;
     let conformance_projection: ValenceExportConformance =
         read_root_json(&root, &args.conformance, "Valence export conformance")?;
@@ -2413,7 +2413,7 @@ fn write_valence_export_update_report(
     root: &RootCapability,
     args: &ValenceExportArgs,
     export: &ValenceReceiptExportEnvelope,
-    old_export_identity: Option<WireIdentity>,
+    old_export_identity: Option<ProjectionIdentity>,
 ) -> CliResult<()> {
     let Some(golden_path) = &args.golden else {
         return Ok(());
@@ -2441,14 +2441,14 @@ fn write_valence_export_update_report(
 fn read_existing_valence_export_identity(
     root: &RootCapability,
     path: &Path,
-) -> CliResult<Option<WireIdentity>> {
+) -> CliResult<Option<ProjectionIdentity>> {
     let Some(bytes) = root.read_optional(path)? else {
         return Ok(None);
     };
     Ok(parse_valence_export_identity(&bytes))
 }
 
-fn parse_valence_export_identity(bytes: &[u8]) -> Option<WireIdentity> {
+fn parse_valence_export_identity(bytes: &[u8]) -> Option<ProjectionIdentity> {
     let parsed: Result<ValenceReceiptExportEnvelope, serde_json::Error> =
         serde_json::from_slice(bytes);
     parsed.ok().map(|export| export.export_identity)

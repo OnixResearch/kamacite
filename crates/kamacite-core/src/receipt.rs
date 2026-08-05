@@ -1,5 +1,5 @@
 use crate::diagnostic::Diagnostic;
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{ReceiptIdentity, WireIdentity};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
@@ -67,13 +67,40 @@ impl ReceiptBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ReceiptEnvelope {
     pub body: ReceiptBody,
+    pub receipt_identity: ReceiptIdentity,
+}
+
+/// Untrusted receipt envelope as read from interchange bytes.
+///
+/// The receipt identity stays a wire record until admission so wrong-domain
+/// or stale values produce deterministic diagnostics instead of parse
+/// failures. `ReceiptEnvelope::admit` converts it into the typed core value.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct WireReceiptEnvelope {
+    pub body: ReceiptBody,
     pub receipt_identity: WireIdentity,
+}
+
+impl ReceiptEnvelope {
+    pub fn admit(wire: WireReceiptEnvelope) -> Result<Self, crate::identity::IdentityError> {
+        Ok(Self {
+            body: wire.body,
+            receipt_identity: ReceiptIdentity::from_wire(wire.receipt_identity)?,
+        })
+    }
+
+    pub fn to_wire_envelope(&self) -> WireReceiptEnvelope {
+        WireReceiptEnvelope {
+            body: self.body.clone(),
+            receipt_identity: self.receipt_identity.to_wire(),
+        }
+    }
 }
 
 impl ReceiptEnvelope {
     pub fn finalize(body: ReceiptBody) -> Result<Self, ReceiptError> {
         let body_bytes = canonical_json_bytes(&body)?;
-        let receipt_identity = compute_identity(IdentityDomain::Receipt, &body_bytes);
+        let receipt_identity = ReceiptIdentity::compute(&body_bytes);
         Ok(Self {
             body,
             receipt_identity,
@@ -118,13 +145,8 @@ mod tests {
         let finalized = ReceiptEnvelope::finalize(body);
         assert!(matches!(
             finalized,
-            Ok(ReceiptEnvelope {
-                receipt_identity: WireIdentity {
-                    domain: IdentityDomain::Receipt,
-                    ..
-                },
-                ..
-            })
+            Ok(ReceiptEnvelope { ref receipt_identity, .. })
+                if receipt_identity.domain() == crate::identity::IdentityDomain::Receipt
         ));
     }
 }

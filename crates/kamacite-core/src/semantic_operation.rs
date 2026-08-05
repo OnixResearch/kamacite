@@ -1,4 +1,6 @@
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    EffectOperationIdentity, EvidenceChainIdentity, WireIdentity, IdentityDomain,
+};
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -70,7 +72,7 @@ pub struct SemanticOperationDescriptorInput {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationMetadata {
-    pub semantic_operation_identity: WireIdentity,
+    pub semantic_operation_identity: EffectOperationIdentity,
     pub display_name: String,
     pub aliases: Vec<String>,
     pub path: Option<String>,
@@ -103,14 +105,14 @@ pub struct SemanticOperationCompatibility {
 pub struct IdentifiedSemanticOperation {
     pub descriptor: SemanticOperationDescriptor,
     pub canonical_bytes: Vec<u8>,
-    pub identity: WireIdentity,
+    pub identity: EffectOperationIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IdentifiedSemanticOperationCompatibility {
     pub compatibility: SemanticOperationCompatibility,
     pub canonical_bytes: Vec<u8>,
-    pub identity: WireIdentity,
+    pub identity: EvidenceChainIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -135,7 +137,7 @@ pub struct SemanticOperationReferenceBundle {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationMigrationPreview {
     pub legacy: LegacyEffectOperationReference,
-    pub semantic_operation_identity: WireIdentity,
+    pub semantic_operation_identity: EffectOperationIdentity,
     pub semantic_descriptor: SemanticOperationDescriptor,
     pub changed_fields: Vec<String>,
     pub mutation_performed: bool,
@@ -331,7 +333,7 @@ pub fn identify_semantic_operation(
     )
     .map(|artifact| artifact.packed_bytes)
     .map_err(|error| SemanticOperationError::Canonicalization(error.to_string()))?;
-    let identity = compute_identity(IdentityDomain::EffectOperation, &canonical_bytes);
+    let identity = EffectOperationIdentity::compute(&canonical_bytes);
     Ok(IdentifiedSemanticOperation {
         descriptor,
         canonical_bytes,
@@ -362,7 +364,7 @@ pub fn identify_semantic_operation_compatibility(
     )
     .map(|artifact| artifact.packed_bytes)
     .map_err(|error| SemanticOperationError::Canonicalization(error.to_string()))?;
-    let identity = compute_identity(IdentityDomain::EvidenceChain, &canonical_bytes);
+    let identity = EvidenceChainIdentity::compute(&canonical_bytes);
     Ok(IdentifiedSemanticOperationCompatibility {
         compatibility,
         canonical_bytes,
@@ -448,23 +450,13 @@ pub fn preview_semantic_operation_migration(
 }
 
 pub fn require_exact_semantic_operation(
-    requested: &WireIdentity,
-    handled: &WireIdentity,
+    requested: &EffectOperationIdentity,
+    handled: &EffectOperationIdentity,
 ) -> Result<(), SemanticOperationError> {
-    validate_domain(
-        requested,
-        IdentityDomain::EffectOperation,
-        "requested_operation_identity",
-    )?;
-    validate_domain(
-        handled,
-        IdentityDomain::EffectOperation,
-        "handled_operation_identity",
-    )?;
     if requested != handled {
         return Err(SemanticOperationError::OperationMismatch {
-            requested: requested.clone(),
-            handled: handled.clone(),
+            requested: requested.to_wire(),
+            handled: handled.to_wire(),
         });
     }
     Ok(())
@@ -477,8 +469,38 @@ pub fn admit_semantic_operation_compatibility(
     context: CompatibilityContext,
 ) -> Result<(), SemanticOperationError> {
     let compatibility = normalize_and_validate_compatibility(compatibility)?;
-    require_exact_semantic_operation(source, &compatibility.source_operation_identity)?;
-    require_exact_semantic_operation(target, &compatibility.target_operation_identity)?;
+    validate_domain(
+        source,
+        IdentityDomain::EffectOperation,
+        "source_operation_identity",
+    )?;
+    validate_domain(
+        target,
+        IdentityDomain::EffectOperation,
+        "target_operation_identity",
+    )?;
+    let source = EffectOperationIdentity::from_wire(source.clone()).map_err(|_| {
+        SemanticOperationError::InvalidIdentity {
+            field: "source_operation_identity",
+        }
+    })?;
+    let target = EffectOperationIdentity::from_wire(target.clone()).map_err(|_| {
+        SemanticOperationError::InvalidIdentity {
+            field: "target_operation_identity",
+        }
+    })?;
+    let compatibility_source =
+        EffectOperationIdentity::from_wire(compatibility.source_operation_identity.clone())
+            .map_err(|_| SemanticOperationError::InvalidIdentity {
+                field: "source_operation_identity",
+            })?;
+    let compatibility_target =
+        EffectOperationIdentity::from_wire(compatibility.target_operation_identity.clone())
+            .map_err(|_| SemanticOperationError::InvalidIdentity {
+                field: "target_operation_identity",
+            })?;
+    require_exact_semantic_operation(&source, &compatibility_source)?;
+    require_exact_semantic_operation(&target, &compatibility_target)?;
     if !compatibility.allowed_contexts.contains(&context) {
         return Err(SemanticOperationError::UnsupportedCompatibilityUse { context });
     }
@@ -669,6 +691,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
 
     const FAMILY_BYTES: &[u8] = b"family";
     const PARAMETER_BYTES: &[u8] = b"parameter";
@@ -792,7 +815,7 @@ mod tests {
             assert_eq!(first.identity, second.identity);
             assert_eq!(
                 first.identity,
-                compute_identity(IdentityDomain::EffectOperation, &first.canonical_bytes)
+                EffectOperationIdentity::compute(&first.canonical_bytes)
             );
         }
     }
@@ -847,7 +870,7 @@ mod tests {
             assert_eq!(preview.legacy, legacy);
             assert!(!preview.mutation_performed);
             assert_eq!(
-                preview.semantic_operation_identity.domain,
+                preview.semantic_operation_identity.domain(),
                 IdentityDomain::EffectOperation
             );
             assert!(
@@ -896,7 +919,7 @@ mod tests {
         };
         let requested = requested.identity;
         assert!(require_exact_semantic_operation(&requested, &requested).is_ok());
-        let stale = compute_identity(IdentityDomain::EffectOperation, b"stale");
+        let stale = EffectOperationIdentity::compute(b"stale");
         assert!(matches!(
             require_exact_semantic_operation(&requested, &stale),
             Err(SemanticOperationError::OperationMismatch { .. })
@@ -910,7 +933,7 @@ mod tests {
         let Ok(operation) = operation else {
             return;
         };
-        let references = vec![operation.identity.clone()];
+        let references = vec![operation.identity.to_wire()];
         let bundle = SemanticOperationReferenceBundle {
             declared_operations: references.clone(),
             effect_row: references.clone(),
@@ -934,7 +957,7 @@ mod tests {
         };
         let stale = compute_identity(IdentityDomain::EffectOperation, b"stale-reference");
         let bundle = SemanticOperationReferenceBundle {
-            declared_operations: vec![declared.identity],
+            declared_operations: vec![declared.identity.to_wire()],
             effect_row: vec![stale.clone()],
             effect_summary: Vec::new(),
             handler_descriptor: Vec::new(),
@@ -965,7 +988,7 @@ mod tests {
         let compatibility = SemanticOperationCompatibility {
             schema_version: SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA_VERSION,
             source_operation_identity: source.clone(),
-            target_operation_identity: target.clone(),
+            target_operation_identity: target.to_wire(),
             allowed_contexts: vec![CompatibilityContext::Replay],
             supporting_refs: vec![compute_identity(
                 IdentityDomain::EvidenceChain,
@@ -979,7 +1002,7 @@ mod tests {
             admit_semantic_operation_compatibility(
                 &compatibility,
                 &source,
-                &target,
+                &target.to_wire(),
                 CompatibilityContext::Replay,
             )
             .is_ok()
@@ -988,7 +1011,7 @@ mod tests {
             admit_semantic_operation_compatibility(
                 &compatibility,
                 &source,
-                &target,
+                &target.to_wire(),
                 CompatibilityContext::LiveHostExecution,
             ),
             Err(SemanticOperationError::UnsupportedCompatibilityUse { .. })
@@ -996,7 +1019,7 @@ mod tests {
         assert!(matches!(
             admit_semantic_operation_compatibility(
                 &compatibility,
-                &target,
+                &target.to_wire(),
                 &source,
                 CompatibilityContext::Replay,
             ),

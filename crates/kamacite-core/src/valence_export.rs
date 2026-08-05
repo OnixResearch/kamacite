@@ -1,5 +1,9 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    AdapterIdentity, AnyIdentity, ProjectionIdentity, ReceiptIdentity, WireIdentity,
+    IdentityDomain, compute_identity,
+};
+use crate::receipt::WireReceiptEnvelope;
 use crate::receipt::{RECEIPT_SCHEMA_VERSION, ReceiptEnvelope, ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -104,7 +108,7 @@ impl ValidatedValenceExportConformance {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ValenceReceiptExportInput {
-    pub source_receipt: ReceiptEnvelope,
+    pub source_receipt: WireReceiptEnvelope,
     pub conformance: ValenceExportConformance,
     pub source_spans: SourceSpanSet,
     pub semantic_claims: Vec<String>,
@@ -115,7 +119,7 @@ pub struct ValenceReceiptExportInput {
 pub struct ValenceArtifactIdentity {
     pub role: String,
     pub key: String,
-    pub identity: WireIdentity,
+    pub identity: AnyIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -124,11 +128,11 @@ pub struct ValenceReceiptExportBody {
     pub profile_version: String,
     pub canonical_codec: String,
     pub evidence_role: String,
-    pub source_receipt_identity: WireIdentity,
+    pub source_receipt_identity: ReceiptIdentity,
     pub source_fixture_id: String,
     pub source_artifact_class: String,
     pub source_verdict: String,
-    pub conformance_identity: WireIdentity,
+    pub conformance_identity: AdapterIdentity,
     pub artifact_identities: Vec<ValenceArtifactIdentity>,
     pub checked_laws: Vec<String>,
     pub diagnostics: Vec<Diagnostic>,
@@ -141,7 +145,7 @@ pub struct ValenceReceiptExportBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ValenceReceiptExportEnvelope {
     pub body: ValenceReceiptExportBody,
-    pub export_identity: WireIdentity,
+    pub export_identity: ProjectionIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -172,12 +176,9 @@ struct CanonicalValenceConformanceBody<'a> {
 
 pub fn valence_conformance_identity(
     conformance: &ValenceExportConformance,
-) -> Result<WireIdentity, ReceiptError> {
+) -> Result<AdapterIdentity, ReceiptError> {
     let body = canonical_valence_conformance_body(conformance);
-    Ok(compute_identity(
-        IdentityDomain::Adapter,
-        &canonical_json_bytes(&body)?,
-    ))
+    Ok(AdapterIdentity::compute(&canonical_json_bytes(&body)?))
 }
 
 pub fn admit_valence_conformance(
@@ -245,7 +246,7 @@ pub fn export_valence_receipt(input: &ValenceReceiptExportInput) -> ValenceRecei
     }
 }
 
-fn validate_source_receipt(receipt: &ReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
+fn validate_source_receipt(receipt: &WireReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
     if receipt
         .receipt_identity
         .validate_domain(IdentityDomain::Receipt)
@@ -294,7 +295,7 @@ fn validate_source_receipt(receipt: &ReceiptEnvelope, diagnostics: &mut Vec<Diag
     validate_artifact_identity_keys(receipt, diagnostics);
 }
 
-fn validate_source_receipt_hash(receipt: &ReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
+fn validate_source_receipt_hash(receipt: &WireReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
     let Ok(body_bytes) = canonical_json_bytes(&receipt.body) else {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::MalformedProjectionOutput,
@@ -317,7 +318,7 @@ fn validate_source_receipt_hash(receipt: &ReceiptEnvelope, diagnostics: &mut Vec
     }
 }
 
-fn validate_artifact_identity_keys(receipt: &ReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
+fn validate_artifact_identity_keys(receipt: &WireReceiptEnvelope, diagnostics: &mut Vec<Diagnostic>) {
     if receipt.body.input_identities.is_empty() && receipt.body.output_identities.is_empty() {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
@@ -446,7 +447,7 @@ fn validate_conformance(conformance: &ValenceExportConformance, diagnostics: &mu
         );
     }
     match valence_conformance_identity(conformance) {
-        Ok(computed) if computed == conformance.conformance_identity => {}
+        Ok(computed) if computed.to_wire() == conformance.conformance_identity => {}
         Ok(computed) => diagnostics.push(
             Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -455,7 +456,7 @@ fn validate_conformance(conformance: &ValenceExportConformance, diagnostics: &mu
                 "Valence conformance identity does not match canonical normative content",
             )
             .with_detail("declared", conformance.conformance_identity.hex.as_str())
-            .with_detail("computed", computed.hex.as_str()),
+            .with_detail("computed", computed.hex().as_str()),
         ),
         Err(error) => diagnostics.push(Diagnostic::new(
             DiagnosticCode::MalformedProjectionOutput,
@@ -593,7 +594,7 @@ fn forbidden_claim(claim: &str) -> bool {
         || normalized.contains(FORBIDDEN_CLAIM_ARBITRARY_PROGRAM)
 }
 
-fn artifact_identity_keys(receipt: &ReceiptEnvelope) -> BTreeSet<String> {
+fn artifact_identity_keys(receipt: &WireReceiptEnvelope) -> BTreeSet<String> {
     let mut keys = BTreeSet::new();
     keys.extend(receipt.body.input_identities.keys().cloned());
     keys.extend(receipt.body.output_identities.keys().cloned());
@@ -682,7 +683,7 @@ fn validate_declared_export_identity(
     let Some(export) = export else {
         return;
     };
-    if declared.hex != export.export_identity.hex {
+    if declared.hex != *export.export_identity.hex() {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_EXPORT_IDENTITY,
@@ -693,10 +694,11 @@ fn validate_declared_export_identity(
 }
 
 fn build_export(
-    source_receipt: &ReceiptEnvelope,
+    source_receipt: &WireReceiptEnvelope,
     conformance: &ValenceExportConformance,
     source_spans: &SourceSpanSet,
 ) -> Option<ValenceReceiptExportEnvelope> {
+    let source_receipt = &ReceiptEnvelope::admit(source_receipt.clone()).ok()?;
     let body = ValenceReceiptExportBody {
         schema_version: VALENCE_EXPORT_SCHEMA_VERSION.to_string(),
         profile_version: VALENCE_EXPORT_PROFILE_VERSION.to_string(),
@@ -706,8 +708,11 @@ fn build_export(
         source_fixture_id: source_receipt.body.fixture_id.clone(),
         source_artifact_class: source_receipt.body.artifact_class.clone(),
         source_verdict: source_receipt.body.verdict.clone(),
-        conformance_identity: conformance.conformance_identity.clone(),
-        artifact_identities: collect_artifact_identities(source_receipt, conformance),
+        conformance_identity: AdapterIdentity::from_wire(
+            conformance.conformance_identity.clone(),
+        )
+        .ok()?,
+        artifact_identities: collect_artifact_identities(source_receipt, conformance)?,
         checked_laws: sorted_unique(
             source_receipt
                 .body
@@ -736,7 +741,7 @@ fn build_export(
         Err(_) => return None,
     };
     Some(ValenceReceiptExportEnvelope {
-        export_identity: compute_identity(IdentityDomain::Projection, &body_bytes),
+        export_identity: ProjectionIdentity::compute(&body_bytes),
         body,
     })
 }
@@ -744,34 +749,34 @@ fn build_export(
 fn collect_artifact_identities(
     source_receipt: &ReceiptEnvelope,
     conformance: &ValenceExportConformance,
-) -> Vec<ValenceArtifactIdentity> {
+) -> Option<Vec<ValenceArtifactIdentity>> {
     let mut identities = Vec::new();
     identities.push(ValenceArtifactIdentity {
         role: SOURCE_RECEIPT_ARTIFACT_ROLE.to_string(),
         key: SOURCE_RECEIPT_ARTIFACT_ROLE.to_string(),
-        identity: source_receipt.receipt_identity.clone(),
+        identity: AnyIdentity::Receipt(source_receipt.receipt_identity.clone()),
     });
     identities.push(ValenceArtifactIdentity {
         role: CONFORMANCE_ARTIFACT_ROLE.to_string(),
         key: CONFORMANCE_ARTIFACT_ROLE.to_string(),
-        identity: conformance.conformance_identity.clone(),
+        identity: AnyIdentity::admit(conformance.conformance_identity.clone()).ok()?,
     });
     for (key, identity) in &source_receipt.body.input_identities {
         identities.push(ValenceArtifactIdentity {
             role: INPUT_ARTIFACT_ROLE.to_string(),
             key: key.clone(),
-            identity: identity.clone(),
+            identity: AnyIdentity::admit(identity.clone()).ok()?,
         });
     }
     for (key, identity) in &source_receipt.body.output_identities {
         identities.push(ValenceArtifactIdentity {
             role: OUTPUT_ARTIFACT_ROLE.to_string(),
             key: key.clone(),
-            identity: identity.clone(),
+            identity: AnyIdentity::admit(identity.clone()).ok()?,
         });
     }
     identities.sort();
-    identities
+    Some(identities)
 }
 
 fn sorted_unique(mut values: Vec<String>) -> Vec<String> {
@@ -787,6 +792,7 @@ pub fn export_identity_key() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
     use crate::receipt::{ReceiptBody, ReceiptEnvelope};
     use std::collections::BTreeMap;
 
@@ -842,13 +848,13 @@ mod tests {
                 CONFORMANCE_IDENTITY_PLACEHOLDER,
             ),
         };
-        conformance.conformance_identity = valence_conformance_identity(&conformance)?;
+        conformance.conformance_identity = valence_conformance_identity(&conformance)?.to_wire();
         Ok(conformance)
     }
 
     fn valid_input() -> Result<ValenceReceiptExportInput, crate::receipt::ReceiptError> {
         Ok(ValenceReceiptExportInput {
-            source_receipt: valid_source_receipt()?,
+            source_receipt: valid_source_receipt()?.to_wire_envelope(),
             conformance: valid_conformance()?,
             source_spans: SourceSpanSet::Absent {
                 reason: SOURCE_SPANS_ABSENT_REASON.to_string(),
@@ -868,9 +874,9 @@ mod tests {
         assert!(result.diagnostics.is_empty());
         assert!(result.export.is_some());
         if let Some(export) = result.export {
-            assert_eq!(export.export_identity.domain, IdentityDomain::Projection);
+            assert_eq!(export.export_identity.domain(), IdentityDomain::Projection);
             assert_eq!(
-                export.body.source_receipt_identity,
+                export.body.source_receipt_identity.to_wire(),
                 input.source_receipt.receipt_identity
             );
             assert!(
@@ -911,7 +917,8 @@ mod tests {
     fn rejects_missing_source_non_claims() -> Result<(), crate::receipt::ReceiptError> {
         let mut input = valid_input()?;
         input.source_receipt.body.non_claims = Vec::new();
-        input.source_receipt = ReceiptEnvelope::finalize(input.source_receipt.body)?;
+        input.source_receipt = ReceiptEnvelope::finalize(input.source_receipt.body)?
+            .to_wire_envelope();
 
         let result = export_valence_receipt(&input);
 
@@ -929,8 +936,8 @@ mod tests {
     #[test]
     fn rejects_identity_domain_substitution() -> Result<(), crate::receipt::ReceiptError> {
         let mut input = valid_input()?;
-        let substituted = compute_identity(IdentityDomain::Source, SOURCE_BYTES);
-        input.source_receipt.receipt_identity = substituted;
+        input.source_receipt.receipt_identity =
+            compute_identity(IdentityDomain::Source, SOURCE_BYTES);
 
         let result = export_valence_receipt(&input);
 
@@ -941,6 +948,23 @@ mod tests {
                 .iter()
                 .any(|diagnostic| { diagnostic.code == DiagnosticCode::IdentityDomainMismatch })
         );
+        Ok(())
+    }
+
+    #[test]
+    fn rejects_cross_domain_receipt_identity_json() -> Result<(), crate::receipt::ReceiptError> {
+        let input = valid_input()?;
+        let mut receipt_json = serde_json::to_value(&input.source_receipt)
+            .map_err(|error| crate::receipt::ReceiptError::Serialize(error.to_string()))?;
+        if let Some(identity) = receipt_json.get_mut("receipt_identity") {
+            *identity = serde_json::json!({
+                "domain": "source",
+                "algorithm": "blake3",
+                "hex": compute_identity(IdentityDomain::Source, SOURCE_BYTES).hex.as_str(),
+            });
+        }
+        let result: Result<ReceiptEnvelope, _> = serde_json::from_value(receipt_json);
+        assert!(result.is_err());
         Ok(())
     }
 
@@ -1020,7 +1044,7 @@ mod tests {
         duplicate
             .checked_laws
             .push(duplicate.checked_laws[0].clone());
-        duplicate.conformance_identity = valence_conformance_identity(&duplicate)?;
+        duplicate.conformance_identity = valence_conformance_identity(&duplicate)?.to_wire();
         let duplicate_result = admit_valence_conformance(duplicate);
         assert!(duplicate_result.is_err());
 
@@ -1044,7 +1068,7 @@ mod tests {
         let mut conformance = valid_conformance()?;
         conformance.schema_version = "unsupported".to_string();
         conformance.canonical_codec = "json-self-assertion".to_string();
-        conformance.conformance_identity = valence_conformance_identity(&conformance)?;
+        conformance.conformance_identity = valence_conformance_identity(&conformance)?.to_wire();
 
         let result = admit_valence_conformance(conformance);
 
@@ -1061,7 +1085,7 @@ mod tests {
             "declared-source".to_string(),
             compute_identity(IdentityDomain::Source, SOURCE_BYTES),
         );
-        input.source_receipt = ReceiptEnvelope::finalize(body)?;
+        input.source_receipt = ReceiptEnvelope::finalize(body)?.to_wire_envelope();
 
         let result = export_valence_receipt(&input);
 

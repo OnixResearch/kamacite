@@ -1,6 +1,7 @@
 use crate::{
-    Diagnostic, DiagnosticCode, WireIdentity, IdentityDomain, PreservesCodecError, PreservesLimits,
-    PreservesSchema, compute_identity, encode_typed_preserves,
+    AdapterIdentity, Diagnostic, DiagnosticCode, EvaluatorIdentity, Identity,
+    IdentityDomainMarker, ProjectionIdentity, ReceiptIdentity, SourceIdentity, PreservesCodecError,
+    PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
 use serde::{Deserialize, Serialize};
 
@@ -33,12 +34,12 @@ pub struct ManifestGenerationInput<'a> {
 #[serde(deny_unknown_fields)]
 pub struct ManifestGenerationReceiptBody {
     pub schema: String,
-    pub source_identity: WireIdentity,
-    pub contract_identity: WireIdentity,
+    pub source_identity: SourceIdentity,
+    pub contract_identity: AdapterIdentity,
     pub evaluator_profile: String,
     pub evaluator_descriptor: String,
-    pub evaluator_identity: WireIdentity,
-    pub projection_identity: WireIdentity,
+    pub evaluator_identity: EvaluatorIdentity,
+    pub projection_identity: ProjectionIdentity,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
 }
@@ -47,7 +48,7 @@ pub struct ManifestGenerationReceiptBody {
 #[serde(deny_unknown_fields)]
 pub struct ManifestGenerationReceipt {
     pub body: ManifestGenerationReceiptBody,
-    pub receipt_identity: WireIdentity,
+    pub receipt_identity: ReceiptIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -63,15 +64,12 @@ pub fn build_manifest_generation_receipt(
 ) -> Result<ManifestGenerationReceipt, PreservesCodecError> {
     let body = ManifestGenerationReceiptBody {
         schema: MANIFEST_GENERATION_RECEIPT_SCHEMA.to_string(),
-        source_identity: compute_identity(IdentityDomain::Source, input.source_bytes),
-        contract_identity: compute_identity(IdentityDomain::Adapter, input.contract_bytes),
+        source_identity: SourceIdentity::compute(input.source_bytes),
+        contract_identity: AdapterIdentity::compute(input.contract_bytes),
         evaluator_profile: input.evaluator_profile.to_string(),
         evaluator_descriptor: input.evaluator_descriptor.to_string(),
-        evaluator_identity: compute_identity(
-            IdentityDomain::Evaluator,
-            input.evaluator_descriptor.as_bytes(),
-        ),
-        projection_identity: compute_identity(IdentityDomain::Projection, input.projection_bytes),
+        evaluator_identity: EvaluatorIdentity::compute(input.evaluator_descriptor.as_bytes()),
+        projection_identity: ProjectionIdentity::compute(input.projection_bytes),
         checked_laws: vec![
             CHECKED_LAW_COMPLETE_PROJECTION.to_string(),
             CHECKED_LAW_CONTRACT_IDENTITY.to_string(),
@@ -93,7 +91,7 @@ pub fn build_manifest_generation_receipt(
     )?;
     Ok(ManifestGenerationReceipt {
         body,
-        receipt_identity: compute_identity(IdentityDomain::Receipt, &canonical.packed_bytes),
+        receipt_identity: ReceiptIdentity::compute(&canonical.packed_bytes),
     })
 }
 
@@ -187,10 +185,10 @@ pub fn validate_manifest_generation_receipt(
     }
 }
 
-fn compare_identity(
+fn compare_identity<D: IdentityDomainMarker>(
     field: &str,
-    expected: &WireIdentity,
-    supplied: &WireIdentity,
+    expected: &Identity<D>,
+    supplied: &Identity<D>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     if expected != supplied {
@@ -199,8 +197,8 @@ fn compare_identity(
                 field,
                 "manifest generation identity does not match current exact input bytes",
             )
-            .with_detail("expected_domain", format!("{:?}", expected.domain))
-            .with_detail("supplied_domain", format!("{:?}", supplied.domain)),
+            .with_detail("expected_domain", format!("{:?}", expected.domain()))
+            .with_detail("supplied_domain", format!("{:?}", supplied.domain())),
         );
     }
 }

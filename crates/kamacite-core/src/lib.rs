@@ -159,7 +159,10 @@ pub use proof_evidence::{
     trellis_proof_profile_canonical_bytes, validate_trellis_proof_evidence_input,
     validate_trellis_proof_evidence_json_projection,
 };
-pub use receipt::{ReceiptBody, ReceiptEnvelope, ReceiptError, canonical_json_bytes, receipt_json};
+pub use receipt::{
+    ReceiptBody, ReceiptEnvelope, ReceiptError, WireReceiptEnvelope, canonical_json_bytes,
+    receipt_json,
+};
 pub use semantic_operation::{
     CompatibilityContext, ContinuationContract, IdentifiedSemanticOperation,
     IdentifiedSemanticOperationCompatibility, LEGACY_EFFECT_OPERATION_SCHEMA_VERSION,

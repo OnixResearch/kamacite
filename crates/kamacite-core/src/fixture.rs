@@ -2786,7 +2786,7 @@ fn validate_valence_receipt_export(
     if let Some(export) = result.export {
         accumulator
             .output_identities
-            .insert(export_identity_key(), export.export_identity);
+            .insert(export_identity_key(), export.export_identity.to_wire());
     }
 }
 
