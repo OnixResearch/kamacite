@@ -1,5 +1,7 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    AdapterIdentity, AnyIdentity, ReceiptIdentity, WireIdentity, IdentityDomain, compute_identity,
+};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -106,7 +108,7 @@ pub struct FunctionAddressProducerProfile {
     pub canonicalizer_profile: String,
     pub normative_options: BTreeMap<String, String>,
     pub non_claims: Vec<String>,
-    pub profile_identity: WireIdentity,
+    pub profile_identity: AdapterIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -210,7 +212,7 @@ pub struct FunctionAddressReceiptBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FunctionAddressReceiptEnvelope {
     pub body: FunctionAddressReceiptBody,
-    pub receipt_identity: WireIdentity,
+    pub receipt_identity: ReceiptIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -225,16 +227,16 @@ pub struct FunctionAddressJsonProjection {
     pub schema_version: String,
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub receipt_identity: WireIdentity,
+    pub receipt_identity: ReceiptIdentity,
     pub receipt: FunctionAddressReceiptBody,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FunctionAddressValenceProjection {
     pub schema_version: String,
-    pub source_receipt_identity: WireIdentity,
+    pub source_receipt_identity: ReceiptIdentity,
     pub producer: String,
-    pub producer_profile_identity: WireIdentity,
+    pub producer_profile_identity: AdapterIdentity,
     pub artifact_identities: Vec<FunctionAddressValenceArtifact>,
     pub dependency_edges: Vec<FunctionAddressDependencyEdge>,
     pub non_claims: Vec<String>,
@@ -244,7 +246,7 @@ pub struct FunctionAddressValenceProjection {
 pub struct FunctionAddressValenceArtifact {
     pub role: String,
     pub key: String,
-    pub identity: WireIdentity,
+    pub identity: AnyIdentity,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
@@ -320,7 +322,7 @@ fn function_address_producer_profile_unchecked(
         FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION,
         FUNCTION_ADDRESS_PRODUCER_ROOT_LABEL,
     )?;
-    let profile_identity = compute_identity(IdentityDomain::Adapter, &profile_bytes);
+    let profile_identity = AdapterIdentity::compute(&profile_bytes);
     Ok(FunctionAddressProducerProfile {
         schema_version: FUNCTION_ADDRESS_PRODUCER_PROFILE_SCHEMA_VERSION.to_string(),
         producer_kind: producer.name.clone(),
@@ -542,8 +544,8 @@ pub fn validate_function_address_json_projection(
                 "receipt.producer_profile",
                 "displayed producer fields do not match the bound producer profile",
             )
-            .with_detail("declared", declared.profile_identity.hex.as_str())
-            .with_detail("computed", computed.profile_identity.hex.as_str()),
+            .with_detail("declared", declared.profile_identity.hex().as_str())
+            .with_detail("computed", computed.profile_identity.hex().as_str()),
         ),
         (Ok(_), None) => diagnostics.push(Diagnostic::new(
             DiagnosticCode::MissingInput,
@@ -573,8 +575,8 @@ pub fn validate_function_address_json_projection(
                 "receipt_identity",
                 "function-address JSON projection receipt identity does not match canonical Preserves bytes",
             )
-            .with_detail("declared", projection.receipt_identity.hex.as_str())
-            .with_detail("computed", receipt.receipt_identity.hex.as_str()),
+            .with_detail("declared", projection.receipt_identity.hex().as_str())
+            .with_detail("computed", receipt.receipt_identity.hex().as_str()),
         ),
         None => diagnostics.push(Diagnostic::new(
             DiagnosticCode::MalformedProjectionOutput,
@@ -602,20 +604,34 @@ pub fn export_function_address_valence_projection(
     let mut artifact_identities = vec![FunctionAddressValenceArtifact {
         role: "producer-profile".to_string(),
         key: producer_profile.schema_version.clone(),
-        identity: producer_profile.profile_identity.clone(),
+        identity: AnyIdentity::Adapter(producer_profile.profile_identity.clone()),
     }];
     for source in &receipt.body.source_envelopes {
         artifact_identities.push(FunctionAddressValenceArtifact {
             role: "source-envelope".to_string(),
             key: source.key.clone(),
-            identity: source.source_identity.clone(),
+            identity: AnyIdentity::admit(source.source_identity.clone()).map_err(|error| {
+                vec![Diagnostic::new(
+                    DiagnosticCode::IdentityDomainMismatch,
+                    REQUIREMENT_PRODUCER_BINDING,
+                    "valence_projection.artifact_identities",
+                    format!("source-envelope artifact identity admission failed: {error}"),
+                )]
+            })?,
         });
     }
     for function in &receipt.body.functions {
         artifact_identities.push(FunctionAddressValenceArtifact {
             role: "function-address".to_string(),
             key: function.locator.clone(),
-            identity: function.function_address.clone(),
+            identity: AnyIdentity::admit(function.function_address.clone()).map_err(|error| {
+                vec![Diagnostic::new(
+                    DiagnosticCode::IdentityDomainMismatch,
+                    REQUIREMENT_PRODUCER_BINDING,
+                    "valence_projection.artifact_identities",
+                    format!("function-address artifact identity admission failed: {error}"),
+                )]
+            })?,
         });
     }
     artifact_identities
@@ -653,7 +669,7 @@ fn build_receipt(
         FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
         FUNCTION_ADDRESS_ROOT_LABEL,
     )?;
-    let receipt_identity = compute_identity(IdentityDomain::Receipt, &bytes);
+    let receipt_identity = ReceiptIdentity::compute(&bytes);
     Ok(FunctionAddressReceiptEnvelope {
         body,
         receipt_identity,
@@ -733,7 +749,8 @@ fn canonical_receipt<'a>(
         schema_version: FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
         canonical_codec: FUNCTION_ADDRESS_CANONICAL_CODEC,
         producer_profile_identity: function_address_producer_profile_unchecked(&input.producer)?
-            .profile_identity,
+            .profile_identity
+            .to_wire(),
         source_envelopes,
         functions,
         dependency_edges,
@@ -1371,7 +1388,7 @@ mod tests {
             receipt.body.schema_version,
             FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION
         );
-        assert_eq!(receipt.receipt_identity.domain, IdentityDomain::Receipt);
+        assert_eq!(receipt.receipt_identity.domain(), IdentityDomain::Receipt);
         let projection = function_address_json_projection(&receipt);
         assert_eq!(projection.receipt_identity, receipt.receipt_identity);
         assert_eq!(
@@ -1418,7 +1435,7 @@ mod tests {
         };
 
         assert_eq!(
-            compute_identity(IdentityDomain::Receipt, &canonical_bytes),
+            ReceiptIdentity::compute(&canonical_bytes),
             receipt.receipt_identity
         );
         assert_eq!(projection.receipt_identity, receipt.receipt_identity);

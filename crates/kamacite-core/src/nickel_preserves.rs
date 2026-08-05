@@ -1,6 +1,7 @@
 use crate::{
-    CanonicalPreservesArtifact, WireIdentity, IdentityDomain, PRESERVES_CANONICAL_CODEC,
-    PreservesLimits, PreservesSchema, compute_identity, encode_typed_preserves,
+    AdapterIdentity, CanonicalPreservesArtifact, CanonicalValueIdentity, ProjectionIdentity,
+    ReceiptIdentity, WireIdentity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits,
+    PreservesSchema, encode_typed_preserves,
 };
 use serde::de::{Error as DeserializeError, MapAccess, SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
@@ -141,7 +142,7 @@ pub enum NickelJsonPreservesValue {
 pub struct NickelPreservesReceiptBody {
     pub schema_version: String,
     pub manifest_identity: NickelExportIdentity,
-    pub manifest_wire_identity: WireIdentity,
+    pub manifest_wire_identity: AdapterIdentity,
     pub export_receipt_identity: NickelExportIdentity,
     pub declared_input_identity: NickelExportIdentity,
     pub source_identity: NickelExportIdentity,
@@ -150,12 +151,12 @@ pub struct NickelPreservesReceiptBody {
     pub evaluator_artifact_identity: NickelExportIdentity,
     pub evaluation_plan_identity: NickelExportIdentity,
     pub json_output_identity: NickelExportIdentity,
-    pub json_projection_identity: WireIdentity,
-    pub mapping_profile_identity: WireIdentity,
-    pub canonical_codec_identity: WireIdentity,
-    pub packed_preserves_identity: WireIdentity,
+    pub json_projection_identity: ProjectionIdentity,
+    pub mapping_profile_identity: AdapterIdentity,
+    pub canonical_codec_identity: AdapterIdentity,
+    pub packed_preserves_identity: CanonicalValueIdentity,
     pub packed_output_bytes: u64,
-    pub review_text_identity: WireIdentity,
+    pub review_text_identity: ProjectionIdentity,
     pub checked_laws: Vec<String>,
     pub diagnostics: Vec<String>,
     pub upstream_non_claim: String,
@@ -165,16 +166,16 @@ pub struct NickelPreservesReceiptBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct NickelPreservesReceipt {
     pub body: NickelPreservesReceiptBody,
-    pub receipt_identity: WireIdentity,
+    pub receipt_identity: ReceiptIdentity,
 }
 
 #[derive(Clone, Debug)]
 pub struct NickelPreservesAdaptation {
     pub profile: NickelPreservesProfile,
-    pub profile_identity: WireIdentity,
+    pub profile_identity: AdapterIdentity,
     pub canonical_artifact: CanonicalPreservesArtifact,
-    pub packed_preserves_identity: WireIdentity,
-    pub review_text_identity: WireIdentity,
+    pub packed_preserves_identity: CanonicalValueIdentity,
+    pub review_text_identity: ProjectionIdentity,
     pub receipt: NickelPreservesReceipt,
 }
 
@@ -445,25 +446,24 @@ pub fn adapt_admitted_nickel_json_export(
         preserves_limits(&profile.limits),
     )
     .map_err(|error| NickelPreservesError::Codec(error.to_string()))?;
-    let profile_identity = compute_identity(IdentityDomain::Adapter, profile_bytes);
-    let json_projection_identity =
-        compute_identity(IdentityDomain::Projection, &admitted.json_bytes);
-    let canonical_codec_identity =
-        compute_identity(IdentityDomain::Adapter, canonical_codec.as_bytes());
-    let packed_preserves_identity = compute_identity(
-        IdentityDomain::CanonicalValue,
-        &canonical_artifact.packed_bytes,
-    );
-    let review_text_identity = compute_identity(
-        IdentityDomain::Projection,
-        canonical_artifact.text_projection.as_bytes(),
-    );
+    let profile_identity = AdapterIdentity::compute(profile_bytes);
+    let json_projection_identity = ProjectionIdentity::compute(&admitted.json_bytes);
+    let canonical_codec_identity = AdapterIdentity::compute(canonical_codec.as_bytes());
+    let packed_preserves_identity =
+        CanonicalValueIdentity::compute(&canonical_artifact.packed_bytes);
+    let review_text_identity =
+        ProjectionIdentity::compute(canonical_artifact.text_projection.as_bytes());
     let packed_output_bytes = u64::try_from(canonical_artifact.packed_bytes.len())
         .map_err(|_| NickelPreservesError::SizeOverflow)?;
     let body = NickelPreservesReceiptBody {
         schema_version: NICKEL_PRESERVES_RECEIPT_SCHEMA.to_string(),
         manifest_identity: admitted.manifest_identity.clone(),
-        manifest_wire_identity: admitted.manifest_wire_identity.clone(),
+        manifest_wire_identity: AdapterIdentity::from_wire(
+            admitted.manifest_wire_identity.clone(),
+        )
+        .map_err(|_| {
+            NickelPreservesError::UnsupportedProfile("manifest wire identity domain".to_string())
+        })?,
         export_receipt_identity: admitted.export_receipt_identity.clone(),
         declared_input_identity: admitted.declared_input_identity.clone(),
         source_identity: admitted.source_identity.clone(),
@@ -487,7 +487,7 @@ pub fn adapt_admitted_nickel_json_export(
         .map_err(|error| NickelPreservesError::ReceiptEncoding(error.to_string()))?;
     let receipt = NickelPreservesReceipt {
         body,
-        receipt_identity: compute_identity(IdentityDomain::Receipt, &receipt_bytes),
+        receipt_identity: ReceiptIdentity::compute(&receipt_bytes),
     };
     Ok(NickelPreservesAdaptation {
         profile,
@@ -803,6 +803,7 @@ fn string_values(values: &[&str]) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::compute_identity;
 
     const PROFILE_BYTES: &[u8] =
         include_bytes!("../../../adapters/nickel-preserves/generated/profile.json");

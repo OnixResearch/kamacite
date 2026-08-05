@@ -22,7 +22,8 @@ use kamacite_core::{
     ManifestGenerationReceipt, ManifestGenerationValidation, NICKEL_SANDBOX_SOURCE_PATH,
     NickelAdapterReceiptInput, NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile,
     PRESERVES_CANONICAL_CODEC, PRESERVES_LEGACY_PREFIXED_JSON_CODEC, PRESERVES_PACKAGE_VERSION,
-    PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope, ReplayProfileInput, SourceEnvelopeInput,
+    PRESERVES_SPEC_VERSION, ReceiptBody, ReceiptEnvelope, ReceiptIdentity, ReplayProfileInput,
+    SourceEnvelopeInput,
     SourceSpanSet, StackEvidenceInput, SteelAdapterReceiptInput, SteelExecutedProbeEvidence,
     SteelExecutionEvidence, SteelHostFunctionInput, SteelOutputClass, TargetArtifactInput,
     UnsupportedClaimInput, ValenceExportConformance, ValenceReceiptExportEnvelope,
@@ -393,7 +394,7 @@ enum OctetIdentity {
 struct FunctionAddressReceiptCommandReport {
     passed: bool,
     diagnostics: Vec<kamacite_core::Diagnostic>,
-    receipt_identity: Option<WireIdentity>,
+    receipt_identity: Option<ReceiptIdentity>,
     receipt_path: Option<String>,
     valence_projection_path: Option<String>,
     valence_projection: Option<FunctionAddressValenceProjection>,
@@ -4485,25 +4486,25 @@ mod tests {
             migration
                 .pointer("/current/receipt_identity")
                 .and_then(serde_json::Value::as_str),
-            Some(receipt.receipt_identity.hex.as_str())
+            Some(receipt.receipt_identity.hex().as_str())
         );
         assert_eq!(
             migration
                 .pointer("/current/producer_profile_identity")
                 .and_then(serde_json::Value::as_str),
-            Some(profile.profile_identity.hex.as_str())
+            Some(profile.profile_identity.hex().as_str())
         );
         assert_ne!(
             migration
                 .pointer("/legacy/receipt_identity")
                 .and_then(serde_json::Value::as_str),
-            Some(receipt.receipt_identity.hex.as_str())
+            Some(receipt.receipt_identity.hex().as_str())
         );
         assert_ne!(
             migration
                 .pointer("/previous/receipt_identity")
                 .and_then(serde_json::Value::as_str),
-            Some(receipt.receipt_identity.hex.as_str())
+            Some(receipt.receipt_identity.hex().as_str())
         );
     }
 

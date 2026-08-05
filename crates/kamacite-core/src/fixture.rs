@@ -1,6 +1,9 @@
 use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    FsmCoverageIdentity, FsmSpecIdentity, FsmUniverseIdentity, Identity, IdentityDomain,
+    IdentityDomainMarker, WireIdentity, compute_identity,
+};
 use crate::nickel_sandbox::{
     NickelSandboxEvidence, NickelSandboxProfile, nickel_sandbox_evidence_identity,
     validate_nickel_sandbox,
@@ -909,23 +912,23 @@ pub struct FsmMatrixCell {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FsmCoverageEvidence {
-    pub state_universe_identity: WireIdentity,
-    pub event_universe_identity: WireIdentity,
-    pub transition_coverage_identity: WireIdentity,
-    pub denial_coverage_identity: WireIdentity,
-    pub exclusion_coverage_identity: WireIdentity,
-    pub missing_cells_identity: WireIdentity,
+    pub state_universe_identity: FsmUniverseIdentity,
+    pub event_universe_identity: FsmUniverseIdentity,
+    pub transition_coverage_identity: FsmCoverageIdentity,
+    pub denial_coverage_identity: FsmCoverageIdentity,
+    pub exclusion_coverage_identity: FsmCoverageIdentity,
+    pub missing_cells_identity: FsmCoverageIdentity,
     pub missing_cells: Vec<FsmMatrixCell>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ValidatedFsmDescriptor {
-    pub spec_identity: WireIdentity,
+    pub spec_identity: FsmSpecIdentity,
     pub initial_state: String,
     pub states: BTreeSet<String>,
     pub events: BTreeSet<String>,
     pub coverage: FsmCoverageEvidence,
-    transitions: BTreeMap<(String, String, String), (FsmTransitionRowInput, WireIdentity)>,
+    transitions: BTreeMap<(String, String, String), (FsmTransitionRowInput, FsmCoverageIdentity)>,
     guards: BTreeMap<String, FsmGuardInput>,
 }
 
@@ -936,7 +939,7 @@ impl ValidatedFsmDescriptor {
         from_state: &str,
         event: &str,
         to_state: &str,
-    ) -> Option<&WireIdentity> {
+    ) -> Option<&FsmCoverageIdentity> {
         self.transitions
             .get(&(
                 from_state.to_string(),
@@ -980,7 +983,16 @@ pub fn validate_fsm_descriptor(
         .map(|guard| (guard.guard_id.clone(), guard.clone()))
         .collect();
     Ok(ValidatedFsmDescriptor {
-        spec_identity: input.declared_identity.clone(),
+        spec_identity: FsmSpecIdentity::from_wire(input.declared_identity.clone()).map_err(
+            |error| {
+                vec![Diagnostic::new(
+                    DiagnosticCode::IdentityDomainMismatch,
+                    REQUIREMENT_TYPED_DOMAIN,
+                    "fsm.declared_identity",
+                    format!("FSM spec identity admission failed: {error}"),
+                )]
+            },
+        )?,
         initial_state: input.initial_state.clone(),
         states: input
             .states
@@ -1120,53 +1132,29 @@ fn fsm_coverage_evidence(input: &FsmSpecInput) -> Result<FsmCoverageEvidence, Di
     }
 
     Ok(FsmCoverageEvidence {
-        state_universe_identity: fsm_material_identity(
-            IdentityDomain::FsmUniverse,
-            FSM_STATE_UNIVERSE_KIND,
-            states,
-        )?,
-        event_universe_identity: fsm_material_identity(
-            IdentityDomain::FsmUniverse,
-            FSM_EVENT_UNIVERSE_KIND,
-            events,
-        )?,
+        state_universe_identity: fsm_material_identity(FSM_STATE_UNIVERSE_KIND, states)?,
+        event_universe_identity: fsm_material_identity(FSM_EVENT_UNIVERSE_KIND, events)?,
         transition_coverage_identity: fsm_material_identity(
-            IdentityDomain::FsmCoverage,
             FSM_TRANSITION_COVERAGE_KIND,
             transitions,
         )?,
-        denial_coverage_identity: fsm_material_identity(
-            IdentityDomain::FsmCoverage,
-            FSM_DENIAL_COVERAGE_KIND,
-            denials,
-        )?,
-        exclusion_coverage_identity: fsm_material_identity(
-            IdentityDomain::FsmCoverage,
-            FSM_EXCLUSION_COVERAGE_KIND,
-            exclusions,
-        )?,
-        missing_cells_identity: fsm_material_identity(
-            IdentityDomain::FsmCoverage,
-            FSM_MISSING_CELLS_KIND,
-            missing_cells.clone(),
-        )?,
+        denial_coverage_identity: fsm_material_identity(FSM_DENIAL_COVERAGE_KIND, denials)?,
+        exclusion_coverage_identity: fsm_material_identity(FSM_EXCLUSION_COVERAGE_KIND, exclusions)?,
+        missing_cells_identity: fsm_material_identity(FSM_MISSING_CELLS_KIND, missing_cells.clone())?,
         missing_cells,
     })
 }
 
-fn fsm_transition_identity(transition: &FsmTransitionRowInput) -> Result<WireIdentity, Diagnostic> {
-    fsm_material_identity(
-        IdentityDomain::FsmCoverage,
-        FSM_TRANSITION_KIND,
-        vec![transition.clone()],
-    )
+fn fsm_transition_identity(
+    transition: &FsmTransitionRowInput,
+) -> Result<FsmCoverageIdentity, Diagnostic> {
+    fsm_material_identity(FSM_TRANSITION_KIND, vec![transition.clone()])
 }
 
-fn fsm_material_identity<T: Serialize>(
-    domain: IdentityDomain,
+fn fsm_material_identity<D: IdentityDomainMarker, T: Serialize>(
     kind: &str,
     entries: Vec<T>,
-) -> Result<WireIdentity, Diagnostic> {
+) -> Result<Identity<D>, Diagnostic> {
     let material = FsmCoverageMaterial {
         kind: kind.to_string(),
         entries,
@@ -1187,7 +1175,7 @@ fn fsm_material_identity<T: Serialize>(
             format!("FSM coverage canonicalization failed: {error}"),
         )
     })?;
-    Ok(compute_identity(domain, &encoded.packed_bytes))
+    Ok(Identity::<D>::compute(&encoded.packed_bytes))
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -3571,7 +3559,7 @@ fn validate_bound_fsm_descriptor(
                 descriptor
                     .coverage
                     .missing_cells_identity
-                    .hex
+                    .hex()
                     .as_str()
                     .to_string(),
             ),
@@ -3579,23 +3567,23 @@ fn validate_bound_fsm_descriptor(
     }
     accumulator.input_identities.insert(
         "fsm-exclusion-coverage".to_string(),
-        descriptor.coverage.exclusion_coverage_identity.clone(),
+        descriptor.coverage.exclusion_coverage_identity.to_wire(),
     );
     accumulator.input_identities.insert(
         "fsm-missing-cells".to_string(),
-        descriptor.coverage.missing_cells_identity.clone(),
+        descriptor.coverage.missing_cells_identity.to_wire(),
     );
     Some(descriptor)
 }
 
-fn compare_fsm_evidence_identity(
+fn compare_fsm_evidence_identity<D: IdentityDomainMarker>(
     supplied: &WireIdentity,
-    expected: &WireIdentity,
+    expected: &Identity<D>,
     requirement_id: &str,
     field: &str,
     accumulator: &mut ValidationAccumulator,
 ) {
-    if supplied != expected {
+    if supplied != &expected.to_wire() {
         accumulator.diagnostics.push(
             Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -3603,7 +3591,7 @@ fn compare_fsm_evidence_identity(
                 field,
                 "FSM receipt identity does not match evidence recomputed from the bound descriptor",
             )
-            .with_detail("expected", expected.hex.as_str().to_string())
+            .with_detail("expected", expected.hex().as_str().to_string())
             .with_detail("supplied", supplied.hex.as_str().to_string()),
         );
     }
@@ -6182,10 +6170,10 @@ mod tests {
             receipt_kind: FSM_EXHAUSTIVENESS_RECEIPT_KIND.to_string(),
             canonical_bytes: FSM_RECEIPT_BYTES.to_vec(),
             spec_identity: spec.declared_identity.clone(),
-            state_universe_identity: descriptor.coverage.state_universe_identity.clone(),
-            event_universe_identity: descriptor.coverage.event_universe_identity.clone(),
-            transition_coverage_identity: descriptor.coverage.transition_coverage_identity.clone(),
-            denial_coverage_identity: descriptor.coverage.denial_coverage_identity.clone(),
+            state_universe_identity: descriptor.coverage.state_universe_identity.to_wire(),
+            event_universe_identity: descriptor.coverage.event_universe_identity.to_wire(),
+            transition_coverage_identity: descriptor.coverage.transition_coverage_identity.to_wire(),
+            denial_coverage_identity: descriptor.coverage.denial_coverage_identity.to_wire(),
             adapter_identity: compute_identity(IdentityDomain::Adapter, b"fsm-adapter"),
             dependency_identities: Vec::new(),
             octet_receipt_identities: vec![compute_identity(IdentityDomain::Receipt, b"octet-fsm")],
@@ -6214,7 +6202,7 @@ mod tests {
     fn test_transition_identity(input: &FsmReceiptInput, index: usize) -> Option<WireIdentity> {
         let descriptor = input.descriptor.as_deref()?;
         let transition = descriptor.transitions.get(index)?;
-        fsm_transition_identity(transition).ok()
+        fsm_transition_identity(transition).ok().map(|typed| typed.to_wire())
     }
 
     fn fsm_receipt_fixture(

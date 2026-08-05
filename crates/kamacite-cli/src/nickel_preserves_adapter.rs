@@ -1,6 +1,7 @@
 use crate::root_io::RootCapability;
 use kamacite_core::{
-    AdmittedNickelJsonExport, WireIdentity, IdentityDomain, NickelExportIdentity,
+    AdapterIdentity, AdmittedNickelJsonExport, CanonicalValueIdentity, ProjectionIdentity,
+    ReceiptIdentity, WireIdentity, IdentityDomain, NickelExportIdentity,
     NickelExportIdentityKind, NickelPreservesReceipt, PRESERVES_CANONICAL_CODEC,
     adapt_admitted_nickel_json_export, compute_identity,
 };
@@ -38,11 +39,11 @@ pub struct NickelPreservesCommandReport {
     pub mode: String,
     pub selected_export: String,
     pub manifest_wire_identity: WireIdentity,
-    pub json_projection_identity: WireIdentity,
-    pub mapping_profile_identity: WireIdentity,
-    pub packed_preserves_identity: WireIdentity,
-    pub review_text_identity: WireIdentity,
-    pub receipt_identity: WireIdentity,
+    pub json_projection_identity: ProjectionIdentity,
+    pub mapping_profile_identity: AdapterIdentity,
+    pub packed_preserves_identity: CanonicalValueIdentity,
+    pub review_text_identity: ProjectionIdentity,
+    pub receipt_identity: ReceiptIdentity,
     pub packed_output: String,
     pub text_output: Option<String>,
     pub receipt_output: String,

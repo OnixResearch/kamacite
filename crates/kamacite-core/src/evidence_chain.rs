@@ -1,6 +1,6 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::function_address::FunctionAddressReceiptEnvelope;
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{EvidenceChainIdentity, WireIdentity, IdentityDomain};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -109,7 +109,7 @@ pub struct EvidenceChainEnvelopeBody {
     pub profile_hash: WireIdentity,
     pub parent_links: Vec<EvidenceChainParentLink>,
     pub profile_payload_roots: Vec<EvidenceChainProfileRoot>,
-    pub non_claim_boundary_hash: WireIdentity,
+    pub non_claim_boundary_hash: EvidenceChainIdentity,
     pub projections: Vec<EvidenceChainProjectionRecord>,
     pub non_claims: Vec<String>,
 }
@@ -117,7 +117,7 @@ pub struct EvidenceChainEnvelopeBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct EvidenceChainEnvelope {
     pub body: EvidenceChainEnvelopeBody,
-    pub envelope_identity: WireIdentity,
+    pub envelope_identity: EvidenceChainIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -125,7 +125,7 @@ pub struct EvidenceChainJsonProjection {
     pub schema_version: String,
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub envelope_identity: WireIdentity,
+    pub envelope_identity: EvidenceChainIdentity,
     pub envelope: EvidenceChainEnvelopeBody,
 }
 
@@ -139,7 +139,7 @@ struct CanonicalEvidenceChainEnvelope<'a> {
     profile_hash: &'a WireIdentity,
     parent_links: Vec<EvidenceChainParentLink>,
     profile_payload_roots: Vec<EvidenceChainProfileRoot>,
-    non_claim_boundary_hash: WireIdentity,
+    non_claim_boundary_hash: EvidenceChainIdentity,
     projections: Vec<EvidenceChainProjectionRecord>,
 }
 
@@ -265,8 +265,8 @@ pub fn validate_evidence_chain_json_projection(
                 "envelope_identity",
                 "evidence-chain JSON projection identity does not match canonical Preserves bytes",
             )
-            .with_detail("declared", projection.envelope_identity.hex.as_str())
-            .with_detail("computed", envelope.envelope_identity.hex.as_str()),
+            .with_detail("declared", projection.envelope_identity.hex().as_str())
+            .with_detail("computed", envelope.envelope_identity.hex().as_str()),
         ),
         Err(mut inner) => diagnostics.append(&mut inner),
     }
@@ -278,7 +278,7 @@ pub fn validate_evidence_chain_json_projection(
 pub fn evidence_chain_collection_root(
     evidence_kind: EvidenceKind,
     leaves: &[WireIdentity],
-) -> Result<WireIdentity, ReceiptError> {
+) -> Result<EvidenceChainIdentity, ReceiptError> {
     let mut leaves = leaves.to_vec();
     leaves.sort();
     let collection = CanonicalEvidenceCollection {
@@ -295,7 +295,7 @@ pub fn evidence_chain_collection_root(
     )
     .map(|artifact| artifact.packed_bytes)
     .map_err(|error| ReceiptError::Serialize(error.to_string()))?;
-    Ok(compute_identity(IdentityDomain::EvidenceChain, &bytes))
+    Ok(EvidenceChainIdentity::compute(&bytes))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -334,7 +334,7 @@ pub fn function_address_evidence_chain_input(
         profile_payload_roots: vec![EvidenceChainProfileRoot {
             evidence_kind: EvidenceKind::FunctionAddress,
             schema_version: receipt.body.schema_version.clone(),
-            root_identity: profile_root,
+            root_identity: profile_root.to_wire(),
         }],
         projections: Vec::new(),
         non_claims: receipt.body.non_claims.clone(),
@@ -368,7 +368,7 @@ fn build_evidence_chain_envelope_unchecked(
     let bytes = evidence_chain_canonical_bytes(&canonical_input)?;
     Ok(EvidenceChainEnvelope {
         body,
-        envelope_identity: compute_identity(IdentityDomain::EvidenceChain, &bytes),
+        envelope_identity: EvidenceChainIdentity::compute(&bytes),
     })
 }
 
@@ -418,9 +418,8 @@ fn sorted_non_claims(non_claims: &[String]) -> Vec<String> {
     non_claims
 }
 
-fn non_claim_boundary_hash(non_claims: &[String]) -> Result<WireIdentity, ReceiptError> {
-    Ok(compute_identity(
-        IdentityDomain::EvidenceChain,
+fn non_claim_boundary_hash(non_claims: &[String]) -> Result<EvidenceChainIdentity, ReceiptError> {
+    Ok(EvidenceChainIdentity::compute(
         &crate::receipt::canonical_json_bytes(&sorted_non_claims(non_claims))?,
     ))
 }
@@ -543,6 +542,7 @@ fn validate_identity_domain(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::{ReceiptIdentity, compute_identity};
     use crate::function_address::{
         FUNCTION_ADDRESS_CANONICAL_CODEC, FUNCTION_ADDRESS_RECEIPT_SCHEMA_VERSION,
         FunctionAddressProducer, FunctionAddressReceiptBody, FunctionAddressReceiptEnvelope,
@@ -574,7 +574,8 @@ mod tests {
                 root_identity: evidence_chain_collection_root(
                     EvidenceKind::FunctionAddress,
                     &[leaf],
-                )?,
+                )?
+                .to_wire(),
             }],
             projections: Vec::new(),
             non_claims: vec![
@@ -614,7 +615,7 @@ mod tests {
         let projection = evidence_chain_json_projection(&envelope);
 
         assert_eq!(
-            compute_identity(IdentityDomain::EvidenceChain, &canonical_bytes),
+            EvidenceChainIdentity::compute(&canonical_bytes),
             envelope.envelope_identity
         );
         assert_eq!(projection.envelope_identity, envelope.envelope_identity);
@@ -804,10 +805,7 @@ mod tests {
                     NON_CLAIM_VERIFIER_SOUNDNESS.to_string(),
                 ],
             },
-            receipt_identity: compute_identity(
-                IdentityDomain::Receipt,
-                b"function-address receipt",
-            ),
+            receipt_identity: ReceiptIdentity::compute(b"function-address receipt"),
         }
     }
 }
