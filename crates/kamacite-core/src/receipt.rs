@@ -1,5 +1,5 @@
 use crate::diagnostic::Diagnostic;
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt::{Display, Formatter};
@@ -33,8 +33,8 @@ pub struct ReceiptBody {
     pub artifact_class: String,
     pub verdict: String,
     pub requirement_ids: Vec<String>,
-    pub input_identities: BTreeMap<String, Identity>,
-    pub output_identities: BTreeMap<String, Identity>,
+    pub input_identities: BTreeMap<String, WireIdentity>,
+    pub output_identities: BTreeMap<String, WireIdentity>,
     pub checked_laws: Vec<String>,
     pub diagnostics: Vec<Diagnostic>,
     pub non_claims: Vec<String>,
@@ -67,7 +67,7 @@ impl ReceiptBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ReceiptEnvelope {
     pub body: ReceiptBody,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
 }
 
 impl ReceiptEnvelope {
@@ -119,7 +119,7 @@ mod tests {
         assert!(matches!(
             finalized,
             Ok(ReceiptEnvelope {
-                receipt_identity: Identity {
+                receipt_identity: WireIdentity {
                     domain: IdentityDomain::Receipt,
                     ..
                 },

@@ -3,7 +3,7 @@
 // r[impl kamacite.findings.nickel_sandbox.enforced_evidence]
 // r[impl kamacite.findings.nickel_sandbox.resource_limits]
 use kamacite_core::{
-    Identity, IdentityDomain, NICKEL_SANDBOX_IMPORT_ROOT, NICKEL_SANDBOX_SOURCE_PATH,
+    WireIdentity, IdentityDomain, NICKEL_SANDBOX_IMPORT_ROOT, NICKEL_SANDBOX_SOURCE_PATH,
     NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile, compute_identity,
     nickel_sandbox_observed_facts, validate_nickel_sandbox_profile,
 };
@@ -41,18 +41,18 @@ const DIAGNOSTIC_LIMIT_DIAGNOSTIC: &[u8] = b"diagnostic-limit";
 pub struct NickelSandboxFile {
     pub sandbox_path: String,
     pub file: File,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 pub struct NickelSandboxRequest {
     pub evaluator_command: PathBuf,
     pub evaluator_arguments: Vec<String>,
-    pub evaluator_identity: Identity,
+    pub evaluator_identity: WireIdentity,
     pub sandbox_command: PathBuf,
     pub limit_command: PathBuf,
     pub runtime_closure_paths: Vec<PathBuf>,
     pub source_file: File,
-    pub source_identity: Identity,
+    pub source_identity: WireIdentity,
     pub imports: Vec<NickelSandboxFile>,
     pub requested_capabilities: Vec<String>,
     pub expected_effects: Vec<String>,

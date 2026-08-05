@@ -1,4 +1,4 @@
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -39,38 +39,38 @@ pub enum ReplayClass {
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum OperationImplementation {
-    DefaultBehavior(Identity),
+    DefaultBehavior(WireIdentity),
     Abstract,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationDescriptor {
     pub schema_version: u32,
-    pub effect_family_identity: Identity,
-    pub parameter_schema_identity: Identity,
-    pub result_schema_identity: Identity,
+    pub effect_family_identity: WireIdentity,
+    pub parameter_schema_identity: WireIdentity,
+    pub result_schema_identity: WireIdentity,
     pub continuation_contract: ContinuationContract,
     pub replay_class: ReplayClass,
-    pub dependency_identities: Vec<Identity>,
+    pub dependency_identities: Vec<WireIdentity>,
     pub implementation: OperationImplementation,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationDescriptorInput {
     pub schema_version: u32,
-    pub effect_family_identity: Identity,
-    pub parameter_schema_identity: Identity,
-    pub result_schema_identity: Identity,
+    pub effect_family_identity: WireIdentity,
+    pub parameter_schema_identity: WireIdentity,
+    pub result_schema_identity: WireIdentity,
     pub continuation_contract: ContinuationContract,
     pub replay_class: ReplayClass,
-    pub dependency_identities: Vec<Identity>,
-    pub default_behavior_identity: Option<Identity>,
+    pub dependency_identities: Vec<WireIdentity>,
+    pub default_behavior_identity: Option<WireIdentity>,
     pub abstract_operation: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationMetadata {
-    pub semantic_operation_identity: Identity,
+    pub semantic_operation_identity: WireIdentity,
     pub display_name: String,
     pub aliases: Vec<String>,
     pub path: Option<String>,
@@ -91,10 +91,10 @@ pub enum CompatibilityContext {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationCompatibility {
     pub schema_version: u32,
-    pub source_operation_identity: Identity,
-    pub target_operation_identity: Identity,
+    pub source_operation_identity: WireIdentity,
+    pub target_operation_identity: WireIdentity,
     pub allowed_contexts: Vec<CompatibilityContext>,
-    pub supporting_refs: Vec<Identity>,
+    pub supporting_refs: Vec<WireIdentity>,
     pub diagnostics: Vec<String>,
     pub non_claims: Vec<String>,
 }
@@ -103,14 +103,14 @@ pub struct SemanticOperationCompatibility {
 pub struct IdentifiedSemanticOperation {
     pub descriptor: SemanticOperationDescriptor,
     pub canonical_bytes: Vec<u8>,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IdentifiedSemanticOperationCompatibility {
     pub compatibility: SemanticOperationCompatibility,
     pub canonical_bytes: Vec<u8>,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -121,21 +121,21 @@ pub struct LegacyEffectOperationReference {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationReferenceBundle {
-    pub declared_operations: Vec<Identity>,
-    pub effect_row: Vec<Identity>,
-    pub effect_summary: Vec<Identity>,
-    pub handler_descriptor: Vec<Identity>,
-    pub handler_receipt: Vec<Identity>,
-    pub effect_log: Vec<Identity>,
-    pub adapter_bindings: Vec<Identity>,
-    pub target_imports: Vec<Identity>,
-    pub wasm_imports: Vec<Identity>,
+    pub declared_operations: Vec<WireIdentity>,
+    pub effect_row: Vec<WireIdentity>,
+    pub effect_summary: Vec<WireIdentity>,
+    pub handler_descriptor: Vec<WireIdentity>,
+    pub handler_receipt: Vec<WireIdentity>,
+    pub effect_log: Vec<WireIdentity>,
+    pub adapter_bindings: Vec<WireIdentity>,
+    pub target_imports: Vec<WireIdentity>,
+    pub wasm_imports: Vec<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationMigrationPreview {
     pub legacy: LegacyEffectOperationReference,
-    pub semantic_operation_identity: Identity,
+    pub semantic_operation_identity: WireIdentity,
     pub semantic_descriptor: SemanticOperationDescriptor,
     pub changed_fields: Vec<String>,
     pub mutation_performed: bool,
@@ -179,12 +179,12 @@ pub enum SemanticOperationError {
         context: CompatibilityContext,
     },
     OperationMismatch {
-        requested: Identity,
-        handled: Identity,
+        requested: WireIdentity,
+        handled: WireIdentity,
     },
     UndeclaredOperation {
         surface: &'static str,
-        identity: Identity,
+        identity: WireIdentity,
     },
     Canonicalization(String),
 }
@@ -265,12 +265,12 @@ impl std::error::Error for SemanticOperationError {}
 #[serde(rename = "kamacite-semantic-effect-operation-v2")]
 struct CanonicalSemanticOperation {
     schema_version: u32,
-    effect_family_identity: Identity,
-    parameter_schema_identity: Identity,
-    result_schema_identity: Identity,
+    effect_family_identity: WireIdentity,
+    parameter_schema_identity: WireIdentity,
+    result_schema_identity: WireIdentity,
     continuation_contract: ContinuationContract,
     replay_class: ReplayClass,
-    dependency_identities: Vec<Identity>,
+    dependency_identities: Vec<WireIdentity>,
     implementation: OperationImplementation,
 }
 
@@ -278,10 +278,10 @@ struct CanonicalSemanticOperation {
 #[serde(rename = "kamacite-semantic-effect-operation-compatibility-v1")]
 struct CanonicalSemanticOperationCompatibility {
     schema_version: u32,
-    source_operation_identity: Identity,
-    target_operation_identity: Identity,
+    source_operation_identity: WireIdentity,
+    target_operation_identity: WireIdentity,
     allowed_contexts: Vec<CompatibilityContext>,
-    supporting_refs: Vec<Identity>,
+    supporting_refs: Vec<WireIdentity>,
     diagnostics: Vec<String>,
     non_claims: Vec<String>,
 }
@@ -448,8 +448,8 @@ pub fn preview_semantic_operation_migration(
 }
 
 pub fn require_exact_semantic_operation(
-    requested: &Identity,
-    handled: &Identity,
+    requested: &WireIdentity,
+    handled: &WireIdentity,
 ) -> Result<(), SemanticOperationError> {
     validate_domain(
         requested,
@@ -472,8 +472,8 @@ pub fn require_exact_semantic_operation(
 
 pub fn admit_semantic_operation_compatibility(
     compatibility: &SemanticOperationCompatibility,
-    source: &Identity,
-    target: &Identity,
+    source: &WireIdentity,
+    target: &WireIdentity,
     context: CompatibilityContext,
 ) -> Result<(), SemanticOperationError> {
     let compatibility = normalize_and_validate_compatibility(compatibility)?;
@@ -590,7 +590,7 @@ fn normalize_and_validate_compatibility(
 }
 
 fn validate_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &'static str,
 ) -> Result<(), SemanticOperationError> {
@@ -600,11 +600,11 @@ fn validate_domain(
 }
 
 fn normalize_identities(
-    values: &[Identity],
+    values: &[WireIdentity],
     field: &'static str,
     maximum: usize,
     require_non_empty: bool,
-) -> Result<Vec<Identity>, SemanticOperationError> {
+) -> Result<Vec<WireIdentity>, SemanticOperationError> {
     if values.iter().any(|identity| identity.validate().is_err()) {
         return Err(SemanticOperationError::InvalidIdentity { field });
     }
@@ -612,10 +612,10 @@ fn normalize_identities(
 }
 
 fn normalize_operation_references(
-    values: &[Identity],
+    values: &[WireIdentity],
     field: &'static str,
     require_non_empty: bool,
-) -> Result<Vec<Identity>, SemanticOperationError> {
+) -> Result<Vec<WireIdentity>, SemanticOperationError> {
     for identity in values {
         validate_domain(identity, IdentityDomain::EffectOperation, field)?;
     }

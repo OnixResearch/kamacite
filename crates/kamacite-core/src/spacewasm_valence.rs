@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Identity, IdentityDomain, SourceSpan, SourceSpanSet, SpaceWasmParentRole,
+    WireIdentity, IdentityDomain, SourceSpan, SourceSpanSet, SpaceWasmParentRole,
     SpaceWasmStaticRequest, SpaceWasmValidationError, build_spacewasm_static_receipt,
     compute_identity,
 };
@@ -29,7 +29,7 @@ pub enum SpaceWasmValenceVerificationClass {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceArtifact {
     pub role: String,
-    pub identity: Identity,
+    pub identity: WireIdentity,
     pub verification_class: SpaceWasmValenceVerificationClass,
     pub spans: SourceSpanSet,
 }
@@ -38,9 +38,9 @@ pub struct SpaceWasmValenceArtifact {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceEdge {
     pub parent_role: String,
-    pub parent_identity: Identity,
+    pub parent_identity: WireIdentity,
     pub child_role: String,
-    pub child_identity: Identity,
+    pub child_identity: WireIdentity,
     pub relation: String,
 }
 
@@ -48,7 +48,7 @@ pub struct SpaceWasmValenceEdge {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceProjectionBody {
     pub schema_version: String,
-    pub subject_receipt_identity: Identity,
+    pub subject_receipt_identity: WireIdentity,
     pub artifacts: Vec<SpaceWasmValenceArtifact>,
     pub parent_edges: Vec<SpaceWasmValenceEdge>,
     pub checked_laws: Vec<String>,
@@ -60,7 +60,7 @@ pub struct SpaceWasmValenceProjectionBody {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmValenceProjection {
     pub body: SpaceWasmValenceProjectionBody,
-    pub projection_identity: Identity,
+    pub projection_identity: WireIdentity,
 }
 
 #[derive(Debug)]
@@ -248,7 +248,7 @@ fn parent_edges(
 
 fn artifact_with_span(
     role: &str,
-    identity: Identity,
+    identity: WireIdentity,
     verification_class: SpaceWasmValenceVerificationClass,
     artifact_key: &str,
     byte_len: usize,
@@ -273,7 +273,7 @@ fn artifact_with_span(
 
 fn artifact_without_span(
     role: &str,
-    identity: Identity,
+    identity: WireIdentity,
     verification_class: SpaceWasmValenceVerificationClass,
 ) -> SpaceWasmValenceArtifact {
     SpaceWasmValenceArtifact {

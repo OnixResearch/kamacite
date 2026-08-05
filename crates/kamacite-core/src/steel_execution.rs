@@ -1,4 +1,4 @@
-use crate::{Identity, IdentityDomain, compute_identity};
+use crate::{WireIdentity, IdentityDomain, compute_identity};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -39,7 +39,7 @@ pub struct SteelDtoContractBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SteelDtoContract {
     pub body: SteelDtoContractBody,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -90,7 +90,7 @@ impl std::error::Error for SteelDtoViolation {}
 pub enum SteelExecutionEvidence {
     StoredEvidence {
         fresh: bool,
-        output_identity: Option<Identity>,
+        output_identity: Option<WireIdentity>,
     },
     ExecutedProbe(Box<SteelExecutedProbeEvidence>),
 }
@@ -99,13 +99,13 @@ pub enum SteelExecutionEvidence {
 pub struct SteelExecutedProbeEvidence {
     pub runner_profile: String,
     pub runner_descriptor: String,
-    pub runner_identity: Identity,
-    pub source_identity: Identity,
-    pub module_identity: Identity,
-    pub input_identity: Identity,
-    pub input_contract_identity: Identity,
-    pub output_contract_identity: Identity,
-    pub output_identity: Identity,
+    pub runner_identity: WireIdentity,
+    pub source_identity: WireIdentity,
+    pub module_identity: WireIdentity,
+    pub input_identity: WireIdentity,
+    pub input_contract_identity: WireIdentity,
+    pub output_contract_identity: WireIdentity,
+    pub output_identity: WireIdentity,
     pub declared_builtin_modules: Vec<String>,
     pub registered_host_functions: Vec<String>,
     pub observed_host_functions: Vec<String>,

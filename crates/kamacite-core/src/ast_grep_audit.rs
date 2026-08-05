@@ -5,7 +5,7 @@
 // r[impl kamacite.ast_grep_adapter_audits.codemods]
 // r[impl kamacite.ast_grep_adapter_audits.valence_export]
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::receipt::canonical_json_bytes;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -29,7 +29,7 @@ const AST_GREP_PROFILE_SCHEMA_VERSION: &str = "kamacite.ast-grep-profile.v1";
 struct AstGrepProfileProjection {
     schema_version: String,
     profile_id: String,
-    bundle_identity: Identity,
+    bundle_identity: WireIdentity,
     language_profiles: Vec<AstGrepLanguageProfile>,
     rules: Vec<AstGrepProfileRule>,
     verification_role: String,
@@ -40,9 +40,9 @@ struct AstGrepProfileProjection {
 struct AstGrepProfileRule {
     rule_id: String,
     language: String,
-    rule_identity: Identity,
-    positive_fixture_identity: Identity,
-    negative_fixture_identity: Identity,
+    rule_identity: WireIdentity,
+    positive_fixture_identity: WireIdentity,
+    negative_fixture_identity: WireIdentity,
     positive_cases: u32,
     negative_cases: u32,
     gate_eligible: bool,
@@ -52,7 +52,7 @@ struct AstGrepProfileRule {
 pub struct AstGrepLanguageProfile {
     pub language: String,
     pub parser_kind: String,
-    pub parser_identity: Identity,
+    pub parser_identity: WireIdentity,
     pub extensions: Vec<String>,
 }
 
@@ -60,9 +60,9 @@ pub struct AstGrepLanguageProfile {
 pub struct AstGrepRuleCoverage {
     pub rule_id: String,
     pub language: String,
-    pub rule_identity: Identity,
-    pub positive_fixture_identity: Option<Identity>,
-    pub negative_fixture_identity: Option<Identity>,
+    pub rule_identity: WireIdentity,
+    pub positive_fixture_identity: Option<WireIdentity>,
+    pub negative_fixture_identity: Option<WireIdentity>,
     pub positive_cases: u32,
     pub negative_cases: u32,
     pub gate_eligible: bool,
@@ -72,13 +72,13 @@ pub struct AstGrepRuleCoverage {
 pub struct AstGrepSourceEnvelope {
     pub path: String,
     pub bytes: Vec<u8>,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AstGrepFinding {
     pub rule_id: String,
-    pub source_identity: Identity,
+    pub source_identity: WireIdentity,
     pub start_byte: u64,
     pub end_byte: u64,
     pub message: String,
@@ -87,9 +87,9 @@ pub struct AstGrepFinding {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AstGrepValenceProjection {
     pub schema_version: String,
-    pub profile_identity: Identity,
-    pub rule_bundle_identity: Identity,
-    pub findings_identity: Identity,
+    pub profile_identity: WireIdentity,
+    pub rule_bundle_identity: WireIdentity,
+    pub findings_identity: WireIdentity,
     pub verification_role: String,
     pub findings: Vec<AstGrepFinding>,
     pub non_claims: Vec<String>,
@@ -98,11 +98,11 @@ pub struct AstGrepValenceProjection {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AstGrepCodemodArtifact {
     pub recipe_bytes: Vec<u8>,
-    pub recipe_identity: Identity,
+    pub recipe_identity: WireIdentity,
     pub before_source_bytes: Vec<u8>,
-    pub before_source_identity: Identity,
+    pub before_source_identity: WireIdentity,
     pub after_source_bytes: Vec<u8>,
-    pub after_source_identity: Identity,
+    pub after_source_identity: WireIdentity,
     pub dry_run: bool,
     pub post_check_commands: Vec<String>,
     pub non_claims: Vec<String>,
@@ -112,13 +112,13 @@ pub struct AstGrepCodemodArtifact {
 pub struct AstGrepAuditInput {
     pub schema_version: String,
     pub profile_bytes: Vec<u8>,
-    pub profile_identity: Identity,
+    pub profile_identity: WireIdentity,
     pub rule_bundle_bytes: Vec<u8>,
-    pub rule_bundle_identity: Identity,
-    pub source_scope_identity: Identity,
-    pub findings_identity: Identity,
+    pub rule_bundle_identity: WireIdentity,
+    pub source_scope_identity: WireIdentity,
+    pub findings_identity: WireIdentity,
     pub valence_projection_bytes: Vec<u8>,
-    pub valence_projection_identity: Identity,
+    pub valence_projection_identity: WireIdentity,
     pub language_profiles: Vec<AstGrepLanguageProfile>,
     pub rules: Vec<AstGrepRuleCoverage>,
     pub sources: Vec<AstGrepSourceEnvelope>,
@@ -131,7 +131,7 @@ pub struct AstGrepAuditInput {
 #[derive(Serialize)]
 struct ScopeIdentityEntry<'a> {
     path: &'a str,
-    identity: &'a Identity,
+    identity: &'a WireIdentity,
 }
 
 #[must_use]
@@ -459,7 +459,7 @@ fn validate_codemod(codemod: Option<&AstGrepCodemodArtifact>, diagnostics: &mut 
 }
 
 fn validate_computed_identity(
-    declared: &Identity,
+    declared: &WireIdentity,
     domain: IdentityDomain,
     bytes: &[u8],
     field: &str,

@@ -1,4 +1,4 @@
-use crate::{Identity, IdentityDomain, SemanticOperationError, compute_identity};
+use crate::{WireIdentity, IdentityDomain, SemanticOperationError, compute_identity};
 use serde::{Deserialize, Serialize};
 
 pub const SEMANTIC_OPERATION_VALENCE_SCHEMA: &str = "kamacite.semantic-effect-operation-valence.v1";
@@ -18,22 +18,22 @@ pub enum SemanticOperationValenceRole {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceArtifact {
     pub role: SemanticOperationValenceRole,
-    pub identity: Identity,
+    pub identity: WireIdentity,
     pub checked_claim: String,
     pub non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceEdge {
-    pub parent_identity: Identity,
-    pub child_identity: Identity,
+    pub parent_identity: WireIdentity,
+    pub child_identity: WireIdentity,
     pub relation: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceProjectionBody {
     pub schema_version: String,
-    pub subject_identity: Identity,
+    pub subject_identity: WireIdentity,
     pub artifacts: Vec<SemanticOperationValenceArtifact>,
     pub parent_edges: Vec<SemanticOperationValenceEdge>,
     pub non_claims: Vec<String>,
@@ -42,17 +42,17 @@ pub struct SemanticOperationValenceProjectionBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct SemanticOperationValenceProjection {
     pub body: SemanticOperationValenceProjectionBody,
-    pub projection_identity: Identity,
+    pub projection_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SemanticOperationValenceInput {
-    pub descriptor_identity: Identity,
-    pub default_behavior_identity: Option<Identity>,
-    pub compatibility_identities: Vec<Identity>,
-    pub handler_identities: Vec<Identity>,
-    pub runtime_receipt_identities: Vec<Identity>,
-    pub supporting_evidence_identities: Vec<Identity>,
+    pub descriptor_identity: WireIdentity,
+    pub default_behavior_identity: Option<WireIdentity>,
+    pub compatibility_identities: Vec<WireIdentity>,
+    pub handler_identities: Vec<WireIdentity>,
+    pub runtime_receipt_identities: Vec<WireIdentity>,
+    pub supporting_evidence_identities: Vec<WireIdentity>,
 }
 
 pub fn project_semantic_operation_to_valence(
@@ -148,7 +148,7 @@ pub fn project_semantic_operation_to_valence(
 
 fn append_typed_artifacts<'a>(
     artifacts: &mut Vec<SemanticOperationValenceArtifact>,
-    identities: impl Iterator<Item = &'a Identity>,
+    identities: impl Iterator<Item = &'a WireIdentity>,
     expected: IdentityDomain,
     role: SemanticOperationValenceRole,
     checked_claim: &str,
@@ -167,7 +167,7 @@ fn append_typed_artifacts<'a>(
 
 fn artifact(
     role: SemanticOperationValenceRole,
-    identity: Identity,
+    identity: WireIdentity,
     checked_claim: &str,
     non_claims: &[&str],
 ) -> SemanticOperationValenceArtifact {
@@ -183,7 +183,7 @@ fn artifact(
 }
 
 fn require_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &'static str,
 ) -> Result<(), SemanticOperationError> {

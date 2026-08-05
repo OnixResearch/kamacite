@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::{
-    Identity, IdentityDomain, PreservesLimits, PreservesSchema, PreservesSyntax,
+    WireIdentity, IdentityDomain, PreservesLimits, PreservesSchema, PreservesSyntax,
     canonicalize_preserves, compute_identity, encode_typed_preserves,
 };
 
@@ -257,7 +257,7 @@ pub struct SpaceWasmProfile {
 pub struct SpaceWasmSchemaRef {
     pub schema_version: String,
     pub root_label: String,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Ord, PartialOrd, Serialize)]
@@ -282,7 +282,7 @@ pub enum SpaceWasmParentRole {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmParentEdge {
     pub role: SpaceWasmParentRole,
-    pub parent_identity: Identity,
+    pub parent_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -291,19 +291,19 @@ pub struct SpaceWasmDescriptor {
     pub schema_version: String,
     pub adapter_kind: String,
     pub artifact_kind: String,
-    pub profile_identity: Identity,
-    pub abi_profile_identity: Identity,
-    pub capability_plan_identity: Identity,
-    pub effect_plan_identity: Identity,
-    pub resource_plan_identity: Identity,
-    pub source_identity: Identity,
-    pub canonical_input_identity: Identity,
+    pub profile_identity: WireIdentity,
+    pub abi_profile_identity: WireIdentity,
+    pub capability_plan_identity: WireIdentity,
+    pub effect_plan_identity: WireIdentity,
+    pub resource_plan_identity: WireIdentity,
+    pub source_identity: WireIdentity,
+    pub canonical_input_identity: WireIdentity,
     pub input_schema: SpaceWasmSchemaRef,
     pub output_schema: SpaceWasmSchemaRef,
-    pub module_identity: Identity,
-    pub runtime_identity: Identity,
-    pub mantle_bundle_identity: Identity,
-    pub octet_report_identity: Identity,
+    pub module_identity: WireIdentity,
+    pub runtime_identity: WireIdentity,
+    pub mantle_bundle_identity: WireIdentity,
+    pub octet_report_identity: WireIdentity,
     pub allowed_host_functions: Vec<String>,
     pub component_fallback: bool,
     pub wit_world: Option<String>,
@@ -346,20 +346,20 @@ pub enum SpaceWasmPlanningState {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SpaceWasmStaticValidation {
     pub state: SpaceWasmPlanningState,
-    pub profile_identity: Identity,
-    pub descriptor_identity: Identity,
-    pub abi_profile_identity: Identity,
-    pub capability_plan_identity: Identity,
-    pub effect_plan_identity: Identity,
-    pub resource_plan_identity: Identity,
-    pub source_identity: Identity,
-    pub canonical_input_identity: Identity,
-    pub input_schema_identity: Identity,
-    pub output_schema_identity: Identity,
-    pub module_identity: Identity,
-    pub runtime_identity: Identity,
-    pub mantle_bundle_identity: Identity,
-    pub octet_report_identity: Identity,
+    pub profile_identity: WireIdentity,
+    pub descriptor_identity: WireIdentity,
+    pub abi_profile_identity: WireIdentity,
+    pub capability_plan_identity: WireIdentity,
+    pub effect_plan_identity: WireIdentity,
+    pub resource_plan_identity: WireIdentity,
+    pub source_identity: WireIdentity,
+    pub canonical_input_identity: WireIdentity,
+    pub input_schema_identity: WireIdentity,
+    pub output_schema_identity: WireIdentity,
+    pub module_identity: WireIdentity,
+    pub runtime_identity: WireIdentity,
+    pub mantle_bundle_identity: WireIdentity,
+    pub octet_report_identity: WireIdentity,
     pub blockers: Vec<SpaceWasmBlocker>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
@@ -370,20 +370,20 @@ pub struct SpaceWasmStaticValidation {
 pub struct SpaceWasmStaticReceiptBody {
     pub schema_version: String,
     pub state: SpaceWasmPlanningState,
-    pub profile_identity: Identity,
-    pub descriptor_identity: Identity,
-    pub abi_profile_identity: Identity,
-    pub capability_plan_identity: Identity,
-    pub effect_plan_identity: Identity,
-    pub resource_plan_identity: Identity,
-    pub source_identity: Identity,
-    pub canonical_input_identity: Identity,
-    pub input_schema_identity: Identity,
-    pub output_schema_identity: Identity,
-    pub module_identity: Identity,
-    pub runtime_identity: Identity,
-    pub mantle_bundle_identity: Identity,
-    pub octet_report_identity: Identity,
+    pub profile_identity: WireIdentity,
+    pub descriptor_identity: WireIdentity,
+    pub abi_profile_identity: WireIdentity,
+    pub capability_plan_identity: WireIdentity,
+    pub effect_plan_identity: WireIdentity,
+    pub resource_plan_identity: WireIdentity,
+    pub source_identity: WireIdentity,
+    pub canonical_input_identity: WireIdentity,
+    pub input_schema_identity: WireIdentity,
+    pub output_schema_identity: WireIdentity,
+    pub module_identity: WireIdentity,
+    pub runtime_identity: WireIdentity,
+    pub mantle_bundle_identity: WireIdentity,
+    pub octet_report_identity: WireIdentity,
     pub blockers: Vec<SpaceWasmBlocker>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
@@ -393,15 +393,15 @@ pub struct SpaceWasmStaticReceiptBody {
 #[serde(deny_unknown_fields)]
 pub struct SpaceWasmStaticReceipt {
     pub body: SpaceWasmStaticReceiptBody,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SpaceWasmProfilePlanIdentities {
-    pub abi_profile_identity: Identity,
-    pub capability_plan_identity: Identity,
-    pub effect_plan_identity: Identity,
-    pub resource_plan_identity: Identity,
+    pub abi_profile_identity: WireIdentity,
+    pub capability_plan_identity: WireIdentity,
+    pub effect_plan_identity: WireIdentity,
+    pub resource_plan_identity: WireIdentity,
 }
 
 #[derive(Serialize)]
@@ -416,14 +416,14 @@ struct SpaceWasmEffectPlanMaterial<'a> {
 }
 
 struct SpaceWasmAdmittedIdentityRefs<'a> {
-    profile: &'a Identity,
+    profile: &'a WireIdentity,
     plans: &'a SpaceWasmProfilePlanIdentities,
-    source: &'a Identity,
-    canonical_input: &'a Identity,
-    module: &'a Identity,
-    runtime: &'a Identity,
-    mantle_bundle: &'a Identity,
-    octet_report: &'a Identity,
+    source: &'a WireIdentity,
+    canonical_input: &'a WireIdentity,
+    module: &'a WireIdentity,
+    runtime: &'a WireIdentity,
+    mantle_bundle: &'a WireIdentity,
+    octet_report: &'a WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -662,7 +662,7 @@ pub fn validate_spacewasm_static_receipt(
 pub fn validate_spacewasm_canonical_output(
     bytes: &[u8],
     schema: &SpaceWasmSchemaRef,
-) -> Result<Identity, SpaceWasmValidationError> {
+) -> Result<WireIdentity, SpaceWasmValidationError> {
     let mut diagnostics = Vec::new();
     validate_schema_ref(&mut diagnostics, "output_schema", schema);
     let identity = validate_canonical_value(
@@ -1470,7 +1470,7 @@ fn validate_canonical_input(
     schema: &SpaceWasmSchemaRef,
     maximum_bytes: u64,
     diagnostics: &mut Vec<SpaceWasmDiagnostic>,
-) -> Option<Identity> {
+) -> Option<WireIdentity> {
     validate_canonical_value(bytes, schema, maximum_bytes, "canonical_input", diagnostics)
 }
 
@@ -1480,7 +1480,7 @@ fn validate_canonical_value(
     maximum_bytes: u64,
     field: &'static str,
     diagnostics: &mut Vec<SpaceWasmDiagnostic>,
-) -> Option<Identity> {
+) -> Option<WireIdentity> {
     let observed_bytes = u64::try_from(bytes.len()).unwrap_or(u64::MAX);
     if observed_bytes > maximum_bytes {
         diagnostics.push(SpaceWasmDiagnostic::new(
@@ -1568,9 +1568,9 @@ fn identity_from_hex(
     hex: &str,
     field: &'static str,
     diagnostics: &mut Vec<SpaceWasmDiagnostic>,
-) -> Option<Identity> {
+) -> Option<WireIdentity> {
     match crate::Blake3Hex::parse(hex.to_string()) {
-        Ok(hex) => Some(Identity::new(domain, hex)),
+        Ok(hex) => Some(WireIdentity::new(domain, hex)),
         Err(error) => {
             diagnostics.push(SpaceWasmDiagnostic::new(
                 "invalid-identity",
@@ -1602,7 +1602,7 @@ fn encoded_identity<T: Serialize>(
     domain: IdentityDomain,
     field: &'static str,
     value: &T,
-) -> Result<Identity, SpaceWasmValidationError> {
+) -> Result<WireIdentity, SpaceWasmValidationError> {
     let bytes = serde_json::to_vec(value).map_err(|error| {
         single_error(SpaceWasmDiagnostic::new(
             "encoding",
@@ -1613,7 +1613,7 @@ fn encoded_identity<T: Serialize>(
     Ok(compute_identity(domain, &bytes))
 }
 
-pub fn spacewasm_schema_identity(schema_version: &str, root_label: &str) -> Identity {
+pub fn spacewasm_schema_identity(schema_version: &str, root_label: &str) -> WireIdentity {
     let material = format!("{schema_version}\0{root_label}");
     compute_identity(IdentityDomain::Projection, material.as_bytes())
 }
@@ -1648,9 +1648,9 @@ fn validate_schema_ref(
 fn validate_identity(
     diagnostics: &mut Vec<SpaceWasmDiagnostic>,
     field: &'static str,
-    identity: &Identity,
+    identity: &WireIdentity,
     domain: IdentityDomain,
-    expected: &Identity,
+    expected: &WireIdentity,
 ) {
     validate_identity_domain(diagnostics, field, identity, domain);
     if identity != expected {
@@ -1665,7 +1665,7 @@ fn validate_identity(
 fn validate_identity_domain(
     diagnostics: &mut Vec<SpaceWasmDiagnostic>,
     field: &'static str,
-    identity: &Identity,
+    identity: &WireIdentity,
     domain: IdentityDomain,
 ) {
     if let Err(error) = identity.validate_domain(domain) {
@@ -1927,7 +1927,7 @@ mod tests {
             output_schema,
             module_identity: compute_identity(IdentityDomain::TargetArtifact, MODULE_BYTES),
             runtime_identity: compute_identity(IdentityDomain::Evaluator, MANTLE_PROFILE_BYTES),
-            mantle_bundle_identity: Identity::new(
+            mantle_bundle_identity: WireIdentity::new(
                 IdentityDomain::DependencyClosure,
                 crate::Blake3Hex::parse(SPACEWASM_MANTLE_BUNDLE_ID.to_string())?,
             ),

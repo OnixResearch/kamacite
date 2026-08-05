@@ -1,5 +1,5 @@
 use crate::{
-    Diagnostic, DiagnosticCode, Identity, IdentityDomain, PreservesCodecError, PreservesLimits,
+    Diagnostic, DiagnosticCode, WireIdentity, IdentityDomain, PreservesCodecError, PreservesLimits,
     PreservesSchema, compute_identity, encode_typed_preserves,
 };
 use serde::{Deserialize, Serialize};
@@ -33,12 +33,12 @@ pub struct ManifestGenerationInput<'a> {
 #[serde(deny_unknown_fields)]
 pub struct ManifestGenerationReceiptBody {
     pub schema: String,
-    pub source_identity: Identity,
-    pub contract_identity: Identity,
+    pub source_identity: WireIdentity,
+    pub contract_identity: WireIdentity,
     pub evaluator_profile: String,
     pub evaluator_descriptor: String,
-    pub evaluator_identity: Identity,
-    pub projection_identity: Identity,
+    pub evaluator_identity: WireIdentity,
+    pub projection_identity: WireIdentity,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
 }
@@ -47,7 +47,7 @@ pub struct ManifestGenerationReceiptBody {
 #[serde(deny_unknown_fields)]
 pub struct ManifestGenerationReceipt {
     pub body: ManifestGenerationReceiptBody,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -189,8 +189,8 @@ pub fn validate_manifest_generation_receipt(
 
 fn compare_identity(
     field: &str,
-    expected: &Identity,
-    supplied: &Identity,
+    expected: &WireIdentity,
+    supplied: &WireIdentity,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     if expected != supplied {

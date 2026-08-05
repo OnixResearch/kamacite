@@ -1,5 +1,5 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -89,7 +89,7 @@ pub struct FunctionAddressProducer {
     pub canonicalizer: String,
     pub tool_version: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub build_identity: Option<Identity>,
+    pub build_identity: Option<WireIdentity>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub normative_options: BTreeMap<String, String>,
     #[serde(default)]
@@ -102,11 +102,11 @@ pub struct FunctionAddressProducerProfile {
     pub producer_kind: String,
     pub tool_version: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub build_identity: Option<Identity>,
+    pub build_identity: Option<WireIdentity>,
     pub canonicalizer_profile: String,
     pub normative_options: BTreeMap<String, String>,
     pub non_claims: Vec<String>,
-    pub profile_identity: Identity,
+    pub profile_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -124,7 +124,7 @@ pub struct FunctionAddressSourceEnvelope {
     pub display_path: String,
     pub language: String,
     pub source_bytes: String,
-    pub source_identity: Identity,
+    pub source_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -160,8 +160,8 @@ pub struct FunctionAddressRecord {
     pub display_name: String,
     pub source_key: String,
     pub span: Option<FunctionAddressSpan>,
-    pub function_address: Identity,
-    pub dependency_closure: Option<Identity>,
+    pub function_address: WireIdentity,
+    pub dependency_closure: Option<WireIdentity>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
     pub caveats: Vec<String>,
@@ -171,7 +171,7 @@ pub struct FunctionAddressRecord {
 pub struct FunctionAddressDependencyEdge {
     pub from_locator: String,
     pub to_locator: String,
-    pub dependency_identity: Option<Identity>,
+    pub dependency_identity: Option<WireIdentity>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
 }
@@ -210,7 +210,7 @@ pub struct FunctionAddressReceiptBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FunctionAddressReceiptEnvelope {
     pub body: FunctionAddressReceiptBody,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -225,16 +225,16 @@ pub struct FunctionAddressJsonProjection {
     pub schema_version: String,
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
     pub receipt: FunctionAddressReceiptBody,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct FunctionAddressValenceProjection {
     pub schema_version: String,
-    pub source_receipt_identity: Identity,
+    pub source_receipt_identity: WireIdentity,
     pub producer: String,
-    pub producer_profile_identity: Identity,
+    pub producer_profile_identity: WireIdentity,
     pub artifact_identities: Vec<FunctionAddressValenceArtifact>,
     pub dependency_edges: Vec<FunctionAddressDependencyEdge>,
     pub non_claims: Vec<String>,
@@ -244,19 +244,19 @@ pub struct FunctionAddressValenceProjection {
 pub struct FunctionAddressValenceArtifact {
     pub role: String,
     pub key: String,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 struct CanonicalSourceEnvelope {
-    source_identity: Identity,
+    source_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 struct CanonicalFunctionRecord {
-    source_identity: Identity,
-    function_address: Identity,
-    dependency_closure: Option<Identity>,
+    source_identity: WireIdentity,
+    function_address: WireIdentity,
+    dependency_closure: Option<WireIdentity>,
     dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
     caveats: Vec<String>,
 }
@@ -266,7 +266,7 @@ struct CanonicalFunctionRecord {
 struct CanonicalReceipt<'a> {
     schema_version: &'a str,
     canonical_codec: &'a str,
-    producer_profile_identity: Identity,
+    producer_profile_identity: WireIdentity,
     source_envelopes: Vec<CanonicalSourceEnvelope>,
     functions: Vec<CanonicalFunctionRecord>,
     dependency_edges: Vec<CanonicalDependencyEdge>,
@@ -276,9 +276,9 @@ struct CanonicalReceipt<'a> {
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 struct CanonicalDependencyEdge {
-    from_address: Identity,
-    to_address: Identity,
-    dependency_identity: Option<Identity>,
+    from_address: WireIdentity,
+    to_address: WireIdentity,
+    dependency_identity: Option<WireIdentity>,
     dependency_identity_kind: Option<FunctionAddressDependencyIdentityKind>,
 }
 
@@ -288,7 +288,7 @@ struct CanonicalProducerProfile<'a> {
     schema_version: &'a str,
     producer_kind: &'a str,
     tool_version: &'a str,
-    build_identity: &'a Option<Identity>,
+    build_identity: &'a Option<WireIdentity>,
     canonicalizer_profile: &'a str,
     normative_options: &'a BTreeMap<String, String>,
     non_claims: Vec<String>,
@@ -633,7 +633,7 @@ pub fn export_function_address_valence_projection(
 
 fn build_receipt(
     input: &FunctionAddressReceiptInput,
-    source_identities: &BTreeMap<String, Identity>,
+    source_identities: &BTreeMap<String, WireIdentity>,
 ) -> Result<FunctionAddressReceiptEnvelope, ReceiptError> {
     let producer_profile = function_address_producer_profile_unchecked(&input.producer)?;
     let body = FunctionAddressReceiptBody {
@@ -662,7 +662,7 @@ fn build_receipt(
 
 fn canonical_receipt<'a>(
     input: &'a FunctionAddressReceiptInput,
-    source_identities: &BTreeMap<String, Identity>,
+    source_identities: &BTreeMap<String, WireIdentity>,
 ) -> Result<CanonicalReceipt<'a>, ReceiptError> {
     let mut source_envelopes = source_identities
         .values()
@@ -869,7 +869,7 @@ fn validate_semantic_claims(claims: &[String], diagnostics: &mut Vec<Diagnostic>
 fn validate_sources(
     sources: &[FunctionAddressSourceEnvelope],
     diagnostics: &mut Vec<Diagnostic>,
-) -> BTreeMap<String, Identity> {
+) -> BTreeMap<String, WireIdentity> {
     let mut identities = BTreeMap::new();
     let mut keys = BTreeSet::new();
     for source in sources {
@@ -919,11 +919,11 @@ fn validate_sources(
 
 fn validate_functions(
     input: &FunctionAddressReceiptInput,
-    source_identities: &BTreeMap<String, Identity>,
+    source_identities: &BTreeMap<String, WireIdentity>,
     source_lengths: &BTreeMap<String, u64>,
-    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
+    dependency_kinds: &mut BTreeMap<WireIdentity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
-) -> BTreeMap<String, Identity> {
+) -> BTreeMap<String, WireIdentity> {
     let mut function_addresses = BTreeMap::new();
     let mut locators = BTreeSet::new();
     for function in &input.functions {
@@ -1038,8 +1038,8 @@ fn validate_function_span(
 
 fn validate_dependency_edges(
     input: &FunctionAddressReceiptInput,
-    function_addresses: &BTreeMap<String, Identity>,
-    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
+    function_addresses: &BTreeMap<String, WireIdentity>,
+    dependency_kinds: &mut BTreeMap<WireIdentity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     for edge in &input.dependency_edges {
@@ -1077,11 +1077,11 @@ fn validate_dependency_edges(
 }
 
 fn validate_dependency_identity_metadata(
-    identity: &Option<Identity>,
+    identity: &Option<WireIdentity>,
     kind: &Option<FunctionAddressDependencyIdentityKind>,
     identity_field: &str,
     kind_field: &str,
-    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
+    dependency_kinds: &mut BTreeMap<WireIdentity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     match (identity, kind) {
@@ -1128,10 +1128,10 @@ fn validate_dependency_identity_metadata(
 }
 
 fn validate_dependency_kind_consistency(
-    identity: &Identity,
+    identity: &WireIdentity,
     kind: &FunctionAddressDependencyIdentityKind,
     kind_field: &str,
-    dependency_kinds: &mut BTreeMap<Identity, FunctionAddressDependencyIdentityKind>,
+    dependency_kinds: &mut BTreeMap<WireIdentity, FunctionAddressDependencyIdentityKind>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     if let Some(existing) = dependency_kinds.get(identity) {
@@ -1155,7 +1155,7 @@ fn validate_dependency_kind_consistency(
 
 fn validate_caveats(
     input: &FunctionAddressReceiptInput,
-    function_addresses: &BTreeMap<String, Identity>,
+    function_addresses: &BTreeMap<String, WireIdentity>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     for caveat in &input.caveats {
@@ -1185,7 +1185,7 @@ fn validate_caveats(
 }
 
 fn validate_identity_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
@@ -1204,7 +1204,7 @@ fn validate_identity_domain(
     }
 }
 
-fn source_identity_map(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<String, Identity> {
+fn source_identity_map(sources: &[FunctionAddressSourceEnvelope]) -> BTreeMap<String, WireIdentity> {
     sources
         .iter()
         .map(|source| (source.key.clone(), source.source_identity.clone()))

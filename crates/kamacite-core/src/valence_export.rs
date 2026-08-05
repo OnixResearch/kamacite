@@ -1,5 +1,5 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::receipt::{RECEIPT_SCHEMA_VERSION, ReceiptEnvelope, ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -88,7 +88,7 @@ pub struct ValenceExportConformance {
     pub dependency_profile: String,
     pub fixture_coverage: Vec<String>,
     pub non_claims: Vec<String>,
-    pub conformance_identity: Identity,
+    pub conformance_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -108,14 +108,14 @@ pub struct ValenceReceiptExportInput {
     pub conformance: ValenceExportConformance,
     pub source_spans: SourceSpanSet,
     pub semantic_claims: Vec<String>,
-    pub declared_export_identity: Option<Identity>,
+    pub declared_export_identity: Option<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct ValenceArtifactIdentity {
     pub role: String,
     pub key: String,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -124,11 +124,11 @@ pub struct ValenceReceiptExportBody {
     pub profile_version: String,
     pub canonical_codec: String,
     pub evidence_role: String,
-    pub source_receipt_identity: Identity,
+    pub source_receipt_identity: WireIdentity,
     pub source_fixture_id: String,
     pub source_artifact_class: String,
     pub source_verdict: String,
-    pub conformance_identity: Identity,
+    pub conformance_identity: WireIdentity,
     pub artifact_identities: Vec<ValenceArtifactIdentity>,
     pub checked_laws: Vec<String>,
     pub diagnostics: Vec<Diagnostic>,
@@ -141,7 +141,7 @@ pub struct ValenceReceiptExportBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ValenceReceiptExportEnvelope {
     pub body: ValenceReceiptExportBody,
-    pub export_identity: Identity,
+    pub export_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -172,7 +172,7 @@ struct CanonicalValenceConformanceBody<'a> {
 
 pub fn valence_conformance_identity(
     conformance: &ValenceExportConformance,
-) -> Result<Identity, ReceiptError> {
+) -> Result<WireIdentity, ReceiptError> {
     let body = canonical_valence_conformance_body(conformance);
     Ok(compute_identity(
         IdentityDomain::Adapter,
@@ -659,7 +659,7 @@ fn validate_one_source_span(
 }
 
 fn validate_declared_export_identity(
-    declared: &Identity,
+    declared: &WireIdentity,
     export: Option<&ValenceReceiptExportEnvelope>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {

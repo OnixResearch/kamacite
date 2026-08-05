@@ -58,7 +58,7 @@ struct MigrationInput {
 struct IdentifyOutput {
     descriptor: kamacite_core::SemanticOperationDescriptor,
     canonical_bytes: Vec<u8>,
-    semantic_operation_identity: kamacite_core::Identity,
+    semantic_operation_identity: kamacite_core::WireIdentity,
 }
 
 fn main() {

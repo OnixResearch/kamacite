@@ -17,7 +17,7 @@ use kamacite_core::{
     FunctionAddressCaveat, FunctionAddressDependencyEdge, FunctionAddressDependencyIdentityKind,
     FunctionAddressProducer, FunctionAddressReceiptInput, FunctionAddressRecord,
     FunctionAddressSourceEnvelope, FunctionAddressSpan, FunctionAddressValenceProjection,
-    HandlerDescriptorInput, HandlerReceiptInput, Identity, IdentityDomain, IdentityUseInput,
+    HandlerDescriptorInput, HandlerReceiptInput, WireIdentity, IdentityDomain, IdentityUseInput,
     MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE, ManifestGenerationInput,
     ManifestGenerationReceipt, ManifestGenerationValidation, NICKEL_SANDBOX_SOURCE_PATH,
     NickelAdapterReceiptInput, NickelSandboxEvidence, NickelSandboxOutcome, NickelSandboxProfile,
@@ -296,17 +296,17 @@ struct DocsCommandReport {
     action: DocsActionKind,
     config_path: String,
     config_schema_version: u32,
-    config_source_identity: Identity,
-    config_contract_identity: Identity,
-    evaluator_identity: Identity,
-    projection_identity: Identity,
+    config_source_identity: WireIdentity,
+    config_contract_identity: WireIdentity,
+    evaluator_identity: WireIdentity,
+    projection_identity: WireIdentity,
     format: Option<String>,
     profile: Option<String>,
     target: Option<String>,
     dry_run: bool,
     completed_work_items: usize,
-    documentation_ir_identity: Option<Identity>,
-    output_identity: Option<Identity>,
+    documentation_ir_identity: Option<WireIdentity>,
+    output_identity: Option<WireIdentity>,
     mutated: bool,
     executed: bool,
     diagnostics: Vec<String>,
@@ -386,14 +386,14 @@ struct OctetFunctionAddressRecord {
 #[serde(untagged)]
 enum OctetIdentity {
     Text(String),
-    Structured(Identity),
+    Structured(WireIdentity),
 }
 
 #[derive(Debug, Serialize)]
 struct FunctionAddressReceiptCommandReport {
     passed: bool,
     diagnostics: Vec<kamacite_core::Diagnostic>,
-    receipt_identity: Option<Identity>,
+    receipt_identity: Option<WireIdentity>,
     receipt_path: Option<String>,
     valence_projection_path: Option<String>,
     valence_projection: Option<FunctionAddressValenceProjection>,
@@ -425,18 +425,18 @@ struct FixtureProjection {
 #[serde(deny_unknown_fields)]
 struct AstGrepSourceProjection {
     path: String,
-    identity: Identity,
+    identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct AstGrepCodemodProjection {
     recipe_path: String,
-    recipe_identity: Identity,
+    recipe_identity: WireIdentity,
     before_source_path: String,
-    before_source_identity: Identity,
+    before_source_identity: WireIdentity,
     after_source_path: String,
-    after_source_identity: Identity,
+    after_source_identity: WireIdentity,
     dry_run: bool,
     post_check_commands: Vec<String>,
     non_claims: Vec<String>,
@@ -451,14 +451,14 @@ enum PayloadProjection {
         media_type: String,
         parser_identity: String,
         source_path: String,
-        declared_identity: Identity,
+        declared_identity: WireIdentity,
         aliases: Vec<String>,
     },
     CanonicalValue {
         schema_version: u32,
         canonical_path: String,
-        declared_identity: Identity,
-        projection_identity: Option<Identity>,
+        declared_identity: WireIdentity,
+        projection_identity: Option<WireIdentity>,
         projection_claims_authority: bool,
         aliases: Vec<String>,
     },
@@ -466,13 +466,13 @@ enum PayloadProjection {
     AstGrepAudit {
         schema_version: String,
         profile_path: String,
-        profile_identity: Identity,
+        profile_identity: WireIdentity,
         rule_bundle_path: String,
-        rule_bundle_identity: Identity,
-        source_scope_identity: Identity,
-        findings_identity: Identity,
+        rule_bundle_identity: WireIdentity,
+        source_scope_identity: WireIdentity,
+        findings_identity: WireIdentity,
         valence_projection_path: String,
-        valence_projection_identity: Identity,
+        valence_projection_identity: WireIdentity,
         language_profiles: Vec<AstGrepLanguageProfile>,
         rules: Vec<AstGrepRuleCoverage>,
         sources: Vec<AstGrepSourceProjection>,
@@ -485,12 +485,12 @@ enum PayloadProjection {
         schema_version: u32,
         adapter_kind: String,
         source_path: Option<String>,
-        declared_source_identity: Option<Identity>,
+        declared_source_identity: Option<WireIdentity>,
         evaluator_profile: String,
         evaluator_descriptor: String,
-        evaluator_identity: Option<Identity>,
+        evaluator_identity: Option<WireIdentity>,
         export_path: Option<String>,
-        projection_identity: Option<Identity>,
+        projection_identity: Option<WireIdentity>,
         declared_capabilities: Vec<String>,
         observed_effects: Vec<String>,
         #[serde(default)]
@@ -507,12 +507,12 @@ enum PayloadProjection {
         schema_version: u32,
         adapter_kind: String,
         source_path: Option<String>,
-        declared_source_identity: Option<Identity>,
+        declared_source_identity: Option<WireIdentity>,
         evaluator_profile: String,
         evaluator_descriptor: String,
-        evaluator_identity: Option<Identity>,
+        evaluator_identity: Option<WireIdentity>,
         module_descriptor_path: String,
-        module_identity: Box<Option<Identity>>,
+        module_identity: Box<Option<WireIdentity>>,
         input_schema: String,
         output_schema: String,
         host_functions: Vec<SteelHostFunctionInput>,
@@ -524,7 +524,7 @@ enum PayloadProjection {
         observed_effects: Vec<String>,
         effect_class: String,
         output_path: Option<String>,
-        output_projection_identity: Box<Option<Identity>>,
+        output_projection_identity: Box<Option<WireIdentity>>,
         output_class: SteelOutputClass,
         claims_canonical_ir: bool,
         checked_laws: Vec<String>,
@@ -533,7 +533,7 @@ enum PayloadProjection {
     TargetArtifact {
         target_kind: String,
         output_path: String,
-        declared_identity: Identity,
+        declared_identity: WireIdentity,
         claims_canonical_ir: bool,
         metadata: BTreeMap<String, String>,
     },
@@ -545,8 +545,8 @@ enum PayloadProjection {
         schema_version: u32,
         fsm_id: String,
         canonical_path: String,
-        source_envelope_identity: Box<Option<Identity>>,
-        declared_identity: Identity,
+        source_envelope_identity: Box<Option<WireIdentity>>,
+        declared_identity: WireIdentity,
         states: Vec<FsmStateInput>,
         events: Vec<FsmEventInput>,
         initial_state: String,
@@ -566,20 +566,20 @@ enum PayloadProjection {
         receipt_kind: String,
         canonical_path: String,
         descriptor_fixture_id: String,
-        spec_identity: Identity,
-        state_universe_identity: Identity,
-        event_universe_identity: Identity,
-        transition_coverage_identity: Identity,
-        denial_coverage_identity: Identity,
-        adapter_identity: Identity,
-        dependency_identities: Vec<Identity>,
-        octet_receipt_identities: Vec<Identity>,
-        valence_export_identity: Box<Option<Identity>>,
+        spec_identity: WireIdentity,
+        state_universe_identity: WireIdentity,
+        event_universe_identity: WireIdentity,
+        transition_coverage_identity: WireIdentity,
+        denial_coverage_identity: WireIdentity,
+        adapter_identity: WireIdentity,
+        dependency_identities: Vec<WireIdentity>,
+        octet_receipt_identities: Vec<WireIdentity>,
+        valence_export_identity: Box<Option<WireIdentity>>,
         checked_laws: Vec<String>,
         diagnostics: Vec<String>,
         non_claims: Vec<String>,
         semantic_claims: Vec<String>,
-        declared_receipt_identity: Box<Option<Identity>>,
+        declared_receipt_identity: Box<Option<WireIdentity>>,
         trace_start_state: Box<Option<String>>,
         trace_events: Vec<String>,
         trace_steps: Vec<FsmTraceStepInput>,
@@ -588,21 +588,21 @@ enum PayloadProjection {
     DocumentationIr {
         schema_version: u32,
         canonical_path: String,
-        declared_identity: Identity,
-        collector_identity: Identity,
+        declared_identity: WireIdentity,
+        collector_identity: WireIdentity,
         pages: Vec<DocumentationPageInput>,
         target_formats: Vec<String>,
-        dependency_identities: Vec<Identity>,
+        dependency_identities: Vec<WireIdentity>,
         checked_laws: Vec<String>,
         non_claims: Vec<String>,
     },
     DocumentationOutput {
         schema_version: u32,
-        documentation_ir_identity: Identity,
-        renderer_identity: Identity,
+        documentation_ir_identity: WireIdentity,
+        renderer_identity: WireIdentity,
         target_format: String,
         output_path: String,
-        declared_output_identity: Identity,
+        declared_output_identity: WireIdentity,
         claims_canonical_ir: bool,
         checked_laws: Vec<String>,
         non_claims: Vec<String>,
@@ -612,16 +612,16 @@ enum PayloadProjection {
         cell_id: String,
         language: String,
         source_path: String,
-        source_identity: Box<Option<Identity>>,
+        source_identity: Box<Option<WireIdentity>>,
         run_profile: String,
         execution_mode: String,
-        evaluator_identity: Box<Option<Identity>>,
+        evaluator_identity: Box<Option<WireIdentity>>,
         declared_capabilities: Vec<String>,
         observed_effects: Vec<String>,
         expected_result: String,
-        expected_output_identity: Box<Option<Identity>>,
+        expected_output_identity: Box<Option<WireIdentity>>,
         observed_output_path: Option<String>,
-        observed_output_identity: Box<Option<Identity>>,
+        observed_output_identity: Box<Option<WireIdentity>>,
         expected_diagnostic: Box<Option<String>>,
         observed_diagnostic: Box<Option<String>>,
         claims_semantic_equivalence: bool,
@@ -632,12 +632,12 @@ enum PayloadProjection {
         schema_version: u32,
         receipt_kind: String,
         canonical_path: String,
-        documentation_ir_identity: Identity,
-        renderer_identity: Box<Option<Identity>>,
-        output_identities: Vec<Identity>,
-        cell_receipt_identities: Vec<Identity>,
-        valence_export_identity: Box<Option<Identity>>,
-        declared_receipt_identity: Box<Option<Identity>>,
+        documentation_ir_identity: WireIdentity,
+        renderer_identity: Box<Option<WireIdentity>>,
+        output_identities: Vec<WireIdentity>,
+        cell_receipt_identities: Vec<WireIdentity>,
+        valence_export_identity: Box<Option<WireIdentity>>,
+        declared_receipt_identity: Box<Option<WireIdentity>>,
         diagnostics: Vec<String>,
         semantic_claims: Vec<String>,
         checked_laws: Vec<String>,
@@ -648,12 +648,12 @@ enum PayloadProjection {
         conformance_path: String,
         source_spans_path: Option<String>,
         semantic_claims: Vec<String>,
-        declared_export_identity: Option<Identity>,
+        declared_export_identity: Option<WireIdentity>,
     },
     AlgebraicEffect {
         schema_version: u32,
         canonical_path: String,
-        declared_identity: Identity,
+        declared_identity: WireIdentity,
         signatures: Vec<EffectOperation>,
         input_row: Vec<String>,
         row_open: bool,
@@ -670,7 +670,7 @@ enum PayloadProjection {
 struct ReplayProjection {
     replay_class: String,
     effect_log_path: Option<String>,
-    effect_log_identity: Option<Identity>,
+    effect_log_identity: Option<WireIdentity>,
 }
 
 impl PayloadProjection {
@@ -686,7 +686,7 @@ impl PayloadProjection {
         }
     }
 
-    fn declared_canonical_identity(&self) -> Option<Identity> {
+    fn declared_canonical_identity(&self) -> Option<WireIdentity> {
         match self {
             Self::CanonicalValue {
                 declared_identity, ..
@@ -730,12 +730,12 @@ struct NickelAdapterProjectionParts<'a> {
     schema_version: u32,
     adapter_kind: &'a str,
     source_path: &'a Option<String>,
-    declared_source_identity: &'a Option<Identity>,
+    declared_source_identity: &'a Option<WireIdentity>,
     evaluator_profile: &'a str,
     evaluator_descriptor: &'a str,
-    evaluator_identity: &'a Option<Identity>,
+    evaluator_identity: &'a Option<WireIdentity>,
     export_path: &'a Option<String>,
-    projection_identity: &'a Option<Identity>,
+    projection_identity: &'a Option<WireIdentity>,
     declared_capabilities: &'a [String],
     observed_effects: &'a [String],
     import_paths: &'a [String],
@@ -750,12 +750,12 @@ struct SteelAdapterProjectionParts<'a> {
     schema_version: u32,
     adapter_kind: &'a str,
     source_path: &'a Option<String>,
-    declared_source_identity: &'a Option<Identity>,
+    declared_source_identity: &'a Option<WireIdentity>,
     evaluator_profile: &'a str,
     evaluator_descriptor: &'a str,
-    evaluator_identity: &'a Option<Identity>,
+    evaluator_identity: &'a Option<WireIdentity>,
     module_descriptor_path: &'a str,
-    module_identity: &'a Option<Identity>,
+    module_identity: &'a Option<WireIdentity>,
     input_schema: &'a str,
     output_schema: &'a str,
     host_functions: &'a [SteelHostFunctionInput],
@@ -767,7 +767,7 @@ struct SteelAdapterProjectionParts<'a> {
     observed_effects: &'a [String],
     effect_class: &'a str,
     output_path: &'a Option<String>,
-    output_projection_identity: &'a Option<Identity>,
+    output_projection_identity: &'a Option<WireIdentity>,
     output_class: &'a SteelOutputClass,
     claims_canonical_ir: bool,
     checked_laws: &'a [String],
@@ -792,9 +792,9 @@ struct GoldenResult {
 #[derive(Debug, Serialize)]
 struct ManifestProjectionReport {
     passed: bool,
-    generated_projection_identity: Identity,
-    checked_projection_identity: Identity,
-    evaluator_identity: Identity,
+    generated_projection_identity: WireIdentity,
+    checked_projection_identity: WireIdentity,
+    evaluator_identity: WireIdentity,
     diagnostics: Vec<String>,
 }
 
@@ -817,10 +817,10 @@ struct GoldenUpdateReport {
 struct GoldenUpdate {
     fixture_id: String,
     path: String,
-    old_identity: Option<Identity>,
-    new_identity: Identity,
-    input_identities: BTreeMap<String, Identity>,
-    output_identities: BTreeMap<String, Identity>,
+    old_identity: Option<WireIdentity>,
+    new_identity: WireIdentity,
+    input_identities: BTreeMap<String, WireIdentity>,
+    output_identities: BTreeMap<String, WireIdentity>,
     requirement_ids: Vec<String>,
     non_claims: Vec<String>,
 }
@@ -830,7 +830,7 @@ struct ValenceExportCommandReport {
     passed: bool,
     validation_passed: bool,
     diagnostics: Vec<kamacite_core::Diagnostic>,
-    export_identity: Option<Identity>,
+    export_identity: Option<WireIdentity>,
     golden_result: Option<ValenceExportGoldenResult>,
     export: Option<ValenceReceiptExportEnvelope>,
 }
@@ -839,8 +839,8 @@ struct ValenceExportCommandReport {
 struct ValenceExportGoldenResult {
     path: String,
     status: String,
-    old_export_identity: Option<Identity>,
-    new_export_identity: Option<Identity>,
+    old_export_identity: Option<WireIdentity>,
+    new_export_identity: Option<WireIdentity>,
 }
 
 #[derive(Debug, Serialize)]
@@ -851,9 +851,9 @@ struct ValenceExportUpdateReport {
 #[derive(Debug, Serialize)]
 struct ValenceExportUpdate {
     path: String,
-    source_receipt_identity: Identity,
-    old_export_identity: Option<Identity>,
-    new_export_identity: Identity,
+    source_receipt_identity: WireIdentity,
+    old_export_identity: Option<WireIdentity>,
+    new_export_identity: WireIdentity,
     checked_laws: Vec<String>,
     non_claims: Vec<String>,
 }
@@ -877,8 +877,8 @@ struct PreservesMigrationReport {
 struct PreservesMigrationArtifact {
     fixture_id: String,
     path: String,
-    old_identity: Option<Identity>,
-    new_identity: Option<Identity>,
+    old_identity: Option<WireIdentity>,
+    new_identity: Option<WireIdentity>,
     content_changed: bool,
     canonical_packed_size: Option<usize>,
     error: Option<String>,
@@ -1550,8 +1550,8 @@ fn run_docs(args: DocsArgs) -> CliResult<i32> {
 #[derive(Debug)]
 struct DocsActionWork {
     completed_work_items: usize,
-    documentation_ir_identity: Option<Identity>,
-    output_identity: Option<Identity>,
+    documentation_ir_identity: Option<WireIdentity>,
+    output_identity: Option<WireIdentity>,
     diagnostics: Vec<String>,
 }
 
@@ -1671,10 +1671,10 @@ fn is_documentation_fixture(fixture: &FixtureCase) -> bool {
 }
 
 struct DocsReceiptContext<'a> {
-    config_source_identity: &'a Identity,
-    config_contract_identity: &'a Identity,
-    evaluator_identity: &'a Identity,
-    projection_identity: &'a Identity,
+    config_source_identity: &'a WireIdentity,
+    config_contract_identity: &'a WireIdentity,
+    evaluator_identity: &'a WireIdentity,
+    projection_identity: &'a WireIdentity,
     format: Option<&'a str>,
     profile: Option<&'a str>,
     target: Option<&'a str>,
@@ -1930,7 +1930,7 @@ fn run_generate_manifest(args: GenerateManifestArgs) -> CliResult<i32> {
     })
 }
 
-fn checked_manifest_evaluator(evaluator_command: &Path) -> CliResult<(String, Identity)> {
+fn checked_manifest_evaluator(evaluator_command: &Path) -> CliResult<(String, WireIdentity)> {
     let descriptor = nickel_evaluator_descriptor(&run_nickel_version(evaluator_command)?)?;
     if descriptor != MANIFEST_EVALUATOR_DESCRIPTOR {
         return Err(CliError(format!(
@@ -2302,14 +2302,14 @@ fn octet_function_record(record: OctetFunctionAddressRecord) -> CliResult<Functi
     })
 }
 
-fn octet_identity(domain: IdentityDomain, value: &OctetIdentity) -> CliResult<Identity> {
+fn octet_identity(domain: IdentityDomain, value: &OctetIdentity) -> CliResult<WireIdentity> {
     match value {
         OctetIdentity::Text(value) => {
             let hex = value.strip_prefix("b3:").unwrap_or(value);
             let parsed = Blake3Hex::parse(hex.to_owned()).map_err(|error| {
                 CliError(format!("invalid Octet BLAKE3 identity `{value}`: {error}"))
             })?;
-            Ok(Identity::new(domain, parsed))
+            Ok(WireIdentity::new(domain, parsed))
         }
         OctetIdentity::Structured(identity) => {
             identity
@@ -2412,7 +2412,7 @@ fn write_valence_export_update_report(
     root: &RootCapability,
     args: &ValenceExportArgs,
     export: &ValenceReceiptExportEnvelope,
-    old_export_identity: Option<Identity>,
+    old_export_identity: Option<WireIdentity>,
 ) -> CliResult<()> {
     let Some(golden_path) = &args.golden else {
         return Ok(());
@@ -2440,14 +2440,14 @@ fn write_valence_export_update_report(
 fn read_existing_valence_export_identity(
     root: &RootCapability,
     path: &Path,
-) -> CliResult<Option<Identity>> {
+) -> CliResult<Option<WireIdentity>> {
     let Some(bytes) = root.read_optional(path)? else {
         return Ok(None);
     };
     Ok(parse_valence_export_identity(&bytes))
 }
 
-fn parse_valence_export_identity(bytes: &[u8]) -> Option<Identity> {
+fn parse_valence_export_identity(bytes: &[u8]) -> Option<WireIdentity> {
     let parsed: Result<ValenceReceiptExportEnvelope, serde_json::Error> =
         serde_json::from_slice(bytes);
     parsed.ok().map(|export| export.export_identity)
@@ -3661,7 +3661,7 @@ fn materialize_nickel_adapter_receipt(
 struct AdmittedNickelImport {
     sandbox_path: String,
     bytes: Vec<u8>,
-    identity: Identity,
+    identity: WireIdentity,
 }
 
 fn admit_nickel_import_closure(
@@ -3859,11 +3859,11 @@ fn materialize_steel_adapter_receipt(
 }
 
 fn require_steel_identity(
-    declared_identity: &Option<Identity>,
+    declared_identity: &Option<WireIdentity>,
     domain: IdentityDomain,
     bytes: &[u8],
     label: &str,
-) -> CliResult<Identity> {
+) -> CliResult<WireIdentity> {
     let declared_identity = declared_identity
         .as_ref()
         .ok_or_else(|| CliError(format!("executed Steel {label} is missing identity")))?;
@@ -4201,8 +4201,8 @@ mod tests {
 
     fn migration_artifact(
         fixture_id: &str,
-        old_identity: Identity,
-        new_identity: Identity,
+        old_identity: WireIdentity,
+        new_identity: WireIdentity,
         content_changed: bool,
     ) -> PreservesMigrationArtifact {
         PreservesMigrationArtifact {

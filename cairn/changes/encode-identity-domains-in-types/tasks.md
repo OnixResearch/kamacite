@@ -2,10 +2,10 @@
 
 ## Phase 1: Baseline and identity foundation
 
-- [ ] [serial] V1 Capture current canonical Preserves bytes, JSON projections, identity refs, manifests, and golden receipts for every maintained identity family. r[kamacite.lossless_ir.nominal_identity.compatibility]
-- [ ] [serial] I1 Add private owned and borrowed generic identity types with marker domains, checked construction, explicit accessors, and typed diagnostics. r[kamacite.lossless_ir.nominal_identity]
-- [ ] [parallel] V2 Add positive and negative parser tests for supported BLAKE3 input, malformed text, unsupported algorithms, and unknown domains. r[kamacite.lossless_ir.nominal_identity.validation]
-- [ ] [serial] I2 Add the versioned wire identity adapter and closed `AnyIdentity` enum. r[kamacite.lossless_ir.nominal_identity_wire]
+- [x] [serial] V1 Capture current canonical Preserves bytes, JSON projections, identity refs, manifests, and golden receipts for every maintained identity family. r[kamacite.lossless_ir.nominal_identity.compatibility]
+- [x] [serial] I1 Add private owned and borrowed generic identity types with marker domains, checked construction, explicit accessors, and typed diagnostics. r[kamacite.lossless_ir.nominal_identity]
+- [x] [parallel] V2 Add positive and negative parser tests for supported BLAKE3 input, malformed text, unsupported algorithms, and unknown domains. r[kamacite.lossless_ir.nominal_identity.validation]
+- [x] [serial] I2 Add the versioned wire identity adapter and closed `AnyIdentity` enum. r[kamacite.lossless_ir.nominal_identity_wire]
 
 ## Phase 2: Staged core migration
 

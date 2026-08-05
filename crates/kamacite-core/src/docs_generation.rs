@@ -3,7 +3,7 @@ use crate::fixture::{
     DocumentationCellDescriptor, DocumentationIrInput, DocumentationPageInput,
     DocumentationSectionInput,
 };
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
@@ -70,19 +70,19 @@ pub struct SourceByteSpan {
 pub struct RunnableCellReference {
     pub cell_id: String,
     pub language: String,
-    pub source_identity: Identity,
+    pub source_identity: WireIdentity,
     pub required_capabilities: Vec<String>,
     pub expected_result: String,
-    pub evaluator_identity: Option<Identity>,
+    pub evaluator_identity: Option<WireIdentity>,
     pub wasm_target: Option<WasmTargetBinding>,
     pub non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct WasmTargetBinding {
-    pub module_identity: Identity,
-    pub runner_profile_identity: Identity,
-    pub expected_output_identity: Option<Identity>,
+    pub module_identity: WireIdentity,
+    pub runner_profile_identity: WireIdentity,
+    pub expected_output_identity: Option<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -97,37 +97,37 @@ pub struct LanguageDocumentationItem {
     pub source_span: SourceByteSpan,
     pub links: Vec<String>,
     pub runnable_cells: Vec<RunnableCellReference>,
-    pub dependency_identities: Vec<Identity>,
+    pub dependency_identities: Vec<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LanguageDocumentationFactsInput {
     pub schema_version: u32,
     pub language: String,
-    pub source_identity: Identity,
+    pub source_identity: WireIdentity,
     pub source_len: u64,
-    pub collector_identity: Identity,
-    pub collector_profile_identity: Identity,
+    pub collector_identity: WireIdentity,
+    pub collector_profile_identity: WireIdentity,
     pub items: Vec<LanguageDocumentationItem>,
     pub diagnostics: Vec<String>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
     pub semantic_claims: Vec<String>,
-    pub declared_facts_identity: Option<Identity>,
+    pub declared_facts_identity: Option<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct LanguageDocumentationFactsArtifact {
     pub schema_version: u32,
     pub language: String,
-    pub source_identity: Identity,
-    pub collector_identity: Identity,
-    pub collector_profile_identity: Identity,
+    pub source_identity: WireIdentity,
+    pub collector_identity: WireIdentity,
+    pub collector_profile_identity: WireIdentity,
     pub items: Vec<LanguageDocumentationItem>,
     pub diagnostics: Vec<String>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
-    pub facts_identity: Identity,
+    pub facts_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -141,7 +141,7 @@ pub struct DocsAssemblyInput {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct WasmRunnerProfileInput {
     pub profile_id: String,
-    pub engine_identity: Identity,
+    pub engine_identity: WireIdentity,
     pub declared_imports: Vec<String>,
     pub declared_capabilities: Vec<String>,
     pub fuel_limit: u64,
@@ -153,10 +153,10 @@ pub struct WasmRunnerProfileInput {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct WasmExecutionRecordInput {
     pub cell_id: String,
-    pub source_identity: Identity,
-    pub module_identity: Identity,
-    pub runner_profile_identity: Identity,
-    pub engine_identity: Identity,
+    pub source_identity: WireIdentity,
+    pub module_identity: WireIdentity,
+    pub runner_profile_identity: WireIdentity,
+    pub engine_identity: WireIdentity,
     pub declared_imports: Vec<String>,
     pub observed_imports: Vec<String>,
     pub declared_capabilities: Vec<String>,
@@ -164,7 +164,7 @@ pub struct WasmExecutionRecordInput {
     pub fuel_used: u64,
     pub memory_used_bytes: u64,
     pub output_bytes: Vec<u8>,
-    pub expected_output_identity: Option<Identity>,
+    pub expected_output_identity: Option<WireIdentity>,
     pub diagnostics: Vec<String>,
     pub non_claims: Vec<String>,
     pub semantic_claims: Vec<String>,
@@ -244,8 +244,8 @@ pub struct DocsActionEvidenceInput {
     pub target: Option<String>,
     pub dry_run: bool,
     pub completed_work_items: usize,
-    pub documentation_ir_identity: Option<Identity>,
-    pub output_identity: Option<Identity>,
+    pub documentation_ir_identity: Option<WireIdentity>,
+    pub output_identity: Option<WireIdentity>,
     pub executed: bool,
     pub mutated: bool,
     pub diagnostics: Vec<String>,
@@ -257,8 +257,8 @@ pub struct DocsActionOutcome {
     pub state: DocsCompletionState,
     pub action: DocsActionKind,
     pub completed_work_items: usize,
-    pub documentation_ir_identity: Option<Identity>,
-    pub output_identity: Option<Identity>,
+    pub documentation_ir_identity: Option<WireIdentity>,
+    pub output_identity: Option<WireIdentity>,
     pub executed: bool,
     pub mutated: bool,
     pub diagnostics: Vec<String>,
@@ -899,7 +899,7 @@ fn docs_completion_state(
 pub fn validate_documentation_render_output(
     generated_bytes: &[u8],
     declared_bytes: &[u8],
-) -> Result<Identity, Diagnostic> {
+) -> Result<WireIdentity, Diagnostic> {
     if generated_bytes != declared_bytes {
         return Err(Diagnostic::new(
             DiagnosticCode::GoldenReceiptMismatch,
@@ -915,13 +915,13 @@ pub fn validate_documentation_render_output(
 }
 
 #[must_use]
-pub fn docs_config_identity(config_bytes: &[u8]) -> Identity {
+pub fn docs_config_identity(config_bytes: &[u8]) -> WireIdentity {
     compute_identity(IdentityDomain::DocumentationFacts, config_bytes)
 }
 
 fn language_documentation_facts_identity(
     input: &LanguageDocumentationFactsInput,
-) -> Result<Identity, ReceiptError> {
+) -> Result<WireIdentity, ReceiptError> {
     let payload = LanguageDocumentationFactsArtifact {
         schema_version: input.schema_version,
         language: input.language.clone(),
@@ -1157,7 +1157,7 @@ fn validate_semantic_claims(
 }
 
 fn validate_identity_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
@@ -1321,7 +1321,7 @@ fn documentation_ir_canonical_bytes(
 
 fn docs_collector_identity(
     facts: &[LanguageDocumentationFactsArtifact],
-) -> Result<Identity, ReceiptError> {
+) -> Result<WireIdentity, ReceiptError> {
     let collector_identities = facts
         .iter()
         .map(|fact| fact.collector_identity.clone())
@@ -1365,11 +1365,11 @@ mod tests {
     const WASM_OUTPUT_LIMIT_BYTES: u64 = 1_024;
     const OVERSIZED_OUTPUT_BYTES: usize = 2_048;
 
-    fn source_identity() -> Identity {
+    fn source_identity() -> WireIdentity {
         compute_identity(IdentityDomain::Source, b"source")
     }
 
-    fn collector_identity() -> Identity {
+    fn collector_identity() -> WireIdentity {
         compute_identity(IdentityDomain::Adapter, b"collector")
     }
 

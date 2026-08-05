@@ -1,5 +1,5 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use serde::{Deserialize, Serialize};
 
 pub const DIALECT_ROUNDTRIP_PROFILE_SCHEMA_VERSION: u32 = 1;
@@ -36,7 +36,7 @@ const FORBIDDEN_CLAIMS: &[&str] = &[
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DialectSourceSpan {
-    pub source_identity: Identity,
+    pub source_identity: WireIdentity,
     pub start_byte: u64,
     pub end_byte: u64,
 }
@@ -48,12 +48,12 @@ pub struct DialectRoundtripInput {
     pub operation_name: String,
     pub payload_version: u32,
     pub canonical_payload_bytes: Vec<u8>,
-    pub declared_payload_identity: Option<Identity>,
-    pub source_identity: Identity,
+    pub declared_payload_identity: Option<WireIdentity>,
+    pub source_identity: WireIdentity,
     pub source_len: u64,
     pub source_spans: Vec<DialectSourceSpan>,
-    pub lowering_receipt_identities: Vec<Identity>,
-    pub compatibility_projection_identity: Option<Identity>,
+    pub lowering_receipt_identities: Vec<WireIdentity>,
+    pub compatibility_projection_identity: Option<WireIdentity>,
     pub non_claims: Vec<String>,
     pub semantic_claims: Vec<String>,
 }
@@ -64,11 +64,11 @@ pub struct DialectRoundtripProfile {
     pub namespace: String,
     pub operation_name: String,
     pub payload_version: u32,
-    pub payload_identity: Identity,
-    pub source_identity: Identity,
+    pub payload_identity: WireIdentity,
+    pub source_identity: WireIdentity,
     pub source_spans: Vec<DialectSourceSpan>,
-    pub lowering_receipt_identities: Vec<Identity>,
-    pub compatibility_projection_identity: Option<Identity>,
+    pub lowering_receipt_identities: Vec<WireIdentity>,
+    pub compatibility_projection_identity: Option<WireIdentity>,
     pub opaque_unknown_namespace: bool,
     pub non_claims: Vec<String>,
 }
@@ -77,16 +77,16 @@ pub struct DialectRoundtripProfile {
 pub struct DialectRoundtripJsonProjection {
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub payload_identity: Identity,
+    pub payload_identity: WireIdentity,
     pub profile: DialectRoundtripProfile,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DialectRoundtripValenceProjection {
     pub role: String,
-    pub payload_identity: Identity,
-    pub source_identity: Identity,
-    pub lowering_receipt_identities: Vec<Identity>,
+    pub payload_identity: WireIdentity,
+    pub source_identity: WireIdentity,
+    pub lowering_receipt_identities: Vec<WireIdentity>,
     pub non_claims: Vec<String>,
 }
 
@@ -268,7 +268,7 @@ pub fn dialect_roundtrip_valence_projection(
 }
 
 #[must_use]
-pub fn dialect_payload_identity(canonical_payload_bytes: &[u8]) -> Identity {
+pub fn dialect_payload_identity(canonical_payload_bytes: &[u8]) -> WireIdentity {
     compute_identity(IdentityDomain::DialectPayload, canonical_payload_bytes)
 }
 
@@ -357,7 +357,7 @@ fn validate_required_text(value: &str, field: &str, diagnostics: &mut Vec<Diagno
 }
 
 fn validate_identity_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
@@ -392,7 +392,7 @@ fn sorted_source_spans(spans: &[DialectSourceSpan]) -> Vec<DialectSourceSpan> {
     spans
 }
 
-fn sorted_identities(identities: &[Identity]) -> Vec<Identity> {
+fn sorted_identities(identities: &[WireIdentity]) -> Vec<WireIdentity> {
     let mut identities = identities.to_vec();
     identities.sort();
     identities.dedup();
@@ -417,7 +417,7 @@ mod tests {
     const SPAN_START: u64 = 2;
     const SPAN_END: u64 = 12;
 
-    fn source_identity() -> Identity {
+    fn source_identity() -> WireIdentity {
         compute_identity(IdentityDomain::Source, b"source")
     }
 

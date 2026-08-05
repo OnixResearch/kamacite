@@ -3,7 +3,7 @@
 // r[impl kamacite.findings.nickel_sandbox.enforced_evidence]
 // r[impl kamacite.findings.nickel_sandbox.resource_limits]
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -58,7 +58,7 @@ pub struct NickelSandboxProfile {
     pub writable_paths: Vec<String>,
     pub admitted_capabilities: Vec<String>,
     pub limits: NickelSandboxLimits,
-    pub profile_identity: Identity,
+    pub profile_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -75,17 +75,17 @@ pub enum NickelSandboxOutcome {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct NickelSandboxEvidence {
-    pub profile_identity: Identity,
-    pub evaluator_identity: Identity,
-    pub import_identities: BTreeMap<String, Identity>,
+    pub profile_identity: WireIdentity,
+    pub evaluator_identity: WireIdentity,
+    pub import_identities: BTreeMap<String, WireIdentity>,
     pub requested_capabilities: Vec<String>,
     pub admitted_capabilities: Vec<String>,
     pub expected_effects: Vec<String>,
     pub observed_execution_facts: Vec<String>,
     pub outcome: NickelSandboxOutcome,
     pub exit_code: Option<i32>,
-    pub stdout_identity: Option<Identity>,
-    pub stderr_identity: Identity,
+    pub stdout_identity: Option<WireIdentity>,
+    pub stderr_identity: WireIdentity,
     pub sandbox_enforced: bool,
 }
 
@@ -155,7 +155,7 @@ pub fn nickel_sandbox_profile() -> Result<NickelSandboxProfile, ReceiptError> {
 
 pub fn nickel_sandbox_evidence_identity(
     evidence: &NickelSandboxEvidence,
-) -> Result<Identity, ReceiptError> {
+) -> Result<WireIdentity, ReceiptError> {
     Ok(compute_identity(
         IdentityDomain::Adapter,
         &canonical_json_bytes(evidence)?,
@@ -178,8 +178,8 @@ pub fn validate_nickel_sandbox(
     profile: &NickelSandboxProfile,
     evidence: &NickelSandboxEvidence,
     declared_capabilities: &[String],
-    projection_identity: Option<&Identity>,
-    evaluator_identity: Option<&Identity>,
+    projection_identity: Option<&WireIdentity>,
+    evaluator_identity: Option<&WireIdentity>,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = validate_nickel_sandbox_profile(profile);
     if evidence.profile_identity != profile.profile_identity {
@@ -247,7 +247,7 @@ pub fn validate_nickel_sandbox_profile(profile: &NickelSandboxProfile) -> Vec<Di
 }
 
 fn validate_import_identities(
-    imports: &BTreeMap<String, Identity>,
+    imports: &BTreeMap<String, WireIdentity>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     if imports.is_empty() {
@@ -337,7 +337,7 @@ fn validate_observed_execution_facts(
 
 fn validate_sandbox_outcome(
     evidence: &NickelSandboxEvidence,
-    projection_identity: Option<&Identity>,
+    projection_identity: Option<&WireIdentity>,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     match evidence.outcome {

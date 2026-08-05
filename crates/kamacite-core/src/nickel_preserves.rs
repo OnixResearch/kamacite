@@ -1,5 +1,5 @@
 use crate::{
-    CanonicalPreservesArtifact, Identity, IdentityDomain, PRESERVES_CANONICAL_CODEC,
+    CanonicalPreservesArtifact, WireIdentity, IdentityDomain, PRESERVES_CANONICAL_CODEC,
     PreservesLimits, PreservesSchema, compute_identity, encode_typed_preserves,
 };
 use serde::de::{Error as DeserializeError, MapAccess, SeqAccess, Visitor};
@@ -105,7 +105,7 @@ pub struct AdmittedNickelJsonExport {
     pub receipt_schema: String,
     pub destination: String,
     pub manifest_identity: NickelExportIdentity,
-    pub manifest_wire_identity: Identity,
+    pub manifest_wire_identity: WireIdentity,
     pub export_receipt_identity: NickelExportIdentity,
     pub declared_input_identity: NickelExportIdentity,
     pub source_identity: NickelExportIdentity,
@@ -141,7 +141,7 @@ pub enum NickelJsonPreservesValue {
 pub struct NickelPreservesReceiptBody {
     pub schema_version: String,
     pub manifest_identity: NickelExportIdentity,
-    pub manifest_wire_identity: Identity,
+    pub manifest_wire_identity: WireIdentity,
     pub export_receipt_identity: NickelExportIdentity,
     pub declared_input_identity: NickelExportIdentity,
     pub source_identity: NickelExportIdentity,
@@ -150,12 +150,12 @@ pub struct NickelPreservesReceiptBody {
     pub evaluator_artifact_identity: NickelExportIdentity,
     pub evaluation_plan_identity: NickelExportIdentity,
     pub json_output_identity: NickelExportIdentity,
-    pub json_projection_identity: Identity,
-    pub mapping_profile_identity: Identity,
-    pub canonical_codec_identity: Identity,
-    pub packed_preserves_identity: Identity,
+    pub json_projection_identity: WireIdentity,
+    pub mapping_profile_identity: WireIdentity,
+    pub canonical_codec_identity: WireIdentity,
+    pub packed_preserves_identity: WireIdentity,
     pub packed_output_bytes: u64,
-    pub review_text_identity: Identity,
+    pub review_text_identity: WireIdentity,
     pub checked_laws: Vec<String>,
     pub diagnostics: Vec<String>,
     pub upstream_non_claim: String,
@@ -165,16 +165,16 @@ pub struct NickelPreservesReceiptBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct NickelPreservesReceipt {
     pub body: NickelPreservesReceiptBody,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug)]
 pub struct NickelPreservesAdaptation {
     pub profile: NickelPreservesProfile,
-    pub profile_identity: Identity,
+    pub profile_identity: WireIdentity,
     pub canonical_artifact: CanonicalPreservesArtifact,
-    pub packed_preserves_identity: Identity,
-    pub review_text_identity: Identity,
+    pub packed_preserves_identity: WireIdentity,
+    pub review_text_identity: WireIdentity,
     pub receipt: NickelPreservesReceipt,
 }
 

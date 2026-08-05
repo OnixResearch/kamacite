@@ -1,6 +1,6 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::function_address::FunctionAddressReceiptEnvelope;
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -71,29 +71,29 @@ impl ParentLinkDomain {
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct EvidenceChainParentLink {
     pub domain: ParentLinkDomain,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct EvidenceChainProfileRoot {
     pub evidence_kind: EvidenceKind,
     pub schema_version: String,
-    pub root_identity: Identity,
+    pub root_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct EvidenceChainProjectionRecord {
     pub projection_kind: String,
-    pub projection_identity: Identity,
-    pub canonical_envelope_identity: Identity,
+    pub projection_identity: WireIdentity,
+    pub canonical_envelope_identity: WireIdentity,
     pub authority: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct EvidenceChainEnvelopeInput {
     pub evidence_kind: EvidenceKind,
-    pub policy_hash: Identity,
-    pub profile_hash: Identity,
+    pub policy_hash: WireIdentity,
+    pub profile_hash: WireIdentity,
     pub parent_links: Vec<EvidenceChainParentLink>,
     pub profile_payload_roots: Vec<EvidenceChainProfileRoot>,
     pub projections: Vec<EvidenceChainProjectionRecord>,
@@ -105,11 +105,11 @@ pub struct EvidenceChainEnvelopeBody {
     pub schema_version: String,
     pub canonical_codec: String,
     pub evidence_kind: EvidenceKind,
-    pub policy_hash: Identity,
-    pub profile_hash: Identity,
+    pub policy_hash: WireIdentity,
+    pub profile_hash: WireIdentity,
     pub parent_links: Vec<EvidenceChainParentLink>,
     pub profile_payload_roots: Vec<EvidenceChainProfileRoot>,
-    pub non_claim_boundary_hash: Identity,
+    pub non_claim_boundary_hash: WireIdentity,
     pub projections: Vec<EvidenceChainProjectionRecord>,
     pub non_claims: Vec<String>,
 }
@@ -117,7 +117,7 @@ pub struct EvidenceChainEnvelopeBody {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct EvidenceChainEnvelope {
     pub body: EvidenceChainEnvelopeBody,
-    pub envelope_identity: Identity,
+    pub envelope_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -125,7 +125,7 @@ pub struct EvidenceChainJsonProjection {
     pub schema_version: String,
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub envelope_identity: Identity,
+    pub envelope_identity: WireIdentity,
     pub envelope: EvidenceChainEnvelopeBody,
 }
 
@@ -135,11 +135,11 @@ struct CanonicalEvidenceChainEnvelope<'a> {
     schema_version: &'a str,
     canonical_codec: &'a str,
     evidence_kind: &'a EvidenceKind,
-    policy_hash: &'a Identity,
-    profile_hash: &'a Identity,
+    policy_hash: &'a WireIdentity,
+    profile_hash: &'a WireIdentity,
     parent_links: Vec<EvidenceChainParentLink>,
     profile_payload_roots: Vec<EvidenceChainProfileRoot>,
-    non_claim_boundary_hash: Identity,
+    non_claim_boundary_hash: WireIdentity,
     projections: Vec<EvidenceChainProjectionRecord>,
 }
 
@@ -277,8 +277,8 @@ pub fn validate_evidence_chain_json_projection(
 
 pub fn evidence_chain_collection_root(
     evidence_kind: EvidenceKind,
-    leaves: &[Identity],
-) -> Result<Identity, ReceiptError> {
+    leaves: &[WireIdentity],
+) -> Result<WireIdentity, ReceiptError> {
     let mut leaves = leaves.to_vec();
     leaves.sort();
     let collection = CanonicalEvidenceCollection {
@@ -302,13 +302,13 @@ pub fn evidence_chain_collection_root(
 #[serde(rename = "kamacite-evidence-chain-collection-v2")]
 struct CanonicalEvidenceCollection {
     evidence_kind: EvidenceKind,
-    leaves: Vec<Identity>,
+    leaves: Vec<WireIdentity>,
 }
 
 pub fn function_address_evidence_chain_input(
     receipt: &FunctionAddressReceiptEnvelope,
-    policy_hash: Identity,
-    profile_hash: Identity,
+    policy_hash: WireIdentity,
+    profile_hash: WireIdentity,
 ) -> Result<EvidenceChainEnvelopeInput, ReceiptError> {
     let leaves = receipt
         .body
@@ -418,7 +418,7 @@ fn sorted_non_claims(non_claims: &[String]) -> Vec<String> {
     non_claims
 }
 
-fn non_claim_boundary_hash(non_claims: &[String]) -> Result<Identity, ReceiptError> {
+fn non_claim_boundary_hash(non_claims: &[String]) -> Result<WireIdentity, ReceiptError> {
     Ok(compute_identity(
         IdentityDomain::EvidenceChain,
         &crate::receipt::canonical_json_bytes(&sorted_non_claims(non_claims))?,
@@ -521,7 +521,7 @@ fn validate_non_claims(non_claims: &[String], diagnostics: &mut Vec<Diagnostic>)
 }
 
 fn validate_identity_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,

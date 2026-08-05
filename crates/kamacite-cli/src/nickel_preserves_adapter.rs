@@ -1,6 +1,6 @@
 use crate::root_io::RootCapability;
 use kamacite_core::{
-    AdmittedNickelJsonExport, Identity, IdentityDomain, NickelExportIdentity,
+    AdmittedNickelJsonExport, WireIdentity, IdentityDomain, NickelExportIdentity,
     NickelExportIdentityKind, NickelPreservesReceipt, PRESERVES_CANONICAL_CODEC,
     adapt_admitted_nickel_json_export, compute_identity,
 };
@@ -37,12 +37,12 @@ pub struct NickelPreservesCommandReport {
     pub passed: bool,
     pub mode: String,
     pub selected_export: String,
-    pub manifest_wire_identity: Identity,
-    pub json_projection_identity: Identity,
-    pub mapping_profile_identity: Identity,
-    pub packed_preserves_identity: Identity,
-    pub review_text_identity: Identity,
-    pub receipt_identity: Identity,
+    pub manifest_wire_identity: WireIdentity,
+    pub json_projection_identity: WireIdentity,
+    pub mapping_profile_identity: WireIdentity,
+    pub packed_preserves_identity: WireIdentity,
+    pub review_text_identity: WireIdentity,
+    pub receipt_identity: WireIdentity,
     pub packed_output: String,
     pub text_output: Option<String>,
     pub receipt_output: String,
@@ -150,7 +150,7 @@ fn select_json_export<'a>(
 fn normalize_admitted_export(
     selected: &nickel_export_core::ExportReceipt,
     manifest: &nickel_export_core::VerifiedManifest,
-    manifest_wire_identity: Identity,
+    manifest_wire_identity: WireIdentity,
     json_bytes: Vec<u8>,
 ) -> Result<AdmittedNickelJsonExport, String> {
     Ok(AdmittedNickelJsonExport {

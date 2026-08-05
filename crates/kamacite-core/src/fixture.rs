@@ -1,6 +1,6 @@
 use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::nickel_sandbox::{
     NickelSandboxEvidence, NickelSandboxProfile, nickel_sandbox_evidence_identity,
     validate_nickel_sandbox,
@@ -368,7 +368,7 @@ pub struct SourceEnvelopeInput {
     pub media_type: String,
     pub parser_identity: String,
     pub source_bytes: Vec<u8>,
-    pub declared_identity: Identity,
+    pub declared_identity: WireIdentity,
     pub aliases: Vec<String>,
 }
 
@@ -376,8 +376,8 @@ pub struct SourceEnvelopeInput {
 pub struct CanonicalValueInput {
     pub schema_version: u32,
     pub canonical_bytes: Vec<u8>,
-    pub declared_identity: Identity,
-    pub projection_identity: Option<Identity>,
+    pub declared_identity: WireIdentity,
+    pub projection_identity: Option<WireIdentity>,
     pub projection_claims_authority: bool,
     pub aliases: Vec<String>,
 }
@@ -398,12 +398,12 @@ pub struct NickelAdapterReceiptInput {
     pub adapter_kind: String,
     pub execution_mode: String,
     pub source_bytes: Vec<u8>,
-    pub source_identity: Option<Identity>,
+    pub source_identity: Option<WireIdentity>,
     pub evaluator_profile: String,
     pub evaluator_descriptor: String,
-    pub evaluator_identity: Option<Identity>,
+    pub evaluator_identity: Option<WireIdentity>,
     pub export_bytes: Vec<u8>,
-    pub projection_identity: Option<Identity>,
+    pub projection_identity: Option<WireIdentity>,
     pub declared_capabilities: Vec<String>,
     pub expected_effects: Vec<String>,
     pub sandbox_profile: Option<NickelSandboxProfile>,
@@ -440,14 +440,14 @@ pub struct SteelAdapterReceiptInput {
     pub schema_version: u32,
     pub adapter_kind: String,
     pub source_bytes: Vec<u8>,
-    pub source_identity: Option<Identity>,
+    pub source_identity: Option<WireIdentity>,
     pub evaluator_profile: String,
     pub evaluator_descriptor: String,
-    pub evaluator_identity: Option<Identity>,
+    pub evaluator_identity: Option<WireIdentity>,
     pub module_descriptor_bytes: Vec<u8>,
-    pub module_identity: Option<Identity>,
+    pub module_identity: Option<WireIdentity>,
     pub input_bytes: Vec<u8>,
-    pub input_identity: Option<Identity>,
+    pub input_identity: Option<WireIdentity>,
     pub input_schema: String,
     pub output_schema: String,
     pub host_functions: Vec<SteelHostFunctionInput>,
@@ -459,7 +459,7 @@ pub struct SteelAdapterReceiptInput {
     pub observed_effects: Vec<String>,
     pub effect_class: String,
     pub output_bytes: Vec<u8>,
-    pub output_projection_identity: Option<Identity>,
+    pub output_projection_identity: Option<WireIdentity>,
     pub output_class: SteelOutputClass,
     pub claims_canonical_ir: bool,
     pub execution_evidence: SteelExecutionEvidence,
@@ -470,7 +470,7 @@ pub struct SteelAdapterReceiptInput {
 pub struct TargetArtifactInput {
     pub target_kind: String,
     pub output_bytes: Vec<u8>,
-    pub declared_identity: Identity,
+    pub declared_identity: WireIdentity,
     pub claims_canonical_ir: bool,
     pub metadata: BTreeMap<String, String>,
 }
@@ -485,7 +485,7 @@ pub struct UnsupportedClaimInput {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct IdentityUseInput {
     pub required_domain: IdentityDomain,
-    pub supplied_identity: Identity,
+    pub supplied_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -510,7 +510,7 @@ pub struct StackEvidenceInput {
     pub role: String,
     pub bounded_claim: String,
     pub broadens_claim: bool,
-    pub referenced_identities: Vec<Identity>,
+    pub referenced_identities: Vec<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -545,14 +545,14 @@ pub struct HandlerReceiptInput {
 pub struct ReplayProfileInput {
     pub replay_class: String,
     pub effect_log_bytes: Vec<u8>,
-    pub effect_log_identity: Option<Identity>,
+    pub effect_log_identity: Option<WireIdentity>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AlgebraicEffectInput {
     pub schema_version: u32,
     pub canonical_bytes: Vec<u8>,
-    pub declared_identity: Identity,
+    pub declared_identity: WireIdentity,
     pub signatures: Vec<EffectOperation>,
     pub input_row: Vec<String>,
     pub row_open: bool,
@@ -613,8 +613,8 @@ pub struct FsmSpecInput {
     pub schema_version: u32,
     pub fsm_id: String,
     pub canonical_bytes: Vec<u8>,
-    pub source_envelope_identity: Option<Identity>,
-    pub declared_identity: Identity,
+    pub source_envelope_identity: Option<WireIdentity>,
+    pub declared_identity: WireIdentity,
     pub states: Vec<FsmStateInput>,
     pub events: Vec<FsmEventInput>,
     pub initial_state: String,
@@ -642,7 +642,7 @@ pub struct FsmTraceStepInput {
     pub from_state: String,
     pub event: String,
     pub to_state: String,
-    pub transition_identity: Option<Identity>,
+    pub transition_identity: Option<WireIdentity>,
     pub guard_decisions: Vec<FsmGuardDecisionInput>,
 }
 
@@ -651,20 +651,20 @@ pub struct FsmReceiptInput {
     pub schema_version: u32,
     pub receipt_kind: String,
     pub canonical_bytes: Vec<u8>,
-    pub spec_identity: Identity,
-    pub state_universe_identity: Identity,
-    pub event_universe_identity: Identity,
-    pub transition_coverage_identity: Identity,
-    pub denial_coverage_identity: Identity,
-    pub adapter_identity: Identity,
-    pub dependency_identities: Vec<Identity>,
-    pub octet_receipt_identities: Vec<Identity>,
-    pub valence_export_identity: Option<Identity>,
+    pub spec_identity: WireIdentity,
+    pub state_universe_identity: WireIdentity,
+    pub event_universe_identity: WireIdentity,
+    pub transition_coverage_identity: WireIdentity,
+    pub denial_coverage_identity: WireIdentity,
+    pub adapter_identity: WireIdentity,
+    pub dependency_identities: Vec<WireIdentity>,
+    pub octet_receipt_identities: Vec<WireIdentity>,
+    pub valence_export_identity: Option<WireIdentity>,
     pub checked_laws: Vec<String>,
     pub diagnostics: Vec<String>,
     pub non_claims: Vec<String>,
     pub semantic_claims: Vec<String>,
-    pub declared_receipt_identity: Option<Identity>,
+    pub declared_receipt_identity: Option<WireIdentity>,
     pub trace_start_state: Option<String>,
     pub trace_events: Vec<String>,
     pub trace_steps: Vec<FsmTraceStepInput>,
@@ -687,10 +687,10 @@ pub struct DocumentationSectionInput {
 pub struct DocumentationCellDescriptor {
     pub cell_id: String,
     pub language: String,
-    pub source_identity: Option<Identity>,
+    pub source_identity: Option<WireIdentity>,
     pub required_capabilities: Vec<String>,
     pub expected_result: String,
-    pub evaluator_identity: Option<Identity>,
+    pub evaluator_identity: Option<WireIdentity>,
     pub non_claims: Vec<String>,
 }
 
@@ -698,7 +698,7 @@ pub struct DocumentationCellDescriptor {
 pub struct DocumentationPageInput {
     pub page_id: String,
     pub title: String,
-    pub source_envelope_identity: Option<Identity>,
+    pub source_envelope_identity: Option<WireIdentity>,
     pub sections: Vec<DocumentationSectionInput>,
     pub cells: Vec<DocumentationCellDescriptor>,
 }
@@ -707,11 +707,11 @@ pub struct DocumentationPageInput {
 pub struct DocumentationIrInput {
     pub schema_version: u32,
     pub canonical_bytes: Vec<u8>,
-    pub declared_identity: Identity,
-    pub collector_identity: Identity,
+    pub declared_identity: WireIdentity,
+    pub collector_identity: WireIdentity,
     pub pages: Vec<DocumentationPageInput>,
     pub target_formats: Vec<String>,
-    pub dependency_identities: Vec<Identity>,
+    pub dependency_identities: Vec<WireIdentity>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
 }
@@ -719,11 +719,11 @@ pub struct DocumentationIrInput {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct DocumentationOutputInput {
     pub schema_version: u32,
-    pub documentation_ir_identity: Identity,
-    pub renderer_identity: Identity,
+    pub documentation_ir_identity: WireIdentity,
+    pub renderer_identity: WireIdentity,
     pub target_format: String,
     pub output_bytes: Vec<u8>,
-    pub declared_output_identity: Identity,
+    pub declared_output_identity: WireIdentity,
     pub claims_canonical_ir: bool,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
@@ -735,16 +735,16 @@ pub struct DocumentationCellInput {
     pub cell_id: String,
     pub language: String,
     pub source_bytes: Vec<u8>,
-    pub source_identity: Option<Identity>,
+    pub source_identity: Option<WireIdentity>,
     pub run_profile: String,
     pub execution_mode: String,
-    pub evaluator_identity: Option<Identity>,
+    pub evaluator_identity: Option<WireIdentity>,
     pub declared_capabilities: Vec<String>,
     pub observed_effects: Vec<String>,
     pub expected_result: String,
-    pub expected_output_identity: Option<Identity>,
+    pub expected_output_identity: Option<WireIdentity>,
     pub observed_output_bytes: Vec<u8>,
-    pub observed_output_identity: Option<Identity>,
+    pub observed_output_identity: Option<WireIdentity>,
     pub expected_diagnostic: Option<String>,
     pub observed_diagnostic: Option<String>,
     pub claims_semantic_equivalence: bool,
@@ -757,12 +757,12 @@ pub struct DocumentationReceiptInput {
     pub schema_version: u32,
     pub receipt_kind: String,
     pub canonical_bytes: Vec<u8>,
-    pub documentation_ir_identity: Identity,
-    pub renderer_identity: Option<Identity>,
-    pub output_identities: Vec<Identity>,
-    pub cell_receipt_identities: Vec<Identity>,
-    pub valence_export_identity: Option<Identity>,
-    pub declared_receipt_identity: Option<Identity>,
+    pub documentation_ir_identity: WireIdentity,
+    pub renderer_identity: Option<WireIdentity>,
+    pub output_identities: Vec<WireIdentity>,
+    pub cell_receipt_identities: Vec<WireIdentity>,
+    pub valence_export_identity: Option<WireIdentity>,
+    pub declared_receipt_identity: Option<WireIdentity>,
     pub diagnostics: Vec<String>,
     pub semantic_claims: Vec<String>,
     pub checked_laws: Vec<String>,
@@ -806,7 +806,7 @@ impl From<&AlgebraicEffectInput> for CanonicalAlgebraicEffect {
 struct CanonicalFsmSpec {
     schema_version: u32,
     fsm_id: String,
-    source_envelope_identity: Option<Identity>,
+    source_envelope_identity: Option<WireIdentity>,
     states: Vec<FsmStateInput>,
     events: Vec<FsmEventInput>,
     initial_state: String,
@@ -850,15 +850,15 @@ impl From<&FsmSpecInput> for CanonicalFsmSpec {
 struct CanonicalFsmReceipt {
     schema_version: u32,
     receipt_kind: String,
-    spec_identity: Identity,
-    state_universe_identity: Identity,
-    event_universe_identity: Identity,
-    transition_coverage_identity: Identity,
-    denial_coverage_identity: Identity,
-    adapter_identity: Identity,
-    dependency_identities: Vec<Identity>,
-    octet_receipt_identities: Vec<Identity>,
-    valence_export_identity: Option<Identity>,
+    spec_identity: WireIdentity,
+    state_universe_identity: WireIdentity,
+    event_universe_identity: WireIdentity,
+    transition_coverage_identity: WireIdentity,
+    denial_coverage_identity: WireIdentity,
+    adapter_identity: WireIdentity,
+    dependency_identities: Vec<WireIdentity>,
+    octet_receipt_identities: Vec<WireIdentity>,
+    valence_export_identity: Option<WireIdentity>,
     checked_laws: Vec<String>,
     diagnostics: Vec<String>,
     non_claims: Vec<String>,
@@ -909,23 +909,23 @@ pub struct FsmMatrixCell {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FsmCoverageEvidence {
-    pub state_universe_identity: Identity,
-    pub event_universe_identity: Identity,
-    pub transition_coverage_identity: Identity,
-    pub denial_coverage_identity: Identity,
-    pub exclusion_coverage_identity: Identity,
-    pub missing_cells_identity: Identity,
+    pub state_universe_identity: WireIdentity,
+    pub event_universe_identity: WireIdentity,
+    pub transition_coverage_identity: WireIdentity,
+    pub denial_coverage_identity: WireIdentity,
+    pub exclusion_coverage_identity: WireIdentity,
+    pub missing_cells_identity: WireIdentity,
     pub missing_cells: Vec<FsmMatrixCell>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ValidatedFsmDescriptor {
-    pub spec_identity: Identity,
+    pub spec_identity: WireIdentity,
     pub initial_state: String,
     pub states: BTreeSet<String>,
     pub events: BTreeSet<String>,
     pub coverage: FsmCoverageEvidence,
-    transitions: BTreeMap<(String, String, String), (FsmTransitionRowInput, Identity)>,
+    transitions: BTreeMap<(String, String, String), (FsmTransitionRowInput, WireIdentity)>,
     guards: BTreeMap<String, FsmGuardInput>,
 }
 
@@ -936,7 +936,7 @@ impl ValidatedFsmDescriptor {
         from_state: &str,
         event: &str,
         to_state: &str,
-    ) -> Option<&Identity> {
+    ) -> Option<&WireIdentity> {
         self.transitions
             .get(&(
                 from_state.to_string(),
@@ -1154,7 +1154,7 @@ fn fsm_coverage_evidence(input: &FsmSpecInput) -> Result<FsmCoverageEvidence, Di
     })
 }
 
-fn fsm_transition_identity(transition: &FsmTransitionRowInput) -> Result<Identity, Diagnostic> {
+fn fsm_transition_identity(transition: &FsmTransitionRowInput) -> Result<WireIdentity, Diagnostic> {
     fsm_material_identity(
         IdentityDomain::FsmCoverage,
         FSM_TRANSITION_KIND,
@@ -1166,7 +1166,7 @@ fn fsm_material_identity<T: Serialize>(
     domain: IdentityDomain,
     kind: &str,
     entries: Vec<T>,
-) -> Result<Identity, Diagnostic> {
+) -> Result<WireIdentity, Diagnostic> {
     let material = FsmCoverageMaterial {
         kind: kind.to_string(),
         entries,
@@ -1194,10 +1194,10 @@ fn fsm_material_identity<T: Serialize>(
 #[serde(rename = "kamacite-documentation-ir-v2")]
 struct CanonicalDocumentationIr {
     schema_version: u32,
-    collector_identity: Identity,
+    collector_identity: WireIdentity,
     pages: Vec<DocumentationPageInput>,
     target_formats: Vec<String>,
-    dependency_identities: Vec<Identity>,
+    dependency_identities: Vec<WireIdentity>,
     checked_laws: Vec<String>,
     non_claims: Vec<String>,
 }
@@ -1221,11 +1221,11 @@ impl From<&DocumentationIrInput> for CanonicalDocumentationIr {
 struct CanonicalDocumentationReceipt {
     schema_version: u32,
     receipt_kind: String,
-    documentation_ir_identity: Identity,
-    renderer_identity: Option<Identity>,
-    output_identities: Vec<Identity>,
-    cell_receipt_identities: Vec<Identity>,
-    valence_export_identity: Option<Identity>,
+    documentation_ir_identity: WireIdentity,
+    renderer_identity: Option<WireIdentity>,
+    output_identities: Vec<WireIdentity>,
+    cell_receipt_identities: Vec<WireIdentity>,
+    valence_export_identity: Option<WireIdentity>,
     diagnostics: Vec<String>,
     semantic_claims: Vec<String>,
     checked_laws: Vec<String>,
@@ -1339,8 +1339,8 @@ pub struct FixtureSuiteReport {
 #[derive(Clone, Debug, Default)]
 struct ValidationAccumulator {
     diagnostics: Vec<Diagnostic>,
-    input_identities: BTreeMap<String, Identity>,
-    output_identities: BTreeMap<String, Identity>,
+    input_identities: BTreeMap<String, WireIdentity>,
+    output_identities: BTreeMap<String, WireIdentity>,
     checked_laws: Vec<String>,
 }
 
@@ -2881,7 +2881,7 @@ fn validate_fsm_spec(input: &FsmSpecInput, accumulator: &mut ValidationAccumulat
 }
 
 fn validate_optional_source_identity(
-    identity: &Option<Identity>,
+    identity: &Option<WireIdentity>,
     field: &str,
     accumulator: &mut ValidationAccumulator,
 ) {
@@ -3589,8 +3589,8 @@ fn validate_bound_fsm_descriptor(
 }
 
 fn compare_fsm_evidence_identity(
-    supplied: &Identity,
-    expected: &Identity,
+    supplied: &WireIdentity,
+    expected: &WireIdentity,
     requirement_id: &str,
     field: &str,
     accumulator: &mut ValidationAccumulator,
@@ -4315,7 +4315,7 @@ fn validate_supported_schema(schema_version: u32, accumulator: &mut ValidationAc
 }
 
 fn validate_identity_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &str,
     accumulator: &mut ValidationAccumulator,
@@ -5369,7 +5369,7 @@ mod tests {
                 Ok(parsed) => parsed,
                 Err(_) => Blake3Hex::from_bytes(VALID_SOURCE),
             };
-            input.declared_identity = Identity::new(IdentityDomain::Source, stale_hex);
+            input.declared_identity = WireIdentity::new(IdentityDomain::Source, stale_hex);
         }
         let result = validate_fixture(&fixture);
         assert_eq!(result.observed_verdict, ValidationVerdict::Rejected);
@@ -6211,7 +6211,7 @@ mod tests {
         Ok(input)
     }
 
-    fn test_transition_identity(input: &FsmReceiptInput, index: usize) -> Option<Identity> {
+    fn test_transition_identity(input: &FsmReceiptInput, index: usize) -> Option<WireIdentity> {
         let descriptor = input.descriptor.as_deref()?;
         let transition = descriptor.transitions.get(index)?;
         fsm_transition_identity(transition).ok()

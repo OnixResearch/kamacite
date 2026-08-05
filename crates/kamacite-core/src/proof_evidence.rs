@@ -5,7 +5,7 @@ use crate::evidence_chain::{
     ParentLinkDomain, build_evidence_chain_envelope, evidence_chain_json_projection,
     validate_evidence_chain_json_projection,
 };
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
 use crate::preserves_codec::{
     PRESERVES_CANONICAL_CODEC, PreservesLimits, PreservesSchema, encode_typed_preserves,
 };
@@ -60,14 +60,14 @@ pub enum TrellisProofEvidenceRole {
 pub struct TrellisProofEvidenceInput {
     pub producer: String,
     pub role: TrellisProofEvidenceRole,
-    pub source_identity: Identity,
-    pub proof_ir_identity: Identity,
-    pub verifier_receipt_identity: Identity,
+    pub source_identity: WireIdentity,
+    pub proof_ir_identity: WireIdentity,
+    pub verifier_receipt_identity: WireIdentity,
     pub verifier_passed: bool,
     pub assumptions: Vec<String>,
-    pub declared_assumptions_root: Option<Identity>,
-    pub dependency_identities: Vec<Identity>,
-    pub declared_dependency_root: Option<Identity>,
+    pub declared_assumptions_root: Option<WireIdentity>,
+    pub dependency_identities: Vec<WireIdentity>,
+    pub declared_dependency_root: Option<WireIdentity>,
     pub property_ids: Vec<String>,
     pub requirement_ids: Vec<String>,
     pub non_claims: Vec<String>,
@@ -81,22 +81,22 @@ pub struct TrellisProofEvidenceProfile {
     pub canonical_codec: String,
     pub producer: String,
     pub role: TrellisProofEvidenceRole,
-    pub source_identity: Identity,
-    pub proof_ir_identity: Identity,
-    pub verifier_receipt_identity: Identity,
+    pub source_identity: WireIdentity,
+    pub proof_ir_identity: WireIdentity,
+    pub verifier_receipt_identity: WireIdentity,
     pub verifier_passed: bool,
-    pub assumptions_root: Identity,
-    pub dependency_root: Identity,
+    pub assumptions_root: WireIdentity,
+    pub dependency_root: WireIdentity,
     pub property_ids: Vec<String>,
     pub requirement_ids: Vec<String>,
-    pub non_claim_boundary_hash: Identity,
+    pub non_claim_boundary_hash: WireIdentity,
     pub non_claims: Vec<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct TrellisProofEvidenceEnvelope {
     pub profile: TrellisProofEvidenceProfile,
-    pub profile_identity: Identity,
+    pub profile_identity: WireIdentity,
     pub evidence_chain: EvidenceChainEnvelope,
 }
 
@@ -105,7 +105,7 @@ pub struct TrellisProofEvidenceJsonProjection {
     pub schema_version: String,
     pub compatibility_projection: String,
     pub canonical_identity_owner: String,
-    pub profile_identity: Identity,
+    pub profile_identity: WireIdentity,
     pub evidence_chain_projection: EvidenceChainJsonProjection,
     pub profile: TrellisProofEvidenceProfile,
 }
@@ -145,8 +145,8 @@ pub fn validate_trellis_proof_evidence_input(input: &TrellisProofEvidenceInput) 
 
 pub fn build_trellis_proof_evidence_envelope(
     input: &TrellisProofEvidenceInput,
-    policy_hash: Identity,
-    profile_hash: Identity,
+    policy_hash: WireIdentity,
+    profile_hash: WireIdentity,
 ) -> Result<TrellisProofEvidenceEnvelope, Vec<Diagnostic>> {
     let mut diagnostics = validate_trellis_proof_evidence_input(input);
     validate_identity_domain(
@@ -293,7 +293,7 @@ pub fn trellis_proof_profile_canonical_bytes(
     )
 }
 
-pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Result<Identity, ReceiptError> {
+pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Result<WireIdentity, ReceiptError> {
     let root = CanonicalProofCollection {
         kind: ASSUMPTIONS_ROOT_KIND,
         values: sorted_strings(assumptions),
@@ -308,7 +308,7 @@ pub fn trellis_proof_assumptions_root(assumptions: &[String]) -> Result<Identity
     ))
 }
 
-pub fn trellis_proof_dependency_root(dependencies: &[Identity]) -> Result<Identity, ReceiptError> {
+pub fn trellis_proof_dependency_root(dependencies: &[WireIdentity]) -> Result<WireIdentity, ReceiptError> {
     let mut dependencies = dependencies.to_vec();
     dependencies.sort();
     let root = CanonicalProofCollection {
@@ -364,7 +364,7 @@ fn canonicalization_diagnostics(error: ReceiptError) -> Vec<Diagnostic> {
 
 fn trellis_proof_profile_identity(
     profile: &TrellisProofEvidenceProfile,
-) -> Result<Identity, ReceiptError> {
+) -> Result<WireIdentity, ReceiptError> {
     Ok(compute_identity(
         IdentityDomain::EvidenceChain,
         &trellis_proof_profile_canonical_bytes(profile)?,
@@ -428,8 +428,8 @@ fn validate_dependencies(input: &TrellisProofEvidenceInput, diagnostics: &mut Ve
 }
 
 fn validate_declared_root_result(
-    declared: Option<&Identity>,
-    computed: Result<Identity, ReceiptError>,
+    declared: Option<&WireIdentity>,
+    computed: Result<WireIdentity, ReceiptError>,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
@@ -445,8 +445,8 @@ fn validate_declared_root_result(
 }
 
 fn validate_declared_root(
-    declared: Option<&Identity>,
-    computed: Identity,
+    declared: Option<&WireIdentity>,
+    computed: WireIdentity,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
@@ -535,7 +535,7 @@ fn validate_non_claims(input: &TrellisProofEvidenceInput, diagnostics: &mut Vec<
 }
 
 fn validate_identity_domain(
-    identity: &Identity,
+    identity: &WireIdentity,
     expected: IdentityDomain,
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,

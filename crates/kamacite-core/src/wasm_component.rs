@@ -1,5 +1,5 @@
 use crate::{
-    Blake3Hex, Identity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits,
+    Blake3Hex, WireIdentity, IdentityDomain, PRESERVES_CANONICAL_CODEC, PreservesLimits,
     PreservesSchema, PreservesSyntax, canonicalize_preserves, compute_identity,
     encode_typed_preserves,
 };
@@ -238,13 +238,13 @@ pub enum WasmComponentParentRole {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentParentEdge {
     pub role: WasmComponentParentRole,
-    pub identity: Identity,
+    pub identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentSchemaRef {
-    pub identity: Identity,
+    pub identity: WireIdentity,
     pub schema_version: String,
     pub root_label: String,
 }
@@ -261,12 +261,12 @@ pub enum WasmComponentReplayClass {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentImportBinding {
     pub import: String,
-    pub capability_identity: Identity,
-    pub effect_operation_identity: Identity,
-    pub handler_profile_identity: Identity,
-    pub policy_identity: Identity,
-    pub authority_identity: Identity,
-    pub resource_identity: Identity,
+    pub capability_identity: WireIdentity,
+    pub effect_operation_identity: WireIdentity,
+    pub handler_profile_identity: WireIdentity,
+    pub policy_identity: WireIdentity,
+    pub authority_identity: WireIdentity,
+    pub resource_identity: WireIdentity,
     pub replay_class: WasmComponentReplayClass,
 }
 
@@ -279,16 +279,16 @@ pub struct WasmComponentDescriptor {
     pub artifact_kind: String,
     pub wit_package: String,
     pub wit_world: String,
-    pub wit_source_identity: Identity,
-    pub component_identity: Identity,
-    pub runtime_profile_identity: Identity,
-    pub toolchain_cohort_identity: Identity,
-    pub resource_profile_identity: Identity,
+    pub wit_source_identity: WireIdentity,
+    pub component_identity: WireIdentity,
+    pub runtime_profile_identity: WireIdentity,
+    pub toolchain_cohort_identity: WireIdentity,
+    pub resource_profile_identity: WireIdentity,
     pub input_schema: WasmComponentSchemaRef,
     pub output_schema: WasmComponentSchemaRef,
     pub imports: Vec<WasmComponentImportBinding>,
     pub exports: Vec<String>,
-    pub materialization_bundle_identity: Option<Identity>,
+    pub materialization_bundle_identity: Option<WireIdentity>,
     pub parent_edges: Vec<WasmComponentParentEdge>,
     pub semantic_claims: Vec<String>,
     pub non_claims: Vec<String>,
@@ -373,7 +373,7 @@ struct WasmComponentMaterializationIdentityInput<'a> {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentInspection {
     pub artifact_kind: String,
-    pub component_identity: Identity,
+    pub component_identity: WireIdentity,
     pub wit_world: String,
     pub imports: Vec<String>,
     pub exports: Vec<String>,
@@ -410,14 +410,14 @@ pub struct WasmComponentMantleHandoffRequest<'a> {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct WasmComponentMantleHandoff {
-    pub bundle_identity: Identity,
-    pub manifest_identity: Identity,
-    pub cohort_identity: Identity,
-    pub selected_wit_identity: Identity,
-    pub portable_component_identity: Identity,
-    pub expected_octet_profile_identity: Identity,
-    pub expected_runtime_profile_identity: Identity,
-    pub stage_receipt_identities: Vec<Identity>,
+    pub bundle_identity: WireIdentity,
+    pub manifest_identity: WireIdentity,
+    pub cohort_identity: WireIdentity,
+    pub selected_wit_identity: WireIdentity,
+    pub portable_component_identity: WireIdentity,
+    pub expected_octet_profile_identity: WireIdentity,
+    pub expected_runtime_profile_identity: WireIdentity,
+    pub stage_receipt_identities: Vec<WireIdentity>,
     pub non_claims: Vec<String>,
 }
 
@@ -440,21 +440,21 @@ pub enum WasmComponentBlocker {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct WasmComponentExecutionPlan {
-    pub descriptor_identity: Identity,
-    pub component_identity: Identity,
-    pub wit_identity: Identity,
-    pub runtime_profile_identity: Identity,
-    pub materialization_bundle_identity: Identity,
-    pub inspection_identity: Identity,
-    pub canonical_input_identity: Identity,
-    pub input_schema_identity: Identity,
-    pub output_schema_identity: Identity,
+    pub descriptor_identity: WireIdentity,
+    pub component_identity: WireIdentity,
+    pub wit_identity: WireIdentity,
+    pub runtime_profile_identity: WireIdentity,
+    pub materialization_bundle_identity: WireIdentity,
+    pub inspection_identity: WireIdentity,
+    pub canonical_input_identity: WireIdentity,
+    pub input_schema_identity: WireIdentity,
+    pub output_schema_identity: WireIdentity,
     pub imports: Vec<String>,
     pub exports: Vec<String>,
-    pub capability_identities: Vec<Identity>,
-    pub effect_operation_identities: Vec<Identity>,
-    pub authority_identities: Vec<Identity>,
-    pub resource_identities: Vec<Identity>,
+    pub capability_identities: Vec<WireIdentity>,
+    pub effect_operation_identities: Vec<WireIdentity>,
+    pub authority_identities: Vec<WireIdentity>,
+    pub resource_identities: Vec<WireIdentity>,
     pub resource_limits: WasmComponentResources,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
@@ -463,15 +463,15 @@ pub struct WasmComponentExecutionPlan {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct WasmComponentStaticValidation {
     pub state: WasmComponentPlanningState,
-    pub profile_identity: Identity,
-    pub runtime_profile_identity: Identity,
-    pub wit_identity: Identity,
-    pub descriptor_identity: Identity,
-    pub canonical_input_identity: Identity,
-    pub component_identity: Option<Identity>,
-    pub inspection_identity: Option<Identity>,
-    pub materialization_bundle_identity: Option<Identity>,
-    pub execution_plan_identity: Option<Identity>,
+    pub profile_identity: WireIdentity,
+    pub runtime_profile_identity: WireIdentity,
+    pub wit_identity: WireIdentity,
+    pub descriptor_identity: WireIdentity,
+    pub canonical_input_identity: WireIdentity,
+    pub component_identity: Option<WireIdentity>,
+    pub inspection_identity: Option<WireIdentity>,
+    pub materialization_bundle_identity: Option<WireIdentity>,
+    pub execution_plan_identity: Option<WireIdentity>,
     pub execution_plan: Option<WasmComponentExecutionPlan>,
     pub blockers: Vec<WasmComponentBlocker>,
     pub checked_laws: Vec<String>,
@@ -485,14 +485,14 @@ pub struct WasmComponentStaticReceiptBody {
     pub state: WasmComponentPlanningState,
     pub source_repository: String,
     pub source_revision: String,
-    pub profile_identity: Identity,
-    pub runtime_profile_identity: Identity,
-    pub wit_identity: Identity,
-    pub descriptor_identity: Identity,
-    pub canonical_input_identity: Identity,
-    pub component_identity: Option<Identity>,
-    pub inspection_identity: Option<Identity>,
-    pub materialization_bundle_identity: Option<Identity>,
+    pub profile_identity: WireIdentity,
+    pub runtime_profile_identity: WireIdentity,
+    pub wit_identity: WireIdentity,
+    pub descriptor_identity: WireIdentity,
+    pub canonical_input_identity: WireIdentity,
+    pub component_identity: Option<WireIdentity>,
+    pub inspection_identity: Option<WireIdentity>,
+    pub materialization_bundle_identity: Option<WireIdentity>,
     pub blockers: Vec<WasmComponentBlocker>,
     pub checked_laws: Vec<String>,
     pub non_claims: Vec<String>,
@@ -502,7 +502,7 @@ pub struct WasmComponentStaticReceiptBody {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentStaticReceipt {
     pub body: WasmComponentStaticReceiptBody,
-    pub receipt_identity: Identity,
+    pub receipt_identity: WireIdentity,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -548,9 +548,9 @@ impl std::error::Error for WasmComponentValidationError {}
 
 struct AdmittedProfile {
     profile: WasmComponentProfile,
-    profile_identity: Identity,
-    runtime_profile_identity: Identity,
-    wit_identity: Identity,
+    profile_identity: WireIdentity,
+    runtime_profile_identity: WireIdentity,
+    wit_identity: WireIdentity,
     wit_byte_length: u64,
 }
 
@@ -649,7 +649,7 @@ pub fn validate_wasm_component_static(
         .map(|inspection| serialized_identity(IdentityDomain::Adapter, "inspection", inspection))
         .transpose()?;
     let execution_plan: Option<WasmComponentExecutionPlan> = None;
-    let execution_plan_identity: Option<Identity> = None;
+    let execution_plan_identity: Option<WireIdentity> = None;
     match request.materialization_manifest_bytes {
         None => {
             blockers.push(WasmComponentBlocker::MissingMaterializationBundle);
@@ -836,8 +836,8 @@ fn admit_profile(
 fn validate_profile(
     profile: &WasmComponentProfile,
     runtime_export: &WasmComponentRuntimeProfileExport,
-    runtime_identity: &Identity,
-    wit_identity: &Identity,
+    runtime_identity: &WireIdentity,
+    wit_identity: &WireIdentity,
 ) -> Vec<WasmComponentDiagnostic> {
     let mut diagnostics = Vec::new();
     check_equal(
@@ -1070,7 +1070,7 @@ fn validate_adapter_profile(
 
 fn descriptor_identity(
     descriptor: &WasmComponentDescriptor,
-) -> Result<Identity, WasmComponentValidationError> {
+) -> Result<WireIdentity, WasmComponentValidationError> {
     let bytes = serde_json::to_vec(descriptor).map_err(|error| {
         single_error(WasmComponentDiagnostic::new(
             "encoding",
@@ -1345,7 +1345,7 @@ fn validate_canonical_input(
     profile: &WasmComponentProfile,
     descriptor: &WasmComponentDescriptor,
     input: &[u8],
-) -> Result<Identity, WasmComponentDiagnostic> {
+) -> Result<WireIdentity, WasmComponentDiagnostic> {
     validate_canonical_value(
         profile,
         &descriptor.input_schema,
@@ -1358,7 +1358,7 @@ fn validate_canonical_input(
 pub fn validate_wasm_component_canonical_output(
     request: &WasmComponentStaticRequest<'_>,
     output: &[u8],
-) -> Result<Identity, WasmComponentValidationError> {
+) -> Result<WireIdentity, WasmComponentValidationError> {
     validate_wasm_component_static(request)?;
     let profile =
         serde_json::from_slice::<WasmComponentProfile>(request.profile_bytes).map_err(|error| {
@@ -1384,7 +1384,7 @@ fn validate_canonical_value(
     bytes: &[u8],
     field: &'static str,
     error_code: &'static str,
-) -> Result<Identity, WasmComponentDiagnostic> {
+) -> Result<WireIdentity, WasmComponentDiagnostic> {
     let mut limits = PreservesLimits::default();
     let byte_limit = usize::try_from(profile.runtime.profile.resources.max_hostcall_bytes)
         .map_err(|error| WasmComponentDiagnostic::new("limit", field, error.to_string()))?;
@@ -1408,7 +1408,7 @@ fn validate_canonical_value(
 
 fn parse_materialization(
     bytes: &[u8],
-) -> Result<(WasmComponentMaterializationBundle, Identity), WasmComponentValidationError> {
+) -> Result<(WasmComponentMaterializationBundle, WireIdentity), WasmComponentValidationError> {
     let bundle =
         serde_json::from_slice::<WasmComponentMaterializationBundle>(bytes).map_err(|error| {
             single_error(WasmComponentDiagnostic::new(
@@ -1435,7 +1435,7 @@ fn parse_materialization(
 
 fn materialization_bundle_identity(
     bundle: &WasmComponentMaterializationBundle,
-) -> Result<Identity, WasmComponentDiagnostic> {
+) -> Result<WireIdentity, WasmComponentDiagnostic> {
     let input = WasmComponentMaterializationIdentityInput {
         schema: &bundle.schema,
         name: &bundle.name,
@@ -1770,9 +1770,9 @@ fn identity_from_mantle_digest(
     domain: IdentityDomain,
     field: &'static str,
     digest: &str,
-) -> Result<Identity, WasmComponentValidationError> {
+) -> Result<WireIdentity, WasmComponentValidationError> {
     Blake3Hex::parse(digest)
-        .map(|hex| Identity::new(domain, hex))
+        .map(|hex| WireIdentity::new(domain, hex))
         .map_err(|error| {
             single_error(WasmComponentDiagnostic::new(
                 "invalid-blake3",
@@ -1838,7 +1838,7 @@ fn validate_materialization(
     admitted: &AdmittedProfile,
     descriptor: &WasmComponentDescriptor,
     bundle: &WasmComponentMaterializationBundle,
-    bundle_identity: &Identity,
+    bundle_identity: &WireIdentity,
     component_bytes: Option<&[u8]>,
 ) -> Vec<WasmComponentDiagnostic> {
     let mut diagnostics = Vec::new();
@@ -2014,7 +2014,7 @@ fn serialized_identity<T: Serialize>(
     domain: IdentityDomain,
     field: &'static str,
     value: &T,
-) -> Result<Identity, WasmComponentValidationError> {
+) -> Result<WireIdentity, WasmComponentValidationError> {
     let bytes = serde_json::to_vec(value).map_err(|error| {
         single_error(WasmComponentDiagnostic::new(
             "encoding",
@@ -2028,7 +2028,7 @@ fn serialized_identity<T: Serialize>(
 fn validate_encoded_identity<T: Serialize>(
     diagnostics: &mut Vec<WasmComponentDiagnostic>,
     field: &'static str,
-    identity: &Identity,
+    identity: &WireIdentity,
     domain: IdentityDomain,
     value: &T,
 ) {
@@ -2048,9 +2048,9 @@ fn validate_encoded_identity<T: Serialize>(
 fn validate_identity(
     diagnostics: &mut Vec<WasmComponentDiagnostic>,
     field: &'static str,
-    identity: &Identity,
+    identity: &WireIdentity,
     domain: IdentityDomain,
-    expected: Option<&Identity>,
+    expected: Option<&WireIdentity>,
 ) {
     if let Err(error) = identity.validate_domain(domain) {
         diagnostics.push(WasmComponentDiagnostic::new(
@@ -2181,7 +2181,7 @@ mod tests {
     }
 
     fn descriptor(
-        materialization: Option<Identity>,
+        materialization: Option<WireIdentity>,
     ) -> Result<WasmComponentDescriptor, Box<dyn std::error::Error>> {
         let profile = runtime_profile()?.profile;
         let toolchain = serde_json::to_vec(&profile.toolchain)?;
@@ -2255,7 +2255,7 @@ mod tests {
         edges
     }
 
-    fn edge(role: WasmComponentParentRole, identity: &Identity) -> WasmComponentParentEdge {
+    fn edge(role: WasmComponentParentRole, identity: &WireIdentity) -> WasmComponentParentEdge {
         WasmComponentParentEdge {
             role,
             identity: identity.clone(),
