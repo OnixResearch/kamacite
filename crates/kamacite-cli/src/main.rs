@@ -10,7 +10,8 @@ use kamacite_core::{
     AstGrepCodemodArtifact, AstGrepFinding, AstGrepLanguageProfile, AstGrepRuleCoverage,
     AstGrepSourceEnvelope, Blake3Hex, CanonicalValueInput, CapabilityShellInput,
     DocsActionEvidenceInput, DocsActionKind, DocsActionOutcome, DocsCompletionState,
-    DocsConfigProjection, DocumentationCellInput, DocumentationIrInput, DocumentationOutputInput,
+    DocsConfigProjection, DocumentationCellInput, DocumentationFactsIdentity,
+    DocumentationIrInput, DocumentationOutputIdentity, DocumentationOutputInput,
     DocumentationPageInput, DocumentationReceiptInput, EffectOperation, FixtureCase, FixtureClass,
     FixturePayload, FixtureSuite, FsmDenialRowInput, FsmEventInput, FsmGuardInput, FsmReceiptInput,
     FsmSideEffectInput, FsmSpecInput, FsmStateInput, FsmTraceStepInput, FsmTransitionRowInput,
@@ -297,7 +298,7 @@ struct DocsCommandReport {
     action: DocsActionKind,
     config_path: String,
     config_schema_version: u32,
-    config_source_identity: WireIdentity,
+    config_source_identity: DocumentationFactsIdentity,
     config_contract_identity: WireIdentity,
     evaluator_identity: WireIdentity,
     projection_identity: WireIdentity,
@@ -307,7 +308,7 @@ struct DocsCommandReport {
     dry_run: bool,
     completed_work_items: usize,
     documentation_ir_identity: Option<WireIdentity>,
-    output_identity: Option<WireIdentity>,
+    output_identity: Option<DocumentationOutputIdentity>,
     mutated: bool,
     executed: bool,
     diagnostics: Vec<String>,
@@ -1552,7 +1553,7 @@ fn run_docs(args: DocsArgs) -> CliResult<i32> {
 struct DocsActionWork {
     completed_work_items: usize,
     documentation_ir_identity: Option<WireIdentity>,
-    output_identity: Option<WireIdentity>,
+    output_identity: Option<DocumentationOutputIdentity>,
     diagnostics: Vec<String>,
 }
 
@@ -1672,7 +1673,7 @@ fn is_documentation_fixture(fixture: &FixtureCase) -> bool {
 }
 
 struct DocsReceiptContext<'a> {
-    config_source_identity: &'a WireIdentity,
+    config_source_identity: &'a DocumentationFactsIdentity,
     config_contract_identity: &'a WireIdentity,
     evaluator_identity: &'a WireIdentity,
     projection_identity: &'a WireIdentity,
@@ -1718,7 +1719,7 @@ fn docs_action_receipt(
     );
     body.input_identities.insert(
         "config-source".to_string(),
-        context.config_source_identity.clone(),
+        context.config_source_identity.to_wire(),
     );
     body.input_identities.insert(
         "config-contract".to_string(),
@@ -1740,7 +1741,7 @@ fn docs_action_receipt(
     }
     if let Some(identity) = &outcome.output_identity {
         body.output_identities
-            .insert("documentation-output".to_string(), identity.clone());
+            .insert("documentation-output".to_string(), identity.to_wire());
     }
     body.checked_laws = vec![DOCS_ACTION_CHECKED_LAW.to_string()];
     ReceiptEnvelope::finalize(body)

@@ -3,7 +3,10 @@ use crate::fixture::{
     DocumentationCellDescriptor, DocumentationIrInput, DocumentationPageInput,
     DocumentationSectionInput,
 };
-use crate::identity::{WireIdentity, IdentityDomain, compute_identity};
+use crate::identity::{
+    AdapterIdentity, DocumentationFactsIdentity, DocumentationOutputIdentity, WireIdentity,
+    IdentityDomain, compute_identity,
+};
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use crate::receipt::{ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
@@ -245,7 +248,7 @@ pub struct DocsActionEvidenceInput {
     pub dry_run: bool,
     pub completed_work_items: usize,
     pub documentation_ir_identity: Option<WireIdentity>,
-    pub output_identity: Option<WireIdentity>,
+    pub output_identity: Option<DocumentationOutputIdentity>,
     pub executed: bool,
     pub mutated: bool,
     pub diagnostics: Vec<String>,
@@ -258,7 +261,7 @@ pub struct DocsActionOutcome {
     pub action: DocsActionKind,
     pub completed_work_items: usize,
     pub documentation_ir_identity: Option<WireIdentity>,
-    pub output_identity: Option<WireIdentity>,
+    pub output_identity: Option<DocumentationOutputIdentity>,
     pub executed: bool,
     pub mutated: bool,
     pub diagnostics: Vec<String>,
@@ -321,7 +324,7 @@ pub fn validate_language_documentation_facts(
         match language_documentation_facts_identity(input) {
             Ok(computed)
                 if declared.domain == IdentityDomain::DocumentationFacts
-                    && declared.hex != computed.hex =>
+                    && declared.hex != *computed.hex() =>
             {
                 diagnostics.push(
                     Diagnostic::new(
@@ -331,7 +334,7 @@ pub fn validate_language_documentation_facts(
                         "declared language documentation facts identity is stale",
                     )
                     .with_detail("declared", declared.hex.as_str())
-                    .with_detail("computed", computed.hex.as_str()),
+                    .with_detail("computed", computed.hex().as_str()),
                 );
             }
             Ok(_) => {}
@@ -371,7 +374,7 @@ pub fn language_documentation_facts_artifact(
         diagnostics: sorted_strings(&input.diagnostics),
         checked_laws: sorted_strings(&input.checked_laws),
         non_claims: sorted_strings(&input.non_claims),
-        facts_identity,
+        facts_identity: facts_identity.to_wire(),
     })
 }
 
@@ -473,7 +476,7 @@ pub fn assemble_documentation_ir(
         schema_version: DOCUMENTATION_IR_SCHEMA_VERSION,
         canonical_bytes,
         declared_identity,
-        collector_identity,
+        collector_identity: collector_identity.to_wire(),
         pages,
         target_formats: sorted_or_default(&input.target_formats),
         dependency_identities,
@@ -899,7 +902,7 @@ fn docs_completion_state(
 pub fn validate_documentation_render_output(
     generated_bytes: &[u8],
     declared_bytes: &[u8],
-) -> Result<WireIdentity, Diagnostic> {
+) -> Result<DocumentationOutputIdentity, Diagnostic> {
     if generated_bytes != declared_bytes {
         return Err(Diagnostic::new(
             DiagnosticCode::GoldenReceiptMismatch,
@@ -908,20 +911,17 @@ pub fn validate_documentation_render_output(
             "generated documentation output differs from the checked output projection",
         ));
     }
-    Ok(compute_identity(
-        IdentityDomain::DocumentationOutput,
-        generated_bytes,
-    ))
+    Ok(DocumentationOutputIdentity::compute(generated_bytes))
 }
 
 #[must_use]
-pub fn docs_config_identity(config_bytes: &[u8]) -> WireIdentity {
-    compute_identity(IdentityDomain::DocumentationFacts, config_bytes)
+pub fn docs_config_identity(config_bytes: &[u8]) -> DocumentationFactsIdentity {
+    DocumentationFactsIdentity::compute(config_bytes)
 }
 
 fn language_documentation_facts_identity(
     input: &LanguageDocumentationFactsInput,
-) -> Result<WireIdentity, ReceiptError> {
+) -> Result<DocumentationFactsIdentity, ReceiptError> {
     let payload = LanguageDocumentationFactsArtifact {
         schema_version: input.schema_version,
         language: input.language.clone(),
@@ -937,10 +937,9 @@ fn language_documentation_facts_identity(
             b"language facts identity placeholder",
         ),
     };
-    Ok(compute_identity(
-        IdentityDomain::DocumentationFacts,
-        &canonical_json_bytes(&payload)?,
-    ))
+    Ok(DocumentationFactsIdentity::compute(&canonical_json_bytes(
+        &payload,
+    )?))
 }
 
 fn canonicalization_diagnostic(field: &str, artifact: &str, error: &ReceiptError) -> Diagnostic {
@@ -1321,15 +1320,14 @@ fn documentation_ir_canonical_bytes(
 
 fn docs_collector_identity(
     facts: &[LanguageDocumentationFactsArtifact],
-) -> Result<WireIdentity, ReceiptError> {
+) -> Result<AdapterIdentity, ReceiptError> {
     let collector_identities = facts
         .iter()
         .map(|fact| fact.collector_identity.clone())
         .collect::<BTreeSet<_>>();
-    Ok(compute_identity(
-        IdentityDomain::Adapter,
-        &canonical_json_bytes(&collector_identities)?,
-    ))
+    Ok(AdapterIdentity::compute(&canonical_json_bytes(
+        &collector_identities,
+    )?))
 }
 
 fn sorted_items(items: &[LanguageDocumentationItem]) -> Vec<LanguageDocumentationItem> {
@@ -1639,10 +1637,7 @@ mod tests {
 
         let mut render_input = valid_docs_action(DocsActionKind::Render);
         render_input.format = Some(DEFAULT_TARGET_FORMAT.to_string());
-        render_input.output_identity = Some(compute_identity(
-            IdentityDomain::DocumentationOutput,
-            b"rendered docs",
-        ));
+        render_input.output_identity = Some(DocumentationOutputIdentity::compute(b"rendered docs"));
         let render = evaluate_docs_action(&config, render_input);
         assert!(render.passed);
         assert_eq!(render.state, DocsCompletionState::Completed);
@@ -1654,7 +1649,7 @@ mod tests {
         let accepted = validate_documentation_render_output(generated, generated);
         assert!(accepted.is_ok());
         assert_eq!(
-            accepted.map(|identity| identity.domain),
+            accepted.map(|identity| identity.domain()),
             Ok(IdentityDomain::DocumentationOutput)
         );
 

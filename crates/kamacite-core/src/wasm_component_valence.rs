@@ -3,9 +3,9 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    WireIdentity, IdentityDomain, SourceSpan, SourceSpanSet, WasmComponentParentRole,
-    WasmComponentStaticReceipt, WasmComponentStaticRequest, WasmComponentValidationError,
-    build_wasm_component_static_receipt, compute_identity,
+    AnyIdentity, ProjectionIdentity, ReceiptIdentity, SourceSpan, SourceSpanSet,
+    WasmComponentParentRole, WasmComponentStaticReceipt, WasmComponentStaticRequest,
+    WasmComponentValidationError, build_wasm_component_static_receipt,
 };
 
 pub const WASM_COMPONENT_VALENCE_PROJECTION_SCHEMA: &str =
@@ -29,7 +29,7 @@ pub enum WasmComponentValenceVerificationClass {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentValenceArtifact {
     pub role: String,
-    pub identity: WireIdentity,
+    pub identity: AnyIdentity,
     pub verification_class: WasmComponentValenceVerificationClass,
     pub spans: SourceSpanSet,
 }
@@ -38,9 +38,9 @@ pub struct WasmComponentValenceArtifact {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentValenceEdge {
     pub parent_role: String,
-    pub parent_identity: WireIdentity,
+    pub parent_identity: AnyIdentity,
     pub child_role: String,
-    pub child_identity: WireIdentity,
+    pub child_identity: AnyIdentity,
     pub relation: String,
 }
 
@@ -48,7 +48,7 @@ pub struct WasmComponentValenceEdge {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentValenceProjectionBody {
     pub schema_version: String,
-    pub subject_receipt_identity: WireIdentity,
+    pub subject_receipt_identity: ReceiptIdentity,
     pub artifacts: Vec<WasmComponentValenceArtifact>,
     pub parent_edges: Vec<WasmComponentValenceEdge>,
     pub checked_laws: Vec<String>,
@@ -60,7 +60,7 @@ pub struct WasmComponentValenceProjectionBody {
 #[serde(deny_unknown_fields)]
 pub struct WasmComponentValenceProjection {
     pub body: WasmComponentValenceProjectionBody,
-    pub projection_identity: WireIdentity,
+    pub projection_identity: ProjectionIdentity,
 }
 
 #[derive(Debug)]
@@ -113,7 +113,7 @@ pub fn project_wasm_component_static_to_valence(
             &descriptor_bytes,
             inspection_bytes.as_deref(),
         )?,
-        parent_edges: parent_edges(request, &receipt),
+        parent_edges: parent_edges(request, &receipt)?,
         checked_laws: receipt.body.checked_laws.clone(),
         non_claims: receipt.body.non_claims.clone(),
         coupling_boundary: COMPONENT_COUPLING_BOUNDARY.to_string(),
@@ -122,7 +122,7 @@ pub fn project_wasm_component_static_to_valence(
         .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?;
     Ok(WasmComponentValenceProjection {
         body,
-        projection_identity: compute_identity(IdentityDomain::Projection, &projection_bytes),
+        projection_identity: ProjectionIdentity::compute(&projection_bytes),
     })
 }
 
@@ -135,52 +135,54 @@ fn artifacts(
     let mut artifacts = vec![
         artifact_with_span(
             "component-adapter-profile",
-            receipt.body.profile_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.profile_identity.clone()),
             WasmComponentValenceVerificationClass::Boundary,
             "adapters/wasm-component/generated/profile.json",
             request.profile_bytes.len(),
         )?,
         artifact_with_span(
             "molten-runtime-profile",
-            receipt.body.runtime_profile_identity.clone(),
+            AnyIdentity::Evaluator(receipt.body.runtime_profile_identity.clone()),
             WasmComponentValenceVerificationClass::RecordedOnly,
             "adapters/wasm-component/upstream/molten-profile.json",
             request.runtime_profile_bytes.len(),
         )?,
         artifact_with_span(
             "wit-source",
-            receipt.body.wit_identity.clone(),
+            AnyIdentity::Source(receipt.body.wit_identity.clone()),
             WasmComponentValenceVerificationClass::RecordedOnly,
             "adapters/wasm-component/upstream/runtime.wit",
             request.wit_bytes.len(),
         )?,
         artifact_with_span(
             COMPONENT_DESCRIPTOR_ROLE,
-            receipt.body.descriptor_identity.clone(),
+            AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
             WasmComponentValenceVerificationClass::Boundary,
             "component-descriptor-json",
             descriptor_bytes.len(),
         )?,
         artifact_with_span(
             "canonical-input",
-            receipt.body.canonical_input_identity.clone(),
+            AnyIdentity::CanonicalValue(receipt.body.canonical_input_identity.clone()),
             WasmComponentValenceVerificationClass::Boundary,
             "canonical-input",
             request.canonical_input_bytes.len(),
         )?,
         artifact_without_span(
             "input-schema",
-            request.descriptor.input_schema.identity.clone(),
+            AnyIdentity::admit(request.descriptor.input_schema.identity.clone())
+                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
             WasmComponentValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             "output-schema",
-            request.descriptor.output_schema.identity.clone(),
+            AnyIdentity::admit(request.descriptor.output_schema.identity.clone())
+                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
             WasmComponentValenceVerificationClass::Boundary,
         ),
         artifact_without_span(
             COMPONENT_RECEIPT_ROLE,
-            receipt.receipt_identity.clone(),
+            AnyIdentity::Receipt(receipt.receipt_identity.clone()),
             WasmComponentValenceVerificationClass::Boundary,
         ),
     ];
@@ -189,7 +191,7 @@ fn artifacts(
     {
         artifacts.push(artifact_with_span(
             "portable-component",
-            identity.clone(),
+            AnyIdentity::TargetArtifact(identity.clone()),
             WasmComponentValenceVerificationClass::RecordedOnly,
             "component-bytes",
             bytes.len(),
@@ -198,7 +200,7 @@ fn artifacts(
     if let (Some(identity), Some(bytes)) = (&receipt.body.inspection_identity, inspection_bytes) {
         artifacts.push(artifact_with_span(
             "component-inspection",
-            identity.clone(),
+            AnyIdentity::Adapter(identity.clone()),
             WasmComponentValenceVerificationClass::Boundary,
             "component-inspection-json",
             bytes.len(),
@@ -210,7 +212,7 @@ fn artifacts(
     ) {
         artifacts.push(artifact_with_span(
             "mantle-materialization-manifest",
-            identity.clone(),
+            AnyIdentity::DependencyClosure(identity.clone()),
             WasmComponentValenceVerificationClass::RecordedOnly,
             "materialization-manifest-json",
             bytes.len(),
@@ -219,22 +221,26 @@ fn artifacts(
     for binding in &request.descriptor.imports {
         artifacts.push(artifact_without_span(
             &format!("capability:{}", binding.import),
-            binding.capability_identity.clone(),
+            AnyIdentity::admit(binding.capability_identity.clone())
+                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
         artifacts.push(artifact_without_span(
             &format!("effect-operation:{}", binding.import),
-            binding.effect_operation_identity.clone(),
+            AnyIdentity::admit(binding.effect_operation_identity.clone())
+                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
         artifacts.push(artifact_without_span(
             &format!("authority:{}", binding.import),
-            binding.authority_identity.clone(),
+            AnyIdentity::admit(binding.authority_identity.clone())
+                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
         artifacts.push(artifact_without_span(
             &format!("resource:{}", binding.import),
-            binding.resource_identity.clone(),
+            AnyIdentity::admit(binding.resource_identity.clone())
+                .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?,
             WasmComponentValenceVerificationClass::Boundary,
         ));
     }
@@ -245,47 +251,50 @@ fn artifacts(
 fn parent_edges(
     request: &WasmComponentStaticRequest<'_>,
     receipt: &WasmComponentStaticReceipt,
-) -> Vec<WasmComponentValenceEdge> {
+) -> Result<Vec<WasmComponentValenceEdge>, WasmComponentValenceProjectionError> {
     let mut edges = request
         .descriptor
         .parent_edges
         .iter()
-        .map(|edge| WasmComponentValenceEdge {
-            parent_role: parent_role_label(&edge.role).to_string(),
-            parent_identity: edge.identity.clone(),
-            child_role: COMPONENT_DESCRIPTOR_ROLE.to_string(),
-            child_identity: receipt.body.descriptor_identity.clone(),
-            relation: COMPONENT_PARENT_RELATION.to_string(),
+        .map(|edge| {
+            AnyIdentity::admit(edge.identity.clone()).map(|parent| WasmComponentValenceEdge {
+                parent_role: parent_role_label(&edge.role).to_string(),
+                parent_identity: parent,
+                child_role: COMPONENT_DESCRIPTOR_ROLE.to_string(),
+                child_identity: AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
+                relation: COMPONENT_PARENT_RELATION.to_string(),
+            })
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?;
     edges.push(WasmComponentValenceEdge {
         parent_role: "component-adapter-profile".to_string(),
-        parent_identity: receipt.body.profile_identity.clone(),
+        parent_identity: AnyIdentity::Adapter(receipt.body.profile_identity.clone()),
         child_role: COMPONENT_DESCRIPTOR_ROLE.to_string(),
-        child_identity: receipt.body.descriptor_identity.clone(),
+        child_identity: AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
         relation: COMPONENT_PARENT_RELATION.to_string(),
     });
     edges.push(WasmComponentValenceEdge {
         parent_role: "canonical-input".to_string(),
-        parent_identity: receipt.body.canonical_input_identity.clone(),
+        parent_identity: AnyIdentity::CanonicalValue(receipt.body.canonical_input_identity.clone()),
         child_role: COMPONENT_RECEIPT_ROLE.to_string(),
-        child_identity: receipt.receipt_identity.clone(),
+        child_identity: AnyIdentity::Receipt(receipt.receipt_identity.clone()),
         relation: COMPONENT_PARENT_RELATION.to_string(),
     });
     edges.push(WasmComponentValenceEdge {
         parent_role: COMPONENT_DESCRIPTOR_ROLE.to_string(),
-        parent_identity: receipt.body.descriptor_identity.clone(),
+        parent_identity: AnyIdentity::Adapter(receipt.body.descriptor_identity.clone()),
         child_role: COMPONENT_RECEIPT_ROLE.to_string(),
-        child_identity: receipt.receipt_identity.clone(),
+        child_identity: AnyIdentity::Receipt(receipt.receipt_identity.clone()),
         relation: COMPONENT_PARENT_RELATION.to_string(),
     });
     edges.sort();
-    edges
+    Ok(edges)
 }
 
 fn artifact_with_span(
     role: &str,
-    identity: WireIdentity,
+    identity: AnyIdentity,
     verification_class: WasmComponentValenceVerificationClass,
     artifact_key: &str,
     byte_len: usize,
@@ -310,7 +319,7 @@ fn artifact_with_span(
 
 fn artifact_without_span(
     role: &str,
-    identity: WireIdentity,
+    identity: AnyIdentity,
     verification_class: WasmComponentValenceVerificationClass,
 ) -> WasmComponentValenceArtifact {
     WasmComponentValenceArtifact {
