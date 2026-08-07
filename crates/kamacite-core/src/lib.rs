@@ -14,6 +14,7 @@ mod evidence_chain;
 mod fixture;
 mod function_address;
 mod identity;
+mod identity_model;
 mod manifest_freshness;
 mod nickel_preserves;
 mod nickel_sandbox;
@@ -98,6 +99,22 @@ pub use function_address::{
 };
 pub use identity::{
     BLAKE3_HEX_LENGTH, Blake3Hex, Identity, IdentityDomain, IdentityError, compute_identity,
+};
+pub use identity_model::{
+    AdapterIdentity, AdapterIdentityRef, AlgebraicEffectIdentity, AlgebraicEffectIdentityRef,
+    AnyIdentity, CanonicalValueIdentity, CanonicalValueIdentityRef, CompilerIdentity,
+    CompilerIdentityRef, DependencyClosureIdentity, DependencyClosureIdentityRef,
+    DialectPayloadIdentity, DialectPayloadIdentityRef, DocumentationFactsIdentity,
+    DocumentationFactsIdentityRef, DocumentationIrIdentity, DocumentationIrIdentityRef,
+    DocumentationOutputIdentity, DocumentationOutputIdentityRef, EffectLogIdentity,
+    EffectLogIdentityRef, EffectOperationIdentity, EffectOperationIdentityRef, EvaluatorIdentity,
+    EvaluatorIdentityRef, EvidenceChainIdentity, EvidenceChainIdentityRef, FsmCoverageIdentity,
+    FsmCoverageIdentityRef, FsmSpecIdentity, FsmSpecIdentityRef, FsmUniverseIdentity,
+    FsmUniverseIdentityRef, FunctionAddressIdentity, FunctionAddressIdentityRef,
+    IdentityAdmissionError, IdentityDomainMarker, ProjectionIdentity, ProjectionIdentityRef,
+    ReceiptIdentity, ReceiptIdentityRef, SourceIdentity, SourceIdentityRef, TargetArtifactIdentity,
+    TargetArtifactIdentityRef, TypedIdentity, TypedIdentityRef, WIRE_IDENTITY_VERSION,
+    WireIdentity,
 };
 pub use manifest_freshness::{
     MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE,
