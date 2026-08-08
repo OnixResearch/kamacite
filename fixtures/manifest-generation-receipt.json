@@ -4,7 +4,7 @@
     "source_identity": {
       "domain": "source",
       "algorithm": "blake3",
-      "hex": "6d2c19c97b8e043eb7a4bee8f024c824c57ab4a037fcb3c1b19d4a7fa45e194b"
+      "hex": "b08da7dcd16ba0c7b9f9c7e08376b6f2745cf6639ebc32e7a58ca03006026549"
     },
     "contract_identity": {
       "domain": "adapter",
@@ -21,7 +21,7 @@
     "projection_identity": {
       "domain": "projection",
       "algorithm": "blake3",
-      "hex": "252ea2486849120fffac1d4b613ee81e23d7c3bd897172632bf79e5dd44cc7e7"
+      "hex": "e40fa3656a0a0649598387e6413612b5f5036254f1db739de4327af0ff053943"
     },
     "checked_laws": [
       "complete-nickel-projection-bound",
@@ -37,6 +37,6 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "a61de7c254619d69ca725b708f5d3e6cc6e3479829eb4e4f57f69a68c0e9fda2"
+    "hex": "e3186401c10c45701ac3b65183cdf49d17e9ee3064f4b9a006abdfdff87eab5e"
   }
 }

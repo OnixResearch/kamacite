@@ -53,9 +53,19 @@ execution, authorization, semantic correctness, or release eligibility.
 
 ## Consumer boundary
 
-Animus is the first planned producer pilot. A frozen Animus fixture will be
-admitted only after its schema, producer revision, and binding projection
-are available upstream. Lattice and Aspen adoption waits for a stable
-schema and pilot. A passing binding proves identity and declared
-compatibility only; product-owned hosts keep authorization, capability,
-sandbox, and runtime enforcement.
+Animus is the first admitted producer pilot. Kamacite freezes producer
+revision `c09991fa299f1f74b04d066bf31382e34108fa82` in
+`fixtures/application-host-binding/animus-producer.json`.
+
+The producer fixture has BLAKE3
+`f8fbfda873094923004b99ac1150eb4e402b49deaa866b0647bd84e758e8a0ef`.
+The accepted Kamacite receipt identity is
+`1bac624751d47bd89ecba53923eda72f9cf20cdcc31dc01186882abf8da1cbb2`.
+
+`fixtures/application-host-binding/animus-conformance.json` binds these
+identities for Animus. Its BLAKE3 is
+`d5a082fb3ee92bc0fdbccdd0a08bbc9e072b3eea95615df8a17be70fbf9c540c`.
+
+Lattice and Aspen adoption waits for a stable schema and pilot. A passing
+binding proves identity and declared compatibility only. Product hosts
+keep authorization, capability, sandbox, and runtime enforcement.

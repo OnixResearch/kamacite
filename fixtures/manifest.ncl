@@ -162,6 +162,45 @@ let ahb_base_payload = {
   semantic_claims = [],
   non_claims = ahb_required_non_claims,
 } in
+let animus_application_host_binding = {
+  kind = "application-host-binding",
+  schema_version = "kamacite.application-host-binding.v1",
+  application_identity = ahb_identity "target-artifact" "5fd77e6bf7e3a618faf48a8a16c398126797a5245011f0d06dd40f45513b9cb1",
+  entrypoint_identity = ahb_identity "target-artifact" "bb661c376f2a83ceedd730d404de471dfcc5abd6f75f9f4a42a95b8afd9a0d42",
+  input_schema_identity = ahb_identity "adapter" "33df3bb18d797392d6421016a76ca9970321dc4d62dda749815a06547419db49",
+  output_schema_identity = ahb_identity "adapter" "f3f6e96b49daecc77fd98bd5434fe34ab23f39d226b506bdfd551ed773b2e81f",
+  effect_summary_identity = ahb_identity "algebraic-effect" "64471a04261cbb5f5d9e9b3df5ba9f2454145535355601760e779d2f6b0a46ac",
+  effect_summary_closed = true,
+  effect_operation_identities = [
+    ahb_identity "effect-operation" "7fa2709c205ccfa8c4b8773ab97396193a5130a2e42b2f94916802b04e07f5f8",
+    ahb_identity "effect-operation" "c598d03de53f54b01e8bc368840e6394e5cc3334b4e1be118f563ddfb8cfba2a",
+  ],
+  host_profile_identity = ahb_identity "evaluator" "53a1955677292245ccd4ccc6c0c3a7f3bcd9431f4ac0d6f1a7f9fb7ca1ac5070",
+  alternative_host_profile_identities = [],
+  fallback_host_profile_identity = null,
+  adapter_cohort_identity = ahb_identity "adapter" "3333333333333333333333333333333333333333333333333333333333333333",
+  resource_profile_identity = ahb_identity "adapter" "876e8e3aedf280155e40378e5ba1add80ca30a7a0931f9a9c972b898694619f2",
+  policy_identity = ahb_identity "adapter" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  compatibility_identity = ahb_identity "evidence-chain" "0ec64025422e00a28a2bfdb45f43b8fcd590ec1a4d3325bc07dae71d7ea0dbcb",
+  expected_adapter_cohort_identity = ahb_identity "adapter" "3333333333333333333333333333333333333333333333333333333333333333",
+  expected_resource_profile_identity = ahb_identity "adapter" "876e8e3aedf280155e40378e5ba1add80ca30a7a0931f9a9c972b898694619f2",
+  expected_host_profile_identity = ahb_identity "evaluator" "53a1955677292245ccd4ccc6c0c3a7f3bcd9431f4ac0d6f1a7f9fb7ca1ac5070",
+  metadata = ahb_empty_metadata,
+  semantic_claims = [],
+  non_claims = [
+    "not effect completeness",
+    "not application correctness",
+    "not host capability or authorization",
+    "not host behavior",
+    "not sandbox admission",
+    "not provider correctness",
+    "not tool safety",
+    "not runtime success",
+    "not runtime correctness",
+    "not resource enforcement",
+    "not release eligibility",
+  ],
+} in
 {
   "authority_non_claims" = [
     "manifest source is review authority",
@@ -7369,6 +7408,22 @@ let ahb_base_payload = {
       "requirement_ids" = [
         "r[kamacite.ast_grep_adapter_audits.fixtures]",
         "r[kamacite.ast_grep_adapter_audits.valence_export]",
+      ],
+    },
+    {
+      "artifact_class" = "application-host-binding",
+      "checked_laws" = ["canonical-identity-stable", "exactly-one-host", "closed-effect-summary", "exact-cohort"],
+      "expected_verdict" = "accepted",
+      "fixture_class" = "positive",
+      "golden_receipt" = "fixtures/golden/application-host-binding.positive.animus-producer.receipt.json",
+      "id" = "application-host-binding.positive.animus-producer",
+      "non_claims" = animus_application_host_binding.non_claims,
+      "payload" = animus_application_host_binding,
+      "requirement_ids" = [
+        "r[kamacite.application_host_binding.artifact]",
+        "r[kamacite.application_host_binding.effects]",
+        "r[kamacite.application_host_binding.cohorts]",
+        "r[kamacite.application_host_binding.fixtures]",
       ],
     },
     {

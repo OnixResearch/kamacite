@@ -12,13 +12,13 @@
 
 ## Phase 3: Pilot fixtures and verification
 
-- [ ] [depends:kamacite.application_host_binding.cohorts] I7 Add an exact frozen Animus producer fixture only after its schema, producer revision, and binding projection are available. r[kamacite.application_host_binding.projection] r[kamacite.application_host_binding.fixtures]
-- [ ] [parallel] V1 Add positive fixtures for capability-free and closed-effect bindings, metadata rename stability, exact Animus projection, and Valence projection. r[kamacite.application_host_binding.fixtures]
+- [x] [depends:kamacite.application_host_binding.cohorts] I7 Add an exact frozen Animus producer fixture only after its schema, producer revision, and binding projection are available. r[kamacite.application_host_binding.projection] r[kamacite.application_host_binding.fixtures]
+- [x] [parallel] V1 Add positive fixtures for capability-free and closed-effect bindings, metadata rename stability, exact Animus projection, and Valence projection. r[kamacite.application_host_binding.fixtures]
 - [x] [parallel] V2 Add negative fixtures for missing or multiple hosts, open or unknown effects, undeclared operations, stale identities, wrong cohorts, unsupported versions, unsafe diagnostics, and authority overclaims. r[kamacite.application_host_binding.fixtures] r[kamacite.application_host_binding.boundary]
 - [x] [depends:kamacite.application_host_binding.fixtures] V3 Add property tests for canonical ordering, metadata exclusion, deterministic identity, and semantic single-field re-keying. r[kamacite.application_host_binding.artifact] r[kamacite.application_host_binding.fixtures]
 - [x] [serial] I8 Document the binding, Roc design reference, consumer rollout boundary, and non-claims without presenting Roc as a current dependency. r[kamacite.application_host_binding.boundary]
-- [ ] [depends:kamacite.application_host_binding.fixtures] V4 Run focused fixture validation, workspace tests, manifest freshness, Valence projection checks, Clippy, lifecycle validation, Cairn gates, and relevant Nix checks. r[kamacite.application_host_binding.fixtures] r[kamacite.application_host_binding.boundary]
+- [x] [depends:kamacite.application_host_binding.fixtures] V4 Run focused fixture validation, workspace tests, manifest freshness, Valence projection checks, Clippy, lifecycle validation, Cairn gates, and relevant Nix checks. r[kamacite.application_host_binding.fixtures] r[kamacite.application_host_binding.boundary]
 
-## Current external blocker
+## Cross-repository completion evidence
 
-The binding artifact, validation core, receipt family, manifest integration, Valence projection, fixture corpus, property tests, and documentation are implemented and validated. Two tasks remain open: I7 needs an exact frozen Animus producer fixture, and the Animus producer side (`animus/cairn/changes/pilot-application-host-binding`) is still an active change with no completed tasks. V1 also stays open because its literal scope includes that exact Animus projection fixture; the capability-free, closed-effect, metadata-rename, and Valence projection fixtures it names are already in place. V4 stays open because it depends on the complete fixture corpus. Closeout remains blocked with `external-animus-producer-unavailable` until Animus publishes a schema, producer revision, and binding projection.
+Kamacite freezes Animus producer revision `c09991fa299f1f74b04d066bf31382e34108fa82` and exact fixture BLAKE3 `f8fbfda873094923004b99ac1150eb4e402b49deaa866b0647bd84e758e8a0ef`. The accepted golden receipt identity is `1bac624751d47bd89ecba53923eda72f9cf20cdcc31dc01186882abf8da1cbb2`. The returned conformance fixture BLAKE3 is `d5a082fb3ee92bc0fdbccdd0a08bbc9e072b3eea95615df8a17be70fbf9c540c`.

@@ -16,11 +16,10 @@ branch (base `origin/main` = `34738d6`).
 
 # Validation evidence
 
-- `cargo test --workspace`: all suites pass, including 16 new
-  `application_host_binding` tests (positive, negative, and property).
+- `cargo test --workspace`: all suites pass. This includes 16 core
+  binding tests and 3 Animus producer conformance tests.
 - `kamacite validate --root . --manifest fixtures/manifest.json`: exit 0
-  with 11 new fixtures (3 positive, 8 negative) and generated golden
-  receipts.
+  with 12 new fixtures. The set has 4 positive and 8 negative fixtures.
 - The metadata-rename golden and the capability-free golden record the
   same `application-host-binding` identity
   (`4d93c4b6ca20031aa2fe665119f423d773351072e94a9975a8284e968e24b886`),
@@ -28,8 +27,17 @@ branch (base `origin/main` = `34738d6`).
 - `generate-manifest --update` regenerated `fixtures/manifest.json` from
   the closed Nickel contract; the contract admits the new
   `application-host-binding` payload kind and identity domain.
+- The exact Animus producer revision is
+  `c09991fa299f1f74b04d066bf31382e34108fa82`.
+- The frozen producer fixture BLAKE3 is
+  `f8fbfda873094923004b99ac1150eb4e402b49deaa866b0647bd84e758e8a0ef`.
+- Kamacite accepted the producer with receipt identity
+  `1bac624751d47bd89ecba53923eda72f9cf20cdcc31dc01186882abf8da1cbb2`.
+- The returned conformance fixture BLAKE3 is
+  `d5a082fb3ee92bc0fdbccdd0a08bbc9e072b3eea95615df8a17be70fbf9c540c`.
 - Clippy with the repository restriction profile: clean.
-- Cairn lifecycle validation: pass.
+- Manifest freshness and Cairn lifecycle validation: pass.
+- `nix flake check path:$PWD -L`: all 17 checks pass.
 
 ## Claim boundary
 
