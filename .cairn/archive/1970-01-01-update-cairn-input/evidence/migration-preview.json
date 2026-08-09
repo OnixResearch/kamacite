@@ -1,0 +1,1334 @@
+{
+  "actions": [
+    {
+      "destination": "./.cairn/archive/.gitkeep",
+      "destination_hash": null,
+      "source": "./cairn/archive/.gitkeep",
+      "source_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/design.md",
+      "source_hash": "2148884ec1b7b1fe921bef7e3513b76e7b022cf4b85ac38eec7eb2a2781d84eb"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/proposal.md",
+      "source_hash": "affd732f5601ab1672e2ad0c3cc84ce0265e7aef3b45aac52b77c116e3f52850"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/specs/lossless-ir/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/specs/lossless-ir/spec.md",
+      "source_hash": "797bf3be6b9377e8382770258a2b3a662fcc9b70afcc7bd585ec453ec05f1d4e"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/specs/nickel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/specs/nickel-adapter-suite/spec.md",
+      "source_hash": "2ebf0b27e370c8b3de37aa05e36b106c3a24da4a989f822ae7851df0fd673752"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-adapt-nickel-exports-to-preserves/tasks.md",
+      "source_hash": "6287abbdd3a315d14c4b107bf25e726d2e04f1091b326fe3d859ed94d877819d"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-add-application-host-binding-artifact/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-add-application-host-binding-artifact/design.md",
+      "source_hash": "b624a043c6da8cbab62ec1c5229d6707d435bf1a94530e22a2947a311d69a430"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-add-application-host-binding-artifact/evidence/baseline-and-validation.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-add-application-host-binding-artifact/evidence/baseline-and-validation.md",
+      "source_hash": "ef8d7db6268150a1eaf59d44c285c0a91fab0af215e67491218e4925ab56b450"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-add-application-host-binding-artifact/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-add-application-host-binding-artifact/proposal.md",
+      "source_hash": "10ab46319322cb2ee6a998e464ac1a55174ab1b128ec96189bce8382472d247e"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-add-application-host-binding-artifact/specs/application-host-binding/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-add-application-host-binding-artifact/specs/application-host-binding/spec.md",
+      "source_hash": "76b9f7f632d5f6a8541017df8654e22d50c0fa6ced6385cc8354ecb27aa104c5"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-add-application-host-binding-artifact/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-add-application-host-binding-artifact/tasks.md",
+      "source_hash": "278b9602505db5aa84be837ecdab6c417c9ed24817f423a75dfd8cdd8e2a7c6a"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/design.md",
+      "source_hash": "bc7653a989ff87ef102f07cff83f60426425445b35c28b536af961ec03971ee4"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/evidence/validation.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/evidence/validation.md",
+      "source_hash": "65cc710f514883146cb10f551bdb9689433bb46a3d105460009c0277e05ee6fe"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/proposal.md",
+      "source_hash": "a6c8fdaa7f11a3bb9b0e575b946544072f86210878b15e0566e356b30e914c00"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/specs/semantic-effect-operation-identity/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/specs/semantic-effect-operation-identity/spec.md",
+      "source_hash": "5b12fa8648e417d3c008914be86a1b5f456340127472642cdd905be8f873de9e"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/specs/semantic-effect-operation-stack/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/specs/semantic-effect-operation-stack/spec.md",
+      "source_hash": "83fc3f31e85c6ef3c804d41d1f81b1589544317f2a029cfc6fd285de932b17ea"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-bind-effect-operation-semantic-identity/tasks.md",
+      "source_hash": "3d664e0817efb5ab24776ab68543715aeb5523512ac29e1abf402dfa0301a69e"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-function-address-receipts/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-function-address-receipts/design.md",
+      "source_hash": "d0f5923cfea1ca2d4a4a7c94bd6f5e971192ea5cbe00c97be599d3b007ee419a"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-function-address-receipts/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-function-address-receipts/proposal.md",
+      "source_hash": "fec3ff3f9f67cd5d0a837a3214e8cced508b8cd14b02cb0e382ada9ffe5a9448"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-function-address-receipts/specs/function-address-receipts/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-function-address-receipts/specs/function-address-receipts/spec.md",
+      "source_hash": "39868dffc6f273be75b752acc79e92b04238bbcbfd12998de45bc2d9e818a7f1"
+    },
+    {
+      "destination": "./.cairn/archive/1970-01-01-function-address-receipts/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/1970-01-01-function-address-receipts/tasks.md",
+      "source_hash": "cd3e203913577072a6f952e3051cdfdb348b2b94015200bdd34714e0f442c746"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/design.md",
+      "source_hash": "fcbd8a378c064ed636a169823d07b0897ec74cda81d2082ba2ff9605ec072aca"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/proposal.md",
+      "source_hash": "ee78ee3931f558ba82fbd378c1ca08b8c3a9a350702d843243bc4be53bdd611d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/specs/algebraic-effect-fixtures-and-stack/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/specs/algebraic-effect-fixtures-and-stack/spec.md",
+      "source_hash": "4385be6b69827d004fa4ad9cc856688f0a923aeaccf93950f288c7522b0b41d6"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/specs/algebraic-effect-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/specs/algebraic-effect-model/spec.md",
+      "source_hash": "f04d82540de06cf167a91c4609a25e3922d3f71fb90ae7edfadef145893bcb5d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-algebraic-effect-ir-boundary/tasks.md",
+      "source_hash": "0bc2401638b2a5d23931201da3da53c019f494eec96b5b8dadf753b477e58b4c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-fsm-model/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-fsm-model/design.md",
+      "source_hash": "2d4e7756470122d2df14eaa4f220c8781cad496216bcbed1927421094c07dea5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-fsm-model/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-fsm-model/proposal.md",
+      "source_hash": "d36be5f127540525932c7a5f4d15f95cf8526b6ac430def043ee0aa76b855514"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-fsm-model/specs/finite-state-machine-fixtures-and-stack/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-fsm-model/specs/finite-state-machine-fixtures-and-stack/spec.md",
+      "source_hash": "9d3b2d2fe2653077275a8f0dc5a059b1075ea8157f90df7f39eb01d3cfb18968"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-fsm-model/specs/finite-state-machine-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-fsm-model/specs/finite-state-machine-model/spec.md",
+      "source_hash": "8f414fc80ca9ade4eaa886241c4569df3deaa7c52566be881ead2f94aff0f1aa"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-fsm-model/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-fsm-model/tasks.md",
+      "source_hash": "aabcba8822e4c648751888294301e9f5a77d0faa1c85c2467457eeff4f381550"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-kamacite-package/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-kamacite-package/design.md",
+      "source_hash": "7ee66531c6086878907621c3124a7ea09e444b060efa509986f0c8ee5c8814e7"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-kamacite-package/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-kamacite-package/proposal.md",
+      "source_hash": "aee4fff7e124bcac579f63ed6e0f741c24a3c2ec8ec08d44ff1e86e84885a01f"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-kamacite-package/specs/packaging-and-validation-rails/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-kamacite-package/specs/packaging-and-validation-rails/spec.md",
+      "source_hash": "1a52bcc25581657308359a813624a5532f0af4b534f3d7a4f6ca9511f70f8142"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-kamacite-package/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-kamacite-package/tasks.md",
+      "source_hash": "f3c390e331dd5dea2e77ad42d905a7dd03622c763b77a9c66bb4ce288f402ee3"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-nickel-adapter-suite/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-nickel-adapter-suite/design.md",
+      "source_hash": "b5ef1de216ce8c797896a333661be935ab00eaa7770b8e66b0d3a76150f4a807"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-nickel-adapter-suite/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-nickel-adapter-suite/proposal.md",
+      "source_hash": "d4c35ebe5364a2a9218613d78c40eb55eb80873e92b44e2eba950d7ae39cf590"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-nickel-adapter-suite/specs/nickel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-nickel-adapter-suite/specs/nickel-adapter-suite/spec.md",
+      "source_hash": "8d82b9a5a5f85d7fa76db48d9ddaa5c3203d3d61afc14f2e4097189bdd6551fb"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-nickel-adapter-suite/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-nickel-adapter-suite/tasks.md",
+      "source_hash": "119a885b7ea0677ddec0379cc3f2d1de77cd21347cb34a84b542ca3ed978edf8"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-runnable-docs-pipeline/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-runnable-docs-pipeline/design.md",
+      "source_hash": "f7351b14d11db6f80d38f289faa0a8414ea30df3064bf1b4b0cf3c25c7c208ff"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-runnable-docs-pipeline/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-runnable-docs-pipeline/proposal.md",
+      "source_hash": "530ba7af6b58a34bd1a1b2745651c9d7682accd996715c2309d773c2db0468e2"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-runnable-docs-pipeline/specs/documentation-pipeline/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-runnable-docs-pipeline/specs/documentation-pipeline/spec.md",
+      "source_hash": "fdb33e3cea4526d5bfebdc07e253b4424d4fa0f64c003ff525e79958c5f45cab"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-runnable-docs-pipeline/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-runnable-docs-pipeline/tasks.md",
+      "source_hash": "c5e8eb728234c499c81993a5968e34bdf6e9b69e25569be14ee6c54ec78c643d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-steel-adapter-suite/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-steel-adapter-suite/design.md",
+      "source_hash": "b2d2c47bc78daec346182935c5f6c2d40192c38268d51514fb2642c01496a345"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-steel-adapter-suite/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-steel-adapter-suite/proposal.md",
+      "source_hash": "996137bbf6fda2f626092c6c6cbdd4ae1ab4c70526b8ccd5fd7193306b326efb"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-steel-adapter-suite/specs/steel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-steel-adapter-suite/specs/steel-adapter-suite/spec.md",
+      "source_hash": "2af45cac60aca966bf7af753390fedf082d4d6ad61230ceac9eede2213db6fb2"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-steel-adapter-suite/specs/validation-command/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-steel-adapter-suite/specs/validation-command/spec.md",
+      "source_hash": "4efbeb793963a511fd4b5417fdca85a9ac17737b059b5f2de5c7a0f55b80b4ea"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-steel-adapter-suite/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-steel-adapter-suite/tasks.md",
+      "source_hash": "496b4dcfaf2935d982f68b1ae94ff8055dd8339735f01206b18055e66ba1aadc"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-valence-receipt-export/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-valence-receipt-export/design.md",
+      "source_hash": "711f3ef4a0fb327d6761f1a342f010f4157d020ba78ce3e9c7733d58173036be"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-valence-receipt-export/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-valence-receipt-export/proposal.md",
+      "source_hash": "c83972d94fb493969d4a4b07a2654a33ae9fd2c8dddb77be1ddfdb08431f83fb"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-valence-receipt-export/specs/adapter-conformance/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-valence-receipt-export/specs/adapter-conformance/spec.md",
+      "source_hash": "0880560b60fc21c0af060fb7e6f5ddee629b668159f5a08f49268fbffaa44c38"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-valence-receipt-export/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-valence-receipt-export/specs/stack-integration/spec.md",
+      "source_hash": "40f4f4ca573da66f06f3c5ea5001b448a8fcfff343d8c3bce7db569a966ad44b"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-valence-receipt-export/specs/validation-command/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-valence-receipt-export/specs/validation-command/spec.md",
+      "source_hash": "0f96d46bbb259f06a5086cbad2a7fd647eba61e14be4eafb4ceb20362da94396"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-add-valence-receipt-export/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-add-valence-receipt-export/tasks.md",
+      "source_hash": "2df66c4f291d47e525e1fb4ab45ebf4d66c40480a6faa1efece21892c5f1ed3d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-align-fixture-manifest-authority/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-align-fixture-manifest-authority/design.md",
+      "source_hash": "537a2b88ab0824c157a1c6f8674e8c9b7f1b3df1ff85115efc4dd12d5dddfd8e"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-align-fixture-manifest-authority/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-align-fixture-manifest-authority/proposal.md",
+      "source_hash": "7ae053decbb47ff5b78e341ea7889e193cf0d4877ed7886b1e11c5c9229f48de"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-align-fixture-manifest-authority/specs/validation-harness/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-align-fixture-manifest-authority/specs/validation-harness/spec.md",
+      "source_hash": "c6146193db4ad4369e34bb7d09030de026338814800a5d3f283d0c3a6a5fd2c1"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-align-fixture-manifest-authority/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-align-fixture-manifest-authority/tasks.md",
+      "source_hash": "de4bb9eda8908e5cfd2c377efe7ed8e0855b18ad3fc925e4f2e5ce0a46fad591"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/design.md",
+      "source_hash": "122ad1700ecbb1f2cb881a6a0daf9600f467ece30e042f68a40d18d606b6189c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/proposal.md",
+      "source_hash": "81d0372b55c9884d7525e0561af7fd566f9441b931ced8f5428723118a841a63"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/adapter-boundaries/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/adapter-boundaries/spec.md",
+      "source_hash": "f7fb0dee920fb09a18332b4f149fa7e7b08dc9f71d321bcbec5dd485d84fc746"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/adapter-conformance/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/adapter-conformance/spec.md",
+      "source_hash": "6c0d1d0bf719a9f9cd961329ad0021339d11b0c1e1c0a637fc3adff90cc1f572"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/fixture-corpus/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/fixture-corpus/spec.md",
+      "source_hash": "9ddada4cbf71c9603966e3fcc7a0bfc5e95ad789dfa20b4b7398f9e1c80d650c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/identity-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/identity-model/spec.md",
+      "source_hash": "a5e52b9c1b680d4c638f19d7d94fb42be459ff43736ee1737424bd3d443fff6e"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/lossless-ir/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/lossless-ir/spec.md",
+      "source_hash": "cda125db9076bce7ef3bbb72c44e7e8e0acaf5f119c7f19be619c5c25d8e32c9"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/reference-ir-boundary/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/reference-ir-boundary/spec.md",
+      "source_hash": "881e5338e0842136a7a6af855a147f6de8be1f07ac3011aab7403d800eb673b6"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/schema-vocabulary/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/schema-vocabulary/spec.md",
+      "source_hash": "8af73005312b89ef6fc3ce75e64e8dcf103a70ee6f9cc5cb5e60d3e7ee897bc0"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/source-envelopes/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/source-envelopes/spec.md",
+      "source_hash": "044a03317a6ce801719780648596e91232161683eb9b0ccf8d0783c2e4f7a4a0"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/stack-integration/spec.md",
+      "source_hash": "3db3a67b3a52467b2a21f0c41bffb8f315f361138c92c0279e1e7010b2926eba"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/typed-core-discipline/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/typed-core-discipline/spec.md",
+      "source_hash": "5d2d0faad8185a4414c6c2e4f2acc150caf0a6a84377fc17d6ae3f04d32b3e3c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/specs/validation-command/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/specs/validation-command/spec.md",
+      "source_hash": "195a56ccfe2aded7ba7f2af6d2ee9e5ceead26d90d6146e8bb66efb5ca04042d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-lossless-ir/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-lossless-ir/tasks.md",
+      "source_hash": "5ec263373fdf915ef2b637e6e5f0fbb8880e40bc0470d7bc1262053e612869f2"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-validation-harness/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-validation-harness/design.md",
+      "source_hash": "5191d7e1ff787857d12ab6d40d69fb4f7924fafa34d4bc37d623cf93b0289586"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-validation-harness/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-validation-harness/proposal.md",
+      "source_hash": "a509eafbc77cf1ee03f259025233f89637b745e68c6d7c0f217de27d6ac5bc8c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-validation-harness/specs/validation-harness/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-validation-harness/specs/validation-harness/spec.md",
+      "source_hash": "6f4995acf04310a61b19161d7168ff3a8e2da7d284eb264fecadbd30d43a3dda"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-establish-validation-harness/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-establish-validation-harness/tasks.md",
+      "source_hash": "14cf78e6f03fe4fd83728e6df4701387592ff206dd54ad7c5a6ad99913757b18"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-fsm-spec-receipts/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-fsm-spec-receipts/design.md",
+      "source_hash": "7d304bf69f66ca83df9a659752000220387f58269156e79576076359f5eae32f"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-fsm-spec-receipts/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-fsm-spec-receipts/proposal.md",
+      "source_hash": "273bfdaa1ffd25210a50e7ae0910e5d0c4f715cb10ed8d50bb0525bb7d55b4b6"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-fsm-spec-receipts/specs/schema-vocabulary/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-fsm-spec-receipts/specs/schema-vocabulary/spec.md",
+      "source_hash": "09925c3215c6eef6d59af3c1865fe63e5e4979a1f6e4c0eff50e817832558398"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-fsm-spec-receipts/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-fsm-spec-receipts/specs/stack-integration/spec.md",
+      "source_hash": "7198c11849e0fc9c08484c47a3655059bcabdf0e01063e789e242a7ea9b17ba8"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-fsm-spec-receipts/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-fsm-spec-receipts/tasks.md",
+      "source_hash": "769fe6570264af339bada08bff57344f82c3678ddb45f9cf945941425df4dcc6"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-ratchet-rust-determinism/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-ratchet-rust-determinism/design.md",
+      "source_hash": "92c4ef24e04fd678bc289af5cdbaca395e0a0c15a1c64166ffcf9c3943843310"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-ratchet-rust-determinism/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-ratchet-rust-determinism/proposal.md",
+      "source_hash": "56bcca8d031e8fd5bb44e8456fd40743abe123095710dfc6e5051f10ce1b010a"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-ratchet-rust-determinism/specs/rust-explicit-determinism/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-ratchet-rust-determinism/specs/rust-explicit-determinism/spec.md",
+      "source_hash": "2c3579c67ef95b35a82ce9bae37c0d737576614c0eefeee57ea5401c24f82bdc"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-ratchet-rust-determinism/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-ratchet-rust-determinism/tasks.md",
+      "source_hash": "2277c55193da82da2c64175a5347c05084cbb381f8e8959fb553c38024545379"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-rename-to-kamacite/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-rename-to-kamacite/design.md",
+      "source_hash": "2cf6f6f4b03ad1152ee50bbd69e64ec47f1548b9dbfcc0a7ac1f77eebce26bd2"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-rename-to-kamacite/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-rename-to-kamacite/proposal.md",
+      "source_hash": "2eb771bdde4f4a2ab1ff6e51af8037deca9a4f12a7277714c1211fcf21641e9f"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-rename-to-kamacite/specs/project-naming/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-rename-to-kamacite/specs/project-naming/spec.md",
+      "source_hash": "1ee57ef0dfeccf976bfedae7d12e11a92e623d409ba827baec20a6cc77cf26f1"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-09-rename-to-kamacite/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-09-rename-to-kamacite/tasks.md",
+      "source_hash": "78e7028fe48c28c0d93081c5cfc0eb7a12f20ae97ab422fc6761f80f170256af"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-autogenerate-language-docs/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-autogenerate-language-docs/design.md",
+      "source_hash": "0b24fc0a3e8eebd875c8d2905ed87348b661a43f595a9c2e16b9f5d64a8d4968"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-autogenerate-language-docs/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-autogenerate-language-docs/proposal.md",
+      "source_hash": "86ba3475d5f3496651c4767706766e0afd8d346c05da5c67d060cd7e4dc22faa"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-autogenerate-language-docs/specs/documentation-pipeline/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-autogenerate-language-docs/specs/documentation-pipeline/spec.md",
+      "source_hash": "83b3646d7d450a7693050558ea0a3818b58e17d89514be55511957057d9cfcfc"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-autogenerate-language-docs/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-autogenerate-language-docs/tasks.md",
+      "source_hash": "90a0892f8012471414acf301e12b3dff3f9be8e07187049ca0018d24b2736d68"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-canonical-evidence-chain-envelope/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-canonical-evidence-chain-envelope/design.md",
+      "source_hash": "7f6925d2e1143a7ca8d4b8c87a921d060ba5a3a5d5249d2190a5657ea81a7ca6"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-canonical-evidence-chain-envelope/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-canonical-evidence-chain-envelope/proposal.md",
+      "source_hash": "fb4e1fb83e3adf9a78261c2c2996d9932856105139fc1f0de21ae267bf73e27c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-canonical-evidence-chain-envelope/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-canonical-evidence-chain-envelope/specs/stack-integration/spec.md",
+      "source_hash": "bf2dd886534daba5cff2491cf104ea6407e9ccd92b4c9932731088090a2c98fe"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-canonical-evidence-chain-envelope/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-canonical-evidence-chain-envelope/tasks.md",
+      "source_hash": "9091dc1d3c08c0773e8896a9676c592a079ce12a7cfd452ee6fbd816c8362f7d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-cli-receipt-adapter/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-cli-receipt-adapter/design.md",
+      "source_hash": "e6b939b56a0fc68d2dacb496e5240176c7f9fa8b4f0b0c5d64a6835637e06738"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-cli-receipt-adapter/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-cli-receipt-adapter/proposal.md",
+      "source_hash": "faf7724a58adf583cb3a1273969c64bb14bc98c13486ef6b75a9646e4170b5fa"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-cli-receipt-adapter/specs/function-address-receipts/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-cli-receipt-adapter/specs/function-address-receipts/spec.md",
+      "source_hash": "54e3b935b92619164dde1f10d3666a7d67ccf3e5eb936834194e6038408c7099"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-cli-receipt-adapter/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-cli-receipt-adapter/tasks.md",
+      "source_hash": "811da038c4728ac8bab55fb819fe859980473ba04431355021c384b59e442e0f"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-dependency-vocabulary/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-dependency-vocabulary/design.md",
+      "source_hash": "f6d891a17f70e0bb11d84d23ca34bfd0bbefe8404e759bb95bea18d335a6c67b"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-dependency-vocabulary/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-dependency-vocabulary/proposal.md",
+      "source_hash": "d3679c13af78ea007959cfa4aad477f96cc41d4bfa4e7964be325ecd49d2aaa7"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-dependency-vocabulary/specs/function-address-receipts/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-dependency-vocabulary/specs/function-address-receipts/spec.md",
+      "source_hash": "e11f4dd01f784840a7f64bb6cd88d56488533354ca4db535a3c3946510b2541b"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-dependency-vocabulary/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-dependency-vocabulary/tasks.md",
+      "source_hash": "1062f318d0c4cf1c680a82d65e60ba06bf69dd433950c52127174f3e146fb70f"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-preserves-authority/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-preserves-authority/design.md",
+      "source_hash": "fdcb6b75410b02add837452f10647277c4f92b8eaf9bd4aa19083935968d8dbe"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-preserves-authority/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-preserves-authority/proposal.md",
+      "source_hash": "72c5c9a086f3af417827fd492773591897942ba735ed12768713f79eadcbb5e0"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-preserves-authority/specs/function-address-receipts/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-preserves-authority/specs/function-address-receipts/spec.md",
+      "source_hash": "92f7ed712ff729073e85c14cc4b9a33f8b8635351cd4a165e0f73510b7406129"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-function-address-preserves-authority/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-function-address-preserves-authority/tasks.md",
+      "source_hash": "e6cc6be6adbf341f59defeb8c6b1caa2f59376e4cce93cca6b6225c24e1b840c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/design.md",
+      "source_hash": "fa02a708553d83782895972c8d68c3581630825d693672a1d655e6af69a08beb"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/proposal.md",
+      "source_hash": "274cdf880dcc4ef80ae7962bfe3effc00b529c96ec07c104445e49eff55962af"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/specs/reference-ir-boundary/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/specs/reference-ir-boundary/spec.md",
+      "source_hash": "e7476492e154219dc743332e38e789d83be448c6b6d0ee25e715b59b25480a9a"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-tmir-dialect-roundtrip-reference/tasks.md",
+      "source_hash": "4c11ce89de611b111f3b2d68a999c9a76a1cba95cacf6a5bb9a71713de311760"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-trellis-proof-evidence-envelope/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-trellis-proof-evidence-envelope/design.md",
+      "source_hash": "2c138eabe6c5b3e5b52e363272a0958a3d8ced5e7828484f17065962ac70841a"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-trellis-proof-evidence-envelope/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-trellis-proof-evidence-envelope/proposal.md",
+      "source_hash": "ed4f0f56617796956d91c90d92bb3d5b8126e49e48b7ac5ddc7ce475a359a569"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-trellis-proof-evidence-envelope/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-trellis-proof-evidence-envelope/specs/stack-integration/spec.md",
+      "source_hash": "79903a38332ceefc4a0efb70306b9eb984b584b839dc9b3777e7f1b8ddd78aae"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-10-trellis-proof-evidence-envelope/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-10-trellis-proof-evidence-envelope/tasks.md",
+      "source_hash": "bfaffb7d3d0a5c6c1cb418791dcd270fd16378d97c4bd43aeb8b35bd68b7c5a0"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/design.md",
+      "source_hash": "a1ffcef823a7e8f14e8e336c7cc9fff8cd18430f6f98dd644c1b0014413092ff"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/proposal.md",
+      "source_hash": "f317307b25528b05b241ef7d3b738de705eed2f8845e818466d3266ef6e7f4e5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/specs/adapter-conformance/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/specs/adapter-conformance/spec.md",
+      "source_hash": "e147ae4d7f86e00602077b701717786ee5bea11322eec2be373152f8150f760d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-add-ast-grep-adapter-boundary-audits/tasks.md",
+      "source_hash": "871adeec93c62eb9a1fc5fc85239110c3c615d8ae504debf4b2b657b31ad2b5c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-function-address-producer-version/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-function-address-producer-version/design.md",
+      "source_hash": "eb419bf505877be52b1baecff16363ca83a118e5d4396b54550161dd27ad1837"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-function-address-producer-version/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-function-address-producer-version/proposal.md",
+      "source_hash": "3a0eddc2f1fbe16f024f5ab9d77bbadf61a83ceeff720dc83bf9321d468be440"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-function-address-producer-version/specs/function-address-receipts/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-function-address-producer-version/specs/function-address-receipts/spec.md",
+      "source_hash": "05848e78323405d75b74000d34986f731a0acca4f2f06556a66be1dd6a0d020c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-function-address-producer-version/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-function-address-producer-version/tasks.md",
+      "source_hash": "098d3801d3e1ac997e6afb22732ac5b585ece051e39620b457ddb77cdd8a7131"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-valence-conformance-content/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-valence-conformance-content/design.md",
+      "source_hash": "764e886dc357eda0b771ad73d1ade7b70e40bc494f4a49f8e86adfb80892a7ee"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-valence-conformance-content/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-valence-conformance-content/proposal.md",
+      "source_hash": "44dcbe11f344029bf8d6b4cc2d07682c082df26e517207e8c99770e2565bf08e"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-valence-conformance-content/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-valence-conformance-content/specs/stack-integration/spec.md",
+      "source_hash": "b2cae1af8e56ca95a710eb485288420ba4c5aa9066e91dec1e044ea564e90c5b"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-bind-valence-conformance-content/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-bind-valence-conformance-content/tasks.md",
+      "source_hash": "9c43fb6299baee97d7f2f245768330836e7cdc9a2477a6cd970145ccefea3105"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-confine-root-relative-filesystem-io/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-confine-root-relative-filesystem-io/design.md",
+      "source_hash": "11476bb54f04ce7d340b640c38e1bd5cf956cc153d7d66bf706983985fbf24f0"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-confine-root-relative-filesystem-io/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-confine-root-relative-filesystem-io/proposal.md",
+      "source_hash": "fabe0ac3e0f730ab9eb04141c0909b7e9ed52cfdf23147e175e644b83a6fe02d"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-confine-root-relative-filesystem-io/specs/validation-command/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-confine-root-relative-filesystem-io/specs/validation-command/spec.md",
+      "source_hash": "69f15586405d259856a77e62d0d9ae645eda437d1a2cf183036176823e4b350c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-confine-root-relative-filesystem-io/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-confine-root-relative-filesystem-io/tasks.md",
+      "source_hash": "c2056bc855b4e3eeb512fb003eba6f9957db3b10fe32a4ec12ae935a369fdd44"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/design.md",
+      "source_hash": "c345b6fcdebc75a266d597997eb9879e9a98fa064e5a4d5320ca2ae2cd5ec10b"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/proposal.md",
+      "source_hash": "ec7d3a9c921189cdd465f852509889d6793ff11b08bde56f4051debe8a2d06c6"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/specs/steel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/specs/steel-adapter-suite/spec.md",
+      "source_hash": "f9af5f9e7bf343177acacb677542111d58bbb80e492d96c0509b2222198f7ef4"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-execute-steel-probes-and-enforce-output-contracts/tasks.md",
+      "source_hash": "ee0f571a2c7347e10722343f15c4bbcb477cd3f4eaee4cb6c0434ce0e1f12bc5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-documentation-commands-fail-closed/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-documentation-commands-fail-closed/design.md",
+      "source_hash": "305e9b61490c38a691b3dfe03c5aea2d94456715fdf0fade716ddf6856a725d5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-documentation-commands-fail-closed/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-documentation-commands-fail-closed/proposal.md",
+      "source_hash": "71dd1f91ddcc87c1b0f66ac01d517f5a634af8bbc8b2d8294b58d904c0438865"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-documentation-commands-fail-closed/specs/documentation-pipeline/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-documentation-commands-fail-closed/specs/documentation-pipeline/spec.md",
+      "source_hash": "9445210795b65104500a1d3f09832d49d4ba71a396d64df9fcc0e4f1cbe81489"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-documentation-commands-fail-closed/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-documentation-commands-fail-closed/tasks.md",
+      "source_hash": "845e787fb1b22de70ed6b2fee3df6fc131f118f496b51a1f679eec3232353f81"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-preserves-authority-real/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-preserves-authority-real/design.md",
+      "source_hash": "7a538fa090fedb108470892a60ead82d4caf63e55f98f78f44776c857447ad62"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-preserves-authority-real/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-preserves-authority-real/proposal.md",
+      "source_hash": "49a4da4d06dc1bcaae5ca27096e7cd22865a3a568e8e7ddd017110e0c57e882f"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-preserves-authority-real/specs/lossless-ir/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-preserves-authority-real/specs/lossless-ir/spec.md",
+      "source_hash": "f834ce5d4e9b36ac2d58e19c16967b87d738a92817b7ef6acdc66d96c2f35020"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-make-preserves-authority-real/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-make-preserves-authority-real/tasks.md",
+      "source_hash": "4d54e90f82f2392d2a28f74c1b5bb81566b7a079c2a0b291e3a3e66b8eb50e91"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-restore-clippy-validation-gate/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-restore-clippy-validation-gate/design.md",
+      "source_hash": "cf5dc35e78a5d7b42adf9f31fb56010a15cf5d86787292e86395e310873eac00"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-restore-clippy-validation-gate/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-restore-clippy-validation-gate/proposal.md",
+      "source_hash": "5b826af8deed8f4f5c7cf19c13ac149dc4792cbce52f067d683bae1f0232fb9c"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-restore-clippy-validation-gate/specs/packaging-and-validation-rails/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-restore-clippy-validation-gate/specs/packaging-and-validation-rails/spec.md",
+      "source_hash": "cbbdfcf409083617d72de344043017f5b4994888f56bb101174c61537d63f42e"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-restore-clippy-validation-gate/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-restore-clippy-validation-gate/tasks.md",
+      "source_hash": "9faf35fab4248d4ce9d073c617f97fb4cc8107ac58bc6e78905ba48a2bd64c74"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/design.md",
+      "source_hash": "f656d2e3cc57e5bcd2e397e7d2e6c4a553ce3c068a2d4047a831e9b024953422"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/proposal.md",
+      "source_hash": "51373022a9a8f84d97f819f782ebf8182ef12138ce5288de049982635447e46a"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/specs/nickel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/specs/nickel-adapter-suite/spec.md",
+      "source_hash": "a8ffca62895ee72225bb5ba0b46b15f2ad3e5274224cf26e03f415427b2027cc"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-sandbox-nickel-evaluator-authority/tasks.md",
+      "source_hash": "98f657df23cda8f73b4457c560d2cfda26c3c4a2d0e31136dbdde26957504fcb"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-separate-cli-license-boundary/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-separate-cli-license-boundary/design.md",
+      "source_hash": "24b28bbfbd87a59d944ae7597c92e09231dbd54c85efe1c9201c38bb52bf3446"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-separate-cli-license-boundary/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-separate-cli-license-boundary/proposal.md",
+      "source_hash": "2dfe639129e6615d91ac24b9d06e02ee5a2f85aab5157ac9e757d5960681366b"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-separate-cli-license-boundary/specs/packaging-and-validation-rails/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-separate-cli-license-boundary/specs/packaging-and-validation-rails/spec.md",
+      "source_hash": "119e8705f5e6696d26564144e8be3083af448ba0d0da018cc393edc91e597644"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-separate-cli-license-boundary/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-separate-cli-license-boundary/tasks.md",
+      "source_hash": "cef677eb0104885958fd883b708805311a9bb411c5a7b2b8b57786f1480567ff"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/design.md",
+      "source_hash": "cd6c2603577c5b9d92200ccd140c96410e98ac1403fb709cd04eb4b48de9be03"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/proposal.md",
+      "source_hash": "74a82fe2395e1081c3af678db9f6ee23758e4c2a5a9b2e6de4ada11a1ba83392"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/specs/finite-state-machine-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/specs/finite-state-machine-model/spec.md",
+      "source_hash": "bfa64d5184fb9f0b6814bf1eae7f904f451096cd72127f7220e8c441e9fafb99"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-validate-fsm-receipts-against-descriptors/tasks.md",
+      "source_hash": "c92824253f4539650150660946940fe6ff8c85b03c870a92e12b298df923d342"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-verify-manifest-semantic-freshness/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-verify-manifest-semantic-freshness/design.md",
+      "source_hash": "59cae757d335ce896af797c14d9615338df952aae3485cd737fe3ef55121aee2"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-verify-manifest-semantic-freshness/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-verify-manifest-semantic-freshness/proposal.md",
+      "source_hash": "cf6e7db9983870c6640f1bd60c34e7cafe77b000a63937b77aa5a91b24b4c5d5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-verify-manifest-semantic-freshness/specs/validation-harness/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-verify-manifest-semantic-freshness/specs/validation-harness/spec.md",
+      "source_hash": "f54a5cad9d63de6791d89331ff69a119f70659e5640f916d33ca7510801fcf83"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-14-verify-manifest-semantic-freshness/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-14-verify-manifest-semantic-freshness/tasks.md",
+      "source_hash": "da080206e41592d00287ff8e9064d659976e2763445bb4323080a0e2b23bb786"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/design.md",
+      "source_hash": "924468d09f70cf2bf05eb077750499677881f17641df7cf24fef33cb7e8311ed"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical/evidence-rail-receipt.json",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical/evidence-rail-receipt.json",
+      "source_hash": "a97d3bb67a1577d4a3654009fa36fb35260d586fb3477bcea7a6ebbde9244bf3"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical/provenance.jsonl",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical/provenance.jsonl",
+      "source_hash": "f1ad3d0de753df66d7474511f757c578b03d7f1952687181a6c71ebcad68eab5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical/summary.txt",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/octet-clippy-canonical/summary.txt",
+      "source_hash": "1cc7a653353033ef9479b7010653f16f0613d857980694e1169da954157c5f45"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/validation.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/evidence/validation.md",
+      "source_hash": "ea0fc74cabb7e51db59a9d17c350ce9b16b1fbe5a2ed44cf17efb3bd2c2a36f9"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/proposal.md",
+      "source_hash": "c13004ef1f69c4c388d4bf614377396eb2cdcc9a4b91598c64aefab09b838e25"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/specs/packaging-and-validation-rails/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/specs/packaging-and-validation-rails/spec.md",
+      "source_hash": "5d499f4fde840a09b9886dcdc2ba3dfe06f374184b79cf73ca9e397d0dbae9ec"
+    },
+    {
+      "destination": "./.cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-07-15-adopt-octet-clippy-canonical-profile/tasks.md",
+      "source_hash": "0398ace0eb1125ba596d0efa6bb9990a39bc2ee509837c8f95bb43a31f14dcaf"
+    },
+    {
+      "destination": "./.cairn/archive/2026-08-05-encode-identity-domains-in-types/design.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-08-05-encode-identity-domains-in-types/design.md",
+      "source_hash": "54bdf51237f8c287f7b29a62c96daf5fbc6ff2bdac2a950fd1dfe73e5e178bf7"
+    },
+    {
+      "destination": "./.cairn/archive/2026-08-05-encode-identity-domains-in-types/evidence/baseline.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-08-05-encode-identity-domains-in-types/evidence/baseline.md",
+      "source_hash": "b9cfa55b9980b6d4b81c9bb98f6763453b0d658d3d5ff8d9bd95e70eb43fc555"
+    },
+    {
+      "destination": "./.cairn/archive/2026-08-05-encode-identity-domains-in-types/evidence/validation.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-08-05-encode-identity-domains-in-types/evidence/validation.md",
+      "source_hash": "a68782b36f514f53e8785af693f579bd8553ee46d8c6d1cee6b4fd910717d4c5"
+    },
+    {
+      "destination": "./.cairn/archive/2026-08-05-encode-identity-domains-in-types/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-08-05-encode-identity-domains-in-types/proposal.md",
+      "source_hash": "1470098d779686d87257c6f7ca4b572990423153443d32dfd8cd1e42e77109fb"
+    },
+    {
+      "destination": "./.cairn/archive/2026-08-05-encode-identity-domains-in-types/specs/identity-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-08-05-encode-identity-domains-in-types/specs/identity-model/spec.md",
+      "source_hash": "ab9474f2739ad4cc615d6b983cc63c776dfcc58a345ddc5b09e1c38ff9b06195"
+    },
+    {
+      "destination": "./.cairn/archive/2026-08-05-encode-identity-domains-in-types/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/archive/2026-08-05-encode-identity-domains-in-types/tasks.md",
+      "source_hash": "a01ec704a380ea3d60699309ae2c8742d6771445bd1cfc1d7432f19ce63ec2ca"
+    },
+    {
+      "destination": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/design.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-spacewasm-mvp-adapter-profile/design.md",
+      "source_hash": "445191668fc9e011864aa8dd96bd60675dd9afe3ec095779f016eb28783ac1c0"
+    },
+    {
+      "destination": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-spacewasm-mvp-adapter-profile/proposal.md",
+      "source_hash": "6e304f37bb51ced0370fb8367d32d7340fa591aeec11ff8f102e42425cf795a2"
+    },
+    {
+      "destination": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/specs/spacewasm-mvp-adapter/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-spacewasm-mvp-adapter-profile/specs/spacewasm-mvp-adapter/spec.md",
+      "source_hash": "ccd52e226941de2809dc644b39b6c14a46e7c9082726ccc0b6ec1a6c6752aaaf"
+    },
+    {
+      "destination": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-spacewasm-mvp-adapter-profile/tasks.md",
+      "source_hash": "98b519fc69ff312e7564e6a2ef66b3eef043317a18004b163bfd31b25779dc93"
+    },
+    {
+      "destination": "./.cairn/changes/add-wit-component-adapter-suite/design.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-wit-component-adapter-suite/design.md",
+      "source_hash": "386fa6317cc5c79595697fa65908abdab77830b5484f94c12ac0ea9199c0dbac"
+    },
+    {
+      "destination": "./.cairn/changes/add-wit-component-adapter-suite/extraction-feasibility.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-wit-component-adapter-suite/extraction-feasibility.md",
+      "source_hash": "2554cc9e9e62ff0bd0d19575b998b8f5fd8dc9d1c2dda9026cc26ac80066d14f"
+    },
+    {
+      "destination": "./.cairn/changes/add-wit-component-adapter-suite/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-wit-component-adapter-suite/proposal.md",
+      "source_hash": "981981d49f13d362f7b77d262126736a240cb435e7d3a460dc0ef1a971746033"
+    },
+    {
+      "destination": "./.cairn/changes/add-wit-component-adapter-suite/specs/wasm-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-wit-component-adapter-suite/specs/wasm-adapter-suite/spec.md",
+      "source_hash": "f8b867ef18290b545b2918b1959519bf3f4e2d840e1ccecfa14bf92e8a679ec7"
+    },
+    {
+      "destination": "./.cairn/changes/add-wit-component-adapter-suite/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/add-wit-component-adapter-suite/tasks.md",
+      "source_hash": "fb378340baec44c6011c7af5bd55ddfa0b7ffed7f7d4a0ad1b2d6bc9ebf96556"
+    },
+    {
+      "destination": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/design.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/evaluate-bend-hvm2-pure-adapter/design.md",
+      "source_hash": "35b8dd3c118352acef40dbb1f86953b9c3c7ecf49c5ca5f32f1d9c952aa865af"
+    },
+    {
+      "destination": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/proposal.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/evaluate-bend-hvm2-pure-adapter/proposal.md",
+      "source_hash": "02a7482b1f26aea0c47afc2d0b515db519bc544e71ae4edda42c7f2ecd637fc7"
+    },
+    {
+      "destination": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md",
+      "source_hash": "96998620f0351c998f309121dc75e9b414f6e847381347963dea1e5c052981ae"
+    },
+    {
+      "destination": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/tasks.md",
+      "destination_hash": null,
+      "source": "./cairn/changes/evaluate-bend-hvm2-pure-adapter/tasks.md",
+      "source_hash": "18ea9379349f196dd9197789a072d6ff028b80a250a3c8c632f2da75d20248d0"
+    },
+    {
+      "destination": "./.cairn/specs/.gitkeep",
+      "destination_hash": null,
+      "source": "./cairn/specs/.gitkeep",
+      "source_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    {
+      "destination": "./.cairn/specs/adapter-boundaries/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/adapter-boundaries/spec.md",
+      "source_hash": "f7fb0dee920fb09a18332b4f149fa7e7b08dc9f71d321bcbec5dd485d84fc746"
+    },
+    {
+      "destination": "./.cairn/specs/adapter-conformance/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/adapter-conformance/spec.md",
+      "source_hash": "1b707a6d058e89883ae6d04fd45cda1821ecb28bd613e2cbcf26dab7d79fd29b"
+    },
+    {
+      "destination": "./.cairn/specs/algebraic-effect-fixtures-and-stack/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/algebraic-effect-fixtures-and-stack/spec.md",
+      "source_hash": "4385be6b69827d004fa4ad9cc856688f0a923aeaccf93950f288c7522b0b41d6"
+    },
+    {
+      "destination": "./.cairn/specs/algebraic-effect-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/algebraic-effect-model/spec.md",
+      "source_hash": "f04d82540de06cf167a91c4609a25e3922d3f71fb90ae7edfadef145893bcb5d"
+    },
+    {
+      "destination": "./.cairn/specs/application-host-binding/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/application-host-binding/spec.md",
+      "source_hash": "6e4e3a0d633a6581a8a42ff50fccd19490c9194befdce2ac0ab81b9423737112"
+    },
+    {
+      "destination": "./.cairn/specs/documentation-pipeline/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/documentation-pipeline/spec.md",
+      "source_hash": "37f44109fe2e69f1431299fcab073af7709ab0de5857d7ab822fe22ddfad233e"
+    },
+    {
+      "destination": "./.cairn/specs/finite-state-machine-fixtures-and-stack/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/finite-state-machine-fixtures-and-stack/spec.md",
+      "source_hash": "9d3b2d2fe2653077275a8f0dc5a059b1075ea8157f90df7f39eb01d3cfb18968"
+    },
+    {
+      "destination": "./.cairn/specs/finite-state-machine-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/finite-state-machine-model/spec.md",
+      "source_hash": "92bbfe23f434c58e707528c34619b1b4eec9272701f2038d0f41fa9fcf5a9cdf"
+    },
+    {
+      "destination": "./.cairn/specs/fixture-corpus/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/fixture-corpus/spec.md",
+      "source_hash": "9ddada4cbf71c9603966e3fcc7a0bfc5e95ad789dfa20b4b7398f9e1c80d650c"
+    },
+    {
+      "destination": "./.cairn/specs/function-address-receipts/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/function-address-receipts/spec.md",
+      "source_hash": "56cbf06278871fa86bd89ec73ab399ac5b60d032ac8603c8bbc70551ceeee1e9"
+    },
+    {
+      "destination": "./.cairn/specs/identity-model/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/identity-model/spec.md",
+      "source_hash": "3478bb4ed4fa09366a91342cf29fada954aa667b3db53e0c147ef3e861ba8af8"
+    },
+    {
+      "destination": "./.cairn/specs/lossless-ir/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/lossless-ir/spec.md",
+      "source_hash": "957e45728b48af3444ad37b7e09e8c483eda7f6a68317710ff2e8458be0e30fd"
+    },
+    {
+      "destination": "./.cairn/specs/nickel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/nickel-adapter-suite/spec.md",
+      "source_hash": "d932d09137b35d4debe7eae4c6093389df4bf3f69a476836e61993879166fb75"
+    },
+    {
+      "destination": "./.cairn/specs/packaging-and-validation-rails/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/packaging-and-validation-rails/spec.md",
+      "source_hash": "e03d0fea8c6422544df1fe01c2ed22eb5d414bf0e2206faf585f395aa4d445f3"
+    },
+    {
+      "destination": "./.cairn/specs/project-naming/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/project-naming/spec.md",
+      "source_hash": "1ee57ef0dfeccf976bfedae7d12e11a92e623d409ba827baec20a6cc77cf26f1"
+    },
+    {
+      "destination": "./.cairn/specs/reference-ir-boundary/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/reference-ir-boundary/spec.md",
+      "source_hash": "09a2497794044e596d393461eb4a88c92ee59f599c4433e91ebe6c5a1a181926"
+    },
+    {
+      "destination": "./.cairn/specs/rust-explicit-determinism/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/rust-explicit-determinism/spec.md",
+      "source_hash": "2c3579c67ef95b35a82ce9bae37c0d737576614c0eefeee57ea5401c24f82bdc"
+    },
+    {
+      "destination": "./.cairn/specs/schema-vocabulary/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/schema-vocabulary/spec.md",
+      "source_hash": "e5e211662efa0c6b5b7b8aa8b32b936299a4d92a2cbeebdbe8ff6b72737c3ce1"
+    },
+    {
+      "destination": "./.cairn/specs/semantic-effect-operation-identity/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/semantic-effect-operation-identity/spec.md",
+      "source_hash": "3f60815860227f06e8e18cefc3931b756e0539b8a24ccf6e652a76a953f230d9"
+    },
+    {
+      "destination": "./.cairn/specs/semantic-effect-operation-stack/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/semantic-effect-operation-stack/spec.md",
+      "source_hash": "8a0d08ca11a9178614b94dcf9cdf06b142ccb373e7fa09b36bbab548ce367ce9"
+    },
+    {
+      "destination": "./.cairn/specs/source-envelopes/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/source-envelopes/spec.md",
+      "source_hash": "044a03317a6ce801719780648596e91232161683eb9b0ccf8d0783c2e4f7a4a0"
+    },
+    {
+      "destination": "./.cairn/specs/stack-integration/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/stack-integration/spec.md",
+      "source_hash": "13095f726bf5c64d7d3c44b6d95247a114b2e36b15595eb59d8e84ca4371b292"
+    },
+    {
+      "destination": "./.cairn/specs/steel-adapter-suite/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/steel-adapter-suite/spec.md",
+      "source_hash": "6ff84ff788abec1c1d44bb4fd681b578307629a783ebff63522d30f154f4ccea"
+    },
+    {
+      "destination": "./.cairn/specs/typed-core-discipline/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/typed-core-discipline/spec.md",
+      "source_hash": "5d2d0faad8185a4414c6c2e4f2acc150caf0a6a84377fc17d6ae3f04d32b3e3c"
+    },
+    {
+      "destination": "./.cairn/specs/validation-command/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/validation-command/spec.md",
+      "source_hash": "7f5a7eef6f6068c320d147b0e90761a9d3378037c8474c328d6613e33b367440"
+    },
+    {
+      "destination": "./.cairn/specs/validation-harness/spec.md",
+      "destination_hash": null,
+      "source": "./cairn/specs/validation-harness/spec.md",
+      "source_hash": "0e2fc1e2db36cde180f7fbf5902db03e8f1c29cc82eb4061c0fb75d7ef99a70b"
+    }
+  ],
+  "blocked": false,
+  "command": "migrate_legacy-cairn",
+  "conflicts": [],
+  "destination_layout": "cairn",
+  "destination_manifest_hash": "d8942be615d4462f9a5263c704056245fc5a8b9ebff638fc6ec23de5b6ebf9b3",
+  "dry_run": true,
+  "manifest_hash": "4ed115c717f7b0735fcc10d54fc27687651bb47f9d39fe86f821065b4ed127df",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "3663d3a6e707ba142031def01f4eca9ac48e3abd42dcfbc7a19311bb3ad0eeb5",
+  "policy": "cairn-default",
+  "policy_hash": "2c0b44345b9d2e2b3eff5fa7db7a14b9681c6bfcf7a4bb651f13bcadc1f91757",
+  "receipt_hash": "6f07be4e947bc198b4e9620a0299ec3d2c6a02206751ebea152c14235253fc61",
+  "root": ".",
+  "source_layout": "legacy-cairn",
+  "source_manifest_hash": "ed77e01944affde99410ffb374b3cf7434766c0201135c5b77a6f140066703cf"
+}

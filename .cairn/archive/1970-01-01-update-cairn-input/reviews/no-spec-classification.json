@@ -1,0 +1,28 @@
+{
+  "decision": "approved",
+  "findings": [],
+  "review_kind": "plan",
+  "reviewed_inputs": [
+    {
+      "hash": "a2f074f409f03097d055615f31e085a2aa6f6eda1085bc39db94562589d9a1d1",
+      "path": "proposal.md"
+    },
+    {
+      "hash": "82f562d0106c1425e0005f44b2a037bec76f9c03e9fc66cae821382045480ee6",
+      "path": "design.md"
+    },
+    {
+      "hash": "adaba00aec406c443054e36963e5667a305119ebffd21ae329cb76cd35b70e55",
+      "path": "acceptance.md"
+    },
+    {
+      "hash": "cf30e273f0741518b4d0e6ccca1cc09dba21d3d3cb1654529ad9148aae5bca12",
+      "path": "tasks.md"
+    }
+  ],
+  "reviewer": {
+    "id": "operator:local",
+    "source": "manual"
+  },
+  "schema_version": "cairn.semantic-review.review-receipt.v1"
+}

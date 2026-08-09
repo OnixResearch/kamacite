@@ -6,11 +6,11 @@
 
 ## Lifecycle
 
-Use native Cairn artifacts under `cairn/` for product decisions:
+Use native Cairn artifacts under `.cairn/` for product decisions:
 
-- accepted specs: `cairn/specs/`
-- active changes: `cairn/changes/`
-- archived changes: `cairn/archive/`
+- accepted specs: `.cairn/specs/`
+- active changes: `.cairn/changes/`
+- archived changes: `.cairn/archive/`
 
 Run normal Rust and harness validation through Kamacite's repo-owned package and development shell:
 
