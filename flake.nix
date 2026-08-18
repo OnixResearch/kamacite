@@ -5,7 +5,7 @@
   inputs.cairn.url = "github:OnixResearch/cairn";
   inputs.cairn.inputs.nixpkgs.follows = "nixpkgs";
   inputs.schema-migration-core-src = {
-    url = "git+https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git?rev=3f7b4315c8e1d07726446f1e53ba45bc091c5275";
+    url = "git+https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git?rev=4fe90e130f2871cf69a6febcdc70785adca98aea";
     flake = false;
   };
 
@@ -128,8 +128,8 @@
             pkgs.runCommand "kamacite-schema-migration-core-pilot-source"
               { nativeBuildInputs = [ pkgs.ripgrep ]; }
               ''
-                test '${schema-migration-core-src.rev}' = '3f7b4315c8e1d07726446f1e53ba45bc091c5275'
-                rg --fixed-strings '3f7b4315c8e1d07726446f1e53ba45bc091c5275' ${self}/pilots/schema-migration/Cargo.toml ${self}/pilots/schema-migration/source.ncl > /dev/null
+                test '${schema-migration-core-src.rev}' = '4fe90e130f2871cf69a6febcdc70785adca98aea'
+                rg --fixed-strings '4fe90e130f2871cf69a6febcdc70785adca98aea' ${self}/pilots/schema-migration/Cargo.toml ${self}/pilots/schema-migration/source.ncl > /dev/null
                 touch "$out"
               '';
 
