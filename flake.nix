@@ -4,12 +4,17 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.cairn.url = "github:OnixResearch/cairn";
   inputs.cairn.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.schema-migration-core-src = {
+    url = "git+https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git?rev=3f7b4315c8e1d07726446f1e53ba45bc091c5275";
+    flake = false;
+  };
 
   outputs =
     {
       self,
       nixpkgs,
       cairn,
+      schema-migration-core-src,
     }:
     let
       systems = [
@@ -118,6 +123,15 @@
         in
         {
           package = self.packages.${system}.kamacite;
+
+          schema-migration-core-pilot-source =
+            pkgs.runCommand "kamacite-schema-migration-core-pilot-source"
+              { nativeBuildInputs = [ pkgs.ripgrep ]; }
+              ''
+                test '${schema-migration-core-src.rev}' = '3f7b4315c8e1d07726446f1e53ba45bc091c5275'
+                rg --fixed-strings '3f7b4315c8e1d07726446f1e53ba45bc091c5275' ${self}/pilots/schema-migration/Cargo.toml ${self}/pilots/schema-migration/source.ncl > /dev/null
+                touch "$out"
+              '';
 
           rustfmt =
             pkgs.runCommand "kamacite-rustfmt-check"

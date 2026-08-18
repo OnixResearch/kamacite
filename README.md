@@ -371,5 +371,6 @@ The split does not change third-party licenses, generated artifacts, prior grant
 - [zkat/miette](https://github.com/zkat/miette), [mitsuhiko/insta](https://github.com/mitsuhiko/insta), [assert-rs/snapbox](https://github.com/assert-rs/snapbox), and [assert-rs/trycmd](https://github.com/assert-rs/trycmd) — diagnostics and fixture-test references.
 - [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — evaluation-only pure parallel-language and source-envelope reference.
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — evaluation-only CPU runtime and generated-C target reference.
+- [Schema Migration Core](https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git) at `3f7b4315c8e1d07726446f1e53ba45bc091c5275` — bounded migration planning pilot without execution authority.
 
 These references do not transfer runtime, compiler, security, semantic, production, or release claims into Kamacite.

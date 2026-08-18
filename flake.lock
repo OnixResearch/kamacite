@@ -419,7 +419,8 @@
     "root": {
       "inputs": {
         "cairn": "cairn",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_5",
+        "schema-migration-core-src": "schema-migration-core-src"
       }
     },
     "rust-overlay": {
@@ -538,6 +539,23 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "type": "github"
+      }
+    },
+    "schema-migration-core-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787080226,
+        "narHash": "sha256-MZB1FOvO9wcFllaKNtfWb/qDuzsBxfV9RkxJ6Ua0AO0=",
+        "ref": "refs/heads/main",
+        "rev": "3f7b4315c8e1d07726446f1e53ba45bc091c5275",
+        "revCount": 2,
+        "type": "git",
+        "url": "https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git"
+      },
+      "original": {
+        "rev": "3f7b4315c8e1d07726446f1e53ba45bc091c5275",
+        "type": "git",
+        "url": "https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git"
       }
     },
     "slotcar": {
