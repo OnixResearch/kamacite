@@ -417,6 +417,26 @@ impl WireIdentity {
         })?;
         any_from_checked(domain, hex)
     }
+
+    /// Build a current-version wire record from a legacy wire struct.
+    pub fn from_legacy(identity: &crate::identity::Identity) -> Self {
+        Self {
+            domain: identity.domain.clone(),
+            algorithm: identity.algorithm.clone(),
+            hex: identity.hex.clone(),
+            version: WIRE_IDENTITY_VERSION,
+        }
+    }
+}
+
+impl From<WireIdentity> for crate::identity::Identity {
+    fn from(wire: WireIdentity) -> Self {
+        Self {
+            domain: wire.domain,
+            algorithm: wire.algorithm,
+            hex: wire.hex,
+        }
+    }
 }
 
 /// The closed heterogeneous enum of admitted domain identities.
@@ -1245,6 +1265,19 @@ mod tests {
                 "label catalog must cover every maintained domain"
             );
         }
+    }
+
+    #[test]
+    fn wire_and_legacy_records_convert_losslessly() {
+        let typed = SourceIdentity::compute(SOURCE_BYTES);
+        let legacy: Identity = typed.as_wire().into();
+        assert_eq!(legacy.domain, IdentityDomain::Source);
+        assert_eq!(legacy.algorithm, "blake3");
+        assert_eq!(legacy.hex.as_str(), typed.hex_str());
+        let back = WireIdentity::from_legacy(&legacy);
+        let admitted = back.admit();
+        assert!(admitted.is_ok());
+        assert_eq!(admitted, Ok(typed.into_any()));
     }
 
     #[test]

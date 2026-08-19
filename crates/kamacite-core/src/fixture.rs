@@ -1,6 +1,9 @@
 use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity_model::{
+    CanonicalValueIdentity, IdentityDomainMarker, SourceIdentity, TypedIdentity, WireIdentity,
+};
 use crate::nickel_sandbox::{
     NickelSandboxEvidence, NickelSandboxProfile, nickel_sandbox_evidence_identity,
     validate_nickel_sandbox,
@@ -1458,9 +1461,8 @@ fn validate_common_metadata(fixture: &FixtureCase, accumulator: &mut ValidationA
 
 fn validate_source_envelope(input: &SourceEnvelopeInput, accumulator: &mut ValidationAccumulator) {
     validate_supported_schema(input.schema_version, accumulator);
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Source>(
         &input.declared_identity,
-        IdentityDomain::Source,
         "source.declared_identity",
         accumulator,
     );
@@ -1475,16 +1477,16 @@ fn validate_source_envelope(input: &SourceEnvelopeInput, accumulator: &mut Valid
         return;
     }
 
-    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
+    let computed = SourceIdentity::compute(&input.source_bytes);
     accumulator.input_identities.insert(
         "declared-source".to_string(),
         input.declared_identity.clone(),
     );
     accumulator
         .output_identities
-        .insert("computed-source".to_string(), computed.clone());
-    if input.declared_identity.domain == IdentityDomain::Source
-        && input.declared_identity.hex != computed.hex
+        .insert("computed-source".to_string(), computed.as_wire().into());
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -1590,9 +1592,8 @@ fn push_preserves_diagnostic(
 
 fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut ValidationAccumulator) {
     validate_supported_schema(input.schema_version, accumulator);
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::CanonicalValue>(
         &input.declared_identity,
-        IdentityDomain::CanonicalValue,
         "canonical.declared_identity",
         accumulator,
     );
@@ -1609,12 +1610,12 @@ fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut Valid
         "canonical.canonical_bytes",
         accumulator,
     ) {
-        let computed = compute_identity(IdentityDomain::CanonicalValue, &canonical_bytes);
+        let computed = CanonicalValueIdentity::compute(&canonical_bytes);
         accumulator
             .output_identities
-            .insert("computed-canonical".to_string(), computed.clone());
-        if input.declared_identity.domain == IdentityDomain::CanonicalValue
-            && input.declared_identity.hex != computed.hex
+            .insert("computed-canonical".to_string(), computed.as_wire().into());
+        if let Some(declared) = &declared
+            && declared.hex_str() != computed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -1625,9 +1626,8 @@ fn validate_canonical_value(input: &CanonicalValueInput, accumulator: &mut Valid
         }
     }
     if let Some(projection_identity) = &input.projection_identity {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Projection>(
             projection_identity,
-            IdentityDomain::Projection,
             "canonical.projection_identity",
             accumulator,
         );
@@ -4334,6 +4334,35 @@ fn validate_identity_domain(
     }
 }
 
+/// Admit a supplied wire record into an exact typed identity domain.
+///
+/// Admission is the runtime boundary for records that cross untrusted JSON
+/// projections. A record that fails admission never reaches the typed
+/// comparison path, and the diagnostic matches the legacy domain check so
+/// recorded receipts stay byte-identical.
+fn admit_typed_identity<Domain: IdentityDomainMarker>(
+    identity: &Identity,
+    field: &str,
+    accumulator: &mut ValidationAccumulator,
+) -> Option<TypedIdentity<Domain>> {
+    match TypedIdentity::<Domain>::from_wire(WireIdentity::from_legacy(identity)) {
+        Ok(typed) => Some(typed),
+        Err(_) => {
+            accumulator.diagnostics.push(
+                Diagnostic::new(
+                    DiagnosticCode::IdentityDomainMismatch,
+                    REQUIREMENT_TYPED_DOMAIN,
+                    field,
+                    "identity domain did not match required typed domain",
+                )
+                .with_detail("actual", identity.domain.to_string())
+                .with_detail("expected", Domain::LABEL.to_string()),
+            );
+            None
+        }
+    }
+}
+
 fn finish_result(fixture: &FixtureCase, mut accumulator: ValidationAccumulator) -> FixtureResult {
     accumulator.diagnostics.sort();
     accumulator.checked_laws.sort();
@@ -5379,6 +5408,86 @@ mod tests {
                 .diagnostics
                 .iter()
                 .any(|diagnostic| diagnostic.code == DiagnosticCode::StaleIdentity)
+        );
+    }
+
+    #[test]
+    fn rejects_source_envelope_wrong_domain_at_typed_admission() {
+        let mut fixture = valid_source_fixture();
+        fixture.id = "unit.source.wrong-domain-admission".to_string();
+        fixture.expected_verdict = ValidationVerdict::Rejected;
+        if let FixturePayload::SourceEnvelope(input) = &mut fixture.payload {
+            input.declared_identity = compute_identity(IdentityDomain::Projection, VALID_SOURCE);
+        }
+        let result = validate_fixture(&fixture);
+        assert_eq!(result.observed_verdict, ValidationVerdict::Rejected);
+        assert!(result.expectation_met);
+        let mismatches: Vec<_> = result
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| diagnostic.code == DiagnosticCode::IdentityDomainMismatch)
+            .collect();
+        assert_eq!(mismatches.len(), 1);
+        let diagnostic = mismatches[0];
+        assert_eq!(diagnostic.field, "source.declared_identity");
+        assert_eq!(
+            diagnostic.details.get("actual"),
+            Some(&"projection".to_string())
+        );
+        assert_eq!(
+            diagnostic.details.get("expected"),
+            Some(&"source".to_string())
+        );
+        assert!(
+            !result
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == DiagnosticCode::StaleIdentity)
+        );
+    }
+
+    #[test]
+    fn rejects_canonical_projection_wrong_domain_at_typed_admission() {
+        let fixture = FixtureCase {
+            id: "unit.canonical.projection-wrong-domain".to_string(),
+            fixture_class: FixtureClass::Negative,
+            artifact_class: ArtifactClass::CanonicalValue,
+            requirement_ids: vec![REQUIREMENT_ID.to_string()],
+            non_claims: vec![NON_CLAIM.to_string()],
+            expected_verdict: ValidationVerdict::Rejected,
+            checked_laws: Vec::new(),
+            payload: FixturePayload::CanonicalValue(CanonicalValueInput {
+                schema_version: SUPPORTED_SCHEMA_VERSION,
+                canonical_bytes: Vec::new(),
+                declared_identity: compute_identity(IdentityDomain::CanonicalValue, b"unmatched"),
+                projection_identity: Some(compute_identity(
+                    IdentityDomain::CanonicalValue,
+                    b"wrong-projection",
+                )),
+                projection_claims_authority: false,
+                aliases: Vec::new(),
+            }),
+        };
+        let result = validate_fixture(&fixture);
+        assert_eq!(result.observed_verdict, ValidationVerdict::Rejected);
+        assert!(result.expectation_met);
+        let mismatches: Vec<_> = result
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| {
+                diagnostic.code == DiagnosticCode::IdentityDomainMismatch
+                    && diagnostic.field == "canonical.projection_identity"
+            })
+            .collect();
+        assert_eq!(mismatches.len(), 1);
+        let diagnostic = mismatches[0];
+        assert_eq!(
+            diagnostic.details.get("actual"),
+            Some(&"canonical-value".to_string())
+        );
+        assert_eq!(
+            diagnostic.details.get("expected"),
+            Some(&"projection".to_string())
         );
     }
 
