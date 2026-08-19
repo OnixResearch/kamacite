@@ -2,7 +2,8 @@ use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
 use crate::identity_model::{
-    CanonicalValueIdentity, IdentityDomainMarker, SourceIdentity, TypedIdentity, WireIdentity,
+    AdapterIdentity, CanonicalValueIdentity, EvaluatorIdentity, IdentityDomainMarker,
+    ProjectionIdentity, SourceIdentity, TargetArtifactIdentity, TypedIdentity, WireIdentity,
 };
 use crate::nickel_sandbox::{
     NickelSandboxEvidence, NickelSandboxProfile, nickel_sandbox_evidence_identity,
@@ -1779,9 +1780,8 @@ fn validate_nickel_source(
         }
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Source>(
         source_identity,
-        IdentityDomain::Source,
         "nickel.source_identity",
         accumulator,
     );
@@ -1797,11 +1797,14 @@ fn validate_nickel_source(
         ));
         return;
     }
-    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
-    accumulator
-        .output_identities
-        .insert("computed-nickel-source".to_string(), computed.clone());
-    if source_identity.domain == IdentityDomain::Source && source_identity.hex != computed.hex {
+    let computed = SourceIdentity::compute(&input.source_bytes);
+    accumulator.output_identities.insert(
+        "computed-nickel-source".to_string(),
+        computed.as_wire().into(),
+    );
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
+    {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_NICKEL_MISSING_SOURCE,
@@ -1843,24 +1846,21 @@ fn validate_nickel_evaluator(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Evaluator>(
         evaluator_identity,
-        IdentityDomain::Evaluator,
         "nickel.evaluator_identity",
         accumulator,
     );
     accumulator
         .input_identities
         .insert("nickel-evaluator".to_string(), evaluator_identity.clone());
-    let computed = compute_identity(
-        IdentityDomain::Evaluator,
-        input.evaluator_descriptor.as_bytes(),
+    let computed = EvaluatorIdentity::compute(input.evaluator_descriptor.as_bytes());
+    accumulator.output_identities.insert(
+        "computed-nickel-evaluator".to_string(),
+        computed.as_wire().into(),
     );
-    accumulator
-        .output_identities
-        .insert("computed-nickel-evaluator".to_string(), computed.clone());
-    if evaluator_identity.domain == IdentityDomain::Evaluator
-        && evaluator_identity.hex != computed.hex
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -1884,9 +1884,8 @@ fn validate_nickel_projection(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Projection>(
         projection_identity,
-        IdentityDomain::Projection,
         "nickel.projection_identity",
         accumulator,
     );
@@ -1894,13 +1893,13 @@ fn validate_nickel_projection(
         "nickel-export-projection".to_string(),
         projection_identity.clone(),
     );
-    let computed = compute_identity(IdentityDomain::Projection, &input.export_bytes);
+    let computed = ProjectionIdentity::compute(&input.export_bytes);
     accumulator.output_identities.insert(
         "computed-nickel-export-projection".to_string(),
-        computed.clone(),
+        computed.as_wire().into(),
     );
-    if projection_identity.domain == IdentityDomain::Projection
-        && projection_identity.hex != computed.hex
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -2040,20 +2039,22 @@ fn validate_steel_source(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Source>(
         source_identity,
-        IdentityDomain::Source,
         "steel.source_identity",
         accumulator,
     );
     accumulator
         .input_identities
         .insert("steel-source".to_string(), source_identity.clone());
-    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
-    accumulator
-        .output_identities
-        .insert("computed-steel-source".to_string(), computed.clone());
-    if source_identity.domain == IdentityDomain::Source && source_identity.hex != computed.hex {
+    let computed = SourceIdentity::compute(&input.source_bytes);
+    accumulator.output_identities.insert(
+        "computed-steel-source".to_string(),
+        computed.as_wire().into(),
+    );
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
+    {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
@@ -2095,24 +2096,21 @@ fn validate_steel_evaluator(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Evaluator>(
         evaluator_identity,
-        IdentityDomain::Evaluator,
         "steel.evaluator_identity",
         accumulator,
     );
     accumulator
         .input_identities
         .insert("steel-evaluator".to_string(), evaluator_identity.clone());
-    let computed = compute_identity(
-        IdentityDomain::Evaluator,
-        input.evaluator_descriptor.as_bytes(),
+    let computed = EvaluatorIdentity::compute(input.evaluator_descriptor.as_bytes());
+    accumulator.output_identities.insert(
+        "computed-steel-evaluator".to_string(),
+        computed.as_wire().into(),
     );
-    accumulator
-        .output_identities
-        .insert("computed-steel-evaluator".to_string(), computed.clone());
-    if evaluator_identity.domain == IdentityDomain::Evaluator
-        && evaluator_identity.hex != computed.hex
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -2145,9 +2143,8 @@ fn validate_steel_module_identity(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Adapter>(
         module_identity,
-        IdentityDomain::Adapter,
         "steel.module_identity",
         accumulator,
     );
@@ -2155,12 +2152,14 @@ fn validate_steel_module_identity(
         "steel-module-descriptor".to_string(),
         module_identity.clone(),
     );
-    let computed = compute_identity(IdentityDomain::Adapter, &input.module_descriptor_bytes);
+    let computed = AdapterIdentity::compute(&input.module_descriptor_bytes);
     accumulator.output_identities.insert(
         "computed-steel-module-descriptor".to_string(),
-        computed.clone(),
+        computed.as_wire().into(),
     );
-    if module_identity.domain == IdentityDomain::Adapter && module_identity.hex != computed.hex {
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
+    {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_STEEL_SOURCE_MODULE_IDENTITY,
@@ -2247,17 +2246,20 @@ fn validate_steel_input_value(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Projection>(
         input_identity,
-        IdentityDomain::Projection,
         "steel.input_identity",
         accumulator,
     );
-    let computed = compute_identity(IdentityDomain::Projection, &input.input_bytes);
-    accumulator
-        .output_identities
-        .insert("computed-steel-input".to_string(), computed.clone());
-    if input_identity != &computed {
+    let computed = ProjectionIdentity::compute(&input.input_bytes);
+    accumulator.output_identities.insert(
+        "computed-steel-input".to_string(),
+        computed.as_wire().into(),
+    );
+    if declared
+        .as_ref()
+        .is_none_or(|value| value.hex_str() != computed.hex_str())
+    {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_STEEL_SCHEMA_CONFORMANCE,
@@ -2438,9 +2440,8 @@ fn validate_steel_output(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Projection>(
         projection_identity,
-        IdentityDomain::Projection,
         "steel.output_projection_identity",
         accumulator,
     );
@@ -2448,13 +2449,13 @@ fn validate_steel_output(
         "steel-output-projection".to_string(),
         projection_identity.clone(),
     );
-    let computed = compute_identity(IdentityDomain::Projection, &input.output_bytes);
+    let computed = ProjectionIdentity::compute(&input.output_bytes);
     accumulator.output_identities.insert(
         "computed-steel-output-projection".to_string(),
-        computed.clone(),
+        computed.as_wire().into(),
     );
-    if projection_identity.domain == IdentityDomain::Projection
-        && projection_identity.hex != computed.hex
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -2488,7 +2489,7 @@ fn validate_steel_execution_evidence(
             return;
         }
     };
-    let evidence_identity = compute_identity(IdentityDomain::Adapter, &evidence_bytes);
+    let evidence_identity = AdapterIdentity::compute(&evidence_bytes);
     match &input.execution_evidence {
         SteelExecutionEvidence::StoredEvidence {
             fresh,
@@ -2497,9 +2498,10 @@ fn validate_steel_execution_evidence(
             accumulator
                 .checked_laws
                 .push("steel-stored-evidence-explicitly-nonfresh".to_string());
-            accumulator
-                .output_identities
-                .insert("steel-stored-evidence".to_string(), evidence_identity);
+            accumulator.output_identities.insert(
+                "steel-stored-evidence".to_string(),
+                evidence_identity.as_wire().into(),
+            );
             if *fresh || output_identity.as_ref() != input.output_projection_identity.as_ref() {
                 accumulator.diagnostics.push(Diagnostic::new(
                     DiagnosticCode::StaleIdentity,
@@ -2515,7 +2517,7 @@ fn validate_steel_execution_evidence(
                 .push("steel-executed-probe".to_string());
             accumulator.output_identities.insert(
                 "steel-executed-probe-evidence".to_string(),
-                evidence_identity,
+                evidence_identity.as_wire().into(),
             );
             validate_executed_steel_evidence(input, evidence, accumulator);
         }
@@ -2527,10 +2529,8 @@ fn validate_executed_steel_evidence(
     evidence: &crate::steel_execution::SteelExecutedProbeEvidence,
     accumulator: &mut ValidationAccumulator,
 ) {
-    let runner_identity = compute_identity(
-        IdentityDomain::Evaluator,
-        evidence.runner_descriptor.as_bytes(),
-    );
+    let runner_identity = EvaluatorIdentity::compute(evidence.runner_descriptor.as_bytes());
+    let runner_wire: Identity = runner_identity.as_wire().into();
     let input_contract = resolve_steel_dto_contract(&input.input_schema).ok();
     let output_contract = resolve_steel_dto_contract(&input.output_schema).ok();
     let output_byte_length = u64::try_from(input.output_bytes.len()).ok();
@@ -2551,7 +2551,7 @@ fn validate_executed_steel_evidence(
             .is_some_and(|contract| contract.identity == evidence.output_contract_identity);
     let runner_matches = evidence.runner_profile == input.evaluator_profile
         && evidence.runner_descriptor == input.evaluator_descriptor
-        && evidence.runner_identity == runner_identity
+        && evidence.runner_identity == runner_wire
         && input.evaluator_identity.as_ref() == Some(&evidence.runner_identity);
     let authority_matches = evidence.declared_builtin_modules == input.declared_builtin_modules
         && evidence.registered_host_functions == declared_host_functions
@@ -2641,22 +2641,21 @@ fn validate_steel_output_class(
 }
 
 fn validate_target_artifact(input: &TargetArtifactInput, accumulator: &mut ValidationAccumulator) {
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::TargetArtifact>(
         &input.declared_identity,
-        IdentityDomain::TargetArtifact,
         "target.declared_identity",
         accumulator,
     );
-    let computed = compute_identity(IdentityDomain::TargetArtifact, &input.output_bytes);
+    let computed = TargetArtifactIdentity::compute(&input.output_bytes);
     accumulator.input_identities.insert(
         "declared-target".to_string(),
         input.declared_identity.clone(),
     );
     accumulator
         .output_identities
-        .insert("computed-target".to_string(), computed.clone());
-    if input.declared_identity.domain == IdentityDomain::TargetArtifact
-        && input.declared_identity.hex != computed.hex
+        .insert("computed-target".to_string(), computed.as_wire().into());
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,

@@ -10,7 +10,7 @@
 ## Phase 2: Staged core migration
 
 - [x] [serial] I3 Migrate source-envelope and canonical-value APIs to exact identity aliases. r[kamacite.lossless_ir.nominal_identity_migration]
-- [ ] [serial] I4 Migrate projection, adapter, evaluator, compiler, and target-artifact APIs. r[kamacite.lossless_ir.nominal_identity_migration]
+- [x] [serial] I4 Migrate projection, adapter, evaluator, compiler, and target-artifact APIs. r[kamacite.lossless_ir.nominal_identity_migration]
 - [ ] [serial] I5 Migrate receipt, effect-family, effect-operation, handler, documentation, and compatibility identity APIs. r[kamacite.lossless_ir.nominal_identity_migration]
 - [ ] [serial] I6 Update Valence-friendly projections and stack adapters without role promotion or direct live dependencies. r[kamacite.lossless_ir.nominal_identity_stack]
 
