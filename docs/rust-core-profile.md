@@ -13,6 +13,21 @@ Crate rails:
 - Core APIs return domain diagnostics and deterministic receipt data rather than shell-oriented opaque errors.
 - Identity domains are typed: source, canonical value, projection, target artifact, adapter, evaluator, compiler, receipt, algebraic-effect, effect-operation, and effect-log identities are not interchangeable.
 
+## Nominal identity domains
+
+The crate separates two identity surfaces in `identity_model`:
+
+- Typed aliases (`SourceIdentity`, `CanonicalValueIdentity`, `ProjectionIdentity`, `TargetArtifactIdentity`, `AdapterIdentity`, `EvaluatorIdentity`, `CompilerIdentity`, `ReceiptIdentity`, `FunctionAddressIdentity`, `DependencyClosureIdentity`, `AlgebraicEffectIdentity`, `EffectOperationIdentity`, `EffectLogIdentity`, `FsmSpecIdentity`, `FsmUniverseIdentity`, `FsmCoverageIdentity`, `DocumentationIrIdentity`, `DocumentationOutputIdentity`, `DocumentationFactsIdentity`, `DialectPayloadIdentity`, `EvidenceChainIdentity`) wrap validated BLAKE3 content behind a zero-sized domain marker. Each alias is a distinct Rust type, so passing one domain's identity to another domain's API is a compile error. The module doc carries compile-fail doctest fixtures for the forbidden substitutions.
+- `WireIdentity` is the versioned interchange record. For the current version it emits the same JSON shape as the legacy wire struct, so canonical projections and recorded receipts stay byte-identical. Admission (`admit`, `admit_from_parts`, `TypedIdentity::from_wire`) fails closed on unknown domains, unsupported algorithms, malformed digests, stale versions, and conflicting artifact roles.
+
+Admission rules:
+
+- Runtime domain checks happen at admission. Heterogeneous records admit into the closed `AnyIdentity` enum; known-role APIs receive exact typed aliases after that boundary.
+- The generic typed identity stores only validated domain content. Family meaning (effect operations, handlers, replay policy) stays in its owning module; the generic type absorbs no effect semantics.
+- Consumers migrate by replacing `compute_identity(IdentityDomain::X, bytes)` with `XIdentity::compute(bytes)` and gating declared records on typed admission. The legacy wire struct stays the interchange record until each family migrates.
+
+Non-claims: nominal identity types prove local domain separation and checked identity syntax only. They do not prove source fidelity, adapter law satisfaction, semantic equivalence, authority, runtime correctness, or release eligibility.
+
 ## Shell role
 
 `kamacite-cli` is allowed to read files, materialize fixture bytes, run explicitly declared Nickel reference-export fixtures, compare golden receipts, write explicit update artifacts, and render JSON. Shells normalize observations into DTOs before calling the core. If a future shell admits filesystem-backed user paths, it should use `cap-std`, WASI, or equivalent root-capability APIs and must keep capability handles out of the core.

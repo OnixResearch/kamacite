@@ -23,8 +23,8 @@
 
 ## Phase 4: Closeout
 
-- [ ] [serial] I7 Document domain aliases, wire admission, semantic-operation ownership, consumer migration, and non-claims. r[kamacite.lossless_ir.nominal_identity_docs]
-- [ ] [serial] V7 Run workspace tests, Clippy, manifest freshness, canonical migration checks, lifecycle validation, Cairn gates, and relevant Nix checks. r[kamacite.lossless_ir.nominal_identity_final_checks]
+- [x] [serial] I7 Document domain aliases, wire admission, semantic-operation ownership, consumer migration, and non-claims. r[kamacite.lossless_ir.nominal_identity_docs]
+- [x] [serial] V7 Run workspace tests, Clippy, manifest freshness, canonical migration checks, lifecycle validation, Cairn gates, and relevant Nix checks. r[kamacite.lossless_ir.nominal_identity_final_checks]
 
 ## Verification coverage
 
