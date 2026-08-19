@@ -2,8 +2,10 @@ use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
 use crate::identity::{Identity, IdentityDomain, compute_identity};
 use crate::identity_model::{
-    AdapterIdentity, CanonicalValueIdentity, EvaluatorIdentity, IdentityDomainMarker,
-    ProjectionIdentity, SourceIdentity, TargetArtifactIdentity, TypedIdentity, WireIdentity,
+    AdapterIdentity, AlgebraicEffectIdentity, CanonicalValueIdentity, DocumentationIrIdentity,
+    DocumentationOutputIdentity, EffectLogIdentity, EvaluatorIdentity, FsmSpecIdentity,
+    IdentityDomainMarker, ProjectionIdentity, ReceiptIdentity, SourceIdentity,
+    TargetArtifactIdentity, TypedIdentity, WireIdentity,
 };
 use crate::nickel_sandbox::{
     NickelSandboxEvidence, NickelSandboxProfile, nickel_sandbox_evidence_identity,
@@ -2708,12 +2710,19 @@ fn validate_unsupported_claim(
 }
 
 fn validate_identity_use(input: &IdentityUseInput, accumulator: &mut ValidationAccumulator) {
-    validate_identity_domain(
-        &input.supplied_identity,
-        input.required_domain.clone(),
-        "identity_use.supplied_identity",
-        accumulator,
-    );
+    let admitted = WireIdentity::from_legacy(&input.supplied_identity).admit();
+    if !admitted.is_ok_and(|any| any.domain() == input.required_domain) {
+        accumulator.diagnostics.push(
+            Diagnostic::new(
+                DiagnosticCode::IdentityDomainMismatch,
+                REQUIREMENT_TYPED_DOMAIN,
+                "identity_use.supplied_identity",
+                "identity domain did not match required typed domain",
+            )
+            .with_detail("actual", input.supplied_identity.domain.to_string())
+            .with_detail("expected", input.required_domain.to_string()),
+        );
+    }
     accumulator
         .input_identities
         .insert("supplied".to_string(), input.supplied_identity.clone());
@@ -2810,9 +2819,8 @@ fn validate_fsm_spec(input: &FsmSpecInput, accumulator: &mut ValidationAccumulat
             "unsupported FSM spec schema version rejected",
         ));
     }
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::FsmSpec>(
         &input.declared_identity,
-        IdentityDomain::FsmSpec,
         "fsm.declared_identity",
         accumulator,
     );
@@ -2842,12 +2850,12 @@ fn validate_fsm_spec(input: &FsmSpecInput, accumulator: &mut ValidationAccumulat
         "fsm.canonical_bytes",
         accumulator,
     ) {
-        let computed = compute_identity(IdentityDomain::FsmSpec, &canonical_bytes);
+        let computed = FsmSpecIdentity::compute(&canonical_bytes);
         accumulator
             .output_identities
-            .insert("computed-fsm-spec".to_string(), computed.clone());
-        if input.declared_identity.domain == IdentityDomain::FsmSpec
-            && input.declared_identity.hex != computed.hex
+            .insert("computed-fsm-spec".to_string(), computed.as_wire().into());
+        if let Some(declared) = &declared
+            && declared.hex_str() != computed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -2885,7 +2893,7 @@ fn validate_optional_source_identity(
     accumulator: &mut ValidationAccumulator,
 ) {
     if let Some(identity) = identity {
-        validate_identity_domain(identity, IdentityDomain::Source, field, accumulator);
+        admit_typed_identity::<crate::identity_model::Source>(identity, field, accumulator);
         accumulator
             .input_identities
             .insert(field.to_string(), identity.clone());
@@ -3612,39 +3620,33 @@ fn validate_fsm_receipt_identities(
     input: &FsmReceiptInput,
     accumulator: &mut ValidationAccumulator,
 ) {
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::FsmSpec>(
         &input.spec_identity,
-        IdentityDomain::FsmSpec,
         "fsm_receipt.spec_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::FsmUniverse>(
         &input.state_universe_identity,
-        IdentityDomain::FsmUniverse,
         "fsm_receipt.state_universe_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::FsmUniverse>(
         &input.event_universe_identity,
-        IdentityDomain::FsmUniverse,
         "fsm_receipt.event_universe_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::FsmCoverage>(
         &input.transition_coverage_identity,
-        IdentityDomain::FsmCoverage,
         "fsm_receipt.transition_coverage_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::FsmCoverage>(
         &input.denial_coverage_identity,
-        IdentityDomain::FsmCoverage,
         "fsm_receipt.denial_coverage_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::Adapter>(
         &input.adapter_identity,
-        IdentityDomain::Adapter,
         "fsm_receipt.adapter_identity",
         accumulator,
     );
@@ -3677,9 +3679,8 @@ fn validate_fsm_receipt_identities(
         );
     }
     for octet_receipt in &input.octet_receipt_identities {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Receipt>(
             octet_receipt,
-            IdentityDomain::Receipt,
             "fsm_receipt.octet_receipt_identities",
             accumulator,
         );
@@ -3689,9 +3690,8 @@ fn validate_fsm_receipt_identities(
         );
     }
     if let Some(valence_export_identity) = &input.valence_export_identity {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Projection>(
             valence_export_identity,
-            IdentityDomain::Projection,
             "fsm_receipt.valence_export_identity",
             accumulator,
         );
@@ -3709,9 +3709,8 @@ fn validate_fsm_receipt_identities(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared_receipt = admit_typed_identity::<crate::identity_model::Receipt>(
         receipt_identity,
-        IdentityDomain::Receipt,
         "fsm_receipt.declared_receipt_identity",
         accumulator,
     );
@@ -3735,12 +3734,13 @@ fn validate_fsm_receipt_identities(
         "fsm_receipt.canonical_bytes",
         accumulator,
     ) {
-        let computed = compute_identity(IdentityDomain::Receipt, &canonical_bytes);
-        accumulator
-            .output_identities
-            .insert("computed-fsm-receipt".to_string(), computed.clone());
-        if receipt_identity.domain == IdentityDomain::Receipt
-            && receipt_identity.hex != computed.hex
+        let computed = ReceiptIdentity::compute(&canonical_bytes);
+        accumulator.output_identities.insert(
+            "computed-fsm-receipt".to_string(),
+            computed.as_wire().into(),
+        );
+        if let Some(declared_receipt) = &declared_receipt
+            && declared_receipt.hex_str() != computed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -4018,9 +4018,8 @@ fn validate_algebraic_effect(
             "unsupported algebraic-effect schema version rejected",
         ));
     }
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::AlgebraicEffect>(
         &input.declared_identity,
-        IdentityDomain::AlgebraicEffect,
         "algebraic.declared_identity",
         accumulator,
     );
@@ -4045,12 +4044,13 @@ fn validate_algebraic_effect(
         "algebraic.canonical_bytes",
         accumulator,
     ) {
-        let computed = compute_identity(IdentityDomain::AlgebraicEffect, &canonical_bytes);
-        accumulator
-            .output_identities
-            .insert("computed-algebraic-effect".to_string(), computed.clone());
-        if input.declared_identity.domain == IdentityDomain::AlgebraicEffect
-            && input.declared_identity.hex != computed.hex
+        let computed = AlgebraicEffectIdentity::compute(&canonical_bytes);
+        accumulator.output_identities.insert(
+            "computed-algebraic-effect".to_string(),
+            computed.as_wire().into(),
+        );
+        if let Some(declared) = &declared
+            && declared.hex_str() != computed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::AlgebraicEffectHashMismatch,
@@ -4268,20 +4268,21 @@ fn validate_replay(input: &AlgebraicEffectInput, accumulator: &mut ValidationAcc
                 ));
                 return;
             };
-            validate_identity_domain(
+            let declared = admit_typed_identity::<crate::identity_model::EffectLog>(
                 identity,
-                IdentityDomain::EffectLog,
                 "algebraic.replay.effect_log_identity",
                 accumulator,
             );
-            let computed = compute_identity(IdentityDomain::EffectLog, &replay.effect_log_bytes);
+            let computed = EffectLogIdentity::compute(&replay.effect_log_bytes);
             accumulator
                 .input_identities
                 .insert("declared-effect-log".to_string(), identity.clone());
             accumulator
                 .output_identities
-                .insert("computed-effect-log".to_string(), computed.clone());
-            if identity.domain == IdentityDomain::EffectLog && identity.hex != computed.hex {
+                .insert("computed-effect-log".to_string(), computed.as_wire().into());
+            if let Some(declared) = declared
+                && declared.hex_str() != computed.hex_str()
+            {
                 accumulator.diagnostics.push(Diagnostic::new(
                     DiagnosticCode::StaleIdentity,
                     REQUIREMENT_REPLAY,
@@ -4310,26 +4311,6 @@ fn validate_supported_schema(schema_version: u32, accumulator: &mut ValidationAc
             "schema_version",
             "unsupported schema version rejected",
         ));
-    }
-}
-
-fn validate_identity_domain(
-    identity: &Identity,
-    expected: IdentityDomain,
-    field: &str,
-    accumulator: &mut ValidationAccumulator,
-) {
-    if identity.validate_domain(expected.clone()).is_err() {
-        accumulator.diagnostics.push(
-            Diagnostic::new(
-                DiagnosticCode::IdentityDomainMismatch,
-                REQUIREMENT_TYPED_DOMAIN,
-                field,
-                "identity domain did not match required typed domain",
-            )
-            .with_detail("actual", identity.domain.to_string())
-            .with_detail("expected", expected.to_string()),
-        );
     }
 }
 
@@ -4508,15 +4489,13 @@ fn validate_documentation_ir(
     accumulator: &mut ValidationAccumulator,
 ) {
     validate_documentation_schema(input.schema_version, accumulator);
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::DocumentationIr>(
         &input.declared_identity,
-        IdentityDomain::DocumentationIr,
         "documentation_ir.declared_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::Adapter>(
         &input.collector_identity,
-        IdentityDomain::Adapter,
         "documentation_ir.collector_identity",
         accumulator,
     );
@@ -4578,12 +4557,17 @@ fn validate_documentation_ir_identity(
         "documentation_ir.canonical_bytes",
         accumulator,
     ) {
-        let computed = compute_identity(IdentityDomain::DocumentationIr, &canonical_bytes);
-        accumulator
-            .output_identities
-            .insert("computed-documentation-ir".to_string(), computed.clone());
-        if input.declared_identity.domain == IdentityDomain::DocumentationIr
-            && input.declared_identity.hex != computed.hex
+        let computed = DocumentationIrIdentity::compute(&canonical_bytes);
+        accumulator.output_identities.insert(
+            "computed-documentation-ir".to_string(),
+            computed.as_wire().into(),
+        );
+        let declared = TypedIdentity::<crate::identity_model::DocumentationIr>::from_wire(
+            WireIdentity::from_legacy(&input.declared_identity),
+        )
+        .ok();
+        if let Some(declared) = declared
+            && declared.hex_str() != computed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::StaleIdentity,
@@ -4624,9 +4608,8 @@ fn validate_documentation_ir_pages(
             ));
         }
         if let Some(identity) = &page.source_envelope_identity {
-            validate_identity_domain(
+            admit_typed_identity::<crate::identity_model::Source>(
                 identity,
-                IdentityDomain::Source,
                 "documentation_ir.pages.source_envelope_identity",
                 accumulator,
             );
@@ -4744,9 +4727,8 @@ fn validate_documentation_cell_descriptor(
         ));
         return;
     };
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::Source>(
         source_identity,
-        IdentityDomain::Source,
         "documentation_ir.cells.source_identity",
         accumulator,
     );
@@ -4798,21 +4780,18 @@ fn validate_documentation_output(
     accumulator: &mut ValidationAccumulator,
 ) {
     validate_documentation_schema(input.schema_version, accumulator);
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::DocumentationIr>(
         &input.documentation_ir_identity,
-        IdentityDomain::DocumentationIr,
         "documentation_output.documentation_ir_identity",
         accumulator,
     );
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::Adapter>(
         &input.renderer_identity,
-        IdentityDomain::Adapter,
         "documentation_output.renderer_identity",
         accumulator,
     );
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::DocumentationOutput>(
         &input.declared_output_identity,
-        IdentityDomain::DocumentationOutput,
         "documentation_output.declared_output_identity",
         accumulator,
     );
@@ -4832,17 +4811,17 @@ fn validate_documentation_output(
             "documentation output bytes are required",
         ));
     }
-    let computed = compute_identity(IdentityDomain::DocumentationOutput, &input.output_bytes);
+    let computed = DocumentationOutputIdentity::compute(&input.output_bytes);
     accumulator.input_identities.insert(
         "declared-documentation-output".to_string(),
         input.declared_output_identity.clone(),
     );
     accumulator.output_identities.insert(
         "computed-documentation-output".to_string(),
-        computed.clone(),
+        computed.as_wire().into(),
     );
-    if input.declared_output_identity.domain == IdentityDomain::DocumentationOutput
-        && input.declared_output_identity.hex != computed.hex
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::GoldenReceiptMismatch,
@@ -4937,14 +4916,15 @@ fn validate_documentation_cell_source(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared = admit_typed_identity::<crate::identity_model::Source>(
         source_identity,
-        IdentityDomain::Source,
         "documentation_cell.source_identity",
         accumulator,
     );
-    let computed = compute_identity(IdentityDomain::Source, &input.source_bytes);
-    if source_identity.domain == IdentityDomain::Source && source_identity.hex != computed.hex {
+    let computed = SourceIdentity::compute(&input.source_bytes);
+    if let Some(declared) = declared
+        && declared.hex_str() != computed.hex_str()
+    {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
             REQUIREMENT_DOCS_STALE_SOURCE,
@@ -4987,9 +4967,8 @@ fn validate_documentation_execution_mode(
         )),
     }
     if let Some(identity) = &input.evaluator_identity {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Evaluator>(
             identity,
-            IdentityDomain::Evaluator,
             "documentation_cell.evaluator_identity",
             accumulator,
         );
@@ -5046,18 +5025,14 @@ fn validate_documentation_observed_result(
     accumulator: &mut ValidationAccumulator,
 ) {
     if let Some(observed_identity) = &input.observed_output_identity {
-        validate_identity_domain(
+        let observed = admit_typed_identity::<crate::identity_model::DocumentationOutput>(
             observed_identity,
-            IdentityDomain::DocumentationOutput,
             "documentation_cell.observed_output_identity",
             accumulator,
         );
-        let computed = compute_identity(
-            IdentityDomain::DocumentationOutput,
-            &input.observed_output_bytes,
-        );
-        if observed_identity.domain == IdentityDomain::DocumentationOutput
-            && observed_identity.hex != computed.hex
+        let computed = DocumentationOutputIdentity::compute(&input.observed_output_bytes);
+        if let Some(observed) = observed
+            && observed.hex_str() != computed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::GoldenReceiptMismatch,
@@ -5090,15 +5065,18 @@ fn validate_documentation_success_result(
         &input.expected_output_identity,
         &input.observed_output_identity,
     ) {
-        validate_identity_domain(
+        let expected_admitted = admit_typed_identity::<crate::identity_model::DocumentationOutput>(
             expected,
-            IdentityDomain::DocumentationOutput,
             "documentation_cell.expected_output_identity",
             accumulator,
         );
-        if expected.domain == IdentityDomain::DocumentationOutput
-            && observed.domain == IdentityDomain::DocumentationOutput
-            && expected.hex != observed.hex
+        let observed_admitted =
+            TypedIdentity::<crate::identity_model::DocumentationOutput>::from_wire(
+                WireIdentity::from_legacy(observed),
+            )
+            .ok();
+        if let (Some(expected), Some(observed)) = (expected_admitted, observed_admitted)
+            && expected.hex_str() != observed.hex_str()
         {
             accumulator.diagnostics.push(Diagnostic::new(
                 DiagnosticCode::GoldenReceiptMismatch,
@@ -5154,40 +5132,35 @@ fn validate_documentation_receipt(
             "documentation receipt kind is required",
         ));
     }
-    validate_identity_domain(
+    admit_typed_identity::<crate::identity_model::DocumentationIr>(
         &input.documentation_ir_identity,
-        IdentityDomain::DocumentationIr,
         "documentation_receipt.documentation_ir_identity",
         accumulator,
     );
     if let Some(renderer_identity) = &input.renderer_identity {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Adapter>(
             renderer_identity,
-            IdentityDomain::Adapter,
             "documentation_receipt.renderer_identity",
             accumulator,
         );
     }
     for output_identity in &input.output_identities {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::DocumentationOutput>(
             output_identity,
-            IdentityDomain::DocumentationOutput,
             "documentation_receipt.output_identities",
             accumulator,
         );
     }
     for cell_receipt_identity in &input.cell_receipt_identities {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Receipt>(
             cell_receipt_identity,
-            IdentityDomain::Receipt,
             "documentation_receipt.cell_receipt_identities",
             accumulator,
         );
     }
     if let Some(valence_export_identity) = &input.valence_export_identity {
-        validate_identity_domain(
+        admit_typed_identity::<crate::identity_model::Projection>(
             valence_export_identity,
-            IdentityDomain::Projection,
             "documentation_receipt.valence_export_identity",
             accumulator,
         );
@@ -5227,7 +5200,10 @@ fn validate_documentation_receipt_identity(
         "documentation_receipt.canonical_bytes",
         accumulator,
     )
-    .map(|canonical_bytes| compute_identity(IdentityDomain::Receipt, &canonical_bytes));
+    .map(|canonical_bytes| {
+        let receipt: Identity = ReceiptIdentity::compute(&canonical_bytes).as_wire().into();
+        receipt
+    });
     if let Some(computed) = &computed {
         accumulator.output_identities.insert(
             "computed-documentation-receipt".to_string(),
@@ -5243,9 +5219,8 @@ fn validate_documentation_receipt_identity(
         ));
         return;
     };
-    validate_identity_domain(
+    let declared_receipt = admit_typed_identity::<crate::identity_model::Receipt>(
         declared,
-        IdentityDomain::Receipt,
         "documentation_receipt.declared_receipt_identity",
         accumulator,
     );
@@ -5253,9 +5228,8 @@ fn validate_documentation_receipt_identity(
         "declared-documentation-receipt".to_string(),
         declared.clone(),
     );
-    if let Some(computed) = computed
-        && declared.domain == IdentityDomain::Receipt
-        && declared.hex != computed.hex
+    if let Some(computed) = &computed
+        && declared_receipt.is_some_and(|value| value.hex_str() != computed.hex.as_str())
     {
         accumulator.diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
