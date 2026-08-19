@@ -3,9 +3,8 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Identity, IdentityDomain, SourceSpan, SourceSpanSet, SpaceWasmParentRole,
+    Identity, ProjectionIdentity, SourceSpan, SourceSpanSet, SpaceWasmParentRole,
     SpaceWasmStaticRequest, SpaceWasmValidationError, build_spacewasm_static_receipt,
-    compute_identity,
 };
 
 pub const SPACEWASM_VALENCE_PROJECTION_SCHEMA: &str = "kamacite.spacewasm-valence-projection.v1";
@@ -115,7 +114,9 @@ pub fn project_spacewasm_static_to_valence(
         .map_err(|error| SpaceWasmValenceProjectionError::Encoding(error.to_string()))?;
     Ok(SpaceWasmValenceProjection {
         body,
-        projection_identity: compute_identity(IdentityDomain::Projection, &projection_bytes),
+        projection_identity: ProjectionIdentity::compute(&projection_bytes)
+            .as_wire()
+            .into(),
     })
 }
 

@@ -1,5 +1,8 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{Identity, IdentityDomain};
+use crate::identity_model::{
+    AdapterIdentity, ProjectionIdentity, ReceiptIdentity, TypedIdentity, WireIdentity,
+};
 use crate::receipt::{RECEIPT_SCHEMA_VERSION, ReceiptEnvelope, ReceiptError, canonical_json_bytes};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -174,10 +177,8 @@ pub fn valence_conformance_identity(
     conformance: &ValenceExportConformance,
 ) -> Result<Identity, ReceiptError> {
     let body = canonical_valence_conformance_body(conformance);
-    Ok(compute_identity(
-        IdentityDomain::Adapter,
-        &canonical_json_bytes(&body)?,
-    ))
+    let canonical = canonical_json_bytes(&body)?;
+    Ok(AdapterIdentity::compute(&canonical).as_wire().into())
 }
 
 pub fn admit_valence_conformance(
@@ -304,9 +305,12 @@ fn validate_source_receipt_hash(receipt: &ReceiptEnvelope, diagnostics: &mut Vec
         ));
         return;
     };
-    let computed = compute_identity(IdentityDomain::Receipt, &body_bytes);
-    if receipt.receipt_identity.domain == IdentityDomain::Receipt
-        && receipt.receipt_identity.hex != computed.hex
+    let computed = ReceiptIdentity::compute(&body_bytes);
+    if let Some(declared) = TypedIdentity::<crate::identity_model::Receipt>::from_wire(
+        WireIdentity::from_legacy(&receipt.receipt_identity),
+    )
+    .ok()
+        && declared.hex_str() != computed.hex_str()
     {
         diagnostics.push(Diagnostic::new(
             DiagnosticCode::StaleIdentity,
@@ -736,7 +740,7 @@ fn build_export(
         Err(_) => return None,
     };
     Some(ValenceReceiptExportEnvelope {
-        export_identity: compute_identity(IdentityDomain::Projection, &body_bytes),
+        export_identity: ProjectionIdentity::compute(&body_bytes).as_wire().into(),
         body,
     })
 }
@@ -787,6 +791,7 @@ pub fn export_identity_key() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
     use crate::receipt::{ReceiptBody, ReceiptEnvelope};
     use std::collections::BTreeMap;
 

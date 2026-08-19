@@ -1,5 +1,6 @@
 use crate::diagnostic::{Diagnostic, DiagnosticCode};
-use crate::identity::{Identity, IdentityDomain, compute_identity};
+use crate::identity::{Identity, IdentityDomain};
+use crate::identity_model::{DialectPayloadIdentity, TypedIdentity, WireIdentity};
 use serde::{Deserialize, Serialize};
 
 pub const DIALECT_ROUNDTRIP_PROFILE_SCHEMA_VERSION: u32 = 1;
@@ -138,8 +139,11 @@ pub fn validate_dialect_roundtrip_input(input: &DialectRoundtripInput) -> Vec<Di
             "declared_payload_identity",
             &mut diagnostics,
         );
-        if declared.domain == IdentityDomain::DialectPayload && declared.hex != computed_payload.hex
-        {
+        let declared_payload = TypedIdentity::<crate::identity_model::DialectPayload>::from_wire(
+            WireIdentity::from_legacy(declared),
+        )
+        .ok();
+        if declared_payload.is_some_and(|typed| typed.hex_str() != computed_payload.hex.as_str()) {
             diagnostics.push(
                 Diagnostic::new(
                     DiagnosticCode::StaleIdentity,
@@ -269,7 +273,9 @@ pub fn dialect_roundtrip_valence_projection(
 
 #[must_use]
 pub fn dialect_payload_identity(canonical_payload_bytes: &[u8]) -> Identity {
-    compute_identity(IdentityDomain::DialectPayload, canonical_payload_bytes)
+    DialectPayloadIdentity::compute(canonical_payload_bytes)
+        .as_wire()
+        .into()
 }
 
 fn validate_source_spans(input: &DialectRoundtripInput, diagnostics: &mut Vec<Diagnostic>) {
@@ -362,7 +368,8 @@ fn validate_identity_domain(
     field: &str,
     diagnostics: &mut Vec<Diagnostic>,
 ) {
-    if identity.validate_domain(expected.clone()).is_err() {
+    let admitted = WireIdentity::from_legacy(identity).admit();
+    if !admitted.is_ok_and(|any| any.domain() == expected) {
         diagnostics.push(
             Diagnostic::new(
                 DiagnosticCode::IdentityDomainMismatch,
@@ -409,6 +416,7 @@ fn sorted_strings(values: &[String]) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::identity::compute_identity;
 
     const KNOWN_NAMESPACE: &str = "kamacite.example.adapter";
     const UNKNOWN_NAMESPACE: &str = "foreign.adapter";

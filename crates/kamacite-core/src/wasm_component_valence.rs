@@ -3,9 +3,9 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Identity, IdentityDomain, SourceSpan, SourceSpanSet, WasmComponentParentRole,
+    Identity, ProjectionIdentity, SourceSpan, SourceSpanSet, WasmComponentParentRole,
     WasmComponentStaticReceipt, WasmComponentStaticRequest, WasmComponentValidationError,
-    build_wasm_component_static_receipt, compute_identity,
+    build_wasm_component_static_receipt,
 };
 
 pub const WASM_COMPONENT_VALENCE_PROJECTION_SCHEMA: &str =
@@ -122,7 +122,9 @@ pub fn project_wasm_component_static_to_valence(
         .map_err(|error| WasmComponentValenceProjectionError::Encoding(error.to_string()))?;
     Ok(WasmComponentValenceProjection {
         body,
-        projection_identity: compute_identity(IdentityDomain::Projection, &projection_bytes),
+        projection_identity: ProjectionIdentity::compute(&projection_bytes)
+            .as_wire()
+            .into(),
     })
 }
 
