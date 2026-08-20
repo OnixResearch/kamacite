@@ -1,0 +1,13 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "schema-migration-plan-receipt"
+  version: "v1"
+  schema-id: "kamacite.schema-migration-plan-receipt.v1"
+  record-label: "kamacite-schema-migration-plan-receipt-v1"
+  fields: ["schema-version" "planner-revision" "decision" "reason" "plan-id" "source-data" "lineage" "source-schema" "target-schema" "catalog-id" "policy-id" "limits-id" "observations-id" "path-id" "step-count" "candidates" "executes-migrations" "non-claims"]
+  identity-domain: "receipt"
+  identity: "blake3(canonical packed Preserves receipt bytes)"
+  planner-authority: "schema-migration-core exact pinned revision"
+  adapter-policy: "nonzero directional adjacent versions only"
+  execution: "none"
+  non-claims: ["not migration implementation correctness" "not migration execution" "not successful atomicity" "not rollback or compensation success" "not storage or transaction authority" "not semantic equivalence" "not release eligibility"]
+}>

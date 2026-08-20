@@ -7,6 +7,11 @@ let SourceContract = {
   reviewed_revision | String,
   cargo_revision | String,
   nix_revision | String,
+  receipt_schema | String,
+  receipt_root_label | String,
+  adjacent_versions_only | Bool,
+  root_rust_version | String,
+  pilot_rust_version | String,
   executes_migrations | Bool,
   non_claims | Array String,
 } in
@@ -17,9 +22,16 @@ let SourceContract = {
   reviewed_revision = Revision,
   cargo_revision = Revision,
   nix_revision = Revision,
+  receipt_schema = "kamacite.schema-migration-plan-receipt.v1",
+  receipt_root_label = "kamacite-schema-migration-plan-receipt-v1",
+  adjacent_versions_only = true,
+  root_rust_version = "1.88",
+  pilot_rust_version = "1.95.0",
   executes_migrations = false,
   non_claims = [
     "planning does not prove migration execution",
+    "planning does not prove migration implementation correctness",
     "planning does not grant storage or transaction authority",
+    "effect requests do not grant execution authority",
   ],
 } | SourceContract

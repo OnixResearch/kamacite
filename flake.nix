@@ -130,6 +130,9 @@
               ''
                 test '${schema-migration-core-src.rev}' = '4fe90e130f2871cf69a6febcdc70785adca98aea'
                 rg --fixed-strings '4fe90e130f2871cf69a6febcdc70785adca98aea' ${self}/pilots/schema-migration/Cargo.toml ${self}/pilots/schema-migration/source.ncl > /dev/null
+                rg --fixed-strings 'kamacite.schema-migration-plan-receipt.v1' ${self}/pilots/schema-migration/source.ncl ${self}/pilots/schema-migration/src/receipt.rs ${self}/schemas/preserves/schema-migration-plan-receipt-v1.preserves > /dev/null
+                rg --fixed-strings 'root_rust_version = "1.88"' ${self}/pilots/schema-migration/source.ncl > /dev/null
+                rg --fixed-strings 'pilot_rust_version = "1.95.0"' ${self}/pilots/schema-migration/source.ncl > /dev/null
                 touch "$out"
               '';
 
