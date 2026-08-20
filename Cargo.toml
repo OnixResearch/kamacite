@@ -15,6 +15,7 @@ rust-version = "1.88"
 blake3 = "1.8.2"
 nickel-export-core = { git = "https://github.com/OnixResearch/nickel-export", rev = "710b6e03a8faf74f6afc6cc8ef36d7667958b70d" }
 preserves = { version = "5.0.0-rc.7", features = ["serde"] }
+preserves-admission-core = { git = "rad://z2q3DgJ91DiVKgeVBonAHp2SG6qkP", rev = "3333de4a486d55cfc00675d6a4d10cfe5598d9ec" }
 rustix = { version = "1.1.4", features = ["fs"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.145", features = ["preserve_order"] }

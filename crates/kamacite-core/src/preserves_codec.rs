@@ -4,6 +4,11 @@ use preserves::{
     Atom, BytesBinarySource, CompoundClass, IOValue, PackedReader, PackedWriter, TextReader,
     ValueClass, ValueImpl,
 };
+use preserves_admission_core::{
+    AdmissionError, ErrorClass as AdmissionErrorClass, ProfileId as AdmissionProfileId,
+    Syntax as AdmissionSyntax, admit as admit_preserves,
+    select_profile as select_admission_profile,
+};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::collections::{BTreeMap, BTreeSet};
@@ -175,6 +180,7 @@ pub fn canonicalize_preserves(
             limit: limits.max_input_bytes,
         });
     }
+    admit_shared(input, syntax)?;
 
     let value = match syntax {
         PreservesSyntax::Text => {
@@ -201,6 +207,46 @@ pub fn canonicalize_preserves(
         packed_bytes,
         text_projection,
     })
+}
+
+fn admit_shared(input: &[u8], syntax: PreservesSyntax) -> Result<(), PreservesCodecError> {
+    let syntax = match syntax {
+        PreservesSyntax::Text => AdmissionSyntax::Text,
+        PreservesSyntax::Packed => AdmissionSyntax::Packed,
+    };
+    let profile = select_admission_profile(AdmissionProfileId::KamaciteCompatibleV1);
+    admit_preserves(input, syntax, profile)
+        .map(|_| ())
+        .map_err(map_admission_error)
+}
+
+fn map_admission_error(error: AdmissionError) -> PreservesCodecError {
+    let actual = error
+        .observed()
+        .and_then(|value| usize::try_from(value).ok())
+        .unwrap_or(usize::MAX);
+    let limit = error
+        .limit()
+        .and_then(|value| usize::try_from(value).ok())
+        .unwrap_or(usize::MAX);
+    match error.class() {
+        AdmissionErrorClass::InputLimit => PreservesCodecError::InputLimit { actual, limit },
+        AdmissionErrorClass::OutputLimit => PreservesCodecError::OutputLimit { actual, limit },
+        AdmissionErrorClass::DepthLimit => PreservesCodecError::DepthLimit { actual, limit },
+        AdmissionErrorClass::NodeLimit => PreservesCodecError::ValueLimit { actual, limit },
+        AdmissionErrorClass::AtomLimit | AdmissionErrorClass::IntegerLimit => {
+            PreservesCodecError::AtomLimit { actual, limit }
+        }
+        AdmissionErrorClass::CollectionLimit => {
+            PreservesCodecError::CollectionLimit { actual, limit }
+        }
+        AdmissionErrorClass::AnnotationForbidden => PreservesCodecError::UnsupportedAnnotation,
+        AdmissionErrorClass::EmbeddedLimit | AdmissionErrorClass::EmbeddedForbidden => {
+            PreservesCodecError::UnsupportedEmbeddedValue
+        }
+        AdmissionErrorClass::NonCanonicalPacked => PreservesCodecError::NonCanonicalPacked,
+        class => PreservesCodecError::Malformed(class.as_str().to_owned()),
+    }
 }
 
 pub fn encode_typed_preserves<T: Serialize>(
