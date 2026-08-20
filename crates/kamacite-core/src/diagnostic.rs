@@ -47,6 +47,7 @@ pub enum DiagnosticCode {
     WrongExpectedVerdict,
     ContinuationPolicyMismatch,
     OpenRowNotPure,
+    SemanticOperationMismatch,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]

@@ -21,6 +21,7 @@ mod nickel_sandbox;
 mod preserves_codec;
 mod proof_evidence;
 mod receipt;
+mod semantic_operation;
 mod spacewasm;
 mod spacewasm_valence;
 mod steel_execution;
@@ -102,19 +103,19 @@ pub use identity::{
 };
 pub use identity_model::{
     AdapterIdentity, AdapterIdentityRef, AlgebraicEffectIdentity, AlgebraicEffectIdentityRef,
-    AnyIdentity, CanonicalValueIdentity, CanonicalValueIdentityRef, CompilerIdentity,
-    CompilerIdentityRef, DependencyClosureIdentity, DependencyClosureIdentityRef,
-    DialectPayloadIdentity, DialectPayloadIdentityRef, DocumentationFactsIdentity,
-    DocumentationFactsIdentityRef, DocumentationIrIdentity, DocumentationIrIdentityRef,
-    DocumentationOutputIdentity, DocumentationOutputIdentityRef, EffectLogIdentity,
-    EffectLogIdentityRef, EffectOperationIdentity, EffectOperationIdentityRef, EvaluatorIdentity,
-    EvaluatorIdentityRef, EvidenceChainIdentity, EvidenceChainIdentityRef, FsmCoverageIdentity,
-    FsmCoverageIdentityRef, FsmSpecIdentity, FsmSpecIdentityRef, FsmUniverseIdentity,
-    FsmUniverseIdentityRef, FunctionAddressIdentity, FunctionAddressIdentityRef,
-    IdentityAdmissionError, IdentityDomainMarker, ProjectionIdentity, ProjectionIdentityRef,
-    ReceiptIdentity, ReceiptIdentityRef, SourceIdentity, SourceIdentityRef, TargetArtifactIdentity,
-    TargetArtifactIdentityRef, TypedIdentity, TypedIdentityRef, WIRE_IDENTITY_VERSION,
-    WireIdentity,
+    AnyIdentity, CanonicalValueIdentity, CanonicalValueIdentityRef, CompatibilityIdentity,
+    CompatibilityIdentityRef, CompilerIdentity, CompilerIdentityRef, DependencyClosureIdentity,
+    DependencyClosureIdentityRef, DialectPayloadIdentity, DialectPayloadIdentityRef,
+    DocumentationFactsIdentity, DocumentationFactsIdentityRef, DocumentationIrIdentity,
+    DocumentationIrIdentityRef, DocumentationOutputIdentity, DocumentationOutputIdentityRef,
+    EffectLogIdentity, EffectLogIdentityRef, EffectOperationIdentity, EffectOperationIdentityRef,
+    EvaluatorIdentity, EvaluatorIdentityRef, EvidenceChainIdentity, EvidenceChainIdentityRef,
+    FsmCoverageIdentity, FsmCoverageIdentityRef, FsmSpecIdentity, FsmSpecIdentityRef,
+    FsmUniverseIdentity, FsmUniverseIdentityRef, FunctionAddressIdentity,
+    FunctionAddressIdentityRef, IdentityAdmissionError, IdentityDomainMarker, ProjectionIdentity,
+    ProjectionIdentityRef, ReceiptIdentity, ReceiptIdentityRef, SourceIdentity, SourceIdentityRef,
+    TargetArtifactIdentity, TargetArtifactIdentityRef, TypedIdentity, TypedIdentityRef,
+    WIRE_IDENTITY_VERSION, WireIdentity,
 };
 pub use manifest_freshness::{
     MANIFEST_EVALUATOR_DESCRIPTOR, MANIFEST_EVALUATOR_PROFILE,
@@ -157,6 +158,18 @@ pub use proof_evidence::{
     validate_trellis_proof_evidence_json_projection,
 };
 pub use receipt::{ReceiptBody, ReceiptEnvelope, ReceiptError, canonical_json_bytes, receipt_json};
+pub use semantic_operation::{
+    REQUIRED_COMPATIBILITY_NON_CLAIMS, REQUIRED_DESCRIPTOR_NON_CLAIMS,
+    SEMANTIC_OPERATION_COMPATIBILITY_ROOT_LABEL, SEMANTIC_OPERATION_COMPATIBILITY_SCHEMA,
+    SEMANTIC_OPERATION_DESCRIPTOR_ROOT_LABEL, SEMANTIC_OPERATION_DESCRIPTOR_SCHEMA,
+    SUPPORTED_COMPATIBILITY_CONTEXTS, SUPPORTED_CONTINUATION_CONTRACTS,
+    SUPPORTED_SEMANTIC_REPLAY_CLASSES, SemanticEffectOperationDescriptorInput,
+    SemanticOperationCompatibilityDirection, SemanticOperationCompatibilityInput,
+    exact_semantic_operation_match, require_semantic_operation_identity,
+    semantic_operation_compatibility_identity, semantic_operation_identity,
+    validate_compatibility_use, validate_semantic_operation_compatibility,
+    validate_semantic_operation_descriptor,
+};
 pub use spacewasm::{
     SPACEWASM_ABI_PROFILE_ID, SPACEWASM_ADAPTER_KIND, SPACEWASM_ARTIFACT_KIND,
     SPACEWASM_DESCRIPTOR_SCHEMA, SPACEWASM_MANTLE_BUNDLE_ID, SPACEWASM_MANTLE_REVISION,

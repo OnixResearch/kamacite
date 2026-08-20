@@ -1,0 +1,13 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "semantic-effect-operation-descriptor"
+  version: "v1"
+  schema-id: "kamacite.algebraic-effect.semantic-operation-descriptor.v1"
+  record-label: "kamacite-semantic-effect-operation-v1"
+  identity-material: ["schema-version" "effect-family-identity" "parameter-schema-identity" "result-schema-identity" "continuation-contract" "replay-class" "dependency-identities" "default-or-abstract"]
+  metadata-only: ["operation-name" "aliases" "non-claims"]
+  identity: "blake3(canonical descriptor bytes) in effect-operation domain"
+  continuation-contracts: ["resumable-one-shot" "linear-continuation" "tail-continuation"]
+  replay-classes: ["deterministic" "recorded-replay" "denied" "non-replayable"]
+  default-marker: "exactly one of default-behavior identity (canonical-value domain) or explicit abstract marker"
+  non-claims: ["semantic operation identity is not host authority" "default-behavior ref is not behavior correctness" "matching keys do not prove semantic equivalence"]
+}>

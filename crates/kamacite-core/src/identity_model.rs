@@ -463,6 +463,7 @@ pub enum AnyIdentity {
     DocumentationFacts(TypedIdentity<DocumentationFacts>),
     DialectPayload(TypedIdentity<DialectPayload>),
     EvidenceChain(TypedIdentity<EvidenceChain>),
+    Compatibility(TypedIdentity<Compatibility>),
 }
 
 impl AnyIdentity {
@@ -490,6 +491,7 @@ impl AnyIdentity {
             Self::DocumentationFacts(_) => IdentityDomain::DocumentationFacts,
             Self::DialectPayload(_) => IdentityDomain::DialectPayload,
             Self::EvidenceChain(_) => IdentityDomain::EvidenceChain,
+            Self::Compatibility(_) => IdentityDomain::Compatibility,
         }
     }
 
@@ -521,6 +523,7 @@ impl AnyIdentity {
             Self::DocumentationFacts(identity) => &identity.hex,
             Self::DialectPayload(identity) => &identity.hex,
             Self::EvidenceChain(identity) => &identity.hex,
+            Self::Compatibility(identity) => &identity.hex,
         }
     }
 }
@@ -614,6 +617,10 @@ fn any_from_checked(
             hex,
             marker: PhantomData,
         }),
+        IdentityDomain::Compatibility => AnyIdentity::Compatibility(TypedIdentity {
+            hex,
+            marker: PhantomData,
+        }),
     })
 }
 
@@ -641,6 +648,7 @@ fn domain_from_label(label: &str) -> Option<IdentityDomain> {
         "documentation-facts" => Some(IdentityDomain::DocumentationFacts),
         "dialect-payload" => Some(IdentityDomain::DialectPayload),
         "evidence-chain" => Some(IdentityDomain::EvidenceChain),
+        "compatibility" => Some(IdentityDomain::Compatibility),
         _ => None,
     }
 }
@@ -851,6 +859,14 @@ identity_domain!(
     EvidenceChainIdentityRef,
     as_evidence_chain
 );
+identity_domain!(
+    "compatibility",
+    Compatibility,
+    Compatibility,
+    CompatibilityIdentity,
+    CompatibilityIdentityRef,
+    as_compatibility
+);
 
 #[cfg(test)]
 mod tests {
@@ -975,6 +991,11 @@ mod tests {
                 IdentityDomain::EvidenceChain,
                 "evidence-chain",
                 Box::new(|b| EvidenceChainIdentity::compute(b).into_any()),
+            ),
+            (
+                IdentityDomain::Compatibility,
+                "compatibility",
+                Box::new(|b| CompatibilityIdentity::compute(b).into_any()),
             ),
         ];
 
@@ -1257,6 +1278,7 @@ mod tests {
             IdentityDomain::DocumentationFacts,
             IdentityDomain::DialectPayload,
             IdentityDomain::EvidenceChain,
+            IdentityDomain::Compatibility,
         ] {
             let label = domain.to_string();
             assert_eq!(

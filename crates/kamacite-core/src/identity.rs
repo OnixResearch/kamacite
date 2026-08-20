@@ -66,6 +66,7 @@ pub enum IdentityDomain {
     DocumentationFacts,
     DialectPayload,
     EvidenceChain,
+    Compatibility,
 }
 
 impl Display for IdentityDomain {
@@ -92,6 +93,7 @@ impl Display for IdentityDomain {
             Self::DocumentationFacts => "documentation-facts",
             Self::DialectPayload => "dialect-payload",
             Self::EvidenceChain => "evidence-chain",
+            Self::Compatibility => "compatibility",
         };
         formatter.write_str(label)
     }

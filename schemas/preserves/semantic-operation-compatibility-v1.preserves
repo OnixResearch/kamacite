@@ -1,0 +1,11 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "semantic-operation-compatibility"
+  version: "v1"
+  schema-id: "kamacite.algebraic-effect.semantic-operation-compatibility.v1"
+  record-label: "kamacite-semantic-operation-compatibility-v1"
+  fields: ["schema-version" "source-operation-identity" "target-operation-identity" "direction" "allowed-contexts" "supporting-evidence-identities" "semantic-claims" "non-claims"]
+  identity: "blake3(canonical compatibility bytes) in compatibility domain"
+  directions: ["old-to-new" "new-to-old"]
+  contexts: ["replay-only" "live-host"]
+  non-claims: ["compatibility is not semantic equivalence" "compatibility is not host authority" "compatibility does not certify default-behavior correctness"]
+}>
