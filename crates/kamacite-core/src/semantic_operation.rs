@@ -1,5 +1,5 @@
 use crate::identity::{
-    EffectOperationIdentity, EvidenceChainIdentity, IdentityDomain, WireIdentity,
+    CompatibilityIdentity, EffectOperationIdentity, IdentityDomain, WireIdentity,
 };
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use serde::{Deserialize, Serialize};
@@ -112,7 +112,7 @@ pub struct IdentifiedSemanticOperation {
 pub struct IdentifiedSemanticOperationCompatibility {
     pub compatibility: SemanticOperationCompatibility,
     pub canonical_bytes: Vec<u8>,
-    pub identity: EvidenceChainIdentity,
+    pub identity: CompatibilityIdentity,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -364,7 +364,7 @@ pub fn identify_semantic_operation_compatibility(
     )
     .map(|artifact| artifact.packed_bytes)
     .map_err(|error| SemanticOperationError::Canonicalization(error.to_string()))?;
-    let identity = EvidenceChainIdentity::compute(&canonical_bytes);
+    let identity = CompatibilityIdentity::compute(&canonical_bytes);
     Ok(IdentifiedSemanticOperationCompatibility {
         compatibility,
         canonical_bytes,
@@ -998,6 +998,10 @@ mod tests {
             non_claims: vec!["not host authority".to_string()],
         };
         assert!(identify_semantic_operation_compatibility(&compatibility).is_ok());
+        let identified = identify_semantic_operation_compatibility(&compatibility);
+        if let Ok(identified) = identified {
+            assert_eq!(identified.identity.domain(), IdentityDomain::Compatibility);
+        }
         assert!(
             admit_semantic_operation_compatibility(
                 &compatibility,

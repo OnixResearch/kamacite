@@ -69,6 +69,7 @@ pub enum IdentityDomain {
     DialectPayload,
     EvidenceChain,
     ApplicationHostBinding,
+    Compatibility,
 }
 
 impl Display for IdentityDomain {
@@ -96,6 +97,7 @@ impl Display for IdentityDomain {
             Self::DialectPayload => "dialect-payload",
             Self::EvidenceChain => "evidence-chain",
             Self::ApplicationHostBinding => "application-host-binding",
+            Self::Compatibility => "compatibility",
         };
         formatter.write_str(label)
     }
@@ -329,6 +331,12 @@ declare_identity_domain!(
     ApplicationHostBindingIdentity,
     ApplicationHostBindingIdentityRef,
     ApplicationHostBinding
+);
+declare_identity_domain!(
+    CompatibilityDomain,
+    CompatibilityIdentity,
+    CompatibilityIdentityRef,
+    Compatibility
 );
 
 /// Nominal typed identity over private validated BLAKE3 content.
@@ -636,6 +644,7 @@ declare_any_identity!(
     { DialectPayload, DialectPayloadIdentity }
     { EvidenceChain, EvidenceChainIdentity }
     { ApplicationHostBinding, ApplicationHostBindingIdentity }
+    { Compatibility, CompatibilityIdentity }
 );
 
 #[cfg(test)]
@@ -748,6 +757,7 @@ mod tests {
             IdentityDomain::DialectPayload,
             IdentityDomain::EvidenceChain,
             IdentityDomain::ApplicationHostBinding,
+            IdentityDomain::Compatibility,
         ];
         for domain in domains {
             let wire = valid_wire(domain.clone());
