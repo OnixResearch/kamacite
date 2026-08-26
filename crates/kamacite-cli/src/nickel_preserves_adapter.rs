@@ -1,4 +1,4 @@
-use crate::root_io::RootCapability;
+use kamacite_cli::root_io::RootCapability;
 use kamacite_core::{
     AdapterIdentity, AdmittedNickelJsonExport, CanonicalValueIdentity, IdentityDomain,
     NickelExportIdentity, NickelExportIdentityKind, NickelPreservesReceipt,

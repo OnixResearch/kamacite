@@ -1,0 +1,27 @@
+{
+  "current_revision": "2f5d7bf9017b3b00df36e55cf0bbef6d68187611",
+  "proposed_revision": "1111111111111111111111111111111111111111",
+  "current_schema_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "0e4c627b8ddf56b68e33eefd8a96159b8b09469374da45dd7a23d46ca5ff2bd0"
+  },
+  "proposed_schema_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "c8208707211d601f12af9e50d5b84b62ec4848e8a5428cf74db44c1173c74f1c"
+  },
+  "current_codec_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "0e4c627b8ddf56b68e33eefd8a96159b8b09469374da45dd7a23d46ca5ff2bd0"
+  },
+  "proposed_codec_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "0e4c627b8ddf56b68e33eefd8a96159b8b09469374da45dd7a23d46ca5ff2bd0"
+  },
+  "explicit_regeneration": false,
+  "convergence_passes": 0,
+  "removed_negative_vectors": []
+}

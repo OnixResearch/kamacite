@@ -1,0 +1,381 @@
+{
+  "schema": "kamacite.world-commit-conformance-entry.v1",
+  "product_repository": "git@github.com:brittonr/aspen.git",
+  "product_revision": "2f5d7bf9017b3b00df36e55cf0bbef6d68187611",
+  "product_owner": "Molten",
+  "product_schema": "molten.world-commit.v1",
+  "canonical_codec": "molten-preserves-packed-canonical-v1-preserves-rs-5.0.0-rc.7",
+  "canonical_domain_tag": "onixresearch.molten.world-commit.identity.v1",
+  "supported_version": "v1",
+  "fixture_manifest_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "ada4be5693a8f449af5c61c216cd2c79fea73812d5ac541d2196db6caa373a71"
+  },
+  "license": "AGPL-3.0-or-later",
+  "source_artifacts": [
+    {
+      "role": "molten-boundary-schema",
+      "path": "fixtures/world-commit/source/molten-world-commit-v1.preserves",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "1469485e31507cea8ba38e9f742857fcaa8bd6760ba2ae82815c2a555ca52d68"
+      },
+      "byte_length": 220
+    },
+    {
+      "role": "molten-boundary-schema",
+      "path": "fixtures/world-commit/source/molten-world-commit-capture-receipt-v1.preserves",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "931254a5453548ca7ba71a12d314a319a9f1eefdcf012592881eef79cbbce9e3"
+      },
+      "byte_length": 268
+    },
+    {
+      "role": "molten-boundary-schema",
+      "path": "fixtures/world-commit/source/molten-world-commit-closure-report-v1.preserves",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "b8f2a3b161e57b9b8d3e651f70620fbad3724d533b07e3b1360b39865819d6d5"
+      },
+      "byte_length": 265
+    },
+    {
+      "role": "molten-boundary-schema",
+      "path": "fixtures/world-commit/source/molten-world-commit-restore-plan-v1.preserves",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "b7aa2bf1530f1155e2187ca11c66dceeb16b2cfad8665d472edef57ac19e32fb"
+      },
+      "byte_length": 259
+    },
+    {
+      "role": "molten-codec-source",
+      "path": "fixtures/world-commit/source/molten-codec.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "a26c8d757a8539ad78225bcce507e8e76bd3df20acca3fc718c8c7360846e5fb"
+      },
+      "byte_length": 11340
+    },
+    {
+      "role": "molten-core-model",
+      "path": "fixtures/world-commit/source/molten-core-mod.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "3df3e2e0829822988a47dc340daeaa0ce661d4b7964476062c94a3567bf3048d"
+      },
+      "byte_length": 676
+    },
+    {
+      "role": "molten-root-domains",
+      "path": "fixtures/world-commit/source/molten-model.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "f1fb828fc1f9cf081ae88ba3bd4e34189634e36de026ac43ce00708b5033252a"
+      },
+      "byte_length": 7932
+    },
+    {
+      "role": "molten-identity",
+      "path": "fixtures/world-commit/source/molten-reference.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "a58b2800a9108f5d0765280bfe0521988fdd4df8752cb14be5a8a34cca9d6e19"
+      },
+      "byte_length": 10111
+    },
+    {
+      "role": "molten-core-model",
+      "path": "fixtures/world-commit/source/molten-validation.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "22a333a3e5cd9ecc2abe7ac265035cf47475008ed1c93eddd202f8a242c555dd"
+      },
+      "byte_length": 8269
+    },
+    {
+      "role": "molten-core-model",
+      "path": "fixtures/world-commit/source/molten-worldcommit-mod.rs",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "0223333497d7c7ffeff470ff29d019be33f45fd2e1dc9fa889e508d9a0ca9d41"
+      },
+      "byte_length": 511
+    },
+    {
+      "role": "molten-canonical-fixture",
+      "path": "fixtures/world-commit/source/logical-v1.preserves",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "4c456ea6ef14212c618c3a1d7778e87752eb499382737aa32d9f069d82aec9b1"
+      },
+      "byte_length": 1423
+    },
+    {
+      "role": "molten-notice",
+      "path": "fixtures/world-commit/source/NOTICE.md",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "30c60a0d2c8d6b87bdabd05b11c180934a4f0c80e68449b4ce35787b6ffa10bc"
+      },
+      "byte_length": 840
+    },
+    {
+      "role": "molten-product-manifest",
+      "path": "fixtures/world-commit/product-source-manifest.json",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dfdce7f71c0c0deb59ae99a80423abab42840a68efea023bf1348261a0e556aa"
+      },
+      "byte_length": 2786
+    },
+    {
+      "role": "kamacite-implementation-manifest",
+      "path": "fixtures/world-commit/implementation-manifest.json",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "fa3653c70dab31d758790df438d0e1f31cef521e0fb676189c3bfa184170a762"
+      },
+      "byte_length": 7697
+    },
+    {
+      "role": "fixture-manifest",
+      "path": "fixtures/world-commit/vector-manifest.json",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "ada4be5693a8f449af5c61c216cd2c79fea73812d5ac541d2196db6caa373a71"
+      },
+      "byte_length": 13154
+    },
+    {
+      "role": "cohort-config",
+      "path": "fixtures/world-commit/cohort.ncl",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "5cb73ba75afd89fbdbf856123307a85c07694ee2309835e050776e22073bcaae"
+      },
+      "byte_length": 10098
+    },
+    {
+      "role": "cohort-config",
+      "path": "fixtures/world-commit/cohort-contract.ncl",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "0a02b51667486190883a3d8c278006dd1394e60f6d392cfb8b5d723f3eb19e6f"
+      },
+      "byte_length": 1144
+    },
+    {
+      "role": "nickel-contract",
+      "path": "fixtures/world-commit/adapters/contracts.ncl",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "b034bf8fe1b1184c376ede982a10b5396106640a008d1ba541a767b205e4533d"
+      },
+      "byte_length": 476
+    },
+    {
+      "role": "nickel-contract",
+      "path": "fixtures/world-commit/adapters/logical-v1.ncl",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "e244edf97d3ea84a85e1348d1808aa85fcd920b4ccc017c1b4884e754a62c794"
+      },
+      "byte_length": 1976
+    },
+    {
+      "role": "steel-adapter",
+      "path": "fixtures/world-commit/adapters/steel-resolve.scm",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "eaca09ec7e025dfa95ac227d436f889f7805e30e78e7b7bf9d92a41da1fdb4cb"
+      },
+      "byte_length": 86
+    },
+    {
+      "role": "steel-adapter",
+      "path": "fixtures/world-commit/adapters/steel-module-descriptor.json",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "1b34a9049dfa3ee39b599f68a169e6da64cea872c2e3392e7bbd1275c7c4e6c2"
+      },
+      "byte_length": 540
+    },
+    {
+      "role": "steel-adapter",
+      "path": "fixtures/world-commit/adapters/steel-input.json",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "c54802ad35d2baa25b25f84a8971d34029e46e10f1beb13fa40b898a43fb3730"
+      },
+      "byte_length": 11
+    }
+  ],
+  "adapter_contracts": [
+    {
+      "adapter": "rust",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "4c456ea6ef14212c618c3a1d7778e87752eb499382737aa32d9f069d82aec9b1"
+      },
+      "implementation_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "fa3653c70dab31d758790df438d0e1f31cef521e0fb676189c3bfa184170a762"
+      },
+      "adapter_identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "1cdb09c5eafacf75825d262af0a0a259ad0b9aa51db8f4ff5dc1aa4273103058"
+      },
+      "evaluator_identity": null,
+      "enforcement_identity": null,
+      "projection_identity": null,
+      "allowed_capabilities": []
+    },
+    {
+      "adapter": "nickel",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "e244edf97d3ea84a85e1348d1808aa85fcd920b4ccc017c1b4884e754a62c794"
+      },
+      "implementation_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "fa3653c70dab31d758790df438d0e1f31cef521e0fb676189c3bfa184170a762"
+      },
+      "adapter_identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "7a9063eebb80f6bef44cc74057409e1067b5d2f00cf77faf808a94f0675c3f74"
+      },
+      "evaluator_identity": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "8430092104d7896c32abba7fbfc1b762861b75309e54d07845f4af1156f88f43"
+      },
+      "enforcement_identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "7578470c48d5e22667ce2477784d7ae07f70404a2ba49f506d9978a8270378ff"
+      },
+      "projection_identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "51c9d99ed65ea23338d174ec52110573a6e822d69f5cc2f871e64f7a597e8dcc"
+      },
+      "allowed_capabilities": [
+        "capture-stdout",
+        "fixture-read",
+        "nickel-reference-export"
+      ]
+    },
+    {
+      "adapter": "steel",
+      "source_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "eaca09ec7e025dfa95ac227d436f889f7805e30e78e7b7bf9d92a41da1fdb4cb"
+      },
+      "implementation_identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "fa3653c70dab31d758790df438d0e1f31cef521e0fb676189c3bfa184170a762"
+      },
+      "adapter_identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "ccbbc7bf306ec492dccb2f1f2de69a65efdf4074c95f2f31370e623e8921f7f4"
+      },
+      "evaluator_identity": {
+        "domain": "evaluator",
+        "algorithm": "blake3",
+        "hex": "2f1af4a3fe9be6aa2666ea0260c8b59575003dccb9a202c3908d88f841d6d345"
+      },
+      "enforcement_identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "7db7f4e9e593409fd11c243095a04c093ad7910034b00d1f7d4d903b5c85a16c"
+      },
+      "projection_identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "c54802ad35d2baa25b25f84a8971d34029e46e10f1beb13fa40b898a43fb3730"
+      },
+      "allowed_capabilities": [
+        "world-vector-resolution"
+      ]
+    }
+  ],
+  "negative_vector_ids": [
+    "unknown-version",
+    "unknown-schema",
+    "unknown-root-domain",
+    "duplicate-root-domain",
+    "duplicate-root-reference",
+    "missing-required-root",
+    "wrong-typed-reference",
+    "oversized-parents",
+    "oversized-roots",
+    "hidden-secret-field",
+    "altered-source",
+    "unapproved-cohort-update",
+    "noncanonical-packed",
+    "order-drift",
+    "codec-drift",
+    "embedded-signature",
+    "undeclared-steel-authority",
+    "json-as-authority",
+    "semantic-equivalence-overclaim"
+  ],
+  "checked_laws": [
+    "canonical-packed-bytes-match",
+    "json-remains-a-projection",
+    "root-domains-are-nominal",
+    "source-identities-remain-detached",
+    "steel-has-no-ambient-authority",
+    "unknown-versions-fail-closed",
+    "world-runtime-authority-remains-with-molten"
+  ],
+  "non_claims": [
+    "not evaluator semantic equivalence",
+    "not Molten runtime behavior",
+    "not restore or merge compatibility",
+    "not branch or effect authority",
+    "not release eligibility",
+    "not a generic stack-wide world protocol",
+    "not proof of referenced object type or contents"
+  ],
+  "semantic_claims": [],
+  "declared_entry_identity": {
+    "domain": "compatibility",
+    "algorithm": "blake3",
+    "hex": "57a0b2d01b18274acfcb45013235dc21ef085237a6b0ae8478a73ec14815aa43"
+  }
+}

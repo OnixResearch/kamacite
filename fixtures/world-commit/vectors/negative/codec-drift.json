@@ -1,0 +1,8 @@
+{
+  "schema": "kamacite.world-commit-hostile-claim.v1",
+  "class": "codec-drift",
+  "claim": "changed codec bytes remain in the existing cohort",
+  "current_identity": "molten-preserves-packed-canonical-v1-preserves-rs-5.0.0-rc.7",
+  "proposed_identity": "future-codec",
+  "expected_verdict": "deny"
+}

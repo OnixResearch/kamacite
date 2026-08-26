@@ -1,0 +1,13 @@
+´³molten-world-commit-v1±molten.world-commit.v1´³version±v1„´³profile±mixed±Gblake3:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff´³some±Gblake3:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee„„´³parentsµ„„´³rootsµ´³
+typed-root±artifact±Gblake3:1111111111111111111111111111111111111111111111111111111111111111„´³
+typed-root±schema±Gblake3:2222222222222222222222222222222222222222222222222222222222222222„´³
+typed-root±durable-state±Gblake3:3333333333333333333333333333333333333333333333333333333333333333„´³
+typed-root±tasks±Gblake3:4444444444444444444444444444444444444444444444444444444444444444„´³
+typed-root±history±Gblake3:5555555555555555555555555555555555555555555555555555555555555555„´³
+typed-root±effects±Gblake3:6666666666666666666666666666666666666666666666666666666666666666„´³
+typed-root±	scheduler±Gblake3:7777777777777777777777777777777777777777777777777777777777777777„´³
+typed-root±time±Gblake3:8888888888888888888888888888888888888888888888888888888888888888„´³
+typed-root±entropy±Gblake3:9999999999999999999999999999999999999999999999999999999999999999„´³
+typed-root±runtime-profile±Gblake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa„´³
+typed-root±policy±Gblake3:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb„´³
+typed-root±opaque-machine-snapshot±Gblake3:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc„„„´³completenessµ±artifact±schema±durable-state±tasks±history±effects±	scheduler±time±entropy±runtime-profile±policy±opaque-machine-snapshot„„„

@@ -58,6 +58,11 @@
               makeWrapper $out/bin/kamacite-validate $out/bin/kamacite \
                 --prefix PATH : ${nickelRuntimePath} \
                 --set KAMACITE_NICKEL_RUNTIME_CLOSURE_FILE ${nickelRuntimeClosure}/store-paths
+              wrapProgram $out/bin/check-world-commit-conformance \
+                --prefix PATH : ${nickelRuntimePath} \
+                --set KAMACITE_NICKEL_RUNTIME_CLOSURE_FILE ${nickelRuntimeClosure}/store-paths \
+                --set STEEL_HOME /homeless \
+                --set STEEL_SEARCH_PATHS ""
             '';
             doCheck = false;
           };
@@ -94,6 +99,11 @@
             type = "app";
             program = "${self.packages.${system}.lifecycle-validate}/bin/kamacite-lifecycle-validate";
             meta.description = "Validate Kamacite Cairn lifecycle artifacts with the pinned Cairn tool";
+          };
+          world-commit-conformance = {
+            type = "app";
+            program = "${self.packages.${system}.kamacite}/bin/check-world-commit-conformance";
+            meta.description = "Check the pinned Molten world-commit interchange cohort";
           };
           default = self.apps.${system}.kamacite;
         }
@@ -266,6 +276,62 @@
             ${kamacite} validate --root . --manifest fixtures/manifest.json >fixture-validation.json
             touch $out
           '';
+
+          world-commit-conformance =
+            pkgs.runCommand "kamacite-world-commit-conformance"
+              {
+                nativeBuildInputs = [
+                  pkgs.b3sum
+                  pkgs.diffutils
+                  pkgs.gnugrep
+                  pkgs.nickel
+                ];
+              }
+              ''
+                ${copySource}
+                checker=${self.packages.${system}.kamacite}/bin/check-world-commit-conformance
+                revision=2f5d7bf9017b3b00df36e55cf0bbef6d68187611
+                rejected_revision=1111111111111111111111111111111111111111
+                "$checker" --root . --plan-update "$rejected_revision" >world-commit-plan.json
+                grep -q '"requires_new_cohort": true' world-commit-plan.json
+                grep -q '"admitted": false' world-commit-plan.json
+                "$checker" --root . >world-commit-check.json
+                grep -q '"verdict": "pass"' world-commit-check.json
+                "$checker" --root . --update --accept-revision "$revision" >world-commit-update-first.json
+                b3sum \
+                  fixtures/world-commit/product-source-manifest.json \
+                  fixtures/world-commit/implementation-manifest.json \
+                  fixtures/world-commit/vector-manifest.json \
+                  fixtures/world-commit/cohort.json \
+                  fixtures/world-commit/golden/world-commit-conformance-receipt.preserves \
+                  fixtures/world-commit/golden/world-commit-conformance-receipt.json \
+                  fixtures/world-commit/golden/world-commit-valence-projection.json \
+                  >world-commit-first.hashes
+                "$checker" --root . --update --accept-revision "$revision" >world-commit-update-second.json
+                b3sum \
+                  fixtures/world-commit/product-source-manifest.json \
+                  fixtures/world-commit/implementation-manifest.json \
+                  fixtures/world-commit/vector-manifest.json \
+                  fixtures/world-commit/cohort.json \
+                  fixtures/world-commit/golden/world-commit-conformance-receipt.preserves \
+                  fixtures/world-commit/golden/world-commit-conformance-receipt.json \
+                  fixtures/world-commit/golden/world-commit-valence-projection.json \
+                  >world-commit-second.hashes
+                cmp world-commit-first.hashes world-commit-second.hashes
+                if "$checker" --root . --update --accept-revision "$rejected_revision" \
+                  >unsafe-update.out 2>&1; then
+                  echo "expected unapproved world-commit update to fail" >&2
+                  exit 1
+                fi
+                grep -q 'requires --accept-revision' unsafe-update.out
+                printf '\n' >>fixtures/world-commit/source/logical-v1.preserves
+                if "$checker" --root . >source-drift.out 2>&1; then
+                  echo "expected altered Molten source fixture to fail" >&2
+                  exit 1
+                fi
+                grep -q 'stale' source-drift.out
+                touch $out
+              '';
 
           wasm-component-static-profile =
             pkgs.runCommand "kamacite-wasm-component-static-profile"

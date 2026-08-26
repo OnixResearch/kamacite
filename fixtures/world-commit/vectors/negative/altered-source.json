@@ -1,0 +1,6 @@
+{
+  "schema": "kamacite.world-commit-altered-source-vector.v1",
+  "source_path": "fixtures/world-commit/source/molten-model.rs",
+  "replacement_text": "altered source bytes",
+  "expected_verdict": "deny"
+}

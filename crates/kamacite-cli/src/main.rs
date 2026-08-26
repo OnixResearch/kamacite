@@ -1,10 +1,13 @@
 #![forbid(unsafe_code)]
 
 mod nickel_preserves_adapter;
-mod nickel_sandbox;
-mod root_io;
-mod steel_runner;
 
+use kamacite_cli::nickel_sandbox::{
+    NickelSandboxFile, NickelSandboxRequest, inheritable_sandbox_data_file, resolve_command,
+    run_nickel_sandbox, runtime_closure_paths, validate_enforcement_command_paths,
+};
+use kamacite_cli::root_io::{RootCapability, RootIoError};
+use kamacite_cli::steel_runner;
 use kamacite_core::{
     AdapterReceiptInput, AlgebraicEffectInput, ApplicationHostBindingInput, ArtifactClass,
     AstGrepAuditInput, AstGrepCodemodArtifact, AstGrepFinding, AstGrepLanguageProfile,
@@ -37,11 +40,6 @@ use kamacite_core::{
     validate_function_address_receipt, validate_manifest_generation_receipt,
 };
 use nickel_preserves_adapter::{AdaptMode, NickelPreservesCommand, run_nickel_preserves_command};
-use nickel_sandbox::{
-    NickelSandboxFile, NickelSandboxRequest, inheritable_sandbox_data_file, resolve_command,
-    run_nickel_sandbox, runtime_closure_paths, validate_enforcement_command_paths,
-};
-use root_io::{RootCapability, RootIoError};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::{Display, Formatter};

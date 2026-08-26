@@ -1,0 +1,22 @@
+{
+  "schema": "kamacite.world-commit-steel-module.v1",
+  "engine": "steel-core:0.8.2;new-raw-no-kernel",
+  "module": "steel/base-empty",
+  "host_functions": [
+    {
+      "id": "kamacite.resolve-world-vector",
+      "effect_class": "pure-index-resolution",
+      "input_schema": "kamacite.dto.integer-v1",
+      "output_schema": "kamacite.dto.integer-v1"
+    }
+  ],
+  "capabilities": ["world-vector-resolution"],
+  "denied_authority": [
+    "environment",
+    "filesystem",
+    "network",
+    "process",
+    "clock",
+    "randomness"
+  ]
+}

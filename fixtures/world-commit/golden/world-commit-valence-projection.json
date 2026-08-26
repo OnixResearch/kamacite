@@ -1,0 +1,45 @@
+{
+  "schema": "kamacite.world-commit-valence-projection.v1",
+  "role": "recorded-only",
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "018938489043b63835391995a4591cb72941de9c7629024518d8038dba950ea7"
+  },
+  "cohort_identity": {
+    "domain": "compatibility",
+    "algorithm": "blake3",
+    "hex": "57a0b2d01b18274acfcb45013235dc21ef085237a6b0ae8478a73ec14815aa43"
+  },
+  "canonical_value_identity": {
+    "domain": "canonical-value",
+    "algorithm": "blake3",
+    "hex": "63f1d2d914dd791247eadc516498c3cde39259eb66912fa50a5ac94be5134d94"
+  },
+  "adapter_identities": [
+    {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "1cdb09c5eafacf75825d262af0a0a259ad0b9aa51db8f4ff5dc1aa4273103058"
+    },
+    {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "7a9063eebb80f6bef44cc74057409e1067b5d2f00cf77faf808a94f0675c3f74"
+    },
+    {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "ccbbc7bf306ec492dccb2f1f2de69a65efdf4074c95f2f31370e623e8921f7f4"
+    }
+  ],
+  "non_claims": [
+    "not evaluator semantic equivalence",
+    "not Molten runtime behavior",
+    "not restore or merge compatibility",
+    "not branch or effect authority",
+    "not release eligibility",
+    "not a generic stack-wide world protocol",
+    "not proof of referenced object type or contents"
+  ]
+}

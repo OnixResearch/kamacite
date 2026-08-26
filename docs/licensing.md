@@ -4,6 +4,7 @@
 |---|---|
 | `crates/kamacite-core/**` | `MIT OR Apache-2.0` |
 | Canonical schemas and reusable interchange fixtures authored by Kamacite | `MIT OR Apache-2.0` |
+| `fixtures/world-commit/source/**` and product-derived world-commit vectors | Molten's `AGPL-3.0-or-later`; see `fixtures/world-commit/source/NOTICE.md` |
 | `crates/kamacite-cli/**` | `AGPL-3.0-or-later` |
 | Repository documentation and lifecycle material not carrying another notice | `AGPL-3.0-or-later` |
 | Dependencies, generated artifacts containing upstream material, and external references | Their stated upstream terms |

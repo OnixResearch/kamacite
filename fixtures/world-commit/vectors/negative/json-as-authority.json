@@ -1,0 +1,8 @@
+{
+  "schema": "kamacite.world-commit-hostile-claim.v1",
+  "class": "json-as-authority",
+  "claim": "JSON projection is canonical world identity",
+  "current_identity": null,
+  "proposed_identity": null,
+  "expected_verdict": "deny"
+}

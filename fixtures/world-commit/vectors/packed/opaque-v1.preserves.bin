@@ -1,0 +1,6 @@
+´³molten-world-commit-v1±molten.world-commit.v1´³version±v1„´³profile±opaque±Gblake3:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff´³some±Gblake3:9999999999999999999999999999999999999999999999999999999999999999„„´³parentsµ„„´³rootsµ´³
+typed-root±artifact±Gblake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa„´³
+typed-root±schema±Gblake3:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb„´³
+typed-root±runtime-profile±Gblake3:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc„´³
+typed-root±policy±Gblake3:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd„´³
+typed-root±opaque-machine-snapshot±Gblake3:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee„„„´³completenessµ±artifact±schema±runtime-profile±policy±opaque-machine-snapshot„„„

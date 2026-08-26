@@ -8,5 +8,6 @@ artifact	LICENSES/AGPL-3.0-or-later.txt	GNU AFFERO GENERAL PUBLIC LICENSE
 artifact	crates/kamacite-core/LICENSE-MIT	MIT License
 artifact	crates/kamacite-core/LICENSE-APACHE	Apache License
 artifact	crates/kamacite-cli/LICENSE	GNU AFFERO GENERAL PUBLIC LICENSE
+artifact	fixtures/world-commit/source/NOTICE.md	AGPL-3.0-or-later
 contains	docs/licensing.md	Package licensing is outside canonical envelope
 forbid	crates/kamacite-core/Cargo.toml	kamacite-cli

@@ -1,13 +1,11 @@
 #![forbid(unsafe_code)]
 
-mod root_io;
-
+use kamacite_cli::root_io::{RootCapability, RootIoError};
 use kamacite_core::{
     LegacyEffectOperationReference, SemanticOperationDescriptorInput, SemanticOperationError,
     identify_semantic_operation, preview_semantic_operation_migration,
     semantic_operation_descriptor,
 };
-use root_io::{RootCapability, RootIoError};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::path::PathBuf;

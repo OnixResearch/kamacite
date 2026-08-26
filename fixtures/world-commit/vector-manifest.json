@@ -1,0 +1,345 @@
+{
+  "schema": "kamacite.world-commit-vector-manifest.v1",
+  "product_repository": "git@github.com:brittonr/aspen.git",
+  "product_revision": "2f5d7bf9017b3b00df36e55cf0bbef6d68187611",
+  "product_schema": "molten.world-commit.v1",
+  "canonical_codec": "molten-preserves-packed-canonical-v1-preserves-rs-5.0.0-rc.7",
+  "positive_vectors": [
+    {
+      "id": "logical-v1",
+      "source_path": "fixtures/world-commit/source/logical-v1.preserves",
+      "packed_path": "fixtures/world-commit/vectors/packed/logical-v1.preserves.bin",
+      "source_identity": "source:4c456ea6ef14212c618c3a1d7778e87752eb499382737aa32d9f069d82aec9b1",
+      "packed_identity": "source:63f1d2d914dd791247eadc516498c3cde39259eb66912fa50a5ac94be5134d94",
+      "canonical_value_identity": "canonical-value:63f1d2d914dd791247eadc516498c3cde39259eb66912fa50a5ac94be5134d94",
+      "molten_world_commit_ref": "blake3:171c519d0028c48b45360f1c82889c18efa8fb765e3a8edb2a2f70d1810ef9fc",
+      "profile": "logical",
+      "root_domains": [
+        "artifact",
+        "schema",
+        "durable-state",
+        "tasks",
+        "history",
+        "effects",
+        "scheduler",
+        "time",
+        "entropy",
+        "runtime-profile",
+        "policy"
+      ],
+      "parent_count": 0,
+      "root_count": 11,
+      "completeness_count": 11
+    },
+    {
+      "id": "opaque-v1",
+      "source_path": "fixtures/world-commit/vectors/positive/opaque-v1.preserves",
+      "packed_path": "fixtures/world-commit/vectors/packed/opaque-v1.preserves.bin",
+      "source_identity": "source:37b2f993ceb0d01cf31162a7215f6f46cdc007108ca43233afeefffcdeeb5992",
+      "packed_identity": "source:a884d56f8f194b3371dcb43cef6936118e2c87f1b821df4983d3d9ddff987be4",
+      "canonical_value_identity": "canonical-value:a884d56f8f194b3371dcb43cef6936118e2c87f1b821df4983d3d9ddff987be4",
+      "molten_world_commit_ref": "blake3:d05b323d9315c69c0e2ea6413fa58b4abc552769028ddd63000d3fae5636c5c9",
+      "profile": "opaque",
+      "root_domains": [
+        "artifact",
+        "schema",
+        "runtime-profile",
+        "policy",
+        "opaque-machine-snapshot"
+      ],
+      "parent_count": 0,
+      "root_count": 5,
+      "completeness_count": 5
+    },
+    {
+      "id": "mixed-v1",
+      "source_path": "fixtures/world-commit/vectors/positive/mixed-v1.preserves",
+      "packed_path": "fixtures/world-commit/vectors/packed/mixed-v1.preserves.bin",
+      "source_identity": "source:248000f2847f6cf2b0ba7deed0d9a68aef42ef7704022a4be06addc329cd1154",
+      "packed_identity": "source:fcaf1a7a073f2e6c5f5e8bfb6bc65e9b95afb2e4c7a470b74efe130108e5f1c6",
+      "canonical_value_identity": "canonical-value:fcaf1a7a073f2e6c5f5e8bfb6bc65e9b95afb2e4c7a470b74efe130108e5f1c6",
+      "molten_world_commit_ref": "blake3:a789e808c16394de02197dc8269208d877bac199b930d806c65152cf708f79e0",
+      "profile": "mixed",
+      "root_domains": [
+        "artifact",
+        "schema",
+        "durable-state",
+        "tasks",
+        "history",
+        "effects",
+        "scheduler",
+        "time",
+        "entropy",
+        "runtime-profile",
+        "policy",
+        "opaque-machine-snapshot"
+      ],
+      "parent_count": 0,
+      "root_count": 12,
+      "completeness_count": 12
+    },
+    {
+      "id": "authority-observation-v1",
+      "source_path": "fixtures/world-commit/vectors/positive/authority-observation-v1.preserves",
+      "packed_path": "fixtures/world-commit/vectors/packed/authority-observation-v1.preserves.bin",
+      "source_identity": "source:77ee306eae327918fe0b63d6807f07d868417e0370c7bf3e8f21fdbfd75056c0",
+      "packed_identity": "source:9210ad7653b18e7af3aac1e1f27116904fd3947e55c142296188f1a20518daec",
+      "canonical_value_identity": "canonical-value:9210ad7653b18e7af3aac1e1f27116904fd3947e55c142296188f1a20518daec",
+      "molten_world_commit_ref": "blake3:42b41b75517e6dad17ad2100023f7c517bdfe7e77e249c06a923dcd0f217b40d",
+      "profile": "logical",
+      "root_domains": [
+        "artifact",
+        "schema",
+        "durable-state",
+        "tasks",
+        "history",
+        "effects",
+        "scheduler",
+        "time",
+        "entropy",
+        "runtime-profile",
+        "policy",
+        "authority-observation"
+      ],
+      "parent_count": 0,
+      "root_count": 12,
+      "completeness_count": 11
+    },
+    {
+      "id": "ordered-parents-v1",
+      "source_path": "fixtures/world-commit/vectors/positive/ordered-parents-v1.preserves",
+      "packed_path": "fixtures/world-commit/vectors/packed/ordered-parents-v1.preserves.bin",
+      "source_identity": "source:ad64c601005692c01bb22214d574be542581c0a8e40aee5423efa895c2de0a5b",
+      "packed_identity": "source:4cf9228f34b3b20d7e7ea73a674959f92dc666b8bbc883f6957b750c963cf090",
+      "canonical_value_identity": "canonical-value:4cf9228f34b3b20d7e7ea73a674959f92dc666b8bbc883f6957b750c963cf090",
+      "molten_world_commit_ref": "blake3:c913724d24683cde8c51563da6947f5fa00d9f2a781f7c2d0d4f362cbe6a0646",
+      "profile": "logical",
+      "root_domains": [
+        "artifact",
+        "schema",
+        "durable-state",
+        "tasks",
+        "history",
+        "effects",
+        "scheduler",
+        "time",
+        "entropy",
+        "runtime-profile",
+        "policy"
+      ],
+      "parent_count": 2,
+      "root_count": 11,
+      "completeness_count": 11
+    },
+    {
+      "id": "bounded-parents-v1",
+      "source_path": "fixtures/world-commit/vectors/positive/bounded-parents-v1.preserves",
+      "packed_path": "fixtures/world-commit/vectors/packed/bounded-parents-v1.preserves.bin",
+      "source_identity": "source:84b84228a9eb6eccb66ceeaa8c63c475119271222d2e6ba8577fa07381c7e1c1",
+      "packed_identity": "source:304582b91103d94432289479c885114e5d6430662d211546c67c40146d7664ae",
+      "canonical_value_identity": "canonical-value:304582b91103d94432289479c885114e5d6430662d211546c67c40146d7664ae",
+      "molten_world_commit_ref": "blake3:a9764c4545ec477c9f2b075cb37a9abcf21dc3f81ae4542fd8cc320bbbf1bba8",
+      "profile": "logical",
+      "root_domains": [
+        "artifact",
+        "schema",
+        "durable-state",
+        "tasks",
+        "history",
+        "effects",
+        "scheduler",
+        "time",
+        "entropy",
+        "runtime-profile",
+        "policy"
+      ],
+      "parent_count": 32,
+      "root_count": 11,
+      "completeness_count": 11
+    }
+  ],
+  "negative_vectors": [
+    {
+      "id": "unknown-version",
+      "source_path": "fixtures/world-commit/vectors/negative/unknown-version.preserves",
+      "source_identity": "source:90fa481ac496c679c43692de84263c30c74d108795d5e5e74dad69e01cf24e2a",
+      "diagnostic_classes": [
+        "world-unsupported-version"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "unknown-schema",
+      "source_path": "fixtures/world-commit/vectors/negative/unknown-schema.preserves",
+      "source_identity": "source:5068c2b62b78b84a0b4f8812bcbcb5ac044b576321eaa3324df90db00d12aba4",
+      "diagnostic_classes": [
+        "world-cohort-field"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "unknown-root-domain",
+      "source_path": "fixtures/world-commit/vectors/negative/unknown-root-domain.preserves",
+      "source_identity": "source:35dcf72c4bae3307c9462632dde3b04680100da1e5f8e4405bda582e30d9d684",
+      "diagnostic_classes": [
+        "world-root-domain-substitution"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "duplicate-root-domain",
+      "source_path": "fixtures/world-commit/vectors/negative/duplicate-root-domain.preserves",
+      "source_identity": "source:e738fa27ff14ffd22e65418073724c81d7d1cc29e227afbaa155d9e3f5cf0447",
+      "diagnostic_classes": [
+        "world-canonical-order",
+        "world-duplicate-root-domain",
+        "world-missing-required-root"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "duplicate-root-reference",
+      "source_path": "fixtures/world-commit/vectors/negative/duplicate-root-reference.preserves",
+      "source_identity": "source:00692a094d20bfaabb5521e88eb7cd29e483da8985655dec680a4523649e89bb",
+      "diagnostic_classes": [
+        "world-duplicate-root-reference"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "missing-required-root",
+      "source_path": "fixtures/world-commit/vectors/negative/missing-required-root.preserves",
+      "source_identity": "source:63c1c3c4af53d0946d73f44e56e4f68e7665791ecfc47eb757d9f90ba9548634",
+      "diagnostic_classes": [
+        "world-missing-required-root"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "wrong-typed-reference",
+      "source_path": "fixtures/world-commit/vectors/negative/wrong-typed-reference.preserves",
+      "source_identity": "source:bbdfe254bac9b245ba0102b5dd0ee95a428070b39aecbfc28717830cc051d269",
+      "diagnostic_classes": [
+        "world-invalid-reference"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "oversized-parents",
+      "source_path": "fixtures/world-commit/vectors/negative/oversized-parents.preserves",
+      "source_identity": "source:264211fe23073fa6e2fcd9bc91094a44545d88cc7a80e6d6b857b66ce735ccc2",
+      "diagnostic_classes": [
+        "world-bound-exceeded"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "oversized-roots",
+      "source_path": "fixtures/world-commit/vectors/negative/oversized-roots.preserves",
+      "source_identity": "source:b77802121d2d5928b9c868693aa064d99dbf514649acd99297dd78ece756dfb4",
+      "diagnostic_classes": [
+        "world-bound-exceeded"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "hidden-secret-field",
+      "source_path": "fixtures/world-commit/vectors/negative/hidden-secret-field.preserves",
+      "source_identity": "source:cf8f879191aa2c067c24ebea4cf7b375aa7e9f8c8dfc31cc933a42bdb0c6dc05",
+      "diagnostic_classes": [
+        "world-malformed-canonical"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "altered-source",
+      "source_path": "fixtures/world-commit/vectors/negative/altered-source.json",
+      "source_identity": "source:9060a6bfdbbdf7784fbac41eec0e119dfb6ab66242e351d96c18fee92628eebf",
+      "diagnostic_classes": [
+        "world-source-identity"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "unapproved-cohort-update",
+      "source_path": "fixtures/world-commit/vectors/negative/unapproved-cohort-update.json",
+      "source_identity": "source:e79484350b1137302f348b7ca5150e77c82f1e2198491f0c1dd05216c6383520",
+      "diagnostic_classes": [
+        "world-cohort-update-denied"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "noncanonical-packed",
+      "source_path": "fixtures/world-commit/vectors/negative/noncanonical-packed.preserves.bin",
+      "source_identity": "source:42f63df8ffdd96a3501bc9689672469a7daf27b537aa989c10c8128e94290bbe",
+      "diagnostic_classes": [
+        "world-malformed-canonical"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "order-drift",
+      "source_path": "fixtures/world-commit/vectors/negative/order-drift.preserves",
+      "source_identity": "source:54f66f999593fbbfd0d9d8418755126270ff919c50c225f5b5ebfa608ebe662f",
+      "diagnostic_classes": [
+        "world-canonical-order"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "codec-drift",
+      "source_path": "fixtures/world-commit/vectors/negative/codec-drift.json",
+      "source_identity": "source:f4d7975f3aad8aa15177681e3cf22bcf40ba99b429e841308140a9dbac9c1e01",
+      "diagnostic_classes": [
+        "world-cohort-field"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "embedded-signature",
+      "source_path": "fixtures/world-commit/vectors/negative/embedded-signature.preserves",
+      "source_identity": "source:a51e09820404b0a8d8cf6a34a8392a6a9d29a25cfad7a2e07fcc1e11a1a8afa4",
+      "diagnostic_classes": [
+        "world-malformed-canonical"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "undeclared-steel-authority",
+      "source_path": "fixtures/world-commit/vectors/negative/undeclared-steel-authority.scm",
+      "source_identity": "source:dca0759abc76519a7fb3acf6342cb1d7cd098bb3ef6f0348830dcde421497d7a",
+      "diagnostic_classes": [
+        "world-adapter-boundary"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "json-as-authority",
+      "source_path": "fixtures/world-commit/vectors/negative/json-as-authority.json",
+      "source_identity": "source:244fc2dc93865668b6891865e4c4d3d67de5f663d7fd2bc7bc4d1835609cd6e1",
+      "diagnostic_classes": [
+        "world-semantic-overclaim"
+      ],
+      "verdict": "deny"
+    },
+    {
+      "id": "semantic-equivalence-overclaim",
+      "source_path": "fixtures/world-commit/vectors/negative/semantic-equivalence-overclaim.json",
+      "source_identity": "source:55c8974d1c69ead407548e1b813180c01dabe2f5d870f61769cfb07d0bc48db3",
+      "diagnostic_classes": [
+        "world-semantic-overclaim"
+      ],
+      "verdict": "deny"
+    }
+  ],
+  "non_claims": [
+    "not evaluator semantic equivalence",
+    "not Molten runtime behavior",
+    "not restore or merge compatibility",
+    "not branch or effect authority",
+    "not release eligibility",
+    "not a generic stack-wide world protocol",
+    "not proof of referenced object type or contents"
+  ]
+}

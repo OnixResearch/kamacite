@@ -29,6 +29,7 @@ mod steel_execution;
 mod valence_export;
 mod wasm_component;
 mod wasm_component_valence;
+pub mod world_commit;
 
 pub use application_host_binding::{
     APPLICATION_HOST_BINDING_RECEIPT_ROOT_LABEL, APPLICATION_HOST_BINDING_RECEIPT_SCHEMA,

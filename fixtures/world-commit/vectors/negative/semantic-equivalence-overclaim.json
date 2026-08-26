@@ -1,0 +1,8 @@
+{
+  "schema": "kamacite.world-commit-hostile-claim.v1",
+  "class": "semantic-equivalence-overclaim",
+  "claim": "adapter parity proves evaluator semantic equivalence",
+  "current_identity": null,
+  "proposed_identity": null,
+  "expected_verdict": "deny"
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "kamacite.molten-world-commit-product-sources.v1",
+  "product_repository": "git@github.com:brittonr/aspen.git",
+  "product_revision": "2f5d7bf9017b3b00df36e55cf0bbef6d68187611",
+  "license": "AGPL-3.0-or-later",
+  "sources": [
+    {
+      "path": "fixtures/world-commit/source/NOTICE.md",
+      "source_identity": "source:30c60a0d2c8d6b87bdabd05b11c180934a4f0c80e68449b4ce35787b6ffa10bc",
+      "byte_length": 840
+    },
+    {
+      "path": "fixtures/world-commit/source/logical-v1.preserves",
+      "source_identity": "source:4c456ea6ef14212c618c3a1d7778e87752eb499382737aa32d9f069d82aec9b1",
+      "byte_length": 1423
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-codec.rs",
+      "source_identity": "source:a26c8d757a8539ad78225bcce507e8e76bd3df20acca3fc718c8c7360846e5fb",
+      "byte_length": 11340
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-core-mod.rs",
+      "source_identity": "source:3df3e2e0829822988a47dc340daeaa0ce661d4b7964476062c94a3567bf3048d",
+      "byte_length": 676
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-model.rs",
+      "source_identity": "source:f1fb828fc1f9cf081ae88ba3bd4e34189634e36de026ac43ce00708b5033252a",
+      "byte_length": 7932
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-reference.rs",
+      "source_identity": "source:a58b2800a9108f5d0765280bfe0521988fdd4df8752cb14be5a8a34cca9d6e19",
+      "byte_length": 10111
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-validation.rs",
+      "source_identity": "source:22a333a3e5cd9ecc2abe7ac265035cf47475008ed1c93eddd202f8a242c555dd",
+      "byte_length": 8269
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-world-commit-capture-receipt-v1.preserves",
+      "source_identity": "source:931254a5453548ca7ba71a12d314a319a9f1eefdcf012592881eef79cbbce9e3",
+      "byte_length": 268
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-world-commit-closure-report-v1.preserves",
+      "source_identity": "source:b8f2a3b161e57b9b8d3e651f70620fbad3724d533b07e3b1360b39865819d6d5",
+      "byte_length": 265
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-world-commit-restore-plan-v1.preserves",
+      "source_identity": "source:b7aa2bf1530f1155e2187ca11c66dceeb16b2cfad8665d472edef57ac19e32fb",
+      "byte_length": 259
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-world-commit-v1.preserves",
+      "source_identity": "source:1469485e31507cea8ba38e9f742857fcaa8bd6760ba2ae82815c2a555ca52d68",
+      "byte_length": 220
+    },
+    {
+      "path": "fixtures/world-commit/source/molten-worldcommit-mod.rs",
+      "source_identity": "source:0223333497d7c7ffeff470ff29d019be33f45fd2e1dc9fa889e508d9a0ca9d41",
+      "byte_length": 511
+    }
+  ]
+}

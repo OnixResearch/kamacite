@@ -1,0 +1,27 @@
+{
+  "schema": "kamacite.world-commit-receipt-projection.v1",
+  "receipt_identity": "receipt:018938489043b63835391995a4591cb72941de9c7629024518d8038dba950ea7",
+  "canonical_value_identity": "canonical-value:63f1d2d914dd791247eadc516498c3cde39259eb66912fa50a5ac94be5134d94",
+  "molten_world_commit_ref": "blake3:171c519d0028c48b45360f1c82889c18efa8fb765e3a8edb2a2f70d1810ef9fc",
+  "cohort_identity": "compatibility:57a0b2d01b18274acfcb45013235dc21ef085237a6b0ae8478a73ec14815aa43",
+  "adapter_count": 3,
+  "verdict": "pass",
+  "checked_laws": [
+    "canonical-packed-bytes-match",
+    "json-remains-a-projection",
+    "root-domains-are-nominal",
+    "source-identities-remain-detached",
+    "steel-has-no-ambient-authority",
+    "unknown-versions-fail-closed",
+    "world-runtime-authority-remains-with-molten"
+  ],
+  "non_claims": [
+    "not evaluator semantic equivalence",
+    "not Molten runtime behavior",
+    "not restore or merge compatibility",
+    "not branch or effect authority",
+    "not release eligibility",
+    "not a generic stack-wide world protocol",
+    "not proof of referenced object type or contents"
+  ]
+}

@@ -18,7 +18,7 @@ const TEMPORARY_FILE_PREFIX: &str = ".kamacite-root-io";
 static TEMPORARY_FILE_COUNTER: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Debug)]
-pub(crate) struct RootIoError(String);
+pub struct RootIoError(String);
 
 impl Display for RootIoError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
@@ -88,12 +88,12 @@ fn path_policy_error(path: &Path, class: &str) -> RootIoError {
 /// r[impl kamacite.findings.root_io_confinement.symlink_safe]
 /// r[impl kamacite.findings.root_io_confinement.mutation_safe]
 #[derive(Debug)]
-pub(crate) struct RootCapability {
+pub struct RootCapability {
     root: File,
 }
 
 impl RootCapability {
-    pub(crate) fn open(root: &Path) -> Result<Self, RootIoError> {
+    pub fn open(root: &Path) -> Result<Self, RootIoError> {
         #[cfg(not(target_os = "linux"))]
         {
             let _ = root;
@@ -118,7 +118,7 @@ impl RootCapability {
         }
     }
 
-    pub(crate) fn read(&self, path: &Path) -> Result<Vec<u8>, RootIoError> {
+    pub fn read(&self, path: &Path) -> Result<Vec<u8>, RootIoError> {
         let admitted = admit_relative_path(path)?;
         let mut file = self.open_read_file(&admitted, true)?;
         let mut bytes = Vec::new();
@@ -127,7 +127,7 @@ impl RootCapability {
         Ok(bytes)
     }
 
-    pub(crate) fn read_optional(&self, path: &Path) -> Result<Option<Vec<u8>>, RootIoError> {
+    pub fn read_optional(&self, path: &Path) -> Result<Option<Vec<u8>>, RootIoError> {
         let admitted = admit_relative_path(path)?;
         let file = match self.open_read_file_optional(&admitted, true)? {
             Some(file) => file,
@@ -140,7 +140,7 @@ impl RootCapability {
         Ok(Some(bytes))
     }
 
-    pub(crate) fn write(&self, path: &Path, bytes: &[u8]) -> Result<(), RootIoError> {
+    pub fn write(&self, path: &Path, bytes: &[u8]) -> Result<(), RootIoError> {
         self.write_with_pre_commit(path, bytes, || Ok(()))
     }
 
