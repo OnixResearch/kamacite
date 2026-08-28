@@ -373,5 +373,7 @@ The split does not change third-party licenses, generated artifacts, prior grant
 - [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — evaluation-only pure parallel-language and source-envelope reference.
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — evaluation-only CPU runtime and generated-C target reference.
 - [Schema Migration Core](https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git) at `4fe90e130f2871cf69a6febcdc70785adca98aea` — bounded migration planning pilot without execution authority.
+- [Jane Street `sexplib`](https://github.com/janestreet/sexplib) at `e5a4df62c104c8f7c2e8a11ce36e88808649fce4` — MIT-licensed typed-path, annotated-value, and layout-retention reference.
+- [Jane Street `ppx_sexp_conv`](https://github.com/janestreet/ppx_sexp_conv) at `fd48b5f67a8149d0b3546a4a3b3c852e8da06398` — MIT-licensed paired-codec and runtime-grammar reference.
 
 These references do not transfer runtime, compiler, security, semantic, production, or release claims into Kamacite.
