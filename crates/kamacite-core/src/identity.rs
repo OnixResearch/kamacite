@@ -1,3 +1,15 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::excessive_file_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::raw_arithmetic_overflow,
+        reason = "The tested nominal identity catalog needs a separate compatibility-preserving decomposition."
+    )
+)]
+
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::hash::{Hash, Hasher};

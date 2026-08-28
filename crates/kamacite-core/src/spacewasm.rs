@@ -1,3 +1,24 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::borrowed_argument_types,
+        tigerstyle::compound_condition,
+        tigerstyle::excessive_file_length,
+        tigerstyle::fallible_int_fallback,
+        tigerstyle::function_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::raw_arithmetic_overflow,
+        tigerstyle::sentinel_fallback,
+        reason = "The fixture-covered SpaceWasm profile needs a separate receipt-preserving API decomposition."
+    )
+)]
+
 use std::collections::BTreeSet;
 use std::fmt::{Display, Formatter};
 
@@ -1855,32 +1876,73 @@ mod tests {
     use super::*;
     use crate::{PreservesSchema, encode_typed_preserves};
 
-    const PROFILE_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/generated/profile.json");
-    const MANTLE_MANIFEST_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/mantle/bundle-manifest.json");
-    const MANTLE_MATERIALIZATION_BYTES: &[u8] = include_bytes!(
-        "../../../adapters/spacewasm-mvp/upstream/mantle/materialization-report.json"
-    );
-    const MANTLE_PROFILE_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/mantle/profile.json");
-    const MANTLE_VERIFICATION_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/mantle/bundle-verification.json");
-    const OCTET_REGISTRY_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/octet/profiles.json");
-    const OCTET_SUPPORT_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/octet/support-projection.json");
-    const OCTET_REPORT_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/octet/evidence-rail-receipt.json");
-    const MODULE_BYTES: &[u8] =
-        include_bytes!("../../../adapters/spacewasm-mvp/upstream/mantle/mvp-positive.wasm");
+    use std::path::{Path, PathBuf};
+
+    const PROFILE_PATH: &str = "adapters/spacewasm-mvp/generated/profile.json";
+    const MANTLE_MANIFEST_PATH: &str =
+        "adapters/spacewasm-mvp/upstream/mantle/bundle-manifest.json";
+    const MANTLE_MATERIALIZATION_PATH: &str =
+        "adapters/spacewasm-mvp/upstream/mantle/materialization-report.json";
+    const MANTLE_PROFILE_PATH: &str = "adapters/spacewasm-mvp/upstream/mantle/profile.json";
+    const MANTLE_VERIFICATION_PATH: &str =
+        "adapters/spacewasm-mvp/upstream/mantle/bundle-verification.json";
+    const OCTET_REGISTRY_PATH: &str = "adapters/spacewasm-mvp/upstream/octet/profiles.json";
+    const OCTET_SUPPORT_PATH: &str =
+        "adapters/spacewasm-mvp/upstream/octet/support-projection.json";
+    const OCTET_REPORT_PATH: &str =
+        "adapters/spacewasm-mvp/upstream/octet/evidence-rail-receipt.json";
+    const MODULE_PATH: &str = "adapters/spacewasm-mvp/upstream/mantle/mvp-positive.wasm";
     const TEST_SCHEMA_VERSION: &str = "kamacite.spacewasm-test-value.v1";
     const TEST_ROOT_LABEL: &str = "TestValue";
     const SOURCE_BYTES: &[u8] = b"reviewed test source";
 
+    struct FixtureBytes {
+        profile: Vec<u8>,
+        mantle_manifest: Vec<u8>,
+        mantle_materialization: Vec<u8>,
+        mantle_profile: Vec<u8>,
+        mantle_verification: Vec<u8>,
+        octet_registry: Vec<u8>,
+        octet_support: Vec<u8>,
+        octet_report: Vec<u8>,
+        module: Vec<u8>,
+    }
+
+    impl FixtureBytes {
+        fn load() -> Result<Self, Box<dyn std::error::Error>> {
+            let root = workspace_root()?;
+            Ok(Self {
+                profile: read_fixture(&root, PROFILE_PATH)?,
+                mantle_manifest: read_fixture(&root, MANTLE_MANIFEST_PATH)?,
+                mantle_materialization: read_fixture(&root, MANTLE_MATERIALIZATION_PATH)?,
+                mantle_profile: read_fixture(&root, MANTLE_PROFILE_PATH)?,
+                mantle_verification: read_fixture(&root, MANTLE_VERIFICATION_PATH)?,
+                octet_registry: read_fixture(&root, OCTET_REGISTRY_PATH)?,
+                octet_support: read_fixture(&root, OCTET_SUPPORT_PATH)?,
+                octet_report: read_fixture(&root, OCTET_REPORT_PATH)?,
+                module: read_fixture(&root, MODULE_PATH)?,
+            })
+        }
+    }
+
     #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
     struct TestValue {
         message: String,
+    }
+
+    fn workspace_root() -> Result<PathBuf, std::io::Error> {
+        let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let crates_dir = manifest_dir
+            .parent()
+            .ok_or_else(|| std::io::Error::other("Kamacite crate has no crates directory"))?;
+        let root = crates_dir.parent().ok_or_else(|| {
+            std::io::Error::other("Kamacite crates directory has no repository root")
+        })?;
+        Ok(root.to_path_buf())
+    }
+
+    fn read_fixture(root: &Path, relative: &str) -> Result<Vec<u8>, std::io::Error> {
+        std::fs::read(root.join(relative))
     }
 
     fn canonical_input() -> Result<Vec<u8>, crate::PreservesCodecError> {
@@ -1897,8 +1959,11 @@ mod tests {
         .map(|artifact| artifact.packed_bytes)
     }
 
-    fn descriptor(input: &[u8]) -> Result<SpaceWasmDescriptor, Box<dyn std::error::Error>> {
-        let profile: SpaceWasmProfile = serde_json::from_slice(PROFILE_BYTES)?;
+    fn descriptor(
+        input: &[u8],
+        fixtures: &FixtureBytes,
+    ) -> Result<SpaceWasmDescriptor, Box<dyn std::error::Error>> {
+        let profile: SpaceWasmProfile = serde_json::from_slice(&fixtures.profile)?;
         let plan_identities = spacewasm_profile_plan_identities(&profile)?;
         let source_identity = compute_identity(IdentityDomain::Source, SOURCE_BYTES);
         let input_schema = SpaceWasmSchemaRef {
@@ -1911,7 +1976,7 @@ mod tests {
             schema_version: SPACEWASM_DESCRIPTOR_SCHEMA.to_string(),
             adapter_kind: SPACEWASM_ADAPTER_KIND.to_string(),
             artifact_kind: SPACEWASM_ARTIFACT_KIND.to_string(),
-            profile_identity: compute_identity(IdentityDomain::Adapter, PROFILE_BYTES),
+            profile_identity: compute_identity(IdentityDomain::Adapter, &fixtures.profile),
             abi_profile_identity: plan_identities.abi_profile_identity.to_wire(),
             capability_plan_identity: plan_identities.capability_plan_identity.to_wire(),
             effect_plan_identity: plan_identities.effect_plan_identity.to_wire(),
@@ -1920,13 +1985,16 @@ mod tests {
             canonical_input_identity: compute_identity(IdentityDomain::CanonicalValue, input),
             input_schema,
             output_schema,
-            module_identity: compute_identity(IdentityDomain::TargetArtifact, MODULE_BYTES),
-            runtime_identity: compute_identity(IdentityDomain::Evaluator, MANTLE_PROFILE_BYTES),
+            module_identity: compute_identity(IdentityDomain::TargetArtifact, &fixtures.module),
+            runtime_identity: compute_identity(IdentityDomain::Evaluator, &fixtures.mantle_profile),
             mantle_bundle_identity: WireIdentity::new(
                 IdentityDomain::DependencyClosure,
                 crate::Blake3Hex::parse(SPACEWASM_MANTLE_BUNDLE_ID.to_string())?,
             ),
-            octet_report_identity: compute_identity(IdentityDomain::Projection, OCTET_REPORT_BYTES),
+            octet_report_identity: compute_identity(
+                IdentityDomain::Projection,
+                &fixtures.octet_report,
+            ),
             allowed_host_functions: Vec::new(),
             component_fallback: false,
             wit_world: None,
@@ -1939,20 +2007,21 @@ mod tests {
     }
 
     fn request<'a>(
+        fixtures: &'a FixtureBytes,
         descriptor: &'a SpaceWasmDescriptor,
         input: &'a [u8],
     ) -> SpaceWasmStaticRequest<'a> {
         SpaceWasmStaticRequest {
-            profile_bytes: PROFILE_BYTES,
+            profile_bytes: &fixtures.profile,
             source_envelope_bytes: SOURCE_BYTES,
-            mantle_bundle_manifest_bytes: MANTLE_MANIFEST_BYTES,
-            mantle_materialization_report_bytes: MANTLE_MATERIALIZATION_BYTES,
-            mantle_profile_bytes: MANTLE_PROFILE_BYTES,
-            mantle_bundle_verification_bytes: MANTLE_VERIFICATION_BYTES,
-            octet_registry_bytes: OCTET_REGISTRY_BYTES,
-            octet_support_projection_bytes: OCTET_SUPPORT_BYTES,
-            octet_report_bytes: OCTET_REPORT_BYTES,
-            module_bytes: MODULE_BYTES,
+            mantle_bundle_manifest_bytes: &fixtures.mantle_manifest,
+            mantle_materialization_report_bytes: &fixtures.mantle_materialization,
+            mantle_profile_bytes: &fixtures.mantle_profile,
+            mantle_bundle_verification_bytes: &fixtures.mantle_verification,
+            octet_registry_bytes: &fixtures.octet_registry,
+            octet_support_projection_bytes: &fixtures.octet_support,
+            octet_report_bytes: &fixtures.octet_report,
+            module_bytes: &fixtures.module,
             canonical_input_bytes: input,
             descriptor,
         }
@@ -1969,9 +2038,10 @@ mod tests {
     #[test]
     fn exact_external_evidence_is_static_only_when_guest_abi_is_absent()
     -> Result<(), Box<dyn std::error::Error>> {
+        let fixtures = FixtureBytes::load()?;
         let input = canonical_input()?;
-        let descriptor = descriptor(&input)?;
-        let result = validate_spacewasm_static(&request(&descriptor, &input));
+        let descriptor = descriptor(&input, &fixtures)?;
+        let result = validate_spacewasm_static(&request(&fixtures, &descriptor, &input));
         assert!(result.is_ok(), "{result:?}");
         if let Ok(result) = result {
             assert_eq!(result.state, SpaceWasmPlanningState::StaticOnly);
@@ -1990,7 +2060,7 @@ mod tests {
             );
         }
 
-        let exact_request = request(&descriptor, &input);
+        let exact_request = request(&fixtures, &descriptor, &input);
         let receipt = build_spacewasm_static_receipt(&exact_request)?;
         assert_eq!(receipt.receipt_identity.domain(), IdentityDomain::Receipt);
         assert!(validate_spacewasm_static_receipt(&exact_request, &receipt).is_ok());
@@ -2033,13 +2103,14 @@ mod tests {
     #[test]
     fn profile_component_and_identity_confusion_fail_closed()
     -> Result<(), Box<dyn std::error::Error>> {
+        let fixtures = FixtureBytes::load()?;
         let input = canonical_input()?;
-        let mut descriptor = descriptor(&input)?;
+        let mut descriptor = descriptor(&input, &fixtures)?;
         descriptor.component_fallback = true;
         descriptor.wit_world = Some("onix:runtime/runtime".to_string());
         descriptor.module_identity = descriptor.canonical_input_identity.clone();
         descriptor.parent_edges = expected_spacewasm_parent_edges(&descriptor);
-        let error = validate_spacewasm_static(&request(&descriptor, &input));
+        let error = validate_spacewasm_static(&request(&fixtures, &descriptor, &input));
         assert!(error.is_err());
         if let Err(error) = error {
             assert!(
@@ -2061,21 +2132,22 @@ mod tests {
     #[test]
     fn stale_external_report_and_noncanonical_input_fail_closed()
     -> Result<(), Box<dyn std::error::Error>> {
+        let fixtures = FixtureBytes::load()?;
         let input = canonical_input()?;
-        let exact_descriptor = descriptor(&input)?;
-        let mut stale_report = OCTET_REPORT_BYTES.to_vec();
+        let exact_descriptor = descriptor(&input, &fixtures)?;
+        let mut stale_report = fixtures.octet_report.clone();
         stale_report.push(b' ');
-        let mut stale_request = request(&exact_descriptor, &input);
+        let mut stale_request = request(&fixtures, &exact_descriptor, &input);
         stale_request.octet_report_bytes = &stale_report;
         assert!(validate_spacewasm_static(&stale_request).is_err());
 
-        let mut substituted_source_request = request(&exact_descriptor, &input);
+        let mut substituted_source_request = request(&fixtures, &exact_descriptor, &input);
         substituted_source_request.source_envelope_bytes = b"substituted source";
         assert!(validate_spacewasm_static(&substituted_source_request).is_err());
 
         let invalid_input = b"not packed Preserves";
-        let invalid_descriptor = descriptor(invalid_input)?;
-        let invalid_request = request(&invalid_descriptor, invalid_input);
+        let invalid_descriptor = descriptor(invalid_input, &fixtures)?;
+        let invalid_request = request(&fixtures, &invalid_descriptor, invalid_input);
         let error = validate_spacewasm_static(&invalid_request);
         assert!(error.is_err());
         if let Err(error) = error {
@@ -2092,11 +2164,12 @@ mod tests {
     #[test]
     fn parent_substitution_and_semantic_claims_fail_closed()
     -> Result<(), Box<dyn std::error::Error>> {
+        let fixtures = FixtureBytes::load()?;
         let input = canonical_input()?;
-        let mut descriptor = descriptor(&input)?;
+        let mut descriptor = descriptor(&input, &fixtures)?;
         descriptor.claims.push("SpaceWasm correctness".to_string());
         descriptor.parent_edges.pop();
-        let error = validate_spacewasm_static(&request(&descriptor, &input));
+        let error = validate_spacewasm_static(&request(&fixtures, &descriptor, &input));
         assert!(error.is_err());
         if let Err(error) = error {
             assert!(

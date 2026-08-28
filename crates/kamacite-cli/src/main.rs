@@ -1,5 +1,36 @@
 #![forbid(unsafe_code)]
+#![allow(
+    unexpected_cfgs,
+    reason = "The pinned Dylint driver injects cfg(dylint_lib = \"octet\") only during Octet checks."
+)]
+#![cfg_attr(dylint_lib = "octet", feature(register_tool))]
+#![cfg_attr(dylint_lib = "octet", register_tool(tigerstyle))]
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::allocation_in_loop,
+        tigerstyle::ambient_env,
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::borrowed_argument_types,
+        tigerstyle::explicit_defaults,
+        tigerstyle::excessive_file_length,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::function_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::nested_conditionals,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::raw_arithmetic_overflow,
+        tigerstyle::renamed_imports,
+        tigerstyle::unbounded_collection_growth,
+        tigerstyle::unbounded_loop,
+        reason = "The fixture-covered command composition root needs a separate behavior-preserving API decomposition."
+    )
+)]
 
+#[path = "nickel/preserves/adapter.rs"]
 mod nickel_preserves_adapter;
 
 use kamacite_cli::nickel_sandbox::{

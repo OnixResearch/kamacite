@@ -1,13 +1,28 @@
 #![forbid(unsafe_code)]
-
-#[path = "../world_commit_shell/mod.rs"]
-mod world_commit_shell;
+#![allow(
+    unexpected_cfgs,
+    reason = "The pinned Dylint driver injects cfg(dylint_lib = \"octet\") only during Octet checks."
+)]
+#![cfg_attr(dylint_lib = "octet", feature(register_tool))]
+#![cfg_attr(dylint_lib = "octet", register_tool(tigerstyle))]
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambient_env,
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::nested_conditionals,
+        tigerstyle::non_trait_imports,
+        reason = "This thin CLI parses explicit arguments and maps typed conformance results to process exits."
+    )
+)]
 
 use std::io::{self, Write};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use world_commit_shell::{PlanUpdateOptions, RunOptions, plan_update, run};
+use kamacite_cli::world_commit_shell::{PlanUpdateOptions, RunOptions, plan_update, run};
 
 const USAGE: &str = "usage: check-world-commit-conformance [--root PATH] [--update --accept-revision REVISION] [--plan-update REVISION [--proposed-schema PATH] [--proposed-codec PATH]]";
 

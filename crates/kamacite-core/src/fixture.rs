@@ -1,3 +1,22 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::compound_condition,
+        tigerstyle::excessive_file_length,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::function_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::too_many_parameters,
+        tigerstyle::unbounded_collection_growth,
+        reason = "The positive and negative fixture registry needs a separate manifest-preserving decomposition."
+    )
+)]
+
 use crate::application_host_binding::ApplicationHostBindingInput;
 use crate::ast_grep_audit::{AstGrepAuditInput, validate_ast_grep_audit};
 use crate::diagnostic::{Diagnostic, DiagnosticCode};

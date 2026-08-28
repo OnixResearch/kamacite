@@ -1,6 +1,18 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::function_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        reason = "The conformance composition root returns typed blockers and needs a separate phase and API decomposition."
+    )
+)]
+
 use std::path::PathBuf;
 
-use kamacite_cli::root_io::RootCapability;
+use crate::root_io::RootCapability;
 use kamacite_core::SourceIdentity;
 use kamacite_core::world_commit::{
     MOLTEN_REVISION, WorldCohortUpdatePlan, WorldCohortUpdateRequest, WorldConformanceIssue,

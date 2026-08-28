@@ -1,3 +1,18 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::borrowed_argument_types,
+        tigerstyle::compound_condition,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::unbounded_collection_growth,
+        reason = "The positive and negative parity fixtures need a separate receipt-preserving API decomposition."
+    )
+)]
+
 use crate::identity::ReceiptIdentity;
 use crate::preserves_codec::{PreservesLimits, PreservesSchema, encode_typed_preserves};
 use crate::world_commit::cohort::{

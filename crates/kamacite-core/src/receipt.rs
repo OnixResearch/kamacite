@@ -1,3 +1,13 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        reason = "The stable receipt DTO API needs a separate compatibility-preserving migration."
+    )
+)]
+
 use crate::diagnostic::Diagnostic;
 use crate::identity::{ReceiptIdentity, WireIdentity};
 use serde::{Deserialize, Serialize};

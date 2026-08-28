@@ -1,3 +1,13 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::path_segment_repetition,
+        reason = "The closed shell DTO vocabulary needs a separate schema-preserving API migration."
+    )
+)]
+
 use kamacite_core::world_commit::{
     WorldCommitValue, WorldProfileKind, WorldRootDomain, WorldSourceRole,
 };

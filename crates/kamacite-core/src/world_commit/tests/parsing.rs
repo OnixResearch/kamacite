@@ -1,3 +1,15 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::raw_arithmetic_overflow,
+        reason = "This bounded negative parser suite intentionally constructs malformed and boundary values."
+    )
+)]
+
 use crate::world_commit::{
     AdmittedWorldCommit, MAX_WORLD_COMMIT_PARENTS, MAX_WORLD_COMMIT_ROOTS, WorldConformanceIssue,
     WorldProfileKind, WorldRoot, WorldRootDomain, admit_world_commit_packed,

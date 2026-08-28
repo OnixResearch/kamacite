@@ -1,3 +1,18 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::borrowed_argument_types,
+        tigerstyle::excessive_file_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::path_segment_repetition,
+        reason = "The positive and negative parser fixtures need a separate byte-parity-preserving API decomposition."
+    )
+)]
+
 use std::collections::BTreeSet;
 
 use preserves::{IOValue, Value, ValueImpl};

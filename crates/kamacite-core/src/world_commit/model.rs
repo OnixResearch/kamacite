@@ -1,3 +1,15 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::excessive_file_length,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::path_segment_repetition,
+        reason = "The checked DTO vocabulary needs a separate schema-preserving decomposition."
+    )
+)]
+
 use serde::{Deserialize, Serialize};
 
 use crate::identity::{

@@ -1,4 +1,16 @@
-use kamacite_cli::root_io::RootCapability;
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::compound_condition,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::unbounded_collection_growth,
+        reason = "Manifest validators keep closed hostile-vector fields visible and return typed errors."
+    )
+)]
+
+use crate::root_io::RootCapability;
 use kamacite_core::SourceIdentity;
 use kamacite_core::world_commit::{
     MAX_WORLD_COMMIT_PARENTS, ROOT_DOMAIN_INVENTORY, WorldCohortUpdateRequest,
@@ -7,6 +19,7 @@ use kamacite_core::world_commit::{
 };
 use std::collections::BTreeSet;
 
+use crate::steel_runner::validate_world_vector_cohort;
 use crate::world_commit_shell::io::{
     from_json, pretty_json, read_bounded, typed_wire, write_or_compare,
 };
@@ -14,7 +27,6 @@ use crate::world_commit_shell::model::{
     AlteredSourceVector, CohortConfig, HostileClaimVector, NegativeVectorManifestEntry,
     PositiveVectorManifestEntry, VectorCorpus, WorldVectorManifest,
 };
-use kamacite_cli::steel_runner::validate_world_vector_cohort;
 
 const MANIFEST_SCHEMA: &str = "kamacite.world-commit-vector-manifest.v1";
 const PRIMARY_VECTOR_ID: &str = "logical-v1";

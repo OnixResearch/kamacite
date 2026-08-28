@@ -1,3 +1,12 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        reason = "The stable diagnostic DTO imports and paths are compatibility surfaces."
+    )
+)]
+
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 

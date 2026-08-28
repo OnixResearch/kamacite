@@ -74,7 +74,7 @@ Every command accepting `--root` opens that root once as a directory capability.
 
 Mutation creates a collision-resistant temporary file through the admitted destination-directory handle, flushes it, rechecks that the destination is not a symlink, renames it through that same handle, and flushes the directory. If an attacker replaces the parent pathname after admission, the operation either fails or stays on the already admitted directory object. Explicit fixture-level Nickel execution copies the exact source/import bytes read through admitted handles into inherited anonymous descriptors, so later pathname replacement cannot detach executed bytes from receipt identities. Explicit manifest generation likewise copies the exact admitted source and contract bytes into one inherited anonymous descriptor, so the evaluator cannot reopen ambient joined paths.
 
-`crates/kamacite-cli/src/root_io.rs` owns the audited gateway. Its unit tests cover normal reads, creates, replacements, absolute and parent rejection, source/destination/parent symlinks, destination replacement, and parent replacement. `crates/kamacite-cli/tests/root_io_cli.rs` exercises the validation, adapter, migration, function-address, and Valence command families and verifies outward files remain unchanged.
+`crates/kamacite-cli/src/root/io.rs` owns the audited gateway. Its unit tests cover normal reads, creates, replacements, absolute and parent rejection, source/destination/parent symlinks, destination replacement, and parent replacement. `crates/kamacite-cli/tests/root-io-cli.rs` exercises the validation, adapter, migration, function-address, and Valence command families and verifies outward files remain unchanged.
 
 ## Boundary
 

@@ -1,3 +1,11 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::non_trait_imports,
+        reason = "This bounded parity test keeps direct imports visible for fixture review."
+    )
+)]
+
 use crate::identity::SourceIdentity;
 use crate::world_commit::{
     REQUIRED_NON_CLAIMS, WorldAdapterKind, WorldAdapterObservation, WorldConformanceIssue,

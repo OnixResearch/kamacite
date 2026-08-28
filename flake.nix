@@ -4,6 +4,10 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   inputs.cairn.url = "github:OnixResearch/cairn";
   inputs.cairn.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.octet = {
+    url = "github:OnixResearch/octet/cf04e894e53eb0947230118a086ef6066ddba38c";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
   inputs.schema-migration-core-src = {
     url = "git+https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git?rev=4fe90e130f2871cf69a6febcdc70785adca98aea";
     flake = false;
@@ -14,6 +18,7 @@
       self,
       nixpkgs,
       cairn,
+      octet,
       schema-migration-core-src,
     }:
     let
@@ -23,6 +28,12 @@
       ];
       eachSystem = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
       nickelExportCargoHash = "sha256-QbvbyqFoqlR+eW4QgRiTZPhxTHuEpf30mrXCOmxJ0gk=";
+      octetLintNames = nixpkgs.lib.filter (name: name != "") (
+        nixpkgs.lib.splitString "\n" (builtins.readFile "${octet}/tests/fixtures/lint_inventory_names.txt")
+      );
+      octetDenyFlags = nixpkgs.lib.concatMapStringsSep " " (name: "-D ${name}") (
+        [ "unknown_lints" ] ++ octetLintNames
+      );
     in
     {
       packages = eachSystem (
@@ -145,6 +156,21 @@
                 rg --fixed-strings 'pilot_rust_version = "1.95.0"' ${self}/pilots/schema-migration/source.ncl > /dev/null
                 touch "$out"
               '';
+
+          octet-deny-all =
+            (octet.lib.mkConsumerCheck {
+              inherit system;
+              src = self;
+              packages = [
+                "kamacite-core"
+                "kamacite-cli"
+              ];
+              cargoExtraArgs = "--all-targets --all-features";
+              cargoLock = ./Cargo.lock;
+            }).overrideAttrs
+              (_previous: {
+                DYLINT_RUSTFLAGS = octetDenyFlags;
+              });
 
           rustfmt =
             pkgs.runCommand "kamacite-rustfmt-check"
@@ -541,10 +567,12 @@
               pkgs.clippy
               pkgs.nickel
               pkgs.nix
+              pkgs.pre-commit
               pkgs.rustc
               pkgs.rustfmt
               pkgs.util-linux
               cairn.packages.${system}.cairn
+              octet.packages.${system}.cargo-octet
               self.packages.${system}.kamacite
             ];
             KAMACITE_NICKEL_RUNTIME_CLOSURE_FILE = "${

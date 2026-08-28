@@ -1,4 +1,19 @@
-use kamacite_cli::root_io::RootCapability;
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::function_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::raw_arithmetic_overflow,
+        reason = "Vector generation returns typed fixture errors and needs a separate byte-parity-preserving decomposition."
+    )
+)]
+
+use crate::root_io::RootCapability;
 use kamacite_core::SourceIdentity;
 use kamacite_core::world_commit::{
     MAX_WORLD_COMMIT_PARENTS, MOLTEN_REVISION, WORLD_COMMIT_CODEC, WorldCohortUpdateRequest,

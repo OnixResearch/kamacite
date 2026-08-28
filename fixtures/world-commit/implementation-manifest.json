@@ -8,53 +8,53 @@
     },
     {
       "path": "Cargo.toml",
-      "source_identity": "source:e8aaf6277c6f2b41377ff5620219488d4b120a7952e7364cbe7a8e70e537d6cf",
-      "byte_length": 699
+      "source_identity": "source:abc6bfa3b21b588a7624e52c9319111a946d99a7322e820208c0e80ca394e304",
+      "byte_length": 814
     },
     {
       "path": "crates/kamacite-cli/Cargo.toml",
-      "source_identity": "source:a39de532fb44bce6aea037e7abb6096a8ddd906862d1be6d0dd5e35ea35d41ea",
+      "source_identity": "source:fb93c35b421597cb65b140b8d68f29f6522240fec7ebb04b12d695295cfd3c90",
       "byte_length": 601
     },
     {
       "path": "crates/kamacite-cli/src/bin/check-world-commit-conformance.rs",
-      "source_identity": "source:c67f3ce85680384d79ec63e1cc38a53c62242fea9be7048a54234ce98c4e9a3c",
-      "byte_length": 3677
+      "source_identity": "source:94e03f5572c6cfb52abfc5945133e40ca78767a11d6078c107492bd550314e47",
+      "byte_length": 4289
     },
     {
       "path": "crates/kamacite-cli/src/lib.rs",
-      "source_identity": "source:b237c5f6438f451aed5ac05c1cbc6fd2265a65a807888983e3606b020cd59e65",
-      "byte_length": 88
+      "source_identity": "source:c108f7002ab146310db919f3e605402cf312423f0836652e44190a9392ed950a",
+      "byte_length": 727
     },
     {
-      "path": "crates/kamacite-cli/src/nickel_sandbox.rs",
-      "source_identity": "source:d0bcc868c3cb7747f4cf4dc9b4af46bb3450cf3de873e892e0c7947303fe5119",
-      "byte_length": 24629
+      "path": "crates/kamacite-cli/src/nickel/sandbox.rs",
+      "source_identity": "source:b48161ac33f99502cfb4d35219cb56d0f43a8966ff4bcdc0dea938200e1b9867",
+      "byte_length": 25428
     },
     {
-      "path": "crates/kamacite-cli/src/root_io.rs",
-      "source_identity": "source:3f348243b095e6c56989166a41ebf9ef83fc7376fd001dcb8d9413a3c5f9a9a5",
-      "byte_length": 21004
+      "path": "crates/kamacite-cli/src/root/io.rs",
+      "source_identity": "source:21fad268b34df4629a6db2a151a9541d17a7b4b4141c7ead70f5d87f44b5e0f7",
+      "byte_length": 21571
     },
     {
-      "path": "crates/kamacite-cli/src/steel_runner.rs",
-      "source_identity": "source:1c44493031f558b7590fca3467d06bb49759f315ab475965fd83daf121069908",
-      "byte_length": 19168
+      "path": "crates/kamacite-cli/src/steel/runner.rs",
+      "source_identity": "source:cfb656b73def2abb468acd5c85bbbbf2137072ee638e3f62165c08b598116354",
+      "byte_length": 19729
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/adapters.rs",
-      "source_identity": "source:0f2fb30eca1a9567852b938fa79dbf2439668ec5b87b452c0daa63d20d47ac38",
-      "byte_length": 11910
+      "source_identity": "source:6e8cc96fe5f6d3c65a4d559b4a4308179b19d751fd607cf85f1a08e919196d14",
+      "byte_length": 12358
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/implementation.rs",
-      "source_identity": "source:91799b1dfb7f8d462597113d01900c93c99dbb6620ac7bf230b0e4532a8cd51c",
-      "byte_length": 1733
+      "source_identity": "source:fd81bdf52006a0b15b2ab37ada0a37ed437356d7cc503856fd4f75ce6c710a41",
+      "byte_length": 2118
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/io.rs",
-      "source_identity": "source:de79bfd8ce4199304b604a4eb82a67243e2ce351d969b8e89740b703cf7a2b04",
-      "byte_length": 1871
+      "source_identity": "source:45eda480c2b8895ab115e1de224dba8d43a4a086ccb97c18837e8c521a8db2c7",
+      "byte_length": 2055
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/mod.rs",
@@ -63,33 +63,33 @@
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/model.rs",
-      "source_identity": "source:de98398080f672b4f56ea228d7425a7bef2027c38cfaae66c8f109e7094de06c",
-      "byte_length": 4415
+      "source_identity": "source:8e20513c897582ac60944bb70f6876a2fd4d2130747b9dccfd2a965066791e59",
+      "byte_length": 4695
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/nickel.rs",
-      "source_identity": "source:06295efb0faafcd84621bf62c322139043e9807fe581b10bb1d6f1dce744fc95",
-      "byte_length": 5774
+      "source_identity": "source:1c184ced54581f0e34d190ee74b15c78a9501ae32f90d47260d21239552dd843",
+      "byte_length": 6136
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/product.rs",
-      "source_identity": "source:32b71e5629ec934fa8c0420dcf33ee6da211e0c470923b8f42c340a5c72b46d6",
-      "byte_length": 2238
+      "source_identity": "source:8a9766f856e7bbe1d77bebc85f59124941430de06888259feb88500bf2eaffb3",
+      "byte_length": 2623
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/run.rs",
-      "source_identity": "source:14b14bd30ddde3774dcc3750b4c647a8fe714262e9fd050793e3c782d2fa0dd0",
-      "byte_length": 10599
+      "source_identity": "source:b39b67301b61e65fcaeeaeb7f8b20dff31c458235f558f9fe2ade3079c26cdd6",
+      "byte_length": 10975
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/vectors/generate.rs",
-      "source_identity": "source:2d27be772f467fcf5156b23b9c94d2458c5f4335d843a9537748027bec8cf7cf",
-      "byte_length": 9823
+      "source_identity": "source:6d46b787dd80097e75cd856aec1ff3934ff8f2c69b640e155f953957760e4b13",
+      "byte_length": 10317
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/vectors/manifest.rs",
-      "source_identity": "source:732a623b3b35dd489eb01613756de3b3d094745ecacd12cdd1ad6cc840cab2be",
-      "byte_length": 10188
+      "source_identity": "source:ae38b5483d14059694d05fa9ef556a76d7e73b80efc5b90cae4997eafc54d94d",
+      "byte_length": 10552
     },
     {
       "path": "crates/kamacite-cli/src/world_commit_shell/vectors/mod.rs",
@@ -103,33 +103,33 @@
     },
     {
       "path": "crates/kamacite-core/src/identity.rs",
-      "source_identity": "source:931087b590dc76e1340229b75b14227afefdd4b43105ad5873615573e646afd6",
-      "byte_length": 25628
+      "source_identity": "source:393bfd4c6cc9edb610af5dbc5477cacf9af860e0257279a12d18fefb406373d3",
+      "byte_length": 26010
     },
     {
       "path": "crates/kamacite-core/src/lib.rs",
-      "source_identity": "source:197f4cb8b2cccd0072f877d55e41253508117f2ec8ed091f92ebd9de8727916e",
-      "byte_length": 16710
+      "source_identity": "source:c6c8adb7667b6d71547aec5355e73dc2e71910c4c8f09d27b2d0983f154b46e0",
+      "byte_length": 17811
     },
     {
-      "path": "crates/kamacite-core/src/nickel_sandbox.rs",
-      "source_identity": "source:625b2712fd819111ba695a45b3263142fc98d7cedf08b25b4f9f0d1b499a6f47",
-      "byte_length": 20167
+      "path": "crates/kamacite-core/src/nickel/sandbox.rs",
+      "source_identity": "source:e9d384441cfcb7748a3736c73394869405e60fa326e862be03a20a23ee08fc51",
+      "byte_length": 20715
     },
     {
-      "path": "crates/kamacite-core/src/preserves_codec.rs",
-      "source_identity": "source:bbb09dd44cae9aaac5226d7298633600480ff1e1776717b05138c422167056a0",
-      "byte_length": 31428
+      "path": "crates/kamacite-core/src/preserves/codec.rs",
+      "source_identity": "source:5254bc3795e2e59033f20e2fdd57999ba4ae096d2828757a31bdb8618ad29aba",
+      "byte_length": 32081
     },
     {
-      "path": "crates/kamacite-core/src/steel_execution.rs",
-      "source_identity": "source:f18bf72194e65dd4a2faba5de78c401742d9a9af316c6003203e78328f835b8d",
-      "byte_length": 11363
+      "path": "crates/kamacite-core/src/steel/execution.rs",
+      "source_identity": "source:8cd901e5869dabb0708c21c5c8a9881cb52e0983390f8f252938f98fac009554",
+      "byte_length": 11834
     },
     {
       "path": "crates/kamacite-core/src/world_commit/cohort.rs",
-      "source_identity": "source:e99fd3e92b85b9bc06c87d9a61c3c6361109db44faa8b59299c63c574407b1a6",
-      "byte_length": 14512
+      "source_identity": "source:e08fd14cc713da340bc1f7c3cf9fbaccda0dbd106d3b35528696870cf3ab6dfc",
+      "byte_length": 15145
     },
     {
       "path": "crates/kamacite-core/src/world_commit/mod.rs",
@@ -138,18 +138,18 @@
     },
     {
       "path": "crates/kamacite-core/src/world_commit/model.rs",
-      "source_identity": "source:5def873efb2f0d01ed77f70aca1b0751f6b01502de39cf2177277baa162cf5fd",
-      "byte_length": 15690
+      "source_identity": "source:9b355df12c1ab7685a9a96c147ccf564407c4bd61a12e34f435bea574516e238",
+      "byte_length": 16059
     },
     {
       "path": "crates/kamacite-core/src/world_commit/parity.rs",
-      "source_identity": "source:0f8d1338aa81a6abbb3382c88c04d9c6a047c0aa6b05fc4cdb15b0a1f5092c0f",
-      "byte_length": 8439
+      "source_identity": "source:7ed0f180fc6e798ee583885f02a6de0ad2fb333cc4646e1590bb37ef9fc734b0",
+      "byte_length": 8955
     },
     {
       "path": "crates/kamacite-core/src/world_commit/parse.rs",
-      "source_identity": "source:720ab0d486eb11993ce0162d29fe89a5f5b949156ca653b83200a23df0e5375d",
-      "byte_length": 13694
+      "source_identity": "source:7659311a910a7bd221544fa916999141c54d85eb90fbbd05ec36c79bc47c6485",
+      "byte_length": 14195
     },
     {
       "path": "crates/kamacite-core/src/world_commit/tests/mod.rs",
@@ -158,38 +158,38 @@
     },
     {
       "path": "crates/kamacite-core/src/world_commit/tests/parity.rs",
-      "source_identity": "source:6846e35506f69faad19fd14a88bf9c48d4ef5c594ff2b479054e11242cc086d3",
-      "byte_length": 6646
+      "source_identity": "source:4d2129ed3a5b9501d49479422bea2d6456c129949f74c8001d8ce4ce31970ca9",
+      "byte_length": 6838
     },
     {
       "path": "crates/kamacite-core/src/world_commit/tests/parsing.rs",
-      "source_identity": "source:4d767a75005d24e6b0fd4f082bbb7a48e099d55360fc2ee863c5aa6196da649a",
-      "byte_length": 8033
+      "source_identity": "source:aa185e6818042f71df617e9bd76689c609ec2d1aa3fc7aa12dd05f4a922e6b52",
+      "byte_length": 8422
     },
     {
       "path": "crates/kamacite-core/src/world_commit/tests/support.rs",
-      "source_identity": "source:dff44d900d88a77fe35b8ca4d50033c298697d6b06ec3401d0f42e2e90998be5",
-      "byte_length": 8233
+      "source_identity": "source:d1333843e2a5a1ce11412206c0e03cdcd5c480012c31d1fdceddda989f5f49fb",
+      "byte_length": 8541
     },
     {
       "path": "crates/kamacite-core/src/world_commit/tests/update.rs",
-      "source_identity": "source:77e938185414195de72bf4feefc36fc56ae22ae40b7bbc17c4920a04e79f2bdd",
-      "byte_length": 2896
+      "source_identity": "source:29f943ebc4a84528f0555ef2bf675a3b9eb5d29688c7f1cda1f3b9d21ab30b54",
+      "byte_length": 3088
     },
     {
       "path": "crates/kamacite-core/src/world_commit/update.rs",
-      "source_identity": "source:b1de2bbc7da6c4853b8455d702a9e3c44270b80ddd1a24f7c62852a13f596848",
-      "byte_length": 1964
+      "source_identity": "source:9612b453270c95b8d0c5e75ef4dc7d8a819e03fb5377fea36f0d544cbf8c6a1b",
+      "byte_length": 2329
     },
     {
       "path": "flake.lock",
-      "source_identity": "source:09e494c2f3171d39f14734df2ceacc598d87dc0f1f77078a35541f655a476432",
-      "byte_length": 19299
+      "source_identity": "source:deacef9137545b376eed4f3982c40ad48f1be7933877ebff878ba9f694d44b8f",
+      "byte_length": 54082
     },
     {
       "path": "flake.nix",
-      "source_identity": "source:6c3a6f41fb5f53f8f001211321f3d86fc708a8d5f3b811a69e834f586a7dded5",
-      "byte_length": 25225
+      "source_identity": "source:edba7844a0c0b896b2688cbf302c20998398dc90317cab77965aa7d2ebbbcb77",
+      "byte_length": 26211
     }
   ]
 }

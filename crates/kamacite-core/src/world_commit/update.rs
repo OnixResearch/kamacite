@@ -1,3 +1,15 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        reason = "The dry-run cohort update contract needs a separate compatibility-preserving API migration."
+    )
+)]
+
 use crate::world_commit::model::{
     MOLTEN_REVISION, WorldCohortUpdatePlan, WorldCohortUpdateRequest,
 };

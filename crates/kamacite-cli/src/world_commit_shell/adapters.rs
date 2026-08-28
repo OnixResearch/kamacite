@@ -1,3 +1,17 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::allocation_in_loop,
+        tigerstyle::assertion_density,
+        tigerstyle::function_length,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::too_many_parameters,
+        tigerstyle::unbounded_collection_growth,
+        reason = "Adapter construction returns typed denials and needs a separate identity-preserving API decomposition."
+    )
+)]
+
 use kamacite_core::world_commit::{
     WorldAdapterContract, WorldAdapterKind, WorldAdapterObservation, WorldCommitCohortEntry,
     WorldCommitValue, WorldSourceArtifact, WorldSourceRole, compute_world_commit_cohort_identity,
@@ -8,14 +22,14 @@ use kamacite_core::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::world_commit_shell::io::{from_json, pretty_json, read_bounded};
-use crate::world_commit_shell::model::{CohortConfig, VectorCorpus};
-use crate::world_commit_shell::nickel::sandboxed_nickel_export;
-use kamacite_cli::root_io::RootCapability;
-use kamacite_cli::steel_runner::{
+use crate::root_io::RootCapability;
+use crate::steel_runner::{
     WORLD_VECTOR_CAPABILITY, WORLD_VECTOR_HOST_FUNCTION, WORLD_VECTOR_RUNNER_DESCRIPTOR,
     run_world_vector_probe,
 };
+use crate::world_commit_shell::io::{from_json, pretty_json, read_bounded};
+use crate::world_commit_shell::model::{CohortConfig, VectorCorpus};
+use crate::world_commit_shell::nickel::sandboxed_nickel_export;
 
 const PRIMARY_VECTOR_ID: i64 = 0;
 const NICKEL_EVALUATOR_PROFILE: &str =

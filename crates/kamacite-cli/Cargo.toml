@@ -12,7 +12,7 @@ path = "src/main.rs"
 
 [[bin]]
 name = "kamacite-semantic-operation"
-path = "src/semantic_operation_cli.rs"
+path = "src/semantic/operation/cli.rs"
 
 [[bin]]
 name = "check-world-commit-conformance"

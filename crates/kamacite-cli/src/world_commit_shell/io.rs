@@ -1,6 +1,14 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::non_trait_imports,
+        reason = "This bounded I/O helper keeps explicit capability-owner imports visible."
+    )
+)]
+
 use std::path::Path;
 
-use kamacite_cli::root_io::RootCapability;
+use crate::root_io::RootCapability;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 

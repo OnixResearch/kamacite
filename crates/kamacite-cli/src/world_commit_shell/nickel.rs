@@ -1,10 +1,22 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::function_length,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        reason = "The sandbox shell returns bounded process errors and needs a separate phase and API decomposition."
+    )
+)]
+
 use std::path::Path;
 
-use kamacite_cli::nickel_sandbox::{
+use crate::nickel_sandbox::{
     NickelSandboxFile, NickelSandboxRequest, inheritable_sandbox_data_file, resolve_command,
     run_nickel_sandbox, runtime_closure_paths, validate_enforcement_command_paths,
 };
-use kamacite_cli::root_io::RootCapability;
+use crate::root_io::RootCapability;
 use kamacite_core::{
     AdapterIdentity, EvaluatorIdentity, IdentityDomain, NICKEL_SANDBOX_SOURCE_PATH,
     NickelSandboxOutcome, ProjectionIdentity, SourceIdentity, compute_identity,

@@ -1,3 +1,21 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::ambiguous_params,
+        tigerstyle::assertion_density,
+        tigerstyle::bool_naming,
+        tigerstyle::borrowed_argument_types,
+        tigerstyle::excessive_file_length,
+        tigerstyle::fragile_exhaustive_enum_match,
+        tigerstyle::function_length,
+        tigerstyle::missing_const_fn,
+        tigerstyle::non_trait_imports,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::unbounded_collection_growth,
+        reason = "The positive and negative cohort fixtures need a separate manifest-preserving API decomposition."
+    )
+)]
+
 use std::collections::BTreeSet;
 
 use serde::Serialize;

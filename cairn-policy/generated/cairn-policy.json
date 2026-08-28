@@ -5556,28 +5556,28 @@
             "extensions": [
               "rs"
             ],
-            "root": "crates/kamacite-core/src/semantic_operation.rs",
+            "root": "crates/kamacite-core/src/semantic/operation.rs",
             "source_kind": "rust_source"
           },
           {
             "extensions": [
               "rs"
             ],
-            "root": "crates/kamacite-core/src/semantic_operation_valence.rs",
+            "root": "crates/kamacite-core/src/semantic/operation/valence.rs",
             "source_kind": "rust_source"
           },
           {
             "extensions": [
               "rs"
             ],
-            "root": "crates/kamacite-cli/src/semantic_operation_cli.rs",
+            "root": "crates/kamacite-cli/src/semantic/operation/cli.rs",
             "source_kind": "rust_source"
           },
           {
             "extensions": [
               "rs"
             ],
-            "root": "crates/kamacite-cli/tests/semantic_operation_cli.rs",
+            "root": "crates/kamacite-cli/tests/semantic-operation-cli.rs",
             "source_kind": "rust_source"
           },
           {

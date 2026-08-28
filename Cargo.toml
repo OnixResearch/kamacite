@@ -11,6 +11,10 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/OnixResearch/kamacite"
 rust-version = "1.88"
 
+[workspace.metadata.octet]
+default_scope = ["--workspace"]
+cargo_check_args = ["--all-targets", "--all-features"]
+
 [workspace.dependencies]
 blake3 = "1.8.2"
 nickel-export-core = { git = "https://github.com/OnixResearch/nickel-export", rev = "710b6e03a8faf74f6afc6cc8ef36d7667958b70d" }

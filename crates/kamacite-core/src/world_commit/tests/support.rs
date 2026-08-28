@@ -1,3 +1,14 @@
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::function_length,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        reason = "This fixture-only builder keeps exact cohort values visible for parity review."
+    )
+)]
+
 use crate::identity::{
     AdapterIdentity, Blake3Hex, CompatibilityIdentity, EvaluatorIdentity, ProjectionIdentity,
     SourceIdentity,

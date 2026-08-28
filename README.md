@@ -329,7 +329,7 @@ The split does not change third-party licenses, generated artifacts, prior grant
 
 - [PsychoLlama/ambient](https://github.com/PsychoLlama/ambient) — nominal ability and immutable identity reference.
 - [`../valence/`](../valence/) — evidence identity and linkage layer.
-- [`../octet/`](../octet/) — checked Rust and provenance layer.
+- [`../octet/`](../octet/) at `cf04e894e53eb0947230118a086ef6066ddba38c` — strict checked Rust and provenance gate. Its results do not prove interchange semantics.
 - [`../aspen/`](../aspen/) at `2f5d7bf9017b3b00df36e55cf0bbef6d68187611` — Molten world-commit schema, codec, identity, and canonical fixture cohort.
 - [`../mantle/`](../mantle/) — build evidence and SpaceWasm reference bundle.
 - [nasa/spacewasm](https://github.com/nasa/spacewasm) at `e24cf09355a90497148eb5029fdb8e3400bd63e3` — experimental core-MVP interpreter cohort.

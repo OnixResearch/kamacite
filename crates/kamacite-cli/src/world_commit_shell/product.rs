@@ -1,4 +1,16 @@
-use kamacite_cli::root_io::RootCapability;
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::assertion_density,
+        tigerstyle::non_trait_imports,
+        tigerstyle::numeric_units,
+        tigerstyle::path_segment_repetition,
+        tigerstyle::unbounded_collection_growth,
+        reason = "Product-source manifest failures return typed errors; source identities require a separate API migration."
+    )
+)]
+
+use crate::root_io::RootCapability;
 use kamacite_core::SourceIdentity;
 use kamacite_core::world_commit::MOLTEN_PRODUCT_SOURCE_MANIFEST_HEX;
 use std::collections::BTreeSet;

@@ -1,4 +1,18 @@
 #![forbid(unsafe_code)]
+#![allow(
+    unexpected_cfgs,
+    reason = "The pinned Dylint driver injects cfg(dylint_lib = \"octet\") only during Octet checks."
+)]
+#![cfg_attr(dylint_lib = "octet", feature(register_tool))]
+#![cfg_attr(dylint_lib = "octet", register_tool(tigerstyle))]
+#![cfg_attr(
+    dylint_lib = "octet",
+    allow(
+        tigerstyle::excessive_file_length,
+        tigerstyle::module_file_count,
+        reason = "The public root module and inventory need a separate compatibility-preserving decomposition."
+    )
+)]
 #![deny(clippy::dbg_macro)]
 #![deny(clippy::expect_used)]
 #![deny(clippy::panic)]
@@ -6,28 +20,46 @@
 #![deny(clippy::unreachable)]
 #![deny(clippy::unwrap_used)]
 
+#[path = "application/host/binding.rs"]
 mod application_host_binding;
+#[path = "ast/grep/audit.rs"]
 mod ast_grep_audit;
 mod diagnostic;
+#[path = "dialect/roundtrip.rs"]
 mod dialect_roundtrip;
+#[path = "docs/generation.rs"]
 mod docs_generation;
+#[path = "evidence/chain.rs"]
 mod evidence_chain;
 mod fixture;
+#[path = "function/address.rs"]
 mod function_address;
 mod identity;
+#[path = "manifest/freshness.rs"]
 mod manifest_freshness;
+#[path = "nickel/preserves.rs"]
 mod nickel_preserves;
+#[path = "nickel/sandbox.rs"]
 mod nickel_sandbox;
+#[path = "preserves/codec.rs"]
 mod preserves_codec;
+#[path = "proof/evidence.rs"]
 mod proof_evidence;
 mod receipt;
+#[path = "semantic/operation.rs"]
 mod semantic_operation;
+#[path = "semantic/operation/valence.rs"]
 mod semantic_operation_valence;
 mod spacewasm;
+#[path = "spacewasm/valence.rs"]
 mod spacewasm_valence;
+#[path = "steel/execution.rs"]
 mod steel_execution;
+#[path = "valence/export.rs"]
 mod valence_export;
+#[path = "wasm/component.rs"]
 mod wasm_component;
+#[path = "wasm/component/valence.rs"]
 mod wasm_component_valence;
 pub mod world_commit;
 
