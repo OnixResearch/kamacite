@@ -1,0 +1,24 @@
+## Tasks
+
+- [ ] [serial] Record current source-envelope, canonical Preserves, adapter-descriptor, identity, receipt, privacy, Tile-review, and validation baselines. r[kamacite.shareable_view_interchange.validation.baseline]
+  - Verify: existing failures and external-contract blockers remain visible.
+- [ ] [serial] Admit one exact published Tile Shareable View revision, source schema, fixture corpus, bounds, license facts, and non-claims. r[kamacite.shareable_view_interchange.boundary.external]
+  - Verify: a sibling path, draft branch, screenshot, renderer tree, or undocumented DTO cannot satisfy the adapter.
+- [ ] [parallel] Inventory source, canonical target, dependency, action, presentation, mode, privacy, receipt, and evidence identity domains and owners. r[kamacite.shareable_view_interchange.boundary.ownership]
+  - Verify: Kamacite does not absorb Tile, Animus, application, transport, runtime, renderer, cache, or authority semantics.
+- [ ] [serial] Define canonical Preserves schemas for Shareable View envelopes, dependency entries, inert live and fork descriptors, adapter descriptors, and receipts. r[kamacite.shareable_view_interchange.envelope.schema]
+  - Verify: schemas reject unknown fields, roles, modes, duplicate members, executable values, host handles, bearer tokens, and hidden authority.
+- [ ] [serial] Add exact Tile and Animus adapter descriptors with immutable source revisions, source schemas, fixture identities, field maps, bounds, privacy rules, loss classes, and non-claims. r[kamacite.shareable_view_interchange.adapter.descriptor]
+  - Verify: unsupported fields cannot disappear silently; Animus mapping cannot reconstruct or claim an authoritative ledger.
+- [ ] [serial] Implement pure descriptor, source-fact, role, identity, bound, privacy, mode, target, reverse-map, receipt, and compatibility validation. r[kamacite.shareable_view_interchange.adapter.functional_core] r[kamacite.shareable_view_interchange.identity.domains]
+  - Verify: direct tests need no filesystem, process, network, clock, random, credential, evaluator, renderer, transport, or storage effects.
+- [ ] [serial] Add bounded CLI inspect, validate, adapt, compare, and explicit update workflows through existing capability-rooted publication. r[kamacite.shareable_view_interchange.adapter.shell]
+  - Verify: dry-run is the default for updates; read-back must match canonical target identity before success.
+- [ ] [parallel] Add positive Tile snapshot, live, fork, fallback, and Animus conversation fixtures with exact canonical bytes and round-trip receipts. r[kamacite.shareable_view_interchange.validation.positive]
+  - Verify: every declared supported field survives the selected constrained round trip.
+- [ ] [parallel] Add negative source drift, unknown role, crossed identity, duplicate dependency, missing state, privacy downgrade, callback, command, token, handle, code, noncanonical, stale-receipt, and overclaim fixtures. r[kamacite.shareable_view_interchange.validation.negative]
+  - Verify: every negative fails before target publication, execution, authority use, or passing receipt creation.
+- [ ] [serial] Add deterministic optional Valence-friendly projections that retain layer identities, roles, parent edges, spans where present, and non-claims. r[kamacite.shareable_view_interchange.adapter.receipt]
+  - Verify: evidence projection does not transfer Kamacite round-trip, Tile semantic, Animus ledger, runtime, transport, or authority ownership.
+- [ ] [serial] Run focused core and CLI tests, canonical fixture freshness, adapter validation, round-trip checks, privacy checks, Octet, lifecycle validation, Cairn gates, and relevant Nix checks. r[kamacite.shareable_view_interchange.validation.closeout]
+  - Verify: accepted requirements sync before archive; runtime execution and semantic equivalence remain non-claims.
