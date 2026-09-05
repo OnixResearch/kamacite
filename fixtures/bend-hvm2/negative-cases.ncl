@@ -1,0 +1,23 @@
+let Cases = import "negative-cases-contract.ncl" in
+[
+  { id = "bend-version-drift", mutation = "bend-version-drift", expected_boundary = "pre-execution" },
+  { id = "hvm2-version-drift", mutation = "hvm2-version-drift", expected_boundary = "pre-execution" },
+  { id = "license-omission", mutation = "license-omission", expected_boundary = "pre-execution" },
+  { id = "proof-revision-drift", mutation = "proof-revision-drift", expected_boundary = "pre-execution" },
+  { id = "proof-rerun-failure", mutation = "proof-rerun-failure", expected_boundary = "pre-execution" },
+  { id = "input-mapping-drift", mutation = "input-mapping-drift", expected_boundary = "pre-execution" },
+  { id = "empty-input", mutation = "empty-input", expected_boundary = "pre-execution" },
+  { id = "non-power-of-two-input", mutation = "non-power-of-two-input", expected_boundary = "pre-execution" },
+  { id = "leaf-limit-exceeded", mutation = "leaf-limit-exceeded", expected_boundary = "pre-execution" },
+  { id = "u24-domain-violation", mutation = "u24-domain-violation", expected_boundary = "pre-execution" },
+  { id = "missing-annotation", mutation = "missing-annotation", expected_boundary = "pre-execution" },
+  { id = "explicit-any", mutation = "explicit-any", expected_boundary = "pre-execution" },
+  { id = "forbidden-authority", mutation = "forbidden-authority", expected_boundary = "pre-execution" },
+  { id = "malformed-generated-artifact", mutation = "malformed-generated-artifact", expected_boundary = "post-output" },
+  { id = "tool-failure", mutation = "tool-failure", expected_boundary = "execution" },
+  { id = "resource-exhaustion", mutation = "resource-exhaustion", expected_boundary = "execution" },
+  { id = "backend-disagreement", mutation = "backend-disagreement", expected_boundary = "post-output" },
+  { id = "unstable-measurements", mutation = "unstable-measurements", expected_boundary = "benchmark" },
+  { id = "stale-receipt", mutation = "stale-receipt", expected_boundary = "receipt" },
+  { id = "semantic-overclaim", mutation = "semantic-overclaim", expected_boundary = "pre-execution" },
+] | Cases

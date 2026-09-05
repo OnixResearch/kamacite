@@ -4,7 +4,7 @@
 
 Evaluate one exact CPU-only Bend and HVM2 cohort as a bounded pure adapter target before any Onix runtime adoption.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Bend and HVM remain non-canonical adapter targets
 

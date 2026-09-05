@@ -1,0 +1,478 @@
+{
+  "schema_version": "kamacite.bend-hvm2-valence-projection.v1",
+  "subject_receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "53a0a561b0d523f5a62b1561387e420830b7a3d14c090f9b6eccafd4c28d99b6"
+  },
+  "artifacts": [
+    {
+      "role": "adapter-profile",
+      "identity": {
+        "domain": "adapter",
+        "algorithm": "blake3",
+        "hex": "7640b25994e778a4d5340f90bd706196b220da22e09987028923267d37240dff"
+      },
+      "verification_class": "boundary"
+    },
+    {
+      "role": "bend-source-envelope",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "dfd13c5a80fe38463dbe531a159f597d99b4238d58f1a84867185febf234ae74"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendgenc-sample-0-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "295192ea1ec8566d563b1a7587e5f0198580cdbd043842f5090a4c197c20c67a"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendgenc-sample-0-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-0-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-0-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-1-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-1-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-2-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-2-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-3-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-3-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-4-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-4-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-5-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "bendrunrs-sample-5-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "canonical-leaf-input",
+      "identity": {
+        "domain": "canonical-value",
+        "algorithm": "blake3",
+        "hex": "b9d7e3fde5cdab7b9de2867ca2bff1038821169cf7fc28fd60a9310501757bc6"
+      },
+      "verification_class": "boundary"
+    },
+    {
+      "role": "ccompile-sample-0-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "ccompile-sample-0-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "compiler-invocation",
+      "identity": {
+        "domain": "compiler",
+        "algorithm": "blake3",
+        "hex": "d7011ae9507d400a615aa039026e6b153090b86e7a93862efa22b99955917362"
+      },
+      "verification_class": "boundary"
+    },
+    {
+      "role": "generated-c-source",
+      "identity": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generated-executable",
+      "identity": {
+        "domain": "target-artifact",
+        "algorithm": "blake3",
+        "hex": "6ce66d9200036f81b3f0b4e1e902238ebe321d3fcdf636f964047cd773768e9c"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-0-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-0-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-1-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-1-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-2-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-2-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-3-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-3-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-4-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-4-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-5-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "generatedc-sample-5-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "pilot-decision",
+      "identity": {
+        "domain": "receipt",
+        "algorithm": "blake3",
+        "hex": "53a0a561b0d523f5a62b1561387e420830b7a3d14c090f9b6eccafd4c28d99b6"
+      },
+      "verification_class": "boundary"
+    },
+    {
+      "role": "trellis-proof-bundle",
+      "identity": {
+        "domain": "source",
+        "algorithm": "blake3",
+        "hex": "e58a90561093f7ae28adfe8eb56c16a618c4e99e056af8822633609d5201a70e"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellis-proof-validation",
+      "identity": {
+        "domain": "evidence-chain",
+        "algorithm": "blake3",
+        "hex": "05f63e3eede85bffd84aeb226dd62d4c57f32b58cae1b79850e9d3b3a829f79b"
+      },
+      "verification_class": "verified-trellis-local"
+    },
+    {
+      "role": "trellisoracle-sample-0-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-0-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-1-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-1-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-2-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-2-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-3-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-3-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-4-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-4-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-5-stderr",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      "verification_class": "recorded-only"
+    },
+    {
+      "role": "trellisoracle-sample-5-stdout",
+      "identity": {
+        "domain": "projection",
+        "algorithm": "blake3",
+        "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+      },
+      "verification_class": "recorded-only"
+    }
+  ],
+  "checked_laws": [
+    "exact-cohort-precedes-execution",
+    "isolated-proc-mount-exposes-only-sandbox-processes",
+    "canonical-leaves-render-the-reviewed-source",
+    "trellis-oracle-does-not-call-bend-or-hvm2",
+    "three-route-equality-precedes-passing-receipt",
+    "artifact-layers-retain-distinct-identities",
+    "benchmark-policy-precedes-measurement",
+    "runtime-consumer-authority-remains-external"
+  ],
+  "non_claims": [
+    "not Bend correctness",
+    "not HVM2 correctness",
+    "not generated-C semantic equivalence",
+    "not host-compiler correctness",
+    "not verifier soundness",
+    "not sandbox completeness",
+    "not portable performance",
+    "not runtime adoption",
+    "not production readiness",
+    "not release eligibility"
+  ],
+  "projection_identity": {
+    "domain": "projection",
+    "algorithm": "blake3",
+    "hex": "365df710e066ed1b61694cb372fd250ab9d74f86cae5980b31efcc63c087453c"
+  }
+}

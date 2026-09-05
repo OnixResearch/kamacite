@@ -1,0 +1,10 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-valence-projection"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-valence-projection.v1"
+  fields: ["subject receipt identity" "role-scoped artifacts" "verification class" "checked laws" "non-claims" "projection identity"]
+  verified-role-limit: "verified-trellis-local applies only to the exact proof validation artifact"
+  recorded-only-roles: ["Bend source" "generated C" "generated executable" "process streams"]
+  canonical-identity: "projection-domain BLAKE3 over the projection body"
+  non-claims: ["not Valence trust transfer" "not external semantic correctness" "not release eligibility"]
+}>

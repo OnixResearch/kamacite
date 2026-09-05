@@ -1,0 +1,10 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-pilot-decision"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-pilot-decision.v1"
+  states: ["adopt" "defer" "reject"]
+  adopt-rule: "exact cohort, proof handoff, three-route equality, limits, stability, and declared performance targets all pass"
+  defer-rule: "execution, resource, stability, or performance evidence has an exact unresolved blocker"
+  reject-rule: "an observed result disagrees with the verified Trellis-local oracle or violates a fixed semantic criterion"
+  non-claims: ["not runtime adoption" "not production readiness" "not release eligibility"]
+}>

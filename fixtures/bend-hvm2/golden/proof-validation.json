@@ -1,0 +1,18 @@
+{
+  "trellis_revision": "f26e3cd465101698ade12f8d142e0dc95578326b",
+  "verifier_provider_revision": "374bd16b26cee2af34211a29bfa531c016811f51",
+  "proof_check": "trellis-verus-proofs-exact-source-v1",
+  "proof_result_present": true,
+  "proof_result_identity": {
+    "domain": "evidence-chain",
+    "algorithm": "blake3",
+    "hex": "88a2d96d0e5a6bce61b502111ef1e990fe179bf45bb32052fe43014815af59f0"
+  },
+  "verifier_identity": {
+    "domain": "compiler",
+    "algorithm": "blake3",
+    "hex": "99ae3afb1e7aecf243dd732ecdf35dd9212674a1a26e89ef67086ed95fcf581d"
+  },
+  "passed": true,
+  "diagnostics": []
+}

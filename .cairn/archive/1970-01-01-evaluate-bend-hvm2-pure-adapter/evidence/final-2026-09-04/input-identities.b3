@@ -1,0 +1,4 @@
+7640b25994e778a4d5340f90bd706196b220da22e09987028923267d37240dff  adapters/bend-hvm2/generated/profile.json
+dfd13c5a80fe38463dbe531a159f597d99b4238d58f1a84867185febf234ae74  fixtures/bend-hvm2/workload.bend
+9a41da5c83928eef7275d83aec398a1ee03ad1fbcc6e0f1783536a8699d613d1  fixtures/bend-hvm2/input.json
+e58a90561093f7ae28adfe8eb56c16a618c4e99e056af8822633609d5201a70e  adapters/bend-hvm2/upstream/trellis/proof-evidence-bundle.json

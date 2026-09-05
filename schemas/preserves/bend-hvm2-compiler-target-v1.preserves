@@ -1,0 +1,8 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-compiler-target"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-compiler-target.v1"
+  fields: ["generated C identity" "compiler family" "compiler version" "target triple" "fixed arguments" "compiler invocation identity" "executable identity" "bounded outcome" "non-claims"]
+  canonical-identity: "compiler-domain BLAKE3 over the canonical invocation record"
+  non-claims: ["not compiler correctness" "not source equivalence" "not portable executable behavior"]
+}>

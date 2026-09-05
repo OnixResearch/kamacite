@@ -1,0 +1,9 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-trellis-proof-handoff"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-trellis-proof-handoff.v1"
+  fields: ["Trellis revision" "source NAR identity" "proof bundle identity" "algorithm profile" "oracle symbol" "requirements" "proof functions" "proof gaps" "verifier provider" "proof result identity" "non-claims"]
+  admission-rule: "exact proof bundle validation and a passing pinned Nix proof result are both required"
+  canonical-identity: "evidence-chain-domain BLAKE3 over the proof validation observation"
+  non-claims: ["not verifier soundness" "not Bend correctness" "not HVM2 correctness" "not release approval"]
+}>

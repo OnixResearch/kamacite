@@ -1,0 +1,10 @@
+{
+  "schema": "kamacite.world-commit-conformance-run.v1",
+  "cohort_identity": "compatibility:131aeeb6f769c244ed507c675cc7756b5191e2cb6eb7921a855cdd7ad7f564a0",
+  "canonical_value_identity": "canonical-value:63f1d2d914dd791247eadc516498c3cde39259eb66912fa50a5ac94be5134d94",
+  "receipt_identity": "receipt:a97fc7ee913ead1ebdee1d072203d0ef36bd4355e72e1a6e9a521838dcd00cbb",
+  "positive_vector_count": 6,
+  "negative_vector_count": 19,
+  "adapter_count": 3,
+  "verdict": "pass"
+}

@@ -1,0 +1,8 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-run-observation"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-run-observation.v1"
+  fields: ["stage" "sample index" "warm-up class" "command profile identity" "outcome" "exit code" "canonical result" "interaction count" "combine count" "wall duration" "peak memory when available" "bounded stdout identity" "bounded stderr identity"]
+  canonical-identity: "projection-domain BLAKE3 for each bounded stream"
+  non-claims: ["not portable performance" "Trellis combines are not HVM interactions" "not sandbox completeness"]
+}>

@@ -1,0 +1,249 @@
+these 4 derivations will be built:
+  /nix/store/mn41s238j8mx398cmdwxg6nms988l8ql-kamacite-0.1.0.drv
+  /nix/store/s4b4hqc03w6ph070iy4hn065rkshdpwp-closure-info.drv
+  /nix/store/aw7n8x7vjkkasdf6zd559kl4ycaax8fg-kamacite-bend-hvm2-pilot.drv
+  /nix/store/l2hmb9afv8sf2ql1lr7dszdiih08snp2-kamacite-bend-hvm2-pilot.drv
+these 21 paths will be fetched (50.8 MiB download, 50.8 MiB unpacked):
+  /nix/store/2p1yryyhabxclhmd9pkmjy20gggjb2cf-ShellCheck-0.11.0
+  /nix/store/7sw4rf00p0161r5bs930givq75aikw6x-audit-4.1.4-lib
+  /nix/store/g7svy17fhkg2cq3q4lfzzc0mmsl3d8hq-bubblewrap-0.11.2
+  /nix/store/rmm3csx3qqv8wnc0iq56ygpd340zkc8f-closure-info
+  /nix/store/2yzrnybmshv43hh22bbfcn0nhj34yghp-db-4.8.30
+  /nix/store/a8phd5lf9wrzgz9mrsg4y3rp7si1yakz-elfutils-0.194
+  /nix/store/0zc8py7pvw9wbfyym6204ddam722w7rj-gmp-with-cxx-6.3.0
+  /nix/store/dlkag0m5p7b6d6nbhh091hq0s60q6vks-json-c-0.18
+  /nix/store/9vk9y8h8md996zkjiwydw624hwkfrkbh-libbsd-0.12.2
+  /nix/store/wn2rikr7gzgvmhsp2a9pphg2qfz2rbyz-libcap-2.77-lib
+  /nix/store/brygjb3xvc1rp7ddnfjdcyp2pqdq4s7f-libmd-1.1.0
+  /nix/store/pv8aczqkk94gzxhx0gk168gpxcll0svi-linux-pam-1.7.1
+  /nix/store/wz2436xdzq8ilbzliiqqxxbngw5wwrkb-shadow-4.19.4
+  /nix/store/bv90l7ic5p0alcjqlcwmgxf76zx3zg20-systemd-minimal-libs-260.2
+  /nix/store/7d9mb1cxsjpdb6m9hdfg05j1l7pvhkla-tcb-1.2
+  /nix/store/qjs15klpvpwz64pjdspy3mln6d54pd8f-util-linux-2.42-bin
+  /nix/store/r36mwd5l0szp5mwmlyfkabdbmd84ad6s-util-linux-2.42-lastlog
+  /nix/store/vf5xyym3j82vx9fgb109q5gi7m983x1m-util-linux-2.42-lib
+  /nix/store/l9ra4yk5khapd0cwi1q6djx7j9zzi232-util-linux-2.42-login
+  /nix/store/qq3x890gwa050lidi6zyxklrr3rbpxdl-util-linux-2.42-mount
+  /nix/store/bb8bj6354lfp5m0141dh6brmf1v1cxcg-util-linux-2.42-swap
+copying path '/nix/store/0zc8py7pvw9wbfyym6204ddam722w7rj-gmp-with-cxx-6.3.0' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/wn2rikr7gzgvmhsp2a9pphg2qfz2rbyz-libcap-2.77-lib' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/bv90l7ic5p0alcjqlcwmgxf76zx3zg20-systemd-minimal-libs-260.2' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/dlkag0m5p7b6d6nbhh091hq0s60q6vks-json-c-0.18' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/7sw4rf00p0161r5bs930givq75aikw6x-audit-4.1.4-lib' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/2yzrnybmshv43hh22bbfcn0nhj34yghp-db-4.8.30' from 'http://100.100.103.95:5000'...
+building '/nix/store/s4b4hqc03w6ph070iy4hn065rkshdpwp-closure-info.drv'...
+copying path '/nix/store/g7svy17fhkg2cq3q4lfzzc0mmsl3d8hq-bubblewrap-0.11.2' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/a8phd5lf9wrzgz9mrsg4y3rp7si1yakz-elfutils-0.194' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/pv8aczqkk94gzxhx0gk168gpxcll0svi-linux-pam-1.7.1' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/vf5xyym3j82vx9fgb109q5gi7m983x1m-util-linux-2.42-lib' from 'http://100.100.103.95:5000'...
+closure-info> structuredAttrs is enabled
+copying path '/nix/store/rmm3csx3qqv8wnc0iq56ygpd340zkc8f-closure-info' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/brygjb3xvc1rp7ddnfjdcyp2pqdq4s7f-libmd-1.1.0' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/2p1yryyhabxclhmd9pkmjy20gggjb2cf-ShellCheck-0.11.0' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/9vk9y8h8md996zkjiwydw624hwkfrkbh-libbsd-0.12.2' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/l9ra4yk5khapd0cwi1q6djx7j9zzi232-util-linux-2.42-login' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/qq3x890gwa050lidi6zyxklrr3rbpxdl-util-linux-2.42-mount' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/bb8bj6354lfp5m0141dh6brmf1v1cxcg-util-linux-2.42-swap' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/r36mwd5l0szp5mwmlyfkabdbmd84ad6s-util-linux-2.42-lastlog' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/7d9mb1cxsjpdb6m9hdfg05j1l7pvhkla-tcb-1.2' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/wz2436xdzq8ilbzliiqqxxbngw5wwrkb-shadow-4.19.4' from 'http://100.100.103.95:5000'...
+copying path '/nix/store/qjs15klpvpwz64pjdspy3mln6d54pd8f-util-linux-2.42-bin' from 'http://100.100.103.95:5000'...
+building '/nix/store/mn41s238j8mx398cmdwxg6nms988l8ql-kamacite-0.1.0.drv'...
+kamacite> Running phase: unpackPhase
+kamacite> unpacking source archive /nix/store/chrp41kp7g25iqmhm85m91agrca8pm7k-source
+kamacite> source root is source
+kamacite> Executing cargoSetupPostUnpackHook
+kamacite> Finished cargoSetupPostUnpackHook
+kamacite> Running phase: patchPhase
+kamacite> Executing cargoSetupPostPatchHook
+kamacite> Validating consistency between /build/source/Cargo.lock and /build/cargo-vendor-dir/Cargo.lock
+kamacite> Finished cargoSetupPostPatchHook
+kamacite> Running phase: updateAutotoolsGnuConfigScriptsPhase
+kamacite> Running phase: configurePhase
+kamacite> Running phase: buildPhase
+kamacite> Executing cargoBuildHook
+kamacite> cargoBuildHook flags: -j 4 --target x86_64-unknown-linux-gnu --offline --profile release -p kamacite-cli
+kamacite>    Compiling proc-macro2 v1.0.106
+kamacite>    Compiling quote v1.0.46
+kamacite>    Compiling unicode-ident v1.0.24
+kamacite>    Compiling serde_core v1.0.228
+kamacite>    Compiling autocfg v1.5.1
+kamacite>    Compiling cfg-if v1.0.4
+kamacite>    Compiling serde v1.0.228
+kamacite>    Compiling version_check v0.9.5
+kamacite>    Compiling libc v0.2.186
+kamacite>    Compiling num-traits v0.2.19
+kamacite>    Compiling syn v2.0.118
+kamacite>    Compiling stable_deref_trait v1.2.1
+kamacite>    Compiling zerocopy v0.8.54
+kamacite>    Compiling typenum v1.20.1
+kamacite>    Compiling parking_lot_core v0.9.12
+kamacite>    Compiling smallvec v1.15.2
+kamacite>    Compiling memchr v2.8.3
+kamacite>    Compiling scopeguard v1.2.0
+kamacite>    Compiling crossbeam-utils v0.8.22
+kamacite>    Compiling lock_api v0.4.14
+kamacite>    Compiling num-integer v0.1.46
+kamacite>    Compiling ahash v0.8.12
+kamacite>    Compiling synstructure v0.13.2
+kamacite>    Compiling generic-array v0.14.7
+kamacite>    Compiling rustversion v1.0.23
+kamacite>    Compiling writeable v0.6.3
+kamacite>    Compiling equivalent v1.0.2
+kamacite>    Compiling itoa v1.0.18
+kamacite>    Compiling shlex v2.0.1
+kamacite>    Compiling getrandom v0.3.4
+kamacite>    Compiling hashbrown v0.17.1
+kamacite>    Compiling once_cell v1.21.4
+kamacite>    Compiling zmij v1.0.21
+kamacite>    Compiling serde_derive v1.0.228
+kamacite>    Compiling zerofrom-derive v0.1.7
+kamacite>    Compiling yoke-derive v0.8.2
+kamacite>    Compiling zerovec-derive v0.11.3
+kamacite>    Compiling displaydoc v0.2.6
+kamacite>    Compiling zerofrom v0.1.8
+kamacite>    Compiling yoke v0.8.3
+kamacite>    Compiling find-msvc-tools v0.1.9
+kamacite>    Compiling zerovec v0.11.6
+kamacite>    Compiling allocator-api2 v0.2.21
+kamacite>    Compiling cc v1.2.66
+kamacite>    Compiling indexmap v2.14.0
+kamacite>    Compiling tinystr v0.8.3
+kamacite>    Compiling indexmap v1.9.3
+kamacite>    Compiling serde_json v1.0.150
+kamacite>    Compiling icu_properties_data v2.2.0
+kamacite>    Compiling num-bigint v0.4.8
+kamacite>    Compiling litemap v0.8.2
+kamacite>    Compiling hashbrown v0.14.5
+kamacite>    Compiling icu_locale_core v2.2.0
+kamacite>    Compiling blake3 v1.8.5
+kamacite>    Compiling potential_utf v0.1.5
+kamacite>    Compiling zerotrie v0.2.4
+kamacite>    Compiling aho-corasick v1.1.4
+kamacite>    Compiling libm v0.2.16
+kamacite>    Compiling utf8_iter v1.0.4
+kamacite>    Compiling regex-syntax v0.8.11
+kamacite>    Compiling icu_casemap_data v2.2.0
+kamacite>    Compiling rustix v1.1.4
+kamacite>    Compiling hashbrown v0.12.3
+kamacite>    Compiling regex-automata v0.4.15
+kamacite>    Compiling icu_collections v2.2.0
+kamacite>    Compiling icu_provider v2.2.0
+kamacite>    Compiling rand_core v0.9.5
+kamacite>    Compiling dashmap v6.2.1
+kamacite>    Compiling castaway v0.2.4
+kamacite>    Compiling crypto-common v0.1.7
+kamacite>    Compiling block-buffer v0.10.4
+kamacite>    Compiling futures-macro v0.3.32
+kamacite>    Compiling ppv-lite86 v0.2.21
+kamacite>    Compiling parking_lot v0.12.5
+kamacite>    Compiling bitmaps v2.1.0
+kamacite>    Compiling im-rc v15.1.0
+kamacite>    Compiling bigdecimal v0.4.10
+kamacite>    Compiling arrayvec v0.5.2
+kamacite>    Compiling futures-core v0.3.32
+kamacite>    Compiling pin-project-lite v0.2.17
+kamacite>    Compiling bitflags v2.13.0
+kamacite>    Compiling static_assertions v1.1.0
+kamacite>    Compiling slab v0.4.12
+kamacite>    Compiling rand_core v0.6.4
+kamacite>    Compiling arrayvec v0.7.8
+kamacite>    Compiling constant_time_eq v0.4.2
+kamacite>    Compiling unicode-width v0.2.2
+kamacite>    Compiling cpufeatures v0.3.0
+kamacite>    Compiling httparse v1.10.1
+kamacite>    Compiling anymap3 v1.1.0
+kamacite>    Compiling arrayref v0.3.9
+kamacite>    Compiling linux-raw-sys v0.12.1
+kamacite>    Compiling futures-task v0.3.32
+kamacite>    Compiling typed-arena v2.0.2
+kamacite>    Compiling ryu v1.0.23
+kamacite>    Compiling compact_str v0.8.2
+kamacite>    Compiling pretty v0.12.5
+kamacite>    Compiling futures-util v0.3.32
+kamacite>    Compiling generic_singleton v0.5.3
+kamacite>    Compiling rand_xoshiro v0.6.0
+kamacite>    Compiling sized-chunks v0.6.5
+kamacite>    Compiling rand_chacha v0.9.0
+kamacite>    Compiling digest v0.10.7
+kamacite>    Compiling icu_properties v2.2.0
+kamacite>    Compiling lasso v0.7.3
+kamacite>    Compiling regex v1.13.0
+kamacite>    Compiling codegen v0.2.0
+kamacite>    Compiling num-rational v0.4.2
+kamacite>    Compiling thin-vec v0.2.18
+kamacite>    Compiling ordered-float v5.3.0
+kamacite>    Compiling serde_bytes v0.11.19
+kamacite>    Compiling iana-time-zone v0.1.65
+kamacite>    Compiling dtoa v0.4.8
+kamacite>    Compiling log v0.4.33
+kamacite>    Compiling termcolor v1.4.1
+kamacite>    Compiling rustc-hash v2.1.3
+kamacite>    Compiling unicode-width v0.1.14
+kamacite>    Compiling bytemuck v1.25.1
+kamacite>    Compiling lazy_static v1.5.0
+kamacite>    Compiling base64 v0.13.1
+kamacite>    Compiling codespan-reporting v0.11.1
+kamacite>    Compiling steel-parser v0.8.2
+kamacite>    Compiling preserves v5.0.0-rc.7
+kamacite>    Compiling chrono v0.4.45
+kamacite>    Compiling steel-gen v0.8.2
+kamacite>    Compiling icu_casemap v2.2.0
+kamacite>    Compiling polling v3.11.0
+kamacite>    Compiling md-5 v0.10.6
+kamacite>    Compiling rand v0.9.5
+kamacite>    Compiling futures-executor v0.3.32
+kamacite>    Compiling im-lists v0.11.4
+kamacite>    Compiling arc-swap v1.9.2
+kamacite>    Compiling bincode v1.3.3
+kamacite>    Compiling steel-quickscope v0.3.2
+kamacite>    Compiling shared_vector v0.4.5
+kamacite>    Compiling steel-derive v0.8.2
+kamacite>    Compiling crossbeam-queue v0.3.13
+kamacite>    Compiling crossbeam-channel v0.5.16
+kamacite>    Compiling which v8.0.5
+kamacite>    Compiling glob v0.3.3
+kamacite>    Compiling env_home v0.1.0
+kamacite>    Compiling weak-table v0.3.2
+kamacite>    Compiling xdg v3.0.0
+kamacite>    Compiling strsim v0.11.1
+kamacite>    Compiling steel-core v0.8.2
+kamacite>    Compiling kamacite-core v0.1.0 (/build/source/crates/kamacite-core)
+kamacite>    Compiling nickel-export-core v0.1.0 (https://github.com/OnixResearch/nickel-export?rev=710b6e03a8faf74f6afc6cc8ef36d7667958b70d#710b6e03)
+kamacite>    Compiling kamacite-cli v0.1.0 (/build/source/crates/kamacite-cli)
+kamacite>     Finished `release` profile [optimized] target(s) in 1m 42s
+kamacite> Executing cargoInstallPostBuildHook
+kamacite> Finished cargoInstallPostBuildHook
+kamacite> Finished cargoBuildHook
+kamacite> buildPhase completed in 1 minutes 43 seconds
+kamacite> Running phase: installPhase
+kamacite> Executing cargoInstallHook
+kamacite> Finished cargoInstallHook
+kamacite> Running phase: fixupPhase
+kamacite> shrinking RPATHs of ELF executables and libraries in /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0
+kamacite> shrinking /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0/bin/check-bend-hvm2-pilot
+kamacite> shrinking /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0/bin/kamacite-semantic-operation
+kamacite> shrinking /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0/bin/.kamacite-validate-wrapped
+kamacite> shrinking /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0/bin/.check-world-commit-conformance-wrapped
+kamacite> checking for references to /build/ in /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0...
+kamacite> patching script interpreter paths in /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0
+kamacite> stripping (with command strip and flags -S -p) in  /nix/store/zyn433cc1d8vffzxkm9w55rd2z1mfcb3-kamacite-0.1.0/bin
+building '/nix/store/aw7n8x7vjkkasdf6zd559kl4ycaax8fg-kamacite-bend-hvm2-pilot.drv'...
+building '/nix/store/l2hmb9afv8sf2ql1lr7dszdiih08snp2-kamacite-bend-hvm2-pilot.drv'...
+kamacite-bend-hvm2-pilot> Bend/HVM2 pilot failed: bend gen-c failed with ExitFailure: thread 'main' (2) panicked at /build/cargo-vendor-dir/stacker-0.1.15/src/lib.rs:416:13:
+kamacite-bend-hvm2-pilot> assertion `left == right` failed
+kamacite-bend-hvm2-pilot>   left: 2
+kamacite-bend-hvm2-pilot>  right: 0
+kamacite-bend-hvm2-pilot> note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: Cannot build '/nix/store/l2hmb9afv8sf2ql1lr7dszdiih08snp2-kamacite-bend-hvm2-pilot.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/nw40vv5qfjw7rhr1c6hlqqj6ji1pbcym-kamacite-bend-hvm2-pilot
+       Last 5 log lines:
+       > Bend/HVM2 pilot failed: bend gen-c failed with ExitFailure: thread 'main' (2) panicked at /build/cargo-vendor-dir/stacker-0.1.15/src/lib.rs:416:13:
+       > assertion `left == right` failed
+       >   left: 2
+       >  right: 0
+       > note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+       For full logs, run:
+         nix log /nix/store/l2hmb9afv8sf2ql1lr7dszdiih08snp2-kamacite-bend-hvm2-pilot.drv

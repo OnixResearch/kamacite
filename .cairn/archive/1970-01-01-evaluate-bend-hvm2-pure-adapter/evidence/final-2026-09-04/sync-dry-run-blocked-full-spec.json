@@ -1,0 +1,60 @@
+{
+  "actions": [],
+  "blocked": true,
+  "change": "evaluate-bend-hvm2-pure-adapter",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "336a4be253b97c408d0b9f0ec407e55d10f42140be6ea15db797399240dad2c0",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "a4db066808056ecbe8a591db4a9816f2ee4b8f43cedf9ed2c567818206256b8f",
+        "blocked": true,
+        "changed": false,
+        "delta_hash": "96998620f0351c998f309121dc75e9b414f6e847381347963dea1e5c052981ae",
+        "destination": ".cairn/specs/bend-hvm2-evaluation-pilot/spec.md",
+        "diagnostics": [
+          {
+            "code": "delta_merge.no_operations",
+            "message": "no supported delta operations were recognized; use explicit `## ADDED Requirements`, `## MODIFIED Requirements`, or `## REMOVED Requirements` sections instead of a full accepted-spec projection"
+          }
+        ],
+        "expected_after_hash": "a4db066808056ecbe8a591db4a9816f2ee4b8f43cedf9ed2c567818206256b8f",
+        "operations": [],
+        "outcomes": [],
+        "source": ".cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "2aaf12045dababeef5a0b280caa0ef19998b3879b70c3e8f72d07320b199cfa3",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [
+    ".cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md: delta_merge.no_operations: no supported delta operations were recognized; use explicit `## ADDED Requirements`, `## MODIFIED Requirements`, or `## REMOVED Requirements` sections instead of a full accepted-spec projection"
+  ],
+  "receipt_hash": "0ae91d30d09266f4895a6e2c60b108f447d9f4a9c3051d3b74e9908884f10247"
+}

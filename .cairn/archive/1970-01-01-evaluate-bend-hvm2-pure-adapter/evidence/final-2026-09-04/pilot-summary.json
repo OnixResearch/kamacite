@@ -1,0 +1,93 @@
+{
+  "schema_version": "kamacite.bend-hvm2-pilot-run.v1",
+  "decision": "defer",
+  "blockers": [
+    "hvm2-address-space-profile:generated_c.static_layout",
+    "stage-failure:observations.BendRunRs.outcome",
+    "stage-failure:observations.GeneratedC.outcome"
+  ],
+  "diagnostics": [
+    {
+      "boundary": "execution",
+      "code": "hvm2-address-space-profile",
+      "field": "generated_c.static_layout",
+      "message": "generated HVM2 C reserves at least 10737418240 bytes, above the declared address-space limit"
+    },
+    {
+      "boundary": "execution",
+      "code": "stage-failure",
+      "field": "observations.BendRunRs.outcome",
+      "message": "stage did not finish with a successful exit"
+    },
+    {
+      "boundary": "execution",
+      "code": "stage-failure",
+      "field": "observations.GeneratedC.outcome",
+      "message": "stage did not finish with a successful exit"
+    }
+  ],
+  "profile_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "7640b25994e778a4d5340f90bd706196b220da22e09987028923267d37240dff"
+  },
+  "bend_source_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "dfd13c5a80fe38463dbe531a159f597d99b4238d58f1a84867185febf234ae74"
+  },
+  "canonical_input_identity": {
+    "domain": "canonical-value",
+    "algorithm": "blake3",
+    "hex": "b9d7e3fde5cdab7b9de2867ca2bff1038821169cf7fc28fd60a9310501757bc6"
+  },
+  "proof_bundle_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "e58a90561093f7ae28adfe8eb56c16a618c4e99e056af8822633609d5201a70e"
+  },
+  "proof_validation_identity": {
+    "domain": "evidence-chain",
+    "algorithm": "blake3",
+    "hex": "05f63e3eede85bffd84aeb226dd62d4c57f32b58cae1b79850e9d3b3a829f79b"
+  },
+  "generated_c_identity": {
+    "domain": "target-artifact",
+    "algorithm": "blake3",
+    "hex": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6"
+  },
+  "compiler_invocation_identity": {
+    "domain": "compiler",
+    "algorithm": "blake3",
+    "hex": "d7011ae9507d400a615aa039026e6b153090b86e7a93862efa22b99955917362"
+  },
+  "executable_identity": {
+    "domain": "target-artifact",
+    "algorithm": "blake3",
+    "hex": "6ce66d9200036f81b3f0b4e1e902238ebe321d3fcdf636f964047cd773768e9c"
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "53a0a561b0d523f5a62b1561387e420830b7a3d14c090f9b6eccafd4c28d99b6"
+  },
+  "valence_projection_identity": {
+    "domain": "projection",
+    "algorithm": "blake3",
+    "hex": "365df710e066ed1b61694cb372fd250ab9d74f86cae5980b31efcc63c087453c"
+  },
+  "observation_count": 20,
+  "benchmark_present": false,
+  "non_claims": [
+    "not Bend correctness",
+    "not HVM2 correctness",
+    "not generated-C semantic equivalence",
+    "not host-compiler correctness",
+    "not verifier soundness",
+    "not sandbox completeness",
+    "not portable performance",
+    "not runtime adoption",
+    "not production readiness",
+    "not release eligibility"
+  ]
+}

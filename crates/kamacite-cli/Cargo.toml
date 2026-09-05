@@ -18,6 +18,10 @@ path = "src/semantic/operation/cli.rs"
 name = "check-world-commit-conformance"
 path = "src/bin/check-world-commit-conformance.rs"
 
+[[bin]]
+name = "check-bend-hvm2-pilot"
+path = "src/bin/check-bend-hvm2-pilot.rs"
+
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true

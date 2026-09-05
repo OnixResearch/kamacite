@@ -14,6 +14,7 @@
     )
 )]
 
+pub mod bend_hvm2_shell;
 #[path = "nickel/sandbox.rs"]
 pub mod nickel_sandbox;
 #[path = "root/io.rs"]

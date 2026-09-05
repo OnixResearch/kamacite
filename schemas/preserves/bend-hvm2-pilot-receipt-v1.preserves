@@ -1,0 +1,10 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-pilot-receipt"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-pilot-receipt.v1"
+  root-label: "BendHvm2PilotReceiptBody"
+  identity-fields: ["adapter profile" "Bend source envelope" "canonical leaf input" "Trellis proof bundle" "Trellis proof validation" "generated C" "compiler invocation" "generated executable" "all bounded observations" "benchmark summary" "decision" "blockers" "ordered diagnostics" "checked laws" "non-claims"]
+  construction-rule: "evaluate supplied facts in the pure core before canonical packed Preserves encoding"
+  canonical-identity: "receipt-domain BLAKE3 over packed Preserves bytes"
+  non-claims: ["not Bend correctness" "not HVM2 correctness" "not compiler correctness" "not semantic equivalence" "not sandbox completeness" "not runtime adoption" "not release eligibility"]
+}>

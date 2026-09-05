@@ -1,0 +1,8 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-source-envelope"
+  version: "v1"
+  schema-id: "kamacite.bend-source-envelope.v1"
+  fields: ["source bytes" "source identity" "language" "Bend revision" "workload profile" "canonical input identity" "annotation policy" "authority policy" "non-claims"]
+  canonical-identity: "source-domain BLAKE3 over exact Bend bytes"
+  non-claims: ["not canonical Kamacite IR" "not Bend correctness" "not semantic equivalence"]
+}>

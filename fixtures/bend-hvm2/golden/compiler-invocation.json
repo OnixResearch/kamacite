@@ -1,0 +1,1 @@
+{"executable":"/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/gcc","arguments":["/work/generated.c","-o","/work/generated","-O2","-lm","-lpthread"],"compiler_family":"gcc","compiler_version":"15.2.0","target":"x86_64-unknown-linux-gnu"}

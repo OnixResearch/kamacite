@@ -1,0 +1,50 @@
+{
+  "changes": [
+    {
+      "delta_specs": [
+        "./.cairn/changes/add-spacewasm-mvp-adapter-profile/specs/spacewasm-mvp-adapter/spec.md"
+      ],
+      "has_design": true,
+      "has_proposal": true,
+      "has_tasks": true,
+      "metadata": {
+        "groups": [],
+        "status": null,
+        "target_date": null
+      },
+      "name": "add-spacewasm-mvp-adapter-profile",
+      "path": "./.cairn/changes/add-spacewasm-mvp-adapter-profile",
+      "task_counts": {
+        "done": 4,
+        "in_progress": 0,
+        "todo": 6,
+        "total": 10,
+        "unmarked": 0
+      }
+    },
+    {
+      "delta_specs": [
+        "./.cairn/changes/add-wit-component-adapter-suite/specs/wasm-adapter-suite/spec.md"
+      ],
+      "has_design": true,
+      "has_proposal": true,
+      "has_tasks": true,
+      "metadata": {
+        "groups": [],
+        "status": null,
+        "target_date": null
+      },
+      "name": "add-wit-component-adapter-suite",
+      "path": "./.cairn/changes/add-wit-component-adapter-suite",
+      "task_counts": {
+        "done": 3,
+        "in_progress": 0,
+        "todo": 6,
+        "total": 9,
+        "unmarked": 0
+      }
+    }
+  ],
+  "layout": "cairn",
+  "root": "."
+}

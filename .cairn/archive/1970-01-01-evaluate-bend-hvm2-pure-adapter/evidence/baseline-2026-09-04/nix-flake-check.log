@@ -1,0 +1,609 @@
+evaluating flake...
+checking flake output 'packages'...
+checking derivation packages.x86_64-linux.kamacite...
+derivation evaluated to /nix/store/l2i8j6hrgn0v0b90clld4rxlfa3rg4c1-kamacite-0.1.0.drv
+checking derivation packages.x86_64-linux.lifecycle-validate...
+derivation evaluated to /nix/store/9vanjdhbnfkllh8xji6p308hs713hczd-kamacite-lifecycle-validate.drv
+checking derivation packages.x86_64-linux.default...
+derivation evaluated to /nix/store/l2i8j6hrgn0v0b90clld4rxlfa3rg4c1-kamacite-0.1.0.drv
+checking flake output 'apps'...
+checking app 'apps.x86_64-linux.kamacite'...
+checking app 'apps.x86_64-linux.lifecycle-validate'...
+checking app 'apps.x86_64-linux.default'...
+checking app 'apps.x86_64-linux.kamacite-validate'...
+checking app 'apps.x86_64-linux.world-commit-conformance'...
+checking flake output 'checks'...
+checking derivation checks.x86_64-linux.world-commit-conformance...
+derivation evaluated to /nix/store/h1p3xxrzdxzd91d8zwzyicrgnnnrp0yj-kamacite-world-commit-conformance.drv
+checking derivation checks.x86_64-linux.package...
+derivation evaluated to /nix/store/l2i8j6hrgn0v0b90clld4rxlfa3rg4c1-kamacite-0.1.0.drv
+checking derivation checks.x86_64-linux.schema-migration-core-pilot-source...
+derivation evaluated to /nix/store/yhcxjlgcp3zh6c0hghr61jgmiblydsak-kamacite-schema-migration-core-pilot-source.drv
+checking derivation checks.x86_64-linux.octet-deny-all...
+derivation evaluated to /nix/store/68zwx9mi0hbh9m5v3zqx18id3kvgr3w6-octet-consumer-check.drv
+checking derivation checks.x86_64-linux.rustfmt...
+derivation evaluated to /nix/store/0dvyrxdvz12cxgqlhyxcg1djzm53g89k-kamacite-rustfmt-check.drv
+checking derivation checks.x86_64-linux.rust-tests...
+derivation evaluated to /nix/store/j5is6qsapxb7rrf694yc8hppkamkbm9h-kamacite-tests-0.1.0.drv
+checking derivation checks.x86_64-linux.clippy...
+derivation evaluated to /nix/store/ncrcrj1hfkqlyvvvzz3z7iq5z71qwyk2-kamacite-clippy-0.1.0.drv
+checking derivation checks.x86_64-linux.clippy-rejects-forbidden-panic...
+derivation evaluated to /nix/store/wkiycnyyfh0ay3xmcs2xspl4nfjp6qi8-kamacite-clippy-rejects-forbidden-panic.drv
+checking derivation checks.x86_64-linux.manifest-projection-fresh...
+derivation evaluated to /nix/store/qa3b9hhrm680d1zk2np9nyzkn2w97xbp-kamacite-manifest-projection-fresh.drv
+checking derivation checks.x86_64-linux.ast-grep-adapter-audits...
+derivation evaluated to /nix/store/d4aqcqvwk47l0z16f90pm0n2z1alcpbn-kamacite-ast-grep-adapter-audits.drv
+checking derivation checks.x86_64-linux.fixture-validation...
+derivation evaluated to /nix/store/ld8jv8lng434zqyvqfg5pn1yqy7hy3ar-kamacite-fixture-validation.drv
+checking derivation checks.x86_64-linux.wasm-component-static-profile...
+derivation evaluated to /nix/store/ifi3b8wfrbkainlm35njjpa2g5x7w4j8-kamacite-wasm-component-static-profile.drv
+checking derivation checks.x86_64-linux.spacewasm-mvp-static-profile...
+derivation evaluated to /nix/store/9hfiajpyl8pvngxwxk8mm8cck4xqrzip-kamacite-spacewasm-mvp-static-profile.drv
+checking derivation checks.x86_64-linux.nickel-preserves-adapter...
+derivation evaluated to /nix/store/49cj23hk5bkyhzwmc0az0jwcm41pp0fg-kamacite-nickel-preserves-adapter.drv
+checking derivation checks.x86_64-linux.nickel-adapter-validation...
+derivation evaluated to /nix/store/mhw3476npqsd47n6dqip8p1xk8145k4h-kamacite-nickel-adapter-validation.drv
+checking derivation checks.x86_64-linux.steel-adapter-validation...
+derivation evaluated to /nix/store/53bsxdssv2j55wxmwh5alymh9h29cy50-kamacite-steel-adapter-validation.drv
+checking derivation checks.x86_64-linux.valence-export-validation...
+derivation evaluated to /nix/store/bqscprb8i7y7n37f1h4wd6hvaqhb325f-kamacite-valence-export-validation.drv
+checking derivation checks.x86_64-linux.function-address-receipt-validation...
+derivation evaluated to /nix/store/5zn7fqfdd6nzjw4xfif3jsr7v4sp1qf9-kamacite-function-address-receipt-validation.drv
+checking derivation checks.x86_64-linux.stale-manifest-detects-drift...
+derivation evaluated to /nix/store/0nnp4v0w6i01mfh2py3pa7farl0c6f20-kamacite-stale-manifest-detects-drift.drv
+checking derivation checks.x86_64-linux.cairn-lifecycle...
+derivation evaluated to /nix/store/vxcda9shq7h1xcbh70i9vnnblfyip4yl-kamacite-cairn-lifecycle.drv
+checking flake output 'devShells'...
+checking derivation devShells.x86_64-linux.default...
+derivation evaluated to /nix/store/z4y2d25mxx9vvc9gv9z0fv8cafln49f3-nix-shell.drv
+running 139 flake checks...
+building '/nix/store/y1yzl1dl25k1jp7s9bjmpwz5v8750q32-cargo-git-https-github.com-OnixResearch-nickel-export-710b6e03a8faf74f6afc6cc8ef36d7667958b70d.drv'...
+building '/nix/store/7y300vgsy3cv0val6pkzk3zlcyg9nh3n-cargo-package-ahash-0.8.12.drv'...
+building '/nix/store/qvq6r0lmkfycbzwb875mdh8052lj6cav-cargo-package-android_system_properties-0.1.5.drv'...
+building '/nix/store/a94aqbss3dzvb7k1pvzrfka8vj1aax46-cargo-package-anymap3-1.1.0.drv'...
+cargo-git-https-github.com-OnixResearch-nickel-export> Running phase: unpackPhase
+cargo-git-https-github.com-OnixResearch-nickel-export> unpacking source archive /nix/store/aid8blf8k9zwrf2jqwx5pyymsh6rj3mm-source
+cargo-git-https-github.com-OnixResearch-nickel-export> source root is source
+cargo-package-ahash> Running phase: unpackPhase
+cargo-package-ahash> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/nopanic.rs"
+cargo-package-android_system_properties> Running phase: unpackPhase
+copying path '/nix/store/zlzwxymybi986la78fqpibqpi3qyps9r-cargo-src-icu_collections-2.2.0' from 'https://cache.nixos.org'...
+cargo-package-ahash> Running phase: patchPhase
+copying path '/nix/store/xa8j0m4c4h71vzjx0hpg8wcl6wf1dh1y-cargo-src-icu_provider-2.2.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/vqjp5sgyfqspzvzhjjydspab7312jgap-cargo-src-potential_utf-0.1.5' from 'https://cache.nixos.org'...
+copying path '/nix/store/v7avv7817640j7vydjvzgiccfby9xp5p-cargo-src-writeable-0.6.3' from 'https://cache.nixos.org'...
+copying path '/nix/store/dzfmvq1j9pzszivw27yl2c4dx7qqqkir-cargo-src-zerotrie-0.2.4' from 'https://cache.nixos.org'...
+copying path '/nix/store/mikyz1yc9ipsqy2samy65i157pjy98bn-cargo-src-zerovec-derive-0.11.3' from 'https://cache.nixos.org'...
+copying path '/nix/store/5xgb6295w9cpf9x919pcmklba21fk8yd-cargo-src-icu_locale_core-2.2.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/ck6anv5n5al2bljy7c6fk5ldhc9fxwy7-cargo-src-icu_properties-2.2.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/l6w1xk56jjr3gclqcqwpmmfx1gzya1bi-cargo-src-tinystr-0.8.3' from 'https://cache.nixos.org'...
+copying path '/nix/store/0dar8xmi1dw9x153nj1dfsli1ckqpp65-cargo-src-zerovec-0.11.6' from 'https://cache.nixos.org'...
+copying path '/nix/store/7rcvyz03hn44cngccas63r5zidmyw79g-cargo-src-litemap-0.8.2' from 'https://cache.nixos.org'...
+copying path '/nix/store/4w7fshi3jlwjxsij52q4yyl4sfxvfl92-ripgrep-15.1.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/jw7q5qip8wdazhc7nwngbdylkws2bal1-cargo-src-icu_properties_data-2.2.0' from 'https://cache.nixos.org'...
+copying path '/nix/store/jmq4x5hyss5masg9r4kjyy5d8pdabqij-cargo-src-displaydoc-0.2.6' from 'https://nix-community.cachix.org'...
+cargo-git-https-github.com-OnixResearch-nickel-export> Running phase: patchPhase
+cargo-git-https-github.com-OnixResearch-nickel-export> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-git-https-github.com-OnixResearch-nickel-export> Running phase: installPhase
+cargo-git-https-github.com-OnixResearch-nickel-export> warning: manifest has no description, license, license-file, documentation, homepage or repository
+cargo-git-https-github.com-OnixResearch-nickel-export>   |
+cargo-git-https-github.com-OnixResearch-nickel-export>   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+cargo-package-ahash> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-ahash> Running phase: installPhase
+cargo-package-android_system_properties> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-android_system_properties> Running phase: patchPhase
+cargo-package-android_system_properties> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-android_system_properties> Running phase: installPhase
+cargo-package-anymap3> Running phase: unpackPhase
+cargo-package-anymap3> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-anymap3> Running phase: patchPhase
+cargo-package-anymap3> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-anymap3> Running phase: installPhase
+copying path '/nix/store/7yf8dgc5bfkw7j9y454mfbhzhffjydx1-cargo-src-js-sys-0.3.103' from 'https://nix-community.cachix.org'...
+copying path '/nix/store/4x7a9jricbmgmii031s81rc3may3g300-cargo-src-wasm-bindgen-0.2.126' from 'https://nix-community.cachix.org'...
+building '/nix/store/cjq7pfkmhm7ycl41qaqhiwqj74q96x47-cargo-package-steel-derive-0.8.2.drv'...
+building '/nix/store/4raddip6l3a181rl5243857yyx1fn3c1-cargo-package-windows-core-0.62.2.drv'...
+building '/nix/store/d4aqcqvwk47l0z16f90pm0n2z1alcpbn-kamacite-ast-grep-adapter-audits.drv'...
+cargo-package-steel-derive> Running phase: unpackPhase
+copying path '/nix/store/h2jiyj7hxh36albxiyq7xxx5nw1zggpw-cargo-src-wasm-bindgen-macro-0.2.126' from 'https://nix-community.cachix.org'...
+copying path '/nix/store/9p5l7jpkp9ajbm0ix2fb3df674akgdk4-cargo-src-wasm-bindgen-shared-0.2.126' from 'https://nix-community.cachix.org'...
+copying path '/nix/store/j8q7n1y2gv9ndc3an3lgi8vv5ml1yi8p-cargo-src-wasm-bindgen-macro-support-0.2.126' from 'https://nix-community.cachix.org'...
+building '/nix/store/95gn1kbckyaqnfj1v9frm7srkzhl8isc-cargo-package-windows-strings-0.5.1.drv'...
+cargo-package-steel-derive> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-steel-derive> Running phase: patchPhase
+cargo-package-steel-derive> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-steel-derive> Running phase: installPhase
+cargo-package-windows-core> Running phase: unpackPhase
+cargo-package-windows-core> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/windows-core.natvis"
+cargo-package-windows-core> Running phase: patchPhase
+cargo-package-windows-core> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-windows-core> Running phase: installPhase
+cargo-package-windows-strings> Running phase: unpackPhase
+building '/nix/store/7bf8hq3qs3mhvsng6zy0g5s4kppifdvy-cargo-package-icu_locale_core-2.2.0.drv'...
+cargo-package-windows-strings> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/windows-strings.natvis"
+cargo-package-windows-strings> Running phase: patchPhase
+building '/nix/store/23l14xxii7ssvyvras4l05hrmhk4ymxs-cargo-package-tinystr-0.8.3.drv'...
+cargo-package-icu_locale_core> Running phase: unpackPhase
+cargo-package-icu_locale_core> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/locale.rs"
+cargo-package-icu_locale_core> Running phase: patchPhase
+cargo-package-icu_locale_core> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-windows-strings> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-windows-strings> Running phase: installPhase
+kamacite-ast-grep-adapter-audits> Running 1 tests
+kamacite-ast-grep-adapter-audits> 
+kamacite-ast-grep-adapter-audits> ----------- Case Details -----------
+kamacite-ast-grep-adapter-audits> PASS core-ambient-process  ....
+kamacite-ast-grep-adapter-audits> 
+kamacite-ast-grep-adapter-audits> test result: ok. 1 passed; 0 failed;
+cargo-package-icu_locale_core> Running phase: installPhase
+building '/nix/store/5zw7bnav7vnmzr0j89rf8f0m133sba6w-cargo-package-wasm-bindgen-macro-0.2.126.drv'...
+cargo-package-tinystr> Running phase: unpackPhase
+cargo-package-tinystr> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/serde.rs"
+cargo-package-tinystr> Running phase: patchPhase
+cargo-package-tinystr> Running phase: updateAutotoolsGnuConfigScriptsPhase
+building '/nix/store/pvww9bs6pyfl1p1a5idnkni742zyajr1-cargo-package-icu_provider-2.2.0.drv'...
+cargo-package-tinystr> Running phase: installPhase
+cargo-package-wasm-bindgen-macro> Running phase: unpackPhase
+cargo-package-wasm-bindgen-macro> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/worker.js"
+cargo-package-wasm-bindgen-macro> Running phase: patchPhase
+building '/nix/store/g8m5n90psdkazcbid6h6ms9wlcbhycvs-cargo-package-wasm-bindgen-0.2.126.drv'...
+cargo-package-icu_provider> Running phase: unpackPhase
+cargo-package-icu_provider> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/varule_traits.rs"
+cargo-package-wasm-bindgen-macro> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-wasm-bindgen-macro> Running phase: installPhase
+building '/nix/store/ckrp7abcp6zvmlf0c6xx2aqqavwipnb6-cargo-package-icu_collections-2.2.0.drv'...
+cargo-package-icu_provider> Running phase: patchPhase
+cargo-package-icu_provider> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-icu_provider> Running phase: installPhase
+cargo-package-wasm-bindgen> Running phase: unpackPhase
+building '/nix/store/w918k3x172zn57f5qihzqhhx3y5ch13h-cargo-package-icu_properties-2.2.0.drv'...
+cargo-package-icu_collections> Running phase: unpackPhase
+cargo-package-wasm-bindgen> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/sys.rs"
+cargo-package-wasm-bindgen> Running phase: patchPhase
+cargo-package-wasm-bindgen> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-wasm-bindgen> Running phase: installPhase
+cargo-package-icu_collections> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/data/cpt/small0-in-fast.small16.toml"
+cargo-package-icu_collections> Running phase: patchPhase
+building '/nix/store/41f0sdbmqmsqcfll1ma7jlq06z2gf4ww-cargo-package-wasm-bindgen-macro-support-0.2.126.drv'...
+cargo-package-icu_collections> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-icu_collections> Running phase: installPhase
+cargo-package-icu_properties> Running phase: unpackPhase
+cargo-package-icu_properties> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/trievalue.rs"
+cargo-package-icu_properties> Running phase: patchPhase
+building '/nix/store/cz1ifkscv713hi5y5ybv6xdf2ddbml97-linkLockedDeps.drv'...
+cargo-package-icu_properties> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-icu_properties> Running phase: installPhase
+cargo-package-wasm-bindgen-macro-support> Running phase: unpackPhase
+building '/nix/store/p91jar92dsia8l4hdx3afxijf9qvmhxz-cargo-package-zerotrie-0.2.4.drv'...
+cargo-package-wasm-bindgen-macro-support> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/parser.rs"
+cargo-package-wasm-bindgen-macro-support> Running phase: patchPhase
+cargo-package-wasm-bindgen-macro-support> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-wasm-bindgen-macro-support> Running phase: installPhase
+building '/nix/store/z4xiq6vjc6djqk65h3i4pigzpc4is179-cargo-package-potential_utf-0.1.5.drv'...
+building '/nix/store/yhcxjlgcp3zh6c0hghr61jgmiblydsak-kamacite-schema-migration-core-pilot-source.drv'...
+cargo-package-zerotrie> Running phase: unpackPhase
+cargo-package-zerotrie> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/locale_aux_test.rs"
+cargo-package-zerotrie> Running phase: patchPhase
+cargo-package-zerotrie> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-zerotrie> Running phase: installPhase
+building '/nix/store/mlcfwndwvxcb1g5cl54bkaprnfsyfm96-cargo-package-zerovec-derive-0.11.3.drv'...
+cargo-package-potential_utf> Running phase: unpackPhase
+cargo-package-potential_utf> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/writeable.rs"
+cargo-package-potential_utf> Running phase: patchPhase
+cargo-package-potential_utf> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-potential_utf> Running phase: installPhase
+building '/nix/store/3xhssch8j0qcs6cz0axx7f8k97hmqzzv-cargo-package-js-sys-0.3.103.drv'...
+building '/nix/store/pz6kak490r70hzzi77f6kvk3mxa9dwpf-cargo-package-displaydoc-0.2.6.drv'...
+building '/nix/store/a84lwbdh5j4rq33mp2xa9gc5k4mpj6f2-cargo-package-icu_properties_data-2.2.0.drv'...
+cargo-package-js-sys> Running phase: unpackPhase
+cargo-package-js-sys> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-js-sys> Running phase: patchPhase
+cargo-package-js-sys> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-zerovec-derive> Running phase: unpackPhase
+cargo-package-zerovec-derive> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/varule.rs"
+cargo-package-zerovec-derive> Running phase: patchPhase
+cargo-package-zerovec-derive> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-zerovec-derive> Running phase: installPhase
+cargo-package-displaydoc> Running phase: unpackPhase
+cargo-package-js-sys> Running phase: installPhase
+building '/nix/store/wd86nlbs3nci3fxjgdigsn8sn1y047b6-cargo-package-litemap-0.8.2.drv'...
+cargo-package-displaydoc> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/variantless.rs"
+cargo-package-displaydoc> Running phase: patchPhase
+cargo-package-displaydoc> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-displaydoc> Running phase: installPhase
+cargo-package-icu_properties_data> Running phase: unpackPhase
+cargo-package-icu_properties_data> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-icu_properties_data> Running phase: patchPhase
+building '/nix/store/lb7kzm95gm0piks4rz7k1vj0mf03yx3f-cargo-package-writeable-0.6.3.drv'...
+cargo-package-icu_properties_data> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-icu_properties_data> Running phase: installPhase
+cargo-package-litemap> Running phase: unpackPhase
+building '/nix/store/yx69xzc2zc4izipjki7vmm4xmn73g8m7-cargo-package-zerovec-0.11.6.drv'...
+cargo-package-litemap> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/store.rs"
+cargo-package-litemap> Running phase: patchPhase
+cargo-package-litemap> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-litemap> Running phase: installPhase
+cargo-package-writeable> Running phase: unpackPhase
+building '/nix/store/1mvf9y2n562gb71l7z8jj0jdk7i2kgn1-cargo-package-wasm-bindgen-shared-0.2.126.drv'...
+cargo-package-writeable> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/writeable.rs"
+cargo-package-writeable> Running phase: patchPhase
+cargo-package-writeable> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-writeable> Running phase: installPhase
+cargo-package-zerovec> Running phase: unpackPhase
+cargo-package-zerovec> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/zerovec/slice.rs"
+cargo-package-zerovec> Running phase: patchPhase
+cargo-package-zerovec> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-zerovec> Running phase: installPhase
+building '/nix/store/wxg4rlxdpzv69y5k4aj4vicx5947qgh5-cargo-package-wasip2-1.0.4+wasi-0.2.12.drv'...
+cargo-package-wasm-bindgen-shared> Running phase: unpackPhase
+building '/nix/store/w9dzj6as1hcrw96jmjlri3lkwzpx1rw7-cargo-package-ryu-1.0.23.drv'...
+building '/nix/store/ysiay9mn9n4wi257awhhi34wxv4x5w3l-cargo-package-thin-vec-0.2.18.drv'...
+cargo-package-wasip2> Running phase: unpackPhase
+cargo-package-wasip2> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/wit/wasi-crate.wit"
+cargo-package-wasip2> Running phase: patchPhase
+cargo-package-wasip2> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-wasip2> Running phase: installPhase
+cargo-package-wasm-bindgen-shared> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/tys.rs"
+cargo-package-wasm-bindgen-shared> Running phase: patchPhase
+cargo-package-wasm-bindgen-shared> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-wasm-bindgen-shared> Running phase: installPhase
+building '/nix/store/5zn7fqfdd6nzjw4xfif3jsr7v4sp1qf9-kamacite-function-address-receipt-validation.drv'...
+cargo-package-ryu> Running phase: unpackPhase
+cargo-package-ryu> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/s2f_test.rs"
+cargo-package-ryu> Running phase: patchPhase
+cargo-package-ryu> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-thin-vec> Running phase: unpackPhase
+building '/nix/store/4pmh8mx9dskfavzr727yxssyvqhcw54m-cargo-src-bytemuck-1.25.1.drv'...
+cargo-package-ryu> Running phase: installPhase
+cargo-package-thin-vec> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-thin-vec> Running phase: patchPhase
+cargo-package-thin-vec> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-thin-vec> Running phase: installPhase
+building '/nix/store/r7wkcf1bch46r003m7kglxdcf8bf8w1w-cargo-package-rand_xoshiro-0.6.0.drv'...
+building '/nix/store/z197xdmf2541ajc2wy0liiwl87qs3kyi-cargo-package-steel-core-0.8.2.drv'...
+cargo-src-bytemuck> structuredAttrs is enabled
+cargo-src-bytemuck> 
+cargo-src-bytemuck> trying https://static.crates.io/crates/bytemuck/1.25.1/download
+building '/nix/store/mhw3476npqsd47n6dqip8p1xk8145k4h-kamacite-nickel-adapter-validation.drv'...
+cargo-package-rand_xoshiro> Running phase: unpackPhase
+cargo-package-rand_xoshiro> Running phase: patchPhase
+cargo-package-rand_xoshiro> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-rand_xoshiro> Running phase: installPhase
+cargo-package-steel-core> Running phase: unpackPhase
+cargo-package-steel-core> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/testbench.rs"
+cargo-package-steel-core> Running phase: patchPhase
+cargo-src-bytemuck>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+cargo-src-bytemuck>                                  Dload  Upload  Total   Spent   Left   Speed
+cargo-src-bytemuck> 100  53760 100  53760   0      0 868.4k      0                              0
+building '/nix/store/0nnp4v0w6i01mfh2py3pa7farl0c6f20-kamacite-stale-manifest-detects-drift.drv'...
+cargo-package-steel-core> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-steel-core> Running phase: installPhase
+building '/nix/store/wqa6zph3j0czkwx614ngb8gazpsv8jhw-cargo-package-bytemuck-1.25.1.drv'...
+building '/nix/store/9dany5m6jxniqcmlxd734v73w7yi3alv-cargo-package-zerofrom-derive-0.1.7.drv'...
+cargo-package-bytemuck> Running phase: unpackPhase
+cargo-package-bytemuck> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/wrapper_forgets.rs"
+cargo-package-bytemuck> Running phase: patchPhase
+cargo-package-bytemuck> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-bytemuck> Running phase: installPhase
+building '/nix/store/qa3b9hhrm680d1zk2np9nyzkn2w97xbp-kamacite-manifest-projection-fresh.drv'...
+cargo-package-zerofrom-derive> Running phase: unpackPhase
+cargo-package-zerofrom-derive> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/visitor.rs"
+cargo-package-zerofrom-derive> Running phase: patchPhase
+cargo-package-zerofrom-derive> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-zerofrom-derive> Running phase: installPhase
+building '/nix/store/dj5y4qc92693x3575yvqc7q61cyhp3pg-cargo-package-yoke-0.8.3.drv'...
+cargo-package-yoke> Running phase: unpackPhase
+cargo-package-yoke> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/miri.rs"
+building '/nix/store/vxcda9shq7h1xcbh70i9vnnblfyip4yl-kamacite-cairn-lifecycle.drv'...
+cargo-package-yoke> Running phase: patchPhase
+cargo-package-yoke> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-yoke> Running phase: installPhase
+building '/nix/store/l9791qndvaxkzv8qz07gizy40skzqyj7-cargo-package-version_check-0.9.5.drv'...
+cargo-package-version_check> Running phase: unpackPhase
+building '/nix/store/0dvyrxdvz12cxgqlhyxcg1djzm53g89k-kamacite-rustfmt-check.drv'...
+cargo-package-version_check> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/version.rs"
+cargo-package-version_check> Running phase: patchPhase
+cargo-package-version_check> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-version_check> Running phase: installPhase
+building '/nix/store/ifi3b8wfrbkainlm35njjpa2g5x7w4j8-kamacite-wasm-component-static-profile.drv'...
+building '/nix/store/bs800pnc04prxy09vzwlncfn466q2r83-cargo-package-yoke-derive-0.8.2.drv'...
+cargo-package-yoke-derive> Running phase: unpackPhase
+cargo-package-yoke-derive> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/visitor.rs"
+cargo-package-yoke-derive> Running phase: patchPhase
+cargo-package-yoke-derive> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-yoke-derive> Running phase: installPhase
+building '/nix/store/rbj465swb2i0ziff16d2n70bpggp7f95-cargo-package-serde_bytes-0.11.19.drv'...
+building '/nix/store/fyp8lrdxh5k05vr69p9a5ydwll29bcqh-cargo-package-typed-arena-2.0.2.drv'...
+cargo-package-serde_bytes> Running phase: unpackPhase
+cargo-package-serde_bytes> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/test_serde.rs"
+cargo-package-serde_bytes> Running phase: patchPhase
+cargo-package-serde_bytes> Running phase: updateAutotoolsGnuConfigScriptsPhase
+building '/nix/store/a6rjk7f13mc0nzjfd0j5vpd5m0xsrwyv-cargo-package-termcolor-1.4.1.drv'...
+cargo-package-serde_bytes> Running phase: installPhase
+cargo-package-typed-arena> Running phase: unpackPhase
+cargo-package-typed-arena> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/test.rs"
+cargo-package-typed-arena> Running phase: patchPhase
+cargo-package-typed-arena> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-typed-arena> Running phase: installPhase
+cargo-package-termcolor> Running phase: unpackPhase
+cargo-package-termcolor> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/lib.rs"
+cargo-package-termcolor> Running phase: patchPhase
+cargo-package-termcolor> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-termcolor> Running phase: installPhase
+building '/nix/store/ggpfn1lf451s7v23zgckwjijavakvra2-cargo-package-rand_core-0.9.5.drv'...
+building '/nix/store/49cj23hk5bkyhzwmc0az0jwcm41pp0fg-kamacite-nickel-preserves-adapter.drv'...
+cargo-package-rand_core> Running phase: unpackPhase
+building '/nix/store/284d3m430f4qpzlphfrlngmfm88lbs4z-cargo-package-weak-table-0.3.2.drv'...
+cargo-package-rand_core> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/os.rs"
+cargo-package-rand_core> Running phase: patchPhase
+cargo-package-rand_core> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-rand_core> Running phase: installPhase
+cargo-package-weak-table> Running phase: unpackPhase
+cargo-package-weak-table> Running phase: patchPhase
+building '/nix/store/ibmsz9nldnwfk7hrzhkw9nrilmkk6cpi-cargo-package-slab-0.4.12.drv'...
+cargo-package-weak-table> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-weak-table> Running phase: installPhase
+building '/nix/store/jj3za7r5zj07av4dmbpwhcqcby9yyw39-cargo-package-steel-gen-0.8.2.drv'...
+cargo-package-slab> Running phase: unpackPhase
+cargo-package-slab> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/slab.rs"
+cargo-package-slab> Running phase: patchPhase
+cargo-package-slab> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-slab> Running phase: installPhase
+building '/nix/store/gn0l87s3qxg6yj4xdc9fz4qhivlsa2gr-cargo-package-windows-implement-0.60.2.drv'...
+cargo-package-steel-gen> Running phase: unpackPhase
+cargo-package-steel-gen> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/opcode.rs"
+cargo-package-steel-gen> Running phase: patchPhase
+cargo-package-steel-gen> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-steel-gen> Running phase: installPhase
+cargo-package-windows-implement> Running phase: unpackPhase
+cargo-package-windows-implement> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/tests.rs"
+cargo-package-windows-implement> Running phase: patchPhase
+building '/nix/store/ncrcrj1hfkqlyvvvzz3z7iq5z71qwyk2-kamacite-clippy-0.1.0.drv'...
+cargo-package-windows-implement> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-windows-implement> Running phase: installPhase
+building '/nix/store/6x2d5pgxy3i2i3hf3d88d2izwcd2n9nb-cargo-package-wit-bindgen-0.57.1.drv'...
+kamacite-clippy> Running phase: unpackPhase
+kamacite-clippy> unpacking source archive /nix/store/xiv92w09jk3rkjpj0pzd6sv2fkjcw0pc-source
+building '/nix/store/a8scklqvhgjvsrq279xhm9072xx8gfvi-cargo-package-typenum-1.20.1.drv'...
+cargo-package-wit-bindgen> Running phase: unpackPhase
+cargo-package-wit-bindgen> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/wit/_5_import_directory.wit"
+kamacite-clippy> source root is source
+cargo-package-wit-bindgen> Running phase: patchPhase
+cargo-package-wit-bindgen> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-typenum> Running phase: unpackPhase
+cargo-package-wit-bindgen> Running phase: installPhase
+kamacite-clippy> Executing cargoSetupPostUnpackHook
+cargo-package-typenum> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/generated.rs"
+cargo-package-typenum> Running phase: patchPhase
+cargo-package-typenum> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-typenum> Running phase: installPhase
+building '/nix/store/53bsxdssv2j55wxmwh5alymh9h29cy50-kamacite-steel-adapter-validation.drv'...
+building '/nix/store/dlaw2p3kkyyjmnlf7f979padp9hzjf96-cargo-package-winapi-util-0.1.11.drv'...
+kamacite-steel-adapter-validation> Unable to create steel home directory "/homeless-shelter/.local/share/steel": No such file or directory (os error 2)
+cargo-package-winapi-util> Running phase: unpackPhase
+cargo-package-winapi-util> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/win.rs"
+cargo-package-winapi-util> Running phase: patchPhase
+cargo-package-winapi-util> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-winapi-util> Running phase: installPhase
+building '/nix/store/js7if68hzmskflhkvf5bghnizzmfknd3-cargo-package-windows-result-0.4.1.drv'...
+building '/nix/store/j5is6qsapxb7rrf694yc8hppkamkbm9h-kamacite-tests-0.1.0.drv'...
+cargo-package-windows-result> Running phase: unpackPhase
+cargo-package-windows-result> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/windows-result.natvis"
+cargo-package-windows-result> Running phase: patchPhase
+cargo-package-windows-result> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-windows-result> Running phase: installPhase
+kamacite-tests> Running phase: unpackPhase
+kamacite-tests> unpacking source archive /nix/store/xiv92w09jk3rkjpj0pzd6sv2fkjcw0pc-source
+building '/nix/store/r65564njmyc29mriwq03z07qfar7k8i9-octet-dylint-lib.drv'...
+kamacite-tests> source root is source
+kamacite-tests> Executing cargoSetupPostUnpackHook
+building '/nix/store/k1nslrb7kmq98pb52v1i72mj3pkywbls-cargo-package-steel-quickscope-0.3.2.drv'...
+kamacite-clippy> Finished cargoSetupPostUnpackHook
+kamacite-clippy> Running phase: patchPhase
+kamacite-clippy> Executing cargoSetupPostPatchHook
+kamacite-clippy> Validating consistency between /build/source/Cargo.lock and /build/cargo-vendor-dir/Cargo.lock
+kamacite-clippy> Finished cargoSetupPostPatchHook
+kamacite-clippy> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-steel-quickscope> Running phase: unpackPhase
+cargo-package-steel-quickscope> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/set.rs"
+kamacite-clippy> Running phase: configurePhase
+cargo-package-steel-quickscope> Running phase: patchPhase
+kamacite-clippy> Running phase: buildPhase
+cargo-package-steel-quickscope> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-steel-quickscope> Running phase: installPhase
+building '/nix/store/ambydj43bnpzdlx5j24as5s0bbjnngvp-cargo-package-unicode-width-0.1.14.drv'...
+cargo-package-unicode-width> Running phase: unpackPhase
+cargo-package-unicode-width> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/tests.rs"
+cargo-package-unicode-width> Running phase: patchPhase
+cargo-package-unicode-width> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-unicode-width> Running phase: installPhase
+building '/nix/store/2kjsa8zqjy037w3644qdazimkk7isba7-cargo-package-rand_core-0.6.4.drv'...
+cargo-package-rand_core> Running phase: unpackPhase
+kamacite-clippy>    Compiling proc-macro2 v1.0.106
+kamacite-clippy>    Compiling unicode-ident v1.0.24
+kamacite-clippy>    Compiling quote v1.0.46
+kamacite-clippy>    Compiling serde_core v1.0.228
+kamacite-clippy>    Compiling autocfg v1.5.1
+kamacite-clippy>     Checking cfg-if v1.0.4
+kamacite-clippy>    Compiling serde v1.0.228
+kamacite-clippy>    Compiling version_check v0.9.5
+kamacite-clippy>    Compiling libc v0.2.186
+kamacite-clippy>     Checking stable_deref_trait v1.2.1
+kamacite-clippy>    Compiling zerocopy v0.8.54
+kamacite-clippy>     Checking typenum v1.20.1
+kamacite-clippy>    Compiling parking_lot_core v0.9.12
+kamacite-clippy>     Checking memchr v2.8.3
+kamacite-clippy>     Checking smallvec v1.15.2
+kamacite-clippy>    Compiling crossbeam-utils v0.8.22
+kamacite-clippy>     Checking scopeguard v1.2.0
+kamacite-clippy>    Compiling rustversion v1.0.23
+kamacite-clippy>    Compiling find-msvc-tools v0.1.9
+kamacite-clippy>     Checking hashbrown v0.17.1
+kamacite-clippy>    Compiling shlex v2.0.1
+kamacite-clippy>    Compiling zmij v1.0.21
+kamacite-clippy>     Checking equivalent v1.0.2
+kamacite-clippy>     Checking itoa v1.0.18
+kamacite-clippy>     Checking writeable v0.6.3
+kamacite-clippy>    Compiling serde_json v1.0.150
+kamacite-clippy>     Checking allocator-api2 v0.2.21
+kamacite-clippy>    Compiling getrandom v0.3.4
+kamacite-clippy>     Checking once_cell v1.21.4
+kamacite-clippy>    Compiling icu_properties_data v2.2.0
+kamacite-clippy>     Checking litemap v0.8.2
+kamacite-clippy>     Checking regex-syntax v0.8.11
+cargo-package-rand_core> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/os.rs"
+cargo-package-rand_core> Running phase: patchPhase
+cargo-package-rand_core> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-rand_core> Running phase: installPhase
+kamacite-clippy>     Checking hashbrown v0.12.3
+kamacite-clippy>     Checking utf8_iter v1.0.4
+kamacite-clippy>     Checking cpufeatures v0.3.0
+kamacite-clippy>     Checking lock_api v0.4.14
+kamacite-clippy>     Checking constant_time_eq v0.4.2
+kamacite-clippy>    Compiling icu_casemap_data v2.2.0
+kamacite-clippy>     Checking arrayvec v0.7.8
+kamacite-clippy>    Compiling libm v0.2.16
+kamacite-clippy>    Compiling rustix v1.1.4
+kamacite-clippy>     Checking arrayref v0.3.9
+kamacite-clippy>    Compiling cc v1.2.66
+kamacite-clippy>     Checking static_assertions v1.1.0
+kamacite-clippy>     Checking pin-project-lite v0.2.17
+kamacite-clippy>     Checking bytemuck v1.25.1
+kamacite-clippy>     Checking rand_core v0.6.4
+kamacite-clippy>     Checking ryu v1.0.23
+kamacite-tests> Finished cargoSetupPostUnpackHook
+kamacite-clippy>     Checking slab v0.4.12
+kamacite-tests> Running phase: patchPhase
+kamacite-tests> Executing cargoSetupPostPatchHook
+kamacite-tests> Validating consistency between /build/source/Cargo.lock and /build/cargo-vendor-dir/Cargo.lock
+kamacite-tests> Finished cargoSetupPostPatchHook
+kamacite-tests> Running phase: updateAutotoolsGnuConfigScriptsPhase
+kamacite-clippy>     Checking arrayvec v0.5.2
+kamacite-tests> Running phase: configurePhase
+kamacite-tests> Running phase: buildPhase
+kamacite-tests> Executing cargoBuildHook
+kamacite-tests> cargoBuildHook flags: -j 4 --target x86_64-unknown-linux-gnu --offline --profile release --workspace --all-targets
+building '/nix/store/gnhz1vmvjshjknzxfdx2splx5n0akyjz-cargo-package-shared_vector-0.4.5.drv'...
+kamacite-clippy>    Compiling httparse v1.10.1
+kamacite-clippy>     Checking typed-arena v2.0.2
+kamacite-clippy>     Checking unicode-width v0.2.2
+kamacite-clippy>     Checking dtoa v0.4.8
+kamacite-clippy>     Checking futures-task v0.3.32
+cargo-package-shared_vector> Running phase: unpackPhase
+cargo-package-shared_vector> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/vector.rs"
+kamacite-clippy>     Checking lazy_static v1.5.0
+cargo-package-shared_vector> Running phase: patchPhase
+cargo-package-shared_vector> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-shared_vector> Running phase: installPhase
+kamacite-clippy>     Checking futures-core v0.3.32
+kamacite-clippy>     Checking base64 v0.13.1
+kamacite-clippy>     Checking bitflags v2.13.0
+kamacite-clippy>     Checking anymap3 v1.1.0
+kamacite-clippy>     Checking linux-raw-sys v0.12.1
+kamacite-clippy>    Compiling generic-array v0.14.7
+kamacite-clippy>    Compiling ahash v0.8.12
+kamacite-clippy>    Compiling im-rc v15.1.0
+kamacite-clippy>     Checking rand_xoshiro v0.6.0
+kamacite-clippy>     Checking iana-time-zone v0.1.65
+kamacite-clippy>     Checking unicode-width v0.1.14
+kamacite-tests>    Compiling proc-macro2 v1.0.106
+kamacite-tests>    Compiling quote v1.0.46
+kamacite-tests>    Compiling unicode-ident v1.0.24
+kamacite-tests>    Compiling serde_core v1.0.228
+kamacite-clippy>     Checking rustc-hash v2.1.3
+kamacite-clippy>     Checking termcolor v1.4.1
+kamacite-clippy>     Checking log v0.4.33
+kamacite-clippy>     Checking shared_vector v0.4.5
+kamacite-clippy>     Checking weak-table v0.3.2
+kamacite-tests>    Compiling cfg-if v1.0.4
+kamacite-clippy>    Compiling num-traits v0.2.19
+kamacite-clippy>    Compiling indexmap v1.9.3
+kamacite-clippy>    Compiling bigdecimal v0.4.10
+kamacite-tests>    Compiling autocfg v1.5.1
+kamacite-clippy>     Checking glob v0.3.3
+kamacite-clippy>     Checking xdg v3.0.0
+kamacite-clippy>     Checking env_home v0.1.0
+kamacite-clippy>     Checking strsim v0.11.1
+kamacite-clippy>     Checking pretty v0.12.5
+kamacite-tests>    Compiling serde v1.0.228
+kamacite-clippy>     Checking codespan-reporting v0.11.1
+kamacite-clippy>     Checking aho-corasick v1.1.4
+kamacite-clippy>     Checking castaway v0.2.4
+kamacite-clippy>     Checking arc-swap v1.9.2
+kamacite-clippy>     Checking crossbeam-channel v0.5.16
+kamacite-clippy>     Checking crossbeam-queue v0.3.13
+kamacite-tests>    Compiling version_check v0.9.5
+kamacite-tests>    Compiling libc v0.2.186
+kamacite-clippy>     Checking indexmap v2.14.0
+building '/nix/store/m14sfmp9zmgly15r34xb2mcb4l8hggiy-cargo-package-sized-chunks-0.6.5.drv'...
+cargo-package-sized-chunks> Running phase: unpackPhase
+cargo-package-sized-chunks> Running phase: patchPhase
+cargo-package-sized-chunks> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-sized-chunks> Running phase: installPhase
+building '/nix/store/d38rz8mkkddc6ipirmvsa2p8g8c60cpg-cargo-package-steel-parser-0.8.2.drv'...
+building '/nix/store/bqscprb8i7y7n37f1h4wd6hvaqhb325f-kamacite-valence-export-validation.drv'...
+cargo-package-steel-parser> Running phase: unpackPhase
+kamacite-clippy>     Checking bitmaps v2.1.0
+kamacite-tests>    Compiling num-traits v0.2.19
+cargo-package-steel-parser> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/src/visitors.rs"
+cargo-package-steel-parser> Running phase: patchPhase
+cargo-package-steel-parser> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-steel-parser> Running phase: installPhase
+building '/nix/store/sinqv5wqpps7mvnsi5mgf6cjrxbjxn17-cargo-package-which-8.0.5.drv'...
+building '/nix/store/wkiycnyyfh0ay3xmcs2xspl4nfjp6qi8-kamacite-clippy-rejects-forbidden-panic.drv'...
+cargo-package-which> Running phase: unpackPhase
+cargo-package-which> setting SOURCE_DATE_EPOCH to timestamp 1153704088 of file "./crate/tests/windows_no_pathext.rs"
+cargo-package-which> Running phase: patchPhase
+cargo-package-which> Running phase: updateAutotoolsGnuConfigScriptsPhase
+cargo-package-which> Running phase: installPhase
+building '/nix/store/cipb6wfmhdcd28qcxgc598i36zd9vivw-cargo-src-icu_casemap_data-2.2.0.drv'...
+kamacite-clippy>    Compiling syn v2.0.118
+cargo-src-icu_casemap_data> structuredAttrs is enabled
+cargo-src-icu_casemap_data> 
+cargo-src-icu_casemap_data> trying https://static.crates.io/crates/icu_casemap_data/2.2.0/download
+cargo-src-icu_casemap_data>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+cargo-src-icu_casemap_data>                                  Dload  Upload  Total   Spent   Left   Speed
+cargo-src-icu_casemap_data> 100  15479 100  15479   0      0 236.8k      0                              0
+building '/nix/store/h1p3xxrzdxzd91d8zwzyicrgnnnrp0yj-kamacite-world-commit-conformance.drv'...
+building '/nix/store/w59fpykn8189i2mkjsmz0bi2hxjgm5gg-cargo-package-icu_casemap_data-2.2.0.drv'...
+kamacite-world-commit-conformance> world-commit conformance denied: generated artifact is stale: fixtures/world-commit/implementation-manifest.json
+warning: killing stray builder process 413814 ()...
+warning: killing stray builder process 414689 (/nix/store/p3zhm0kxg5a8z51h6hzx5y6dkgl1602m-cargo-auditable-0.7.2/bin/cargo-auditable auditable build -j 4 --target x86_64-unknown-linux-gnu --offline --profile release --workspace --all-targets)...
+warning: killing stray builder process 415551 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name proc_macro2 --edition=2021 /build/cargo-vendor-dir/proc-macro2-1.0.106/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debug-assertions=off --cfg feature="default" --cfg feature="proc-macro" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("default", "nightly", "proc-macro", "span-locations")) -C metadata=6f427513fbd21784 -C extra-filename=-78279f0b953c1f45 --out-dir /build/source/target/release/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/release/deps --extern unicode_ident=/build/source/target/release/deps/libunicode_ident-f86cfd78694791c9.rmeta --cap-lints allow --cfg wrap_proc_macro --cfg proc_macro_span_location --cfg proc_macro_span_file --check-cfg cfg(fuzzing) --check-cfg cfg(no_is_available) --check-cfg cfg(no_literal_byte_character) --check-cfg cfg(no_literal_c_string) --check-cfg cfg(no_source_text) --check-cfg cfg(proc_macro_span) --check-cfg cfg(proc_macro_span_file) --check-cfg cfg(proc_macro_span_location) --check-cfg cfg(procmacro2_backtrace) --check-cfg cfg(procmacro2_build_probe) --check-cfg cfg(procmacro2_nightly_testing) --check-cfg cfg(procmacro2_semver_exempt) --check-cfg cfg(randomize_layout) --check-cfg cfg(span_locations) --check-cfg cfg(super_unstable) --check-cfg cfg(wrap_proc_macro))...
+warning: killing stray builder process 417104 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name libc --edition=2021 /build/cargo-vendor-dir/libc-0.2.186/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C embed-bitcode=no --allow=clippy::used_underscore_binding --allow=unused_qualifications --warn=clippy::unnecessary_semicolon --allow=clippy::unnecessary_cast --allow=clippy::uninlined_format_args --warn=clippy::ptr_as_ptr --allow=clippy::non_minimal_cfg --allow=clippy::missing_safety_doc --warn=clippy::map_unwrap_or --warn=clippy::manual_assert --allow=clippy::identity_op --warn=clippy::explicit_iter_loop --allow=clippy::expl_impl_clone_on_copy --cfg feature="default" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("align", "const-extern-fn", "default", "extra_traits", "rustc-dep-of-std", "rustc-std-workspace-core", "std", "use_std")) -C metadata=75a379f707bc4510 -C extra-filename=-3935eed2ab621174 --out-dir /build/source/target/x86_64-unknown-linux-gnu/release/deps --target x86_64-unknown-linux-gnu -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/x86_64-unknown-linux-gnu/release/deps -L dependency=/build/source/target/release/deps --cap-lints allow -Cforce-frame-pointers=yes --cfg freebsd12 --check-cfg cfg(emscripten_old_stat_abi) --check-cfg cfg(espidf_picolibc) --check-cfg cfg(espidf_time32) --check-cfg cfg(freebsd10) --check-cfg cfg(freebsd11) --check-cfg cfg(freebsd12) --check-cfg cfg(freebsd13) --check-cfg cfg(freebsd14) --check-cfg cfg(freebsd15) --check-cfg cfg(gnu_file_offset_bits64) --check-cfg cfg(gnu_time_bits64) --check-cfg cfg(libc_deny_warnings) --check-cfg cfg(linux_time_bits64) --check-cfg cfg(musl_v1_2_3) --check-cfg cfg(musl32_time64) --check-cfg cfg(musl_redir_time64) --check-cfg cfg(vxworks_lt_25_09) --check-cfg cfg(target_os,values("switch","aix","ohos","hurd","rtems","visionos","nuttx","cygwin","qurt")) --check-cfg cfg(target_env,values("illumos","wasi","aix","ohos","nto71_iosock","nto80")) --check-cfg cfg(target_arch,values("loongarch64","mips32r6","mips64r6","csky")))...
+warning: killing stray builder process 417187 ()...
+warning: killing stray builder process 417484 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name autocfg_412228754b48971f_1 --crate-type=lib --out-dir /build/source/target/x86_64-unknown-linux-gnu/release/build/num-traits-9407772ebcb54efd/out --emit=llvm-ir --target x86_64-unknown-linux-gnu -Cforce-frame-pointers=yes -)...
+warning: killing stray builder process 415428 ()...
+warning: killing stray builder process 414695 ()...
+waiting for 128 ms for cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872873984" to become empty
+waiting for 256 ms for cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872873984" to become empty
+waiting for 512 ms for cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872873984" to become empty
+waiting for 1024 ms for cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872873984" to become empty
+warning: killing stray builder process 413652 ()...
+warning: killing stray builder process 413952 (/nix/store/p3zhm0kxg5a8z51h6hzx5y6dkgl1602m-cargo-auditable-0.7.2/bin/cargo-auditable auditable clippy --workspace --all-targets -- -D warnings -D clippy::dbg_macro -D clippy::mem_forget -D clippy::undocumented_unsafe_blocks -D clippy::multiple_unsafe_ops_per_block -D clippy::host_endian_bytes -D clippy::iter_over_hash_type)...
+warning: killing stray builder process 413962 ()...
+warning: killing stray builder process 413968 (/nix/store/6gcrqjdzbx71bavmmrqpl3hw1ljml7vi-cargo-1.95.0/bin/cargo check --workspace --all-targets)...
+warning: killing stray builder process 414091 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name regex_syntax --edition=2021 /build/cargo-vendor-dir/regex-syntax-0.8.11/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --allow=unexpected_cfgs --check-cfg cfg(docsrs_regex) --cfg feature="default" --cfg feature="std" --cfg feature="unicode" --cfg feature="unicode-age" --cfg feature="unicode-bool" --cfg feature="unicode-case" --cfg feature="unicode-gencat" --cfg feature="unicode-perl" --cfg feature="unicode-script" --cfg feature="unicode-segment" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("arbitrary", "default", "std", "unicode", "unicode-age", "unicode-bool", "unicode-case", "unicode-gencat", "unicode-perl", "unicode-script", "unicode-segment")) -C metadata=75c2267369933db0 -C extra-filename=-10f4efd485eba51b --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 414685 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name serde_core --edition=2021 /build/cargo-vendor-dir/serde_core-1.0.228/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="alloc" --cfg feature="rc" --cfg feature="result" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("alloc", "default", "rc", "result", "std", "unstable")) -C metadata=ea5cea913d8d47e4 -C extra-filename=-d42fea379b377c19 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --cap-lints allow -Cforce-frame-pointers=yes --check-cfg cfg(if_docsrs_then_no_serde_core) --check-cfg cfg(no_core_cstr) --check-cfg cfg(no_core_error) --check-cfg cfg(no_core_net) --check-cfg cfg(no_core_num_saturating) --check-cfg cfg(no_diagnostic_namespace) --check-cfg cfg(no_serde_derive) --check-cfg cfg(no_std_atomic) --check-cfg cfg(no_std_atomic64) --check-cfg cfg(no_target_has_atomic))...
+warning: killing stray builder process 414864 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name zerocopy --edition=2021 /build/cargo-vendor-dir/zerocopy-0.8.54/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="simd" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("__internal_use_only_features_that_work_on_stable", "alloc", "derive", "float-nightly", "simd", "simd-nightly", "std", "zerocopy-derive")) -C metadata=7c623895c06a422c -C extra-filename=-5d399dd84d3e6ab7 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --cap-lints allow -Cforce-frame-pointers=yes --check-cfg cfg(no_zerocopy_simd_x86_avx12_1_89_0) --check-cfg cfg(rust, values("1.89.0")) --check-cfg cfg(no_zerocopy_core_error_1_81_0) --check-cfg cfg(rust, values("1.81.0")) --check-cfg cfg(no_zerocopy_diagnostic_on_unimplemented_1_78_0) --check-cfg cfg(rust, values("1.78.0")) --check-cfg cfg(no_zerocopy_generic_bounds_in_const_fn_1_61_0) --check-cfg cfg(rust, values("1.61.0")) --check-cfg cfg(no_zerocopy_target_has_atomics_1_60_0) --check-cfg cfg(rust, values("1.60.0")) --check-cfg cfg(no_zerocopy_aarch64_simd_1_59_0) --check-cfg cfg(rust, values("1.59.0")) --check-cfg cfg(no_zerocopy_aarch64_simd_be_1_87_0) --check-cfg cfg(rust, values("1.87.0")) --check-cfg cfg(no_zerocopy_panic_in_const_and_vec_try_reserve_1_57_0) --check-cfg cfg(rust, values("1.57.0")) --check-cfg cfg(doc_cfg) --check-cfg cfg(kani) --check-cfg cfg(__ZEROCOPY_INTERNAL_USE_ONLY_NIGHTLY_FEATURES_IN_TESTS) --check-cfg cfg(__ZEROCOPY_INTERNAL_USE_ONLY_DEV_MODE) --check-cfg cfg(coverage_nightly) --check-cfg cfg(zerocopy_inline_always) --check-cfg cfg(zerocopy_unstable_ptr) --check-cfg cfg(zerocopy_unstable_linux) --check-cfg cfg(no_fp_fmt_parse))...
+warning: killing stray builder process 415761 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name rustix --edition=2021 /build/cargo-vendor-dir/rustix-1.1.4/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg cfg(alloc_c_string) --check-cfg cfg(alloc_ffi) --check-cfg cfg(apple) --check-cfg cfg(asm_experimental_arch) --check-cfg cfg(bsd) --check-cfg cfg(core_c_str) --check-cfg cfg(core_ffi_c) --check-cfg cfg(core_intrinsics) --check-cfg cfg(criterion) --check-cfg cfg(document_experimental_runtime_api) --check-cfg cfg(error_in_core) --check-cfg cfg(fix_y2038) --check-cfg cfg(freebsdlike) --check-cfg cfg(libc) --check-cfg cfg(linux_kernel) --check-cfg cfg(linux_like) --check-cfg cfg(linux_raw) --check-cfg cfg(linux_raw_dep) --check-cfg cfg(lower_upper_exp_for_non_zero) --check-cfg cfg(sanitize_memory) --check-cfg cfg(netbsdlike) --check-cfg cfg(rustc_attrs) --check-cfg cfg(rustc_diagnostics) --check-cfg cfg(solarish) --check-cfg cfg(staged_api) --check-cfg cfg(static_assertions) --check-cfg cfg(thumb_mode) --check-cfg cfg(wasi) --check-cfg cfg(wasi_ext) --check-cfg cfg(wasip2) --check-cfg cfg(target_arch, values("xtensa")) --check-cfg cfg(target_os, values("cygwin")) --cfg feature="alloc" --cfg feature="default" --cfg feature="event" --cfg feature="fs" --cfg feature="pipe" --cfg feature="process" --cfg feature="std" --cfg feature="time" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("all-apis", "alloc", "core", "default", "event", "fs", "io_uring", "libc", "libc_errno", "linux_4_11", "linux_5_1", "linux_5_11", "linux_latest", "mm", "mount", "net", "param", "pipe", "process", "pty", "rand", "runtime", "rustc-dep-of-std", "rustc-std-workspace-alloc", "shm", "std", "stdio", "system", "termios", "thread", "time", "try_close", "use-explicitly-provided-auxv", "use-libc", "use-libc-auxv")) -C metadata=febb194f7e45dbb5 -C extra-filename=-3114388750dbdd9e --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern bitflags=/build/source/target/debug/deps/libbitflags-c136770c2a4e7267.rmeta --extern linux_raw_sys=/build/source/target/debug/deps/liblinux_raw_sys-75da7bfba0b638be.rmeta --cap-lints allow -Cforce-frame-pointers=yes --cfg static_assertions --cfg lower_upper_exp_for_non_zero --cfg rustc_diagnostics --cfg linux_raw_dep --cfg linux_raw --cfg linux_like --cfg linux_kernel)...
+warning: killing stray builder process 417829 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name codegen --edition=2021 /build/cargo-vendor-dir/codegen-0.2.0/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values()) -C metadata=02814421e6419d02 -C extra-filename=-a64d1096dc1a0520 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern indexmap=/build/source/target/debug/deps/libindexmap-95ff4c0b533233e7.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418064 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name sized_chunks --edition=2018 /build/cargo-vendor-dir/sized-chunks-0.6.5/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="default" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("arbitrary", "array-ops", "default", "refpool", "ringbuffer", "std")) -C metadata=cf176f2d43527246 -C extra-filename=-ab924749938bcf2e --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern bitmaps=/build/source/target/debug/deps/libbitmaps-3e91154a10684c77.rmeta --extern typenum=/build/source/target/debug/deps/libtypenum-68e4a07adbffc4f4.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418351 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name rand_core --edition=2021 /build/cargo-vendor-dir/rand_core-0.9.5/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="os_rng" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("os_rng", "serde", "std")) -C metadata=e1202cf50e9ddb61 -C extra-filename=-137fb4f585335a32 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern getrandom=/build/source/target/debug/deps/libgetrandom-20cf797f377925a9.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418354 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name num_integer --edition=2018 /build/cargo-vendor-dir/num-integer-0.1.46/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="default" --cfg feature="i128" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("default", "i128", "std")) -C metadata=2660bedcc38c947b -C extra-filename=-07703adb390e8629 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern num_traits=/build/source/target/debug/deps/libnum_traits-57ca44bc74692ab4.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418355 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name chrono --edition=2021 /build/cargo-vendor-dir/chrono-0.4.45/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="alloc" --cfg feature="clock" --cfg feature="iana-time-zone" --cfg feature="now" --cfg feature="std" --cfg feature="winapi" --cfg feature="windows-link" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("__internal_bench", "alloc", "arbitrary", "clock", "core-error", "default", "defmt", "iana-time-zone", "js-sys", "libc", "now", "oldtime", "pure-rust-locales", "rkyv", "rkyv-16", "rkyv-32", "rkyv-64", "rkyv-validation", "serde", "std", "unstable-locales", "wasm-bindgen", "wasmbind", "winapi", "windows-link")) -C metadata=63b49f9ff89dc3d6 -C extra-filename=-64beb4583ac34313 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern iana_time_zone=/build/source/target/debug/deps/libiana_time_zone-150a34aac80beb64.rmeta --extern num_traits=/build/source/target/debug/deps/libnum_traits-57ca44bc74692ab4.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418357 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name build_script_build --edition=2024 /build/cargo-vendor-dir/blake3-1.8.5/build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no --cfg feature="default" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("default", "digest", "mmap", "neon", "no_avx2", "no_avx512", "no_neon", "no_sse2", "no_sse41", "prefer_intrinsics", "pure", "rayon", "serde", "std", "traits-preview", "wasm32_simd", "zeroize")) -C metadata=82a39d207937675e -C extra-filename=-d229cc3671c71a89 --out-dir /build/source/target/debug/build/blake3-d229cc3671c71a89 -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern cc=/build/source/target/debug/deps/libcc-262eba355dd88e62.rlib --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418382 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name quickscope --edition=2021 /build/cargo-vendor-dir/steel-quickscope-0.3.2/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values()) -C metadata=93ea2d819e3f9c1f -C extra-filename=-813f5a3ffbc8176d --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern indexmap=/build/source/target/debug/deps/libindexmap-a962cdb07d3a05e5.rmeta --extern smallvec=/build/source/target/debug/deps/libsmallvec-fc7a3653077f4016.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418498 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name digest --edition=2018 /build/cargo-vendor-dir/digest-0.10.7/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="alloc" --cfg feature="block-buffer" --cfg feature="core-api" --cfg feature="default" --cfg feature="std" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("alloc", "blobby", "block-buffer", "const-oid", "core-api", "default", "dev", "mac", "oid", "rand_core", "std", "subtle")) -C metadata=a6a800695d8cb6eb -C extra-filename=-35607174ccf466b1 --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern block_buffer=/build/source/target/debug/deps/libblock_buffer-2572e3e75d0c3e30.rmeta --extern crypto_common=/build/source/target/debug/deps/libcrypto_common-dde4d0bb45468a56.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418539 (/nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/bin/rustc --crate-name parking_lot --edition=2021 /build/cargo-vendor-dir/parking_lot-0.12.5/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata -C embed-bitcode=no -C debuginfo=2 --cfg feature="arc_lock" --cfg feature="default" --cfg feature="send_guard" --check-cfg cfg(docsrs,test) --check-cfg cfg(feature, values("arc_lock", "deadlock_detection", "default", "hardware-lock-elision", "nightly", "owning_ref", "send_guard", "serde")) -C metadata=a99cd844a7f5d22d -C extra-filename=-f41e99707214f98f --out-dir /build/source/target/debug/deps -C linker=/nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -L dependency=/build/source/target/debug/deps --extern lock_api=/build/source/target/debug/deps/liblock_api-858d4d71967ed06d.rmeta --extern parking_lot_core=/build/source/target/debug/deps/libparking_lot_core-217ad977d91e19c9.rmeta --cap-lints allow -Cforce-frame-pointers=yes)...
+warning: killing stray builder process 418704 (/nix/store/zh1ijdhb6gng1509b1zrilb6xlzx60j6-bash-5.3p9/bin/bash /nix/store/xcnqqnhw9hb4j5rjgds2yjryi8qki5f3-gcc-wrapper-15.2.0/bin/cc -m64 /build/source/target/debug/build/blake3-d229cc3671c71a89/rustc7Vo9q7/symbols.o /build/source/target/debug/build/blake3-d229cc3671c71a89/build_script_build-d229cc3671c71a89.build_script_build.f7b56b40a6c14284-cgu.0.rcgu.o /build/source/target/debug/build/blake3-d229cc3671c71a89/build_script_build-d229cc3671c71a89.1ra6rers8lazp6d6e43iapcw6.rcgu.o -Wl,--as-needed -Wl,-Bstatic /build/source/target/debug/deps/libcc-262eba355dd88e62.rlib /build/source/target/debug/deps/libfind_msvc_tools-34062a20ee044030.rlib /build/source/target/debug/deps/libshlex-9f629a98417e5311.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd-c92a0dddec284f7f.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libpanic_unwind-185786176f2e91db.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libobject-0a33c5e4937fec99.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libmemchr-0b1759b3b1482755.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libaddr2line-bcfb26128a0178d4.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libgimli-d85ffd2b38c3c4b4.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libcfg_if-3baf9542431eb9e0.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/librustc_demangle-ad5cfdf4c9fc8a0f.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libstd_detect-8e875ec4d2217f4b.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libhashbrown-78559003c190a23b.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/librustc_std_workspace_alloc-5f1508d9f9717ad4.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libminiz_oxide-72bcb31ed0cc8623.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libadler2-d760dd2d41df3fdc.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libunwind-0e4edc9e17ae65c5.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/liblibc-4fc519aafe53b581.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/librustc_std_workspace_core-7cbda4c0b1609d93.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/liballoc-52ae2f41b8708cb4.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libcore-9f4d0c13cff8243b.rlib /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib/libcompiler_builtins-02051aa5bf890707.rlib -Wl,-Bdynamic -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc -L /build/source/target/debug/build/blake3-d229cc3671c71a89/rustc7Vo9q7/raw-dylibs -Wl,--eh-frame-hdr -Wl,-z,noexecstack -L /nix/store/2bfsfxxm13zakxcc53m69czx18qshzhm-rustc-1.95.0/lib/rustlib/x86_64-unknown-linux-gnu/lib -o /build/source/target/debug/build/blake3-d229cc3671c71a89/build_script_build-d229cc3671c71a89 -Wl,--gc-sections -pie -Wl,-z,relro,-z,now -nodefaultlibs)...
+warning: killing stray builder process 417207 ()...
+error (ignored): deleting cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872677376": Device or resource busy
+error: failed to build attribute 'checks.x86_64-linux.world-commit-conformance', build of '/nix/store/h1p3xxrzdxzd91d8zwzyicrgnnnrp0yj-kamacite-world-commit-conformance.drv^*' failed: Cannot build '/nix/store/h1p3xxrzdxzd91d8zwzyicrgnnnrp0yj-kamacite-world-commit-conformance.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/ifd0d0751r6hi2ihaan598v50q3qdsp9-kamacite-world-commit-conformance
+       Last 1 log lines:
+       > world-commit conformance denied: generated artifact is stale: fixtures/world-commit/implementation-manifest.json
+       For full logs, run:
+         nix log /nix/store/h1p3xxrzdxzd91d8zwzyicrgnnnrp0yj-kamacite-world-commit-conformance.drv

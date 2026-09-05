@@ -1,0 +1,487 @@
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling serde_core v1.0.228
+   Compiling cfg-if v1.0.4
+   Compiling autocfg v1.5.1
+   Compiling serde v1.0.228
+   Compiling version_check v0.9.5
+   Compiling libc v0.2.186
+   Compiling zerocopy v0.8.54
+   Compiling stable_deref_trait v1.2.1
+   Compiling memchr v2.8.3
+   Compiling typenum v1.20.1
+   Compiling smallvec v1.15.2
+   Compiling parking_lot_core v0.9.12
+   Compiling crossbeam-utils v0.8.22
+   Compiling equivalent v1.0.2
+   Compiling scopeguard v1.2.0
+   Compiling zmij v1.0.21
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling itoa v1.0.18
+   Compiling hashbrown v0.17.1
+   Compiling writeable v0.6.3
+   Compiling lock_api v0.4.14
+   Compiling serde_json v1.0.150
+   Compiling cc v1.2.66
+   Compiling rustversion v1.0.23
+   Compiling ahash v0.8.12
+   Compiling generic-array v0.14.7
+   Compiling once_cell v1.21.4
+   Compiling regex-syntax v0.8.11
+   Compiling allocator-api2 v0.2.21
+   Compiling getrandom v0.3.4
+   Compiling num-traits v0.2.19
+   Compiling indexmap v1.9.3
+   Compiling constant_time_eq v0.4.2
+   Compiling litemap v0.8.2
+   Compiling icu_properties_data v2.2.0
+   Compiling arrayvec v0.7.8
+   Compiling arrayref v0.3.9
+   Compiling cpufeatures v0.3.0
+   Compiling hashbrown v0.12.3
+   Compiling icu_casemap_data v2.2.0
+   Compiling base64 v0.13.1
+   Compiling libm v0.2.16
+   Compiling rustix v1.1.4
+   Compiling aho-corasick v1.1.4
+   Compiling lazy_static v1.5.0
+   Compiling bytemuck v1.25.1
+   Compiling indexmap v2.14.0
+   Compiling dtoa v0.4.8
+   Compiling utf8_iter v1.0.4
+   Compiling bigdecimal v0.4.10
+   Compiling im-rc v15.1.0
+   Compiling pin-project-lite v0.2.17
+   Compiling ryu v1.0.23
+   Compiling syn v2.0.118
+   Compiling bitmaps v2.1.0
+   Compiling anymap3 v1.1.0
+   Compiling castaway v0.2.4
+   Compiling bitflags v2.13.0
+   Compiling rand_core v0.6.4
+   Compiling linux-raw-sys v0.12.1
+   Compiling futures-task v0.3.32
+   Compiling typed-arena v2.0.2
+   Compiling slab v0.4.12
+   Compiling unicode-width v0.2.2
+   Compiling futures-core v0.3.32
+   Compiling static_assertions v1.1.0
+   Compiling httparse v1.10.1
+   Compiling arrayvec v0.5.2
+   Compiling rand_xoshiro v0.6.0
+   Compiling crypto-common v0.1.7
+   Compiling num-integer v0.1.46
+   Compiling block-buffer v0.10.4
+   Compiling sized-chunks v0.6.5
+   Compiling iana-time-zone v0.1.65
+   Compiling log v0.4.33
+   Compiling blake3 v1.8.5
+   Compiling pretty v0.12.5
+   Compiling digest v0.10.7
+   Compiling unicode-width v0.1.14
+   Compiling parking_lot v0.12.5
+   Compiling rand_core v0.9.5
+   Compiling codegen v0.2.0
+   Compiling termcolor v1.4.1
+   Compiling rustc-hash v2.1.3
+   Compiling chrono v0.4.45
+   Compiling steel-quickscope v0.3.2
+   Compiling which v8.0.5
+   Compiling md-5 v0.10.6
+   Compiling arc-swap v1.9.2
+   Compiling crossbeam-channel v0.5.16
+   Compiling generic_singleton v0.5.3
+   Compiling codespan-reporting v0.11.1
+   Compiling crossbeam-queue v0.3.13
+   Compiling regex-automata v0.4.15
+   Compiling shared_vector v0.4.5
+   Compiling im-lists v0.11.4
+   Compiling xdg v3.0.0
+   Compiling strsim v0.11.1
+   Compiling env_home v0.1.0
+   Compiling glob v0.3.3
+   Compiling weak-table v0.3.2
+   Compiling serde_bytes v0.11.19
+   Compiling ppv-lite86 v0.2.21
+   Compiling regex v1.13.0
+   Compiling synstructure v0.13.2
+   Compiling rand_chacha v0.9.0
+   Compiling polling v3.11.0
+   Compiling rand v0.9.5
+   Compiling serde_derive v1.0.228
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.6
+   Compiling futures-macro v0.3.32
+   Compiling steel-derive v0.8.2
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling futures-util v0.3.32
+   Compiling zerofrom v0.1.8
+   Compiling yoke v0.8.3
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling icu_collections v2.2.0
+   Compiling icu_locale_core v2.2.0
+   Compiling futures-executor v0.3.32
+   Compiling num-bigint v0.4.8
+   Compiling hashbrown v0.14.5
+   Compiling ordered-float v5.3.0
+   Compiling compact_str v0.8.2
+   Compiling thin-vec v0.2.18
+   Compiling steel-gen v0.8.2
+   Compiling bincode v1.3.3
+   Compiling nickel-export-core v0.1.0 (https://github.com/OnixResearch/nickel-export?rev=710b6e03a8faf74f6afc6cc8ef36d7667958b70d#710b6e03)
+   Compiling dashmap v6.2.1
+   Compiling icu_provider v2.2.0
+   Compiling lasso v0.7.3
+   Compiling icu_properties v2.2.0
+   Compiling preserves v5.0.0-rc.7
+   Compiling num-rational v0.4.2
+   Compiling steel-parser v0.8.2
+   Compiling icu_casemap v2.2.0
+   Compiling kamacite-core v0.1.0 (/home/brittonr/git/OnixResearch/.worktrees/kamacite-bend-hvm2-20260904/crates/kamacite-core)
+   Compiling steel-core v0.8.2
+   Compiling kamacite-cli v0.1.0 (/home/brittonr/git/OnixResearch/.worktrees/kamacite-bend-hvm2-20260904/crates/kamacite-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 27s
+     Running unittests src/lib.rs (target/bend-hvm2-baseline/debug/deps/kamacite_cli-818bd64825b91d1f)
+
+running 20 tests
+test nickel_sandbox::tests::admitted_bytes_materialize_as_rewound_inheritable_data ... ok
+test nickel_sandbox::tests::enforcement_command_policy_accepts_nix_tools_and_rejects_substitution ... ok
+test nickel_sandbox::tests::import_path_policy_accepts_relative_paths_and_rejects_escape ... ok
+test nickel_sandbox::tests::outcome_classification_is_fail_closed ... ok
+test nickel_sandbox::tests::resource_diagnostics_normalize_nondeterministic_process_text ... ok
+test nickel_sandbox::tests::runtime_closure_shape_accepts_store_objects_and_rejects_ambient_paths ... ok
+test root_io::tests::path_policy_accepts_regular_relative_components ... ok
+test root_io::tests::path_policy_rejects_ambient_and_traversal_paths ... ok
+test steel_runner::tests::bounded_engine_denies_unregistered_process_module ... ok
+test steel_runner::tests::rejects_undeclared_host_function_before_execution ... ok
+test steel_runner::tests::rejects_wrong_shaped_input_before_execution ... ok
+test steel_runner::tests::world_vector_probe_rejects_an_altered_source ... ok
+test steel_runner::tests::world_vector_probe_rejects_an_altered_module_descriptor ... ok
+test root_io::tests::gateway_reads_creates_and_replaces_regular_files ... ok
+test root_io::tests::replacement_race_stays_on_the_admitted_parent_handle ... ok
+test root_io::tests::destination_symlink_race_fails_without_modifying_outside_file ... ok
+test root_io::tests::gateway_rejects_symlink_sources_destinations_and_parents ... ok
+test steel_runner::tests::bounded_engine_denies_undeclared_function_called_by_source ... ok
+test steel_runner::tests::world_vector_probe_uses_one_pure_declared_host_function ... ok
+test steel_runner::tests::executes_fresh_bounded_probe ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/bin/check-world-commit-conformance.rs (target/bend-hvm2-baseline/debug/deps/check_world_commit_conformance-575912aa2ce8a875)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/semantic/operation/cli.rs (target/bend-hvm2-baseline/debug/deps/kamacite_semantic_operation-4adfa4d176ac825c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/bend-hvm2-baseline/debug/deps/kamacite_validate-abcc2811f35d853e)
+
+running 17 tests
+test nickel_preserves_adapter::tests::selects_exact_json_export_and_rejects_non_json_duplicate_and_missing ... ok
+test tests::leaves_explicitly_missing_fixture_identity_unchanged ... ok
+test tests::accepts_complete_manifest_projection_shape ... ok
+test tests::merges_migration_passes_without_reinterpreting_the_baseline_identity ... ok
+test tests::rejects_compatibility_fixture_with_wrong_identity_domain ... ok
+test tests::rejects_function_address_report_without_matching_source_bytes ... ok
+test tests::rejects_malformed_fixture_identity_assignment ... ok
+test tests::rejects_malformed_function_address_source_flag ... ok
+test tests::rejects_migration_passes_with_different_artifact_ordering ... ok
+test tests::rejects_symlink_import_fixture_before_sandbox_execution ... ok
+test tests::rejects_unknown_function_address_source_assignment ... ok
+test tests::rejects_duplicate_manifest_fixture_identifiers ... ok
+test tests::rejects_manifest_payload_missing_required_metadata ... ok
+test tests::replaces_json_and_nickel_fixture_identity_values_without_changing_syntax ... ok
+test tests::materializes_octet_function_address_report_with_source_bytes ... ok
+test tests::accepts_compatibility_shaped_function_address_fixture ... ok
+test tests::migration_evidence_preserves_legacy_pseudo_and_current_identities ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/animus-producer-conformance.rs (target/bend-hvm2-baseline/debug/deps/animus_producer_conformance-97b0808c5c167eae)
+
+running 3 tests
+test changed_animus_producer_revision_is_rejected ... ok
+test exact_animus_producer_revision_and_fixture_are_frozen ... ok
+test changed_animus_producer_binding_is_rejected ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/docs-cli.rs (target/bend-hvm2-baseline/debug/deps/docs_cli-1070fe2412e60763)
+
+running 3 tests
+test malformed_and_contract_invalid_configs_fail_before_dispatch ... ok
+test collect_check_and_render_complete_with_receipts ... ok
+test unsupported_and_no_op_actions_fail_closed_while_dry_run_is_only_a_plan ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/manifest-freshness-cli.rs (target/bend-hvm2-baseline/debug/deps/manifest_freshness_cli-c4be5ecd5f5ab6e7)
+
+running 7 tests
+test explicit_generation_rejects_malformed_source_and_stale_evaluator ... ok
+test rejects_source_contract_projection_and_receipt_drift_before_fixture_io ... ok
+test rejects_duplicate_reordered_and_extra_fixture_projections ... ok
+test closed_manifest_contract_accepts_supported_shapes_and_rejects_invalid_shapes ... ok
+test default_validation_is_receipt_only_and_does_not_launch_nickel ... ok
+test explicit_generation_updates_projection_and_checked_receipt ... ok
+test manifest_generation_rejects_symlink_sources_and_destinations ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+     Running tests/nickel-preserves-cli.rs (target/bend-hvm2-baseline/debug/deps/nickel_preserves_cli-dda90c7e22acf5f9)
+
+running 6 tests
+test check_and_write_modes_are_mutually_exclusive ... ok
+test unsafe_projection_destination_is_rejected_before_publication ... ok
+test stale_artifact_is_rejected_before_output ... ok
+test malformed_manifest_wrong_destination_and_parent_escape_are_rejected ... ok
+test stale_source_evaluator_and_dependency_evidence_is_rejected ... ok
+test write_check_and_noop_modes_are_fail_closed ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/root-io-cli.rs (target/bend-hvm2-baseline/debug/deps/root_io_cli-c3ec8cec107e685f)
+
+running 4 tests
+test valence_update_rejects_outward_symlink_parent ... ok
+test root_scoped_commands_reject_absolute_parent_and_symlink_sources ... ok
+test function_address_outputs_reject_symlink_destinations_and_parents ... ok
+test regular_root_scoped_command_families_still_succeed ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+     Running tests/semantic-operation-cli.rs (target/bend-hvm2-baseline/debug/deps/semantic_operation_cli-e08384f42361524f)
+
+running 4 tests
+test rejects_update_without_bounded_output ... ok
+test rejects_operation_without_behavior_or_abstract_marker ... ok
+test migration_is_dry_run_without_update ... ok
+test identifies_default_operation_from_capability_root ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/steel-execution-cli.rs (target/bend-hvm2-baseline/debug/deps/steel_execution_cli-0e9e367ffc58e060)
+
+running 2 tests
+test explicit_validation_rejects_caller_supplied_fake_runner ... ok
+test explicit_validation_executes_and_records_fresh_probe_evidence ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running unittests src/lib.rs (target/bend-hvm2-baseline/debug/deps/kamacite_core-4376d4d7482e6d71)
+
+running 174 tests
+test application_host_binding::tests::authority_overclaim_is_rejected ... ok
+test application_host_binding::tests::alternative_and_fallback_hosts_are_rejected ... ok
+test application_host_binding::tests::missing_host_is_rejected ... ok
+test application_host_binding::tests::missing_non_claims_are_rejected ... ok
+test application_host_binding::tests::open_effect_summary_is_rejected ... ok
+test application_host_binding::tests::stale_cohort_is_rejected ... ok
+test application_host_binding::tests::unsupported_version_is_rejected ... ok
+test application_host_binding::tests::wrong_application_domain_is_rejected ... ok
+test application_host_binding::tests::wrong_domain_operation_is_rejected ... ok
+test dialect_roundtrip::tests::invalid_profile_rejects_stale_hash_domains_spans_versions_and_overclaims ... ok
+test dialect_roundtrip::tests::json_projection_binds_preserves_authority ... ok
+test dialect_roundtrip::tests::known_and_unknown_dialect_payloads_roundtrip_with_preserves_identity ... ok
+test dialect_roundtrip::tests::projection_drift_is_rejected ... ok
+test docs_generation::tests::docs_config_and_completed_actions_are_accepted ... ok
+test docs_generation::tests::docs_actions_reject_invalid_config_no_ops_and_unsupported_values ... ok
+test docs_generation::tests::docs_render_comparison_rejects_stale_output ... ok
+test docs_generation::tests::documentation_ir_assembly_rejects_duplicates_and_unknown_links ... ok
+test ast_grep_audit::tests::accepts_identity_bound_audit_with_fixture_coverage ... ok
+test ast_grep_audit::tests::rejects_gate_without_negative_fixture_and_semantic_role ... ok
+test docs_generation::tests::language_facts_reject_unsupported_inputs_and_overclaims ... ok
+test docs_generation::tests::language_facts_validate_and_assemble_into_documentation_ir ... ok
+test docs_generation::tests::wasm_execution_rejects_undeclared_effects_limits_and_overclaims ... ok
+test docs_generation::tests::wasm_runner_profile_and_execution_validate_bounded_execution ... ok
+test application_host_binding::tests::matching_expected_cohort_passes ... ok
+test application_host_binding::tests::valence_projection_keeps_roles_distinct ... ok
+test application_host_binding::tests::closed_effect_binding_with_policy_and_compatibility_passes ... ok
+test evidence_chain::tests::invalid_evidence_chain_envelope_rejects_wrong_domains_and_weakened_non_claims ... ok
+test evidence_chain::tests::collection_root_is_order_stable_for_profile_leaves ... ok
+test evidence_chain::tests::function_address_receipt_is_first_generic_profile ... ok
+test application_host_binding::tests::metadata_rename_does_not_change_binding_identity ... ok
+test fixture::tests::accepts_valid_source_envelope ... ok
+test fixture::tests::accepts_nickel_adapter_export_evidence ... ok
+test evidence_chain::tests::projection_drift_is_rejected ... ok
+test application_host_binding::tests::canonical_ordering_normalizes_operation_order ... ok
+test application_host_binding::tests::valid_capability_free_binding_passes_with_stable_identity ... ok
+test fixture::tests::rejects_nickel_adapter_missing_source ... ok
+test fixture::tests::rejects_nickel_adapter_stale_projection_identity ... ok
+test fixture::tests::rejects_steel_adapter_opaque_closure_output ... ok
+test fixture::tests::rejects_steel_adapter_bytecode_as_canonical_ir ... ok
+test fixture::tests::rejects_steel_adapter_missing_evaluator_identity ... ok
+test fixture::tests::rejects_steel_adapter_malformed_output ... ok
+test evidence_chain::tests::valid_evidence_chain_envelope_has_stable_canonical_identity_and_projection ... ok
+test fixture::tests::rejects_nickel_adapter_unsupported_evaluator_profile ... ok
+test fixture::tests::accepts_steel_adapter_dto_evidence ... ok
+test fixture::tests::rejects_stale_source_identity ... ok
+test function_address::tests::malformed_blake3_digest_fails_deserialization ... ok
+test fixture::tests::rejects_nickel_adapter_undeclared_effect ... ok
+test function_address::tests::missing_dependency_identity_kind_is_rejected ... ok
+test fixture::tests::rejects_steel_adapter_undeclared_host_function ... ok
+test function_address::tests::missing_dependency_target_is_rejected ... ok
+test fixture::tests::rejects_steel_adapter_ambient_import ... ok
+test function_address::tests::missing_or_out_of_range_spans_are_rejected ... ok
+test fixture::tests::rejects_steel_adapter_stale_output_identity ... ok
+test fixture::tests::rejects_steel_output_with_valid_json_but_wrong_contract_shape ... ok
+test function_address::tests::legacy_v1_receipts_require_the_tool_version_unbound_caveat ... ok
+test function_address::tests::dependency_identity_kind_mismatch_is_rejected ... ok
+test function_address::tests::wrong_identity_domain_is_rejected ... ok
+test fixture::tests::rejects_stored_steel_evidence_relabelled_as_fresh ... ok
+test identity::tests::any_identity_admits_each_known_domain ... ok
+test function_address::tests::missing_non_claim_and_overclaim_text_are_rejected ... ok
+test fixture::tests::rejects_wrong_identity_domain ... ok
+test function_address::tests::producer_profile_rejects_missing_provenance_and_non_claims ... ok
+test identity::tests::any_identity_json_round_trip_preserves_bytes ... ok
+test identity::tests::any_identity_rejects_conflicting_algorithm ... ok
+test identity::tests::blake3_hex_rejects_uppercase_and_non_hex ... ok
+test identity::tests::borrowed_identity_ref_tracks_owner ... ok
+test identity::tests::any_identity_rejects_unknown_domain_json ... ok
+test identity::tests::rejects_short_hex ... ok
+test identity::tests::parses_valid_blake3_hex ... ok
+test function_address::tests::semantic_dependency_closure_overclaim_is_rejected ... ok
+test identity::tests::typed_identity_deserialization_rejects_cross_domain_json ... ok
+test function_address::tests::stale_source_identity_is_rejected ... ok
+test identity::tests::typed_identity_accepts_same_domain_wire ... ok
+test nickel_sandbox::tests::accepted_profile_and_enforced_evidence_validate ... ok
+test function_address::tests::duplicate_locator_is_rejected ... ok
+test identity::tests::typed_identity_rejects_cross_domain_wire ... ok
+test function_address::tests::metadata_rename_and_path_churn_do_not_change_canonical_identity ... ok
+test identity::tests::typed_identity_rejects_wrong_algorithm_wire ... ok
+test function_address::tests::valence_projection_preserves_dependencies_and_non_claims ... ok
+test nickel_sandbox::tests::substituted_evaluator_identity_is_rejected ... ok
+test identity::tests::typed_identity_wire_round_trip_preserves_bytes ... ok
+test nickel_sandbox::tests::self_reported_or_unbounded_evidence_is_rejected ... ok
+test function_address::tests::legacy_v2_pseudo_codec_is_compatibility_evidence_only ... ok
+test function_address::tests::valid_octet_receipt_preserves_inventory_and_projection_identity ... ok
+test function_address::tests::projection_drift_or_json_authority_is_rejected ... ok
+test function_address::tests::projection_rejects_unbound_displayed_producer_version ... ok
+test manifest_freshness::tests::accepts_exact_generation_evidence ... ok
+test preserves_codec::tests::rejects_zero_limit_policy ... ok
+test function_address::tests::producer_profile_and_receipt_identity_bind_normative_provenance ... ok
+test function_address::tests::canonical_preserves_bytes_own_receipt_identity_and_projection_round_trips ... ok
+test preserves_codec::tests::typed_roundtrip_binds_normative_fields ... ok
+test application_host_binding::tests::single_field_change_rekeys_binding_identity ... ok
+test nickel_preserves::tests::equivalent_json_values_converge_to_one_canonical_identity ... ok
+test receipt::tests::receipt_identity_uses_separate_domain ... ok
+test nickel_preserves::tests::enforces_every_named_mapping_limit ... ok
+test proof_evidence::tests::rejects_missing_links_drift_malformed_ids_and_overclaims ... ok
+test semantic_operation::tests::descriptor_input_rejects_missing_or_conflicting_implementation ... ok
+test semantic_operation::tests::abstract_operation_has_canonical_identity ... ok
+test nickel_preserves::tests::maps_every_admitted_json_alternative ... ok
+test manifest_freshness::tests::rejects_stale_source_contract_evaluator_projection_and_receipt ... ok
+test nickel_preserves::tests::rejects_malformed_numbers_stale_identity_wrong_kind_overclaims_and_limits ... ok
+test semantic_operation::tests::dependency_order_is_canonical_and_duplicates_fail ... ok
+test semantic_operation::tests::behavior_change_rekeys_operation ... ok
+test semantic_operation::tests::exact_operation_references_cover_all_artifact_surfaces ... ok
+test semantic_operation::tests::canonical_preserves_and_identity_are_deterministic ... ok
+test semantic_operation::tests::migration_preview_keeps_legacy_and_semantic_identities_separate ... ok
+test semantic_operation::tests::metadata_rename_does_not_change_semantic_identity ... ok
+test semantic_operation::tests::exact_handler_match_passes_and_stale_match_fails ... ok
+test semantic_operation::tests::directional_replay_compatibility_does_not_admit_live_execution ... ok
+test proof_evidence::tests::rejects_projection_drift ... ok
+test preserves_codec::tests::rejects_annotations_embedded_values_and_noncanonical_packed ... ok
+test preserves_codec::tests::enforces_every_named_limit_without_emitting_an_artifact ... ok
+test preserves_codec::tests::text_and_packed_transfer_syntaxes_converge ... ok
+test preserves_codec::tests::rejects_legacy_prefixed_json_as_canonical_preserves ... ok
+test fixture::tests::rejects_host_capability_confusion ... ok
+test preserves_codec::tests::rejects_malformed_trailing_and_unsupported_schema_inputs ... ok
+test fixture::tests::accepts_complete_fsm_spec ... ok
+test semantic_operation::tests::every_semantic_field_change_rekeys_operation ... ok
+test semantic_operation::tests::migration_preview_rejects_unknown_legacy_version_and_empty_id ... ok
+test semantic_operation::tests::rejects_wrong_nominal_family_domain ... ok
+test semantic_operation_valence::tests::projection_rejects_role_substitution ... ok
+test proof_evidence::tests::projection_binds_profile_and_evidence_chain_identity ... ok
+test fixture::tests::accepts_algebraic_exact_discharge ... ok
+test semantic_operation::tests::stale_operation_reference_fails_before_artifact_use ... ok
+test fixture::tests::rejects_missing_denial_coverage_and_wildcards ... ok
+test semantic_operation_valence::tests::projection_preserves_roles_and_non_claims ... ok
+test steel_execution::tests::contract_identity_changes_with_schema ... ok
+test steel_execution::tests::rejects_wrong_shape_unknown_schema_and_extra_fields ... ok
+test steel_execution::tests::validates_closed_integer_and_module_contracts ... ok
+test proof_evidence::tests::builds_verified_and_recorded_trellis_profiles ... ok
+test valence_export::tests::conformance_identity_rejects_normative_field_mutation ... ok
+test valence_export::tests::conformance_admission_rejects_duplicates_domains_and_self_asserted_identity ... ok
+test valence_export::tests::conformance_set_reordering_preserves_identity ... ok
+test valence_export::tests::exports_bounded_receipt_projection ... ok
+test valence_export::tests::preserves_present_source_spans_without_fabrication ... ok
+test valence_export::tests::rejects_cross_domain_receipt_identity_json ... ok
+test valence_export::tests::rejects_identity_domain_substitution ... ok
+test valence_export::tests::rejects_duplicate_artifact_identity_key ... ok
+test valence_export::tests::rejects_semantic_equivalence_overclaim ... ok
+test world_commit::tests::parsing::authoritative_logical_fixture_is_canonical_and_stable ... ok
+test valence_export::tests::rejects_missing_source_non_claims ... ok
+test wasm_component::tests::profile_wit_runtime_and_descriptor_drift_fail_closed ... ok
+test valence_export::tests::conformance_admission_rejects_malformed_projection_metadata ... ok
+test fixture::tests::accepts_fsm_receipt_with_octet_and_valence_links ... ok
+test spacewasm::tests::profile_component_and_identity_confusion_fail_closed ... ok
+test fixture::tests::rejects_fsm_receipt_overclaim ... ok
+test world_commit::tests::parsing::duplicate_domains_references_and_missing_roots_are_denied ... ok
+test world_commit::tests::parity::json_canonicality_claim_is_denied_even_when_bytes_match ... ok
+test world_commit::tests::parsing::opaque_mixed_and_authority_observation_profiles_are_admitted ... ok
+test fixture::tests::rejects_impossible_fsm_trace_transition ... ok
+test fixture::tests::accepts_fsm_trace_receipt_path ... ok
+test world_commit::tests::parsing::parent_bounds_accept_the_limit_and_reject_the_next_item ... ok
+test wasm_component::tests::real_mantle_hello_bundle_crosses_the_schema_and_byte_boundary ... ok
+test world_commit::tests::parity::altered_sources_and_unknown_cohorts_are_rejected ... ok
+test world_commit::tests::parity::missing_adapter_and_byte_drift_fail_closed ... ok
+test world_commit::tests::parity::valence_projection_is_recorded_only_and_preserves_non_claims ... ok
+test world_commit::tests::parity::ambient_steel_effects_and_semantic_overclaims_are_denied ... ok
+test fixture::tests::rejects_missing_descriptor_and_descriptor_missing_matrix_cell ... ok
+test wasm_component::tests::mantle_bundle_identity_receipt_links_and_portable_bytes_fail_closed ... ok
+test valence_export::tests::rejects_stale_declared_export_identity ... ok
+test world_commit::tests::update::changed_cohort_requires_explicit_convergent_regeneration ... ok
+test world_commit::tests::update::unchanged_known_cohort_is_admitted_without_regeneration ... ok
+test world_commit::tests::update::malformed_revisions_and_removed_negative_vectors_are_denied ... ok
+test wasm_component::tests::exact_profile_descriptor_and_canonical_input_validate_without_execution ... ok
+test spacewasm::tests::stale_external_report_and_noncanonical_input_fail_closed ... ok
+test wasm_component::tests::noncanonical_input_undeclared_import_and_parent_confusion_are_rejected ... ok
+test spacewasm::tests::parent_substitution_and_semantic_claims_fail_closed ... ok
+test world_commit::tests::parsing::unknown_versions_schemas_profiles_and_domains_fail_closed ... ok
+test fixture::tests::rejects_descriptor_substitution_and_stale_coverage_roots ... ok
+test world_commit::tests::parsing::wrong_references_hidden_fields_and_oversized_roots_are_denied ... ok
+test world_commit::tests::parity::three_independent_adapters_converge_on_one_canonical_value ... ok
+test wasm_component::tests::canonical_mantle_bundle_is_remeasured_but_remains_static_only ... ok
+test fixture::tests::rejects_wrong_start_undeclared_event_invented_transition_and_guard_evidence ... ok
+test spacewasm::tests::exact_external_evidence_is_static_only_when_guest_abi_is_absent ... ok
+
+test result: ok. 174 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+   Doc-tests kamacite_cli
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kamacite_core
+
+running 2 tests
+test crates/kamacite-core/src/identity.rs - identity::Identity (line 363) ... ok
+test crates/kamacite-core/src/identity.rs - identity::AnyIdentity (line 574) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+test crates/kamacite-core/src/identity.rs - identity::Identity (line 397) - compile fail ... ok
+test crates/kamacite-core/src/identity.rs - identity::Identity (line 407) - compile fail ... ok
+test crates/kamacite-core/src/identity.rs - identity::Identity (line 417) - compile fail ... ok
+test crates/kamacite-core/src/identity.rs - identity::Identity (line 377) - compile fail ... ok
+test crates/kamacite-core/src/identity.rs - identity::Identity (line 387) - compile fail ... ok
+test crates/kamacite-core/src/identity.rs - identity::AnyIdentity (line 585) - compile fail ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+all doctests ran in 1.01s; merged doctests compilation took 0.92s

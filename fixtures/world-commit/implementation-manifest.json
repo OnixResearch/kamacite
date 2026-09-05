@@ -13,8 +13,8 @@
     },
     {
       "path": "crates/kamacite-cli/Cargo.toml",
-      "source_identity": "source:fb93c35b421597cb65b140b8d68f29f6522240fec7ebb04b12d695295cfd3c90",
-      "byte_length": 601
+      "source_identity": "source:2543d69855fa2d4838a5880ae80786aaefdcbdfa270f2c67fef2a9876264c208",
+      "byte_length": 683
     },
     {
       "path": "crates/kamacite-cli/src/bin/check-world-commit-conformance.rs",
@@ -23,8 +23,8 @@
     },
     {
       "path": "crates/kamacite-cli/src/lib.rs",
-      "source_identity": "source:c108f7002ab146310db919f3e605402cf312423f0836652e44190a9392ed950a",
-      "byte_length": 727
+      "source_identity": "source:1d8f6eb56d15a85f14a1d8689f362d45eda024d049bed11e827f8edd9262efb0",
+      "byte_length": 752
     },
     {
       "path": "crates/kamacite-cli/src/nickel/sandbox.rs",
@@ -108,8 +108,8 @@
     },
     {
       "path": "crates/kamacite-core/src/lib.rs",
-      "source_identity": "source:c6c8adb7667b6d71547aec5355e73dc2e71910c4c8f09d27b2d0983f154b46e0",
-      "byte_length": 17811
+      "source_identity": "source:67a8db998144b5a2d9b8ba765585c7db4ec744c683a7bc586360a0b026d0c190",
+      "byte_length": 17830
     },
     {
       "path": "crates/kamacite-core/src/nickel/sandbox.rs",
@@ -183,13 +183,13 @@
     },
     {
       "path": "flake.lock",
-      "source_identity": "source:deacef9137545b376eed4f3982c40ad48f1be7933877ebff878ba9f694d44b8f",
-      "byte_length": 54082
+      "source_identity": "source:3292135d7c348f0c6e69606e5293ccd39f91ef3205c0bebad81108cfd27a855e",
+      "byte_length": 67939
     },
     {
       "path": "flake.nix",
-      "source_identity": "source:edba7844a0c0b896b2688cbf302c20998398dc90317cab77965aa7d2ebbbcb77",
-      "byte_length": 26211
+      "source_identity": "source:9c8396852873a768042deb2dd8163663a35c5d072ee882b5d966b3faa4fec0b9",
+      "byte_length": 36616
     }
   ]
 }

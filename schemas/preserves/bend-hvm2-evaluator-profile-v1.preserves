@@ -1,0 +1,10 @@
+<kamacite-preserves-schema-artifact-v1 {
+  family: "bend-hvm2-evaluator-profile"
+  version: "v1"
+  schema-id: "kamacite.bend-hvm2-evaluation-profile.v1"
+  fields: ["Bend source pin" "HVM2 source pin" "license identities" "command profiles" "resource policy" "benchmark policy" "denied authority" "non-claims"]
+  required-disposition: "evaluation-only"
+  admitted-routes: ["bend run-rs" "bend gen-c plus pinned C compiler"]
+  excluded-routes: ["CUDA" "HVM3" "HVM4" "Kind" "unpinned tools"]
+  canonical-identity: "adapter-domain BLAKE3 over checked Nickel JSON projection"
+}>

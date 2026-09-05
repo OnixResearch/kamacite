@@ -1,0 +1,517 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: evaluate-bend-hvm2-pure-adapter",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter"
+    }
+  ],
+  "blocked": false,
+  "change": "evaluate-bend-hvm2-pure-adapter",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "bdff2813770c3d59c987afcabeca04ae2bae80959a18aa3f4e64096de5847c56",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "35b8dd3c118352acef40dbb1f86953b9c3c7ecf49c5ca5f32f1d9c952aa865af",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/design.md"
+        },
+        {
+          "content_hash": "75107a916d168a0b75e0aa825bd3deb8155f1c56f77edc02d6323152901d7cbb",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "5d4351ca2fe39015a638591f81c0decda2d5574b4b9bd09aac8ee2f6b1b36eab",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "dcf3513a265668fc0e4c6c203bf994182de8f88ef3010c362c388b6b2ef04c43",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "6448295b0cd97e0b0ad9a9a223e5887b2a7d3d46d35eadadb2166ca97473067a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/validate.log"
+        },
+        {
+          "content_hash": "1e1d457356a0b453b32435829b2406ff4963c91b3831989c01333c9ac0709445",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cargo-test-shared-target-lock.log"
+        },
+        {
+          "content_hash": "98533abab6646c5c592936f33c3f2c6267717e0215bff93e6832ebfa88964984",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cargo-test.log"
+        },
+        {
+          "content_hash": "f0a95b025437a02789d67f8b8c8ae0fa1506428afedcc863408455f5eff81a8b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/kamacite-validate.log"
+        },
+        {
+          "content_hash": "2d535d10878495212c71ab0d0c1ad0a76ecc97e8849c54a9e6d1965460a7de8a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/lifecycle-validate.log"
+        },
+        {
+          "content_hash": "954bd836ed9bb028df90bba0cb47ec3e39b770fc97bd507a5a72c5a2400908d5",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "e61de4d7d21ab2f9abc939ea5124a030884df88a15d0df1a7db61f3b734a57e7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/accepted-spec.b3"
+        },
+        {
+          "content_hash": "68ae533650e76939739b765178c8225d75525b9c2efda057309da260e9c1ad4c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/archive-dry-run.json"
+        },
+        {
+          "content_hash": "43a511219b38e0d7a846975ce4048ec4b2facf32a80a4f87436d70cba62f318c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "d21e2406b85ca146708faf6366d57e4528761639a526b21c23520fd82a96cbe3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "0d174afbf8f8b45597113ae3d059b63e5b9853226cf5b995a7223ebeb7e0cd6f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-tasks-pre-closeout.log"
+        },
+        {
+          "content_hash": "1a940d2645187af4630783a05a77d74ea8e81ea95ef21368e41c968c53463293",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "a1f005428170d4345ee5c1a80f9b9f83b974ccf73a000a9fbc8f9a8e8df48c28",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-validate-post-sync.log"
+        },
+        {
+          "content_hash": "cd5768410d29ca88459909031426c5db378569f95079df2602b26339df7dc4e0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-validate-pre-archive.log"
+        },
+        {
+          "content_hash": "618ac6b2a4e8ad333badb3cab6a1e724a8a436deaedff06fb385b2e3236f6dff",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-validate-pre-sync.log"
+        },
+        {
+          "content_hash": "f69c48e1cc34855a607fc92817ceafb64350012b7929060ebebb60998e5561a0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/focused-nix-checks.log"
+        },
+        {
+          "content_hash": "6388a598fd9aeebf2527d0ea16ce2b9a0ec5cb99eb910afc998e43424b5e24a0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/golden-artifact-identities.b3"
+        },
+        {
+          "content_hash": "c9159d1d6c9aba694e37a209cc3f2c7cedf107478f40d996325b9cbabb5af293",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/input-identities.b3"
+        },
+        {
+          "content_hash": "f0a95b025437a02789d67f8b8c8ae0fa1506428afedcc863408455f5eff81a8b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/kamacite-validate.log"
+        },
+        {
+          "content_hash": "6448295b0cd97e0b0ad9a9a223e5887b2a7d3d46d35eadadb2166ca97473067a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/lifecycle-validate.log"
+        },
+        {
+          "content_hash": "f788841bc5c2593a029e653afa7e53bf4467c12fe37250cde78832a4b519f923",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/nix-pilot-result-path.txt"
+        },
+        {
+          "content_hash": "c48ed27e6961549cd08e91a77050f3e1e889e317153c7c8504c99da70d82ab00",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/nix-proof-result-path.txt"
+        },
+        {
+          "content_hash": "6bc5a8ee935d2f9033594d99e7038339ed205a70c23bd6d9553617d27f730bc8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/octet-deny-all-pre-format.log"
+        },
+        {
+          "content_hash": "52433e2814c751a02b97087f6fedc0f3f2379f9eea712ffb906d012de91f795d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/octet-deny-all.log"
+        },
+        {
+          "content_hash": "cbb91bf8549aa83c7bc4a1347b8d9454be3e0332111039e27faaaeac01c218c0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/pilot-summary.json"
+        },
+        {
+          "content_hash": "4a6906514d6bddc67d09a3cf97954fa938f0753ead74d05077e055903e07e910",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/sync-dry-run-blocked-full-spec.json"
+        },
+        {
+          "content_hash": "8d2c3c9e5026694e0d3839db64b301fdcf13da282837351a6f6b54c379400e73",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/sync-dry-run.json"
+        },
+        {
+          "content_hash": "d548b4ecad9666eeaa2468681ea033fb6bf44b242f929f090c94842168aa7482",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/sync-execute.json"
+        },
+        {
+          "content_hash": "783547a86e4f1484c688ec0777eb4c0ce57e5ecbc519d986ff4667763fd7398c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/trellis-proof-validation.log"
+        },
+        {
+          "content_hash": "d1fb856c54e5dab30b9cf9c7c9971641b609fcc3dc8260ba3f2702faaf073534",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/world-commit-check.log"
+        },
+        {
+          "content_hash": "d1fb856c54e5dab30b9cf9c7c9971641b609fcc3dc8260ba3f2702faaf073534",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/world-commit-update.log"
+        },
+        {
+          "content_hash": "4fd80b064299703f117144bf09dfb98323693d1ff4ac651ad43358f73fca3609",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/README.md"
+        },
+        {
+          "content_hash": "6946cc941ba5081a2ab593dfe17c8778bfebe7fdb1a7c2e43c20e92d53d9cf17",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-1-no-proc.log"
+        },
+        {
+          "content_hash": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-generated.c"
+        },
+        {
+          "content_hash": "207db5fd9ed742f43baa64d2ac48684ac78ff38c318fc0a15f117b4fdc3c8ae3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-resource-policy-observations.json"
+        },
+        {
+          "content_hash": "0fbd209f7f5b97b19b50829737afd445f4c82f5a3f6ea467009d817e5b3135f8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-resource-policy-streams.json"
+        },
+        {
+          "content_hash": "8019357d19939f01792594e68201a885830823a356bb6dbbec0caac7d53f82f4",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-resource-policy-summary.json"
+        },
+        {
+          "content_hash": "17ccba3a9d539a361ddd9f90bac18e2982d46f684cb76b0b1eaa73fe4589c7f4",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/evidence/portfolio-search.md"
+        },
+        {
+          "content_hash": "02a7482b1f26aea0c47afc2d0b515db519bc544e71ae4edda42c7f2ecd637fc7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/proposal.md"
+        },
+        {
+          "content_hash": "5a648731995512a1b032f295a4f5f744ce6737bbf70d9212a734b703aca3aab0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+        },
+        {
+          "content_hash": "775724c1c80b6d18190769c5f91f9bbc1ec1fbff5ecd0dd27d8e94647c8f8ace",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/tasks.md"
+        },
+        {
+          "content_hash": "5a860cf47fc1fb4abac6d1668e99f520ec4929b0e28703206539190ccc2aa4b2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-evaluate-bend-hvm2-pure-adapter/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter"
+        }
+      ],
+      "manifest_hash": "84f3145b32b6fa5b2a80764c97db1ab78be18bca0d42de9cefb2810d09c9e23f"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "35b8dd3c118352acef40dbb1f86953b9c3c7ecf49c5ca5f32f1d9c952aa865af",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/design.md"
+        },
+        {
+          "content_hash": "75107a916d168a0b75e0aa825bd3deb8155f1c56f77edc02d6323152901d7cbb",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "5d4351ca2fe39015a638591f81c0decda2d5574b4b9bd09aac8ee2f6b1b36eab",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "dcf3513a265668fc0e4c6c203bf994182de8f88ef3010c362c388b6b2ef04c43",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "6448295b0cd97e0b0ad9a9a223e5887b2a7d3d46d35eadadb2166ca97473067a",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cairn/validate.log"
+        },
+        {
+          "content_hash": "1e1d457356a0b453b32435829b2406ff4963c91b3831989c01333c9ac0709445",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cargo-test-shared-target-lock.log"
+        },
+        {
+          "content_hash": "98533abab6646c5c592936f33c3f2c6267717e0215bff93e6832ebfa88964984",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/cargo-test.log"
+        },
+        {
+          "content_hash": "f0a95b025437a02789d67f8b8c8ae0fa1506428afedcc863408455f5eff81a8b",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/kamacite-validate.log"
+        },
+        {
+          "content_hash": "2d535d10878495212c71ab0d0c1ad0a76ecc97e8849c54a9e6d1965460a7de8a",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/lifecycle-validate.log"
+        },
+        {
+          "content_hash": "954bd836ed9bb028df90bba0cb47ec3e39b770fc97bd507a5a72c5a2400908d5",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/baseline-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "e61de4d7d21ab2f9abc939ea5124a030884df88a15d0df1a7db61f3b734a57e7",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/accepted-spec.b3"
+        },
+        {
+          "content_hash": "68ae533650e76939739b765178c8225d75525b9c2efda057309da260e9c1ad4c",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/archive-dry-run.json"
+        },
+        {
+          "content_hash": "43a511219b38e0d7a846975ce4048ec4b2facf32a80a4f87436d70cba62f318c",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "d21e2406b85ca146708faf6366d57e4528761639a526b21c23520fd82a96cbe3",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "0d174afbf8f8b45597113ae3d059b63e5b9853226cf5b995a7223ebeb7e0cd6f",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-tasks-pre-closeout.log"
+        },
+        {
+          "content_hash": "1a940d2645187af4630783a05a77d74ea8e81ea95ef21368e41c968c53463293",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "a1f005428170d4345ee5c1a80f9b9f83b974ccf73a000a9fbc8f9a8e8df48c28",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-validate-post-sync.log"
+        },
+        {
+          "content_hash": "cd5768410d29ca88459909031426c5db378569f95079df2602b26339df7dc4e0",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-validate-pre-archive.log"
+        },
+        {
+          "content_hash": "618ac6b2a4e8ad333badb3cab6a1e724a8a436deaedff06fb385b2e3236f6dff",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/cairn-validate-pre-sync.log"
+        },
+        {
+          "content_hash": "f69c48e1cc34855a607fc92817ceafb64350012b7929060ebebb60998e5561a0",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/focused-nix-checks.log"
+        },
+        {
+          "content_hash": "6388a598fd9aeebf2527d0ea16ce2b9a0ec5cb99eb910afc998e43424b5e24a0",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/golden-artifact-identities.b3"
+        },
+        {
+          "content_hash": "c9159d1d6c9aba694e37a209cc3f2c7cedf107478f40d996325b9cbabb5af293",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/input-identities.b3"
+        },
+        {
+          "content_hash": "f0a95b025437a02789d67f8b8c8ae0fa1506428afedcc863408455f5eff81a8b",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/kamacite-validate.log"
+        },
+        {
+          "content_hash": "6448295b0cd97e0b0ad9a9a223e5887b2a7d3d46d35eadadb2166ca97473067a",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/lifecycle-validate.log"
+        },
+        {
+          "content_hash": "f788841bc5c2593a029e653afa7e53bf4467c12fe37250cde78832a4b519f923",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/nix-pilot-result-path.txt"
+        },
+        {
+          "content_hash": "c48ed27e6961549cd08e91a77050f3e1e889e317153c7c8504c99da70d82ab00",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/nix-proof-result-path.txt"
+        },
+        {
+          "content_hash": "6bc5a8ee935d2f9033594d99e7038339ed205a70c23bd6d9553617d27f730bc8",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/octet-deny-all-pre-format.log"
+        },
+        {
+          "content_hash": "52433e2814c751a02b97087f6fedc0f3f2379f9eea712ffb906d012de91f795d",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/octet-deny-all.log"
+        },
+        {
+          "content_hash": "cbb91bf8549aa83c7bc4a1347b8d9454be3e0332111039e27faaaeac01c218c0",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/pilot-summary.json"
+        },
+        {
+          "content_hash": "4a6906514d6bddc67d09a3cf97954fa938f0753ead74d05077e055903e07e910",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/sync-dry-run-blocked-full-spec.json"
+        },
+        {
+          "content_hash": "8d2c3c9e5026694e0d3839db64b301fdcf13da282837351a6f6b54c379400e73",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/sync-dry-run.json"
+        },
+        {
+          "content_hash": "d548b4ecad9666eeaa2468681ea033fb6bf44b242f929f090c94842168aa7482",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/sync-execute.json"
+        },
+        {
+          "content_hash": "783547a86e4f1484c688ec0777eb4c0ce57e5ecbc519d986ff4667763fd7398c",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/trellis-proof-validation.log"
+        },
+        {
+          "content_hash": "d1fb856c54e5dab30b9cf9c7c9971641b609fcc3dc8260ba3f2702faaf073534",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/world-commit-check.log"
+        },
+        {
+          "content_hash": "d1fb856c54e5dab30b9cf9c7c9971641b609fcc3dc8260ba3f2702faaf073534",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/final-2026-09-04/world-commit-update.log"
+        },
+        {
+          "content_hash": "4fd80b064299703f117144bf09dfb98323693d1ff4ac651ad43358f73fca3609",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/README.md"
+        },
+        {
+          "content_hash": "6946cc941ba5081a2ab593dfe17c8778bfebe7fdb1a7c2e43c20e92d53d9cf17",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-1-no-proc.log"
+        },
+        {
+          "content_hash": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-generated.c"
+        },
+        {
+          "content_hash": "207db5fd9ed742f43baa64d2ac48684ac78ff38c318fc0a15f117b4fdc3c8ae3",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-resource-policy-observations.json"
+        },
+        {
+          "content_hash": "0fbd209f7f5b97b19b50829737afd445f4c82f5a3f6ea467009d817e5b3135f8",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-resource-policy-streams.json"
+        },
+        {
+          "content_hash": "8019357d19939f01792594e68201a885830823a356bb6dbbec0caac7d53f82f4",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/pilot-attempts/attempt-2-resource-policy-summary.json"
+        },
+        {
+          "content_hash": "17ccba3a9d539a361ddd9f90bac18e2982d46f684cb76b0b1eaa73fe4589c7f4",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/evidence/portfolio-search.md"
+        },
+        {
+          "content_hash": "02a7482b1f26aea0c47afc2d0b515db519bc544e71ae4edda42c7f2ecd637fc7",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/proposal.md"
+        },
+        {
+          "content_hash": "5a648731995512a1b032f295a4f5f744ce6737bbf70d9212a734b703aca3aab0",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+        },
+        {
+          "content_hash": "775724c1c80b6d18190769c5f91f9bbc1ec1fbff5ecd0dd27d8e94647c8f8ace",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/tasks.md"
+        },
+        {
+          "content_hash": "5a860cf47fc1fb4abac6d1668e99f520ec4929b0e28703206539190ccc2aa4b2",
+          "exists": true,
+          "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/verification.md"
+        }
+      ],
+      "manifest_hash": "517ae7550809be3bdbc15e494903c5cc7cb0cc83e4336451cd742d264f003f3b"
+    },
+    "kind": "archive",
+    "manifest_hash": "ad78b017f73b88f94967d43d54e959bff9f659ded39a2efceb48d2bfa7654936"
+  },
+  "plan_hash": "630b4103c788f341b6618685ebe0eee7a111ff51c8604e95ca899b3d63cd16f6",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "9d099673611b0ae9b5547ddff0f244c589de65682dc58979af313a6190af7e33"
+}

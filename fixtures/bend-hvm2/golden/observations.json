@@ -1,0 +1,582 @@
+[
+  {
+    "stage": "bend-gen-c",
+    "sample_index": 0,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "6e2e04b04d0ed7edb1007a436aa0894a3f6e6b5c847140df5dcb55d859e8be4d"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 80852276,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "295192ea1ec8566d563b1a7587e5f0198580cdbd043842f5090a4c197c20c67a"
+    },
+    "stdout_bytes": 130452,
+    "stderr_bytes": 1
+  },
+  {
+    "stage": "c-compile",
+    "sample_index": 0,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "7732442465656db8b26010aeba1ccc8672f1b0587c39906f4daeaf3d55d372a8"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 1985196889,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "trellis-oracle",
+    "sample_index": 0,
+    "warmup": true,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3bb3486634bceeccbc163feaf79ca117650af56b0482341e69a98d1acc9d7b19"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": 1,
+    "interaction_count": null,
+    "combine_count": 3,
+    "wall_nanoseconds": 30528947,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 24,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "bend-run-rs",
+    "sample_index": 0,
+    "warmup": true,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "95cc1129c1f22dca829020d65cb84a2dbf5601524e8331e4b373cbdc7330987f"
+    },
+    "outcome": "exit-failure",
+    "exit_code": 1,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 261957393,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 78
+  },
+  {
+    "stage": "generated-c",
+    "sample_index": 0,
+    "warmup": true,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "5d6c803f0b278b5f2bab17edbad7f49028c7dd5523bd4361685299e6a932a998"
+    },
+    "outcome": "resource-limit",
+    "exit_code": 139,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 80740156,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "trellis-oracle",
+    "sample_index": 1,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3bb3486634bceeccbc163feaf79ca117650af56b0482341e69a98d1acc9d7b19"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": 1,
+    "interaction_count": null,
+    "combine_count": 3,
+    "wall_nanoseconds": 30442565,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 24,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "bend-run-rs",
+    "sample_index": 1,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "95cc1129c1f22dca829020d65cb84a2dbf5601524e8331e4b373cbdc7330987f"
+    },
+    "outcome": "exit-failure",
+    "exit_code": 1,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 223576745,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 78
+  },
+  {
+    "stage": "generated-c",
+    "sample_index": 1,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "5d6c803f0b278b5f2bab17edbad7f49028c7dd5523bd4361685299e6a932a998"
+    },
+    "outcome": "resource-limit",
+    "exit_code": 139,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 265410566,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "trellis-oracle",
+    "sample_index": 2,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3bb3486634bceeccbc163feaf79ca117650af56b0482341e69a98d1acc9d7b19"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": 1,
+    "interaction_count": null,
+    "combine_count": 3,
+    "wall_nanoseconds": 31166253,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 24,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "bend-run-rs",
+    "sample_index": 2,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "95cc1129c1f22dca829020d65cb84a2dbf5601524e8331e4b373cbdc7330987f"
+    },
+    "outcome": "exit-failure",
+    "exit_code": 1,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 221701234,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 78
+  },
+  {
+    "stage": "generated-c",
+    "sample_index": 2,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "5d6c803f0b278b5f2bab17edbad7f49028c7dd5523bd4361685299e6a932a998"
+    },
+    "outcome": "resource-limit",
+    "exit_code": 139,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 151220670,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "trellis-oracle",
+    "sample_index": 3,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3bb3486634bceeccbc163feaf79ca117650af56b0482341e69a98d1acc9d7b19"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": 1,
+    "interaction_count": null,
+    "combine_count": 3,
+    "wall_nanoseconds": 20298900,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 24,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "bend-run-rs",
+    "sample_index": 3,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "95cc1129c1f22dca829020d65cb84a2dbf5601524e8331e4b373cbdc7330987f"
+    },
+    "outcome": "exit-failure",
+    "exit_code": 1,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 151210260,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 78
+  },
+  {
+    "stage": "generated-c",
+    "sample_index": 3,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "5d6c803f0b278b5f2bab17edbad7f49028c7dd5523bd4361685299e6a932a998"
+    },
+    "outcome": "resource-limit",
+    "exit_code": 139,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 80725949,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "trellis-oracle",
+    "sample_index": 4,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3bb3486634bceeccbc163feaf79ca117650af56b0482341e69a98d1acc9d7b19"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": 1,
+    "interaction_count": null,
+    "combine_count": 3,
+    "wall_nanoseconds": 30402790,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 24,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "bend-run-rs",
+    "sample_index": 4,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "95cc1129c1f22dca829020d65cb84a2dbf5601524e8331e4b373cbdc7330987f"
+    },
+    "outcome": "exit-failure",
+    "exit_code": 1,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 151062924,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 78
+  },
+  {
+    "stage": "generated-c",
+    "sample_index": 4,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "5d6c803f0b278b5f2bab17edbad7f49028c7dd5523bd4361685299e6a932a998"
+    },
+    "outcome": "resource-limit",
+    "exit_code": 139,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 131162572,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "trellis-oracle",
+    "sample_index": 5,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "3bb3486634bceeccbc163feaf79ca117650af56b0482341e69a98d1acc9d7b19"
+    },
+    "outcome": "success",
+    "exit_code": 0,
+    "result": 1,
+    "interaction_count": null,
+    "combine_count": 3,
+    "wall_nanoseconds": 30462232,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "3f8d71f7421ab96a4982b5b593e37ec92107dfe477892b317eae63d7649f2781"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 24,
+    "stderr_bytes": 0
+  },
+  {
+    "stage": "bend-run-rs",
+    "sample_index": 5,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "95cc1129c1f22dca829020d65cb84a2dbf5601524e8331e4b373cbdc7330987f"
+    },
+    "outcome": "exit-failure",
+    "exit_code": 1,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 239046339,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "abaf574962fd56257937bdfdc6816ba51382d2533d22e0958f3f21be532360bb"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 78
+  },
+  {
+    "stage": "generated-c",
+    "sample_index": 5,
+    "warmup": false,
+    "command_profile_identity": {
+      "domain": "adapter",
+      "algorithm": "blake3",
+      "hex": "5d6c803f0b278b5f2bab17edbad7f49028c7dd5523bd4361685299e6a932a998"
+    },
+    "outcome": "resource-limit",
+    "exit_code": 139,
+    "result": null,
+    "interaction_count": null,
+    "combine_count": null,
+    "wall_nanoseconds": 153611880,
+    "peak_memory_bytes": null,
+    "stdout_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stderr_identity": {
+      "domain": "projection",
+      "algorithm": "blake3",
+      "hex": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  }
+]

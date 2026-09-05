@@ -1,0 +1,74 @@
+{
+  "schema_version": "kamacite.bend-hvm2-pilot-run.v1",
+  "decision": "reject",
+  "blockers": [
+    "bend-result:observations",
+    "stage-failure:observations.BendRunRs.outcome",
+    "stage-failure:observations.GeneratedC.outcome",
+    "unstable-measurements:benchmark.spread"
+  ],
+  "profile_identity": {
+    "domain": "adapter",
+    "algorithm": "blake3",
+    "hex": "55294ea2e13dcf1869b843cf831a6b223b7078a92daf74aa2e9e425abc7f08f0"
+  },
+  "bend_source_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "dfd13c5a80fe38463dbe531a159f597d99b4238d58f1a84867185febf234ae74"
+  },
+  "canonical_input_identity": {
+    "domain": "canonical-value",
+    "algorithm": "blake3",
+    "hex": "b9d7e3fde5cdab7b9de2867ca2bff1038821169cf7fc28fd60a9310501757bc6"
+  },
+  "proof_bundle_identity": {
+    "domain": "source",
+    "algorithm": "blake3",
+    "hex": "e58a90561093f7ae28adfe8eb56c16a618c4e99e056af8822633609d5201a70e"
+  },
+  "proof_validation_identity": {
+    "domain": "evidence-chain",
+    "algorithm": "blake3",
+    "hex": "05f63e3eede85bffd84aeb226dd62d4c57f32b58cae1b79850e9d3b3a829f79b"
+  },
+  "generated_c_identity": {
+    "domain": "target-artifact",
+    "algorithm": "blake3",
+    "hex": "677fb01c8db8b0488fa213e0194f4f47bf055f4dd7bf07bc614255b6474105e6"
+  },
+  "compiler_invocation_identity": {
+    "domain": "compiler",
+    "algorithm": "blake3",
+    "hex": "d7011ae9507d400a615aa039026e6b153090b86e7a93862efa22b99955917362"
+  },
+  "executable_identity": {
+    "domain": "target-artifact",
+    "algorithm": "blake3",
+    "hex": "6ce66d9200036f81b3f0b4e1e902238ebe321d3fcdf636f964047cd773768e9c"
+  },
+  "receipt_identity": {
+    "domain": "receipt",
+    "algorithm": "blake3",
+    "hex": "6029e062d7522d2b87f1ebc5a39421f9a89d9ea6947a3b8302c94a6bc174bb05"
+  },
+  "valence_projection_identity": {
+    "domain": "projection",
+    "algorithm": "blake3",
+    "hex": "c943d622eeec13de0eec23ca80aabc935f138feaff8d36a20cb0233eb94d515c"
+  },
+  "observation_count": 20,
+  "benchmark_present": true,
+  "non_claims": [
+    "not Bend correctness",
+    "not HVM2 correctness",
+    "not generated-C semantic equivalence",
+    "not host-compiler correctness",
+    "not verifier soundness",
+    "not sandbox completeness",
+    "not portable performance",
+    "not runtime adoption",
+    "not production readiness",
+    "not release eligibility"
+  ]
+}

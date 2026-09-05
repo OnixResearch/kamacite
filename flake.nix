@@ -8,6 +8,23 @@
     url = "github:OnixResearch/octet/cf04e894e53eb0947230118a086ef6066ddba38c";
     inputs.nixpkgs.follows = "nixpkgs";
   };
+  inputs.bend-src = {
+    url = "github:HigherOrderCO/Bend/814453670d0e0d6777c1313c972764dba0491b7f";
+    flake = false;
+  };
+  inputs.hvm2-src = {
+    url = "github:HigherOrderCO/HVM/654276018084b8f44a22b562dd68ab18583bfb5b";
+    flake = false;
+  };
+  inputs.trellis-src = {
+    url = "github:OnixResearch/trellis/f26e3cd465101698ade12f8d142e0dc95578326b";
+    flake = false;
+  };
+  inputs.trellis-octet.url = "github:OnixResearch/octet/374bd16b26cee2af34211a29bfa531c016811f51";
+  inputs.rust-overlay = {
+    url = "github:oxalica/rust-overlay/c807e83cc2e32adc35f51138b3bdef722c0812ab";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
   inputs.schema-migration-core-src = {
     url = "git+https://seed.radicle.garden/z1C4YVMgDGyVdQa72uPNj3UDS5cY.git?rev=4fe90e130f2871cf69a6febcdc70785adca98aea";
     flake = false;
@@ -19,6 +36,11 @@
       nixpkgs,
       cairn,
       octet,
+      bend-src,
+      hvm2-src,
+      trellis-src,
+      trellis-octet,
+      rust-overlay,
       schema-migration-core-src,
     }:
     let
@@ -47,8 +69,130 @@
           ];
           nickelRuntimePath = pkgs.lib.makeBinPath nickelSandboxTools;
           nickelRuntimeClosure = pkgs.closureInfo { rootPaths = [ pkgs.nickel ]; };
+          trellisRustPackages = import nixpkgs {
+            inherit system;
+            overlays = [ (import rust-overlay) ];
+          };
+          trellisRustToolchain = trellisRustPackages.rust-bin.fromRustupToolchainFile "${trellis-src}/rust-toolchain.toml";
+          trellisRustPlatform = trellisRustPackages.makeRustPlatform {
+            cargo = trellisRustToolchain;
+            rustc = trellisRustToolchain;
+          };
+          trellisPilotSource = pkgs.runCommand "trellis-bend-hvm2-pilot-source" { } ''
+            mkdir -p "$out"
+            cp -R ${trellis-src}/. "$out/"
+            chmod -R u+w "$out"
+            install -m 0644 ${./tools/bend-hvm2-oracle.rs} \
+              "$out/src/bin/kamacite-bend-hvm2-oracle.rs"
+          '';
+          trellisPilotTools = trellisRustPlatform.buildRustPackage {
+            pname = "trellis-bend-hvm2-pilot-tools";
+            version = "0.2.0";
+            src = trellisPilotSource;
+            cargoLock.lockFile = "${trellis-src}/Cargo.lock";
+            nativeBuildInputs = with trellisRustPackages; [
+              pkg-config
+              clang
+              mold
+              nix
+            ];
+            buildInputs = with trellisRustPackages; [ openssl ];
+            cargoBuildFlags = [
+              "--bin"
+              "kamacite-bend-hvm2-oracle"
+              "--bin"
+              "proof_evidence"
+            ];
+            cargoInstallFlags = [
+              "--bin"
+              "kamacite-bend-hvm2-oracle"
+              "--bin"
+              "proof_evidence"
+            ];
+            doCheck = false;
+          };
+          hvm2 = pkgs.rustPlatform.buildRustPackage {
+            pname = "hvm";
+            version = "2.0.22";
+            src = hvm2-src;
+            cargoLock.lockFile = "${hvm2-src}/Cargo.lock";
+            doCheck = false;
+          };
+          bendHvm2 = pkgs.rustPlatform.buildRustPackage {
+            pname = "bend-hvm2-pilot";
+            version = "0.2.38";
+            src = bend-src;
+            cargoLock.lockFile = "${bend-src}/Cargo.lock";
+            postPatch = ''
+              cat >> Cargo.toml <<'EOF'
+
+              [patch.crates-io]
+              hvm = { path = "${hvm2-src}" }
+              EOF
+            '';
+            nativeBuildInputs = [ pkgs.makeWrapper ];
+            postInstall = ''
+              wrapProgram $out/bin/bend --set HVM_BIN ${hvm2}/bin/hvm
+            '';
+            doCheck = false;
+          };
+          trellisVerifier = trellis-octet.packages.${system}.octet-production-verus;
+          trellisProofRlimit = 3600;
+          trellisProofResult =
+            pkgs.runCommand "trellis-verus-proofs-exact-source-v1" { nativeBuildInputs = [ trellisVerifier ]; }
+              ''
+                candidate_root=${trellisVerifier}/libexec/verus
+                octet-production-verus \
+                  --triggers-mode silent \
+                  --rlimit ${toString trellisProofRlimit} \
+                  --crate-type=lib \
+                  --extern vstd="$candidate_root/libvstd.rlib" \
+                  --extern builtin="$candidate_root/libverus_builtin.rlib" \
+                  --extern builtin_macros="$candidate_root/libverus_builtin_macros.so" \
+                  --extern state_machines_macros="$candidate_root/libverus_state_machines_macros.so" \
+                  -L "$candidate_root" \
+                  --edition 2021 \
+                  ${trellis-src}/src/lib.rs > "$out"
+                grep -F 'verification results::' "$out" > /dev/null
+                cd ${trellis-src}
+                ${trellisPilotTools}/bin/proof_evidence check >> "$out"
+              '';
+          bendPilotRuntimeClosure = pkgs.closureInfo {
+            rootPaths = [
+              bendHvm2
+              hvm2
+              pkgs.stdenv.cc
+              trellisPilotTools
+            ];
+          };
+          bendPilotRuntimePath = pkgs.lib.makeBinPath [
+            bendHvm2
+            hvm2
+            pkgs.stdenv.cc
+            trellisPilotTools
+            pkgs.bubblewrap
+            pkgs.util-linux
+          ];
+          bendPilotRunner = pkgs.writeShellApplication {
+            name = "kamacite-bend-hvm2-pilot";
+            runtimeInputs = [ ];
+            text = ''
+              export PATH=${bendPilotRuntimePath}
+              exec ${self.packages.${system}.kamacite}/bin/check-bend-hvm2-pilot \
+                --runtime-closure-file ${bendPilotRuntimeClosure}/store-paths \
+                --proof-result ${trellisProofResult} \
+                --verifier-identity-file ${trellisVerifier}/share/identity.txt \
+                "$@"
+            '';
+          };
         in
         {
+          inherit hvm2;
+          bend-hvm2 = bendHvm2;
+          bend-hvm2-pilot = bendPilotRunner;
+          trellis-bend-hvm2-tools = trellisPilotTools;
+          trellis-bend-hvm2-proof = trellisProofResult;
+
           kamacite = pkgs.rustPlatform.buildRustPackage {
             pname = "kamacite";
             version = "0.1.0";
@@ -116,6 +260,11 @@
             program = "${self.packages.${system}.kamacite}/bin/check-world-commit-conformance";
             meta.description = "Check the pinned Molten world-commit interchange cohort";
           };
+          bend-hvm2-pilot = {
+            type = "app";
+            program = "${self.packages.${system}.bend-hvm2-pilot}/bin/kamacite-bend-hvm2-pilot";
+            meta.description = "Run the exact CPU-only Bend and HVM2 evaluation pilot";
+          };
           default = self.apps.${system}.kamacite;
         }
       );
@@ -125,6 +274,11 @@
         let
           system = pkgs.stdenv.hostPlatform.system;
           kamacite = "${self.packages.${system}.kamacite}/bin/kamacite";
+          bendPilot = "${self.packages.${system}.bend-hvm2-pilot}/bin/kamacite-bend-hvm2-pilot";
+          bend = "${self.packages.${system}.bend-hvm2}/bin/bend";
+          hvm2 = "${self.packages.${system}.hvm2}/bin/hvm";
+          trellisPilotTools = self.packages.${system}.trellis-bend-hvm2-tools;
+          trellisProofResult = self.packages.${system}.trellis-bend-hvm2-proof;
           lifecycleValidate = "${self.packages.${system}.lifecycle-validate}/bin/kamacite-lifecycle-validate";
           copySource = ''
             cp -r ${self} source
@@ -133,6 +287,10 @@
           '';
           valenceConformanceIdentity = "d3ae754d7899a794d09781914d5fb4eb6ebdb9becce16ddc0615988864725830";
           staleProjectionIdentity = "0000000000000000000000000000000000000000000000000000000000000000";
+          bendNegativeCaseCount = 20;
+          bendPilotObservationCount = 20;
+          bendPilotMaximumLeaf = 16777215;
+          bendPilotCombineCount = 3;
           canonicalDeterminismClippyFlags = pkgs.lib.concatStringsSep " " [
             "-D clippy::dbg_macro"
             "-D clippy::mem_forget"
@@ -141,6 +299,16 @@
             "-D clippy::host_endian_bytes"
             "-D clippy::iter_over_hash_type"
           ];
+          bendPilotRun = pkgs.runCommand "kamacite-bend-hvm2-pilot-run" { } ''
+            ${copySource}
+            mkdir scratch
+            ${bendPilot} --root . --scratch-root "$PWD/scratch" \
+              --update-evidence > pilot-summary.json
+            mkdir -p "$out"
+            cp pilot-summary.json "$out/summary.json"
+            cp -R scratch "$out/scratch"
+            cp -R fixtures/bend-hvm2/golden "$out/golden"
+          '';
         in
         {
           package = self.packages.${system}.kamacite;
@@ -154,6 +322,71 @@
                 rg --fixed-strings 'kamacite.schema-migration-plan-receipt.v1' ${self}/pilots/schema-migration/source.ncl ${self}/pilots/schema-migration/src/receipt.rs ${self}/schemas/preserves/schema-migration-plan-receipt-v1.preserves > /dev/null
                 rg --fixed-strings 'root_rust_version = "1.88"' ${self}/pilots/schema-migration/source.ncl > /dev/null
                 rg --fixed-strings 'pilot_rust_version = "1.95.0"' ${self}/pilots/schema-migration/source.ncl > /dev/null
+                touch "$out"
+              '';
+
+          bend-hvm2-profile =
+            pkgs.runCommand "kamacite-bend-hvm2-profile"
+              {
+                nativeBuildInputs = [
+                  pkgs.diffutils
+                  pkgs.gnugrep
+                  pkgs.jq
+                  pkgs.nickel
+                ];
+              }
+              ''
+                ${copySource}
+                test '${bend-src.rev}' = '814453670d0e0d6777c1313c972764dba0491b7f'
+                test '${hvm2-src.rev}' = '654276018084b8f44a22b562dd68ab18583bfb5b'
+                test '${trellis-src.rev}' = 'f26e3cd465101698ade12f8d142e0dc95578326b'
+                nickel export --format json adapters/bend-hvm2/profile.ncl > profile.json
+                cmp profile.json adapters/bend-hvm2/generated/profile.json
+                nickel export --format json fixtures/bend-hvm2/negative-cases.ncl > negative-cases.json
+                cmp negative-cases.json fixtures/bend-hvm2/negative-cases.json
+                test "$(jq 'length' negative-cases.json)" -eq ${toString bendNegativeCaseCount}
+                grep -F 'hvm = "=2.0.22"' ${bend-src}/Cargo.toml > /dev/null
+                cmp ${bend-src}/LICENSE-APACHE adapters/bend-hvm2/upstream/bend/LICENSE-APACHE
+                cmp ${hvm2-src}/LICENSE adapters/bend-hvm2/upstream/hvm2/LICENSE
+                for schema in \
+                  schemas/preserves/bend-source-envelope-v1.preserves \
+                  schemas/preserves/bend-hvm2-evaluator-profile-v1.preserves \
+                  schemas/preserves/bend-hvm2-trellis-proof-handoff-v1.preserves \
+                  schemas/preserves/bend-hvm2-compiler-target-v1.preserves \
+                  schemas/preserves/bend-hvm2-observation-v1.preserves \
+                  schemas/preserves/bend-hvm2-decision-v1.preserves \
+                  schemas/preserves/bend-hvm2-pilot-receipt-v1.preserves \
+                  schemas/preserves/bend-hvm2-valence-projection-v1.preserves
+                do
+                  test -s "$schema"
+                done
+                test "$(${bend} --version)" = 'bend-lang 0.2.38'
+                test "$(${hvm2} --version)" = 'hvm 2.0.22'
+                ${trellisPilotTools}/bin/kamacite-bend-hvm2-oracle \
+                  ${toString bendPilotMaximumLeaf} 1 0 1 > oracle.out
+                grep -F 'Result: 1' oracle.out > /dev/null
+                grep -F -- '- COMBINES: ${toString bendPilotCombineCount}' oracle.out > /dev/null
+                test -f ${trellisProofResult}
+                touch "$out"
+              '';
+
+          bend-hvm2-pilot-run = bendPilotRun;
+
+          bend-hvm2-pilot =
+            pkgs.runCommand "kamacite-bend-hvm2-pilot" { nativeBuildInputs = [ pkgs.gnugrep ]; }
+              ''
+                grep -F '"decision": "defer"' ${bendPilotRun}/summary.json > /dev/null
+                grep -F '"code": "hvm2-address-space-profile"' ${bendPilotRun}/summary.json > /dev/null
+                grep -F '"benchmark_present": false' ${bendPilotRun}/summary.json > /dev/null
+                grep -F '"observation_count": ${toString bendPilotObservationCount}' ${bendPilotRun}/summary.json > /dev/null
+                ${copySource}
+                mkdir dirty-scratch
+                touch dirty-scratch/unexpected
+                if ${bendPilot} --root . --scratch-root "$PWD/dirty-scratch" > dirty.out 2>&1; then
+                  echo 'expected non-empty scratch root to fail' >&2
+                  exit 1
+                fi
+                grep -F 'scratch root must be empty' dirty.out > /dev/null
                 touch "$out"
               '';
 

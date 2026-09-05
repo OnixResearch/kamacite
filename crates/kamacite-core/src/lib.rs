@@ -24,6 +24,7 @@
 mod application_host_binding;
 #[path = "ast/grep/audit.rs"]
 mod ast_grep_audit;
+pub mod bend_hvm2;
 mod diagnostic;
 #[path = "dialect/roundtrip.rs"]
 mod dialect_roundtrip;

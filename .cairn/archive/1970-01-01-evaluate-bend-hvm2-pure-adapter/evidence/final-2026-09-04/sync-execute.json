@@ -1,0 +1,205 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "evaluate-bend-hvm2-pure-adapter",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "d3774b5192697ef3ad097302cf48d65a08b10c7e25f8f700ae0274c7fb0f68f4",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "a4db066808056ecbe8a591db4a9816f2ee4b8f43cedf9ed2c567818206256b8f",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "5a648731995512a1b032f295a4f5f744ce6737bbf70d9212a734b703aca3aab0",
+        "destination": ".cairn/specs/bend-hvm2-evaluation-pilot/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "19e852fb7598883c709f5db51344786bad6da423b4861ca76c6d45521b2fefef",
+        "operations": [
+          {
+            "block_hash": "d73f1fcf86c70ffba601e8dc32637ae3f57afe6bfb4b6befdab6735e0306b7a8",
+            "heading": "### Requirement: Bend and HVM remain non-canonical adapter targets",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.boundary"
+          },
+          {
+            "block_hash": "ccdf54b7d16a5daee47c2135e1b840ba64649f338a31288a6cae6042136b9fab",
+            "heading": "### Requirement: The toolchain cohort is exact and licensed",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.cohort"
+          },
+          {
+            "block_hash": "fc84abfb26800d22c7923a38314fb4970b440b38c96b7dfdfa8bbb182208ef89",
+            "heading": "### Requirement: The workload is pure and numerically explicit",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.workload"
+          },
+          {
+            "block_hash": "af2a640adb8807ac6a4fc235ae3aac22bc76b491157af9a6b5bf06129a4f5322",
+            "heading": "### Requirement: An independent Rust oracle participates",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.oracle"
+          },
+          {
+            "block_hash": "447b2684cfe966bab1a9475d8c51104fb0bbdb0eb5f25b67a2967697b23e0ae8",
+            "heading": "### Requirement: Trellis oracle evidence is exact and locally validated",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.trellis_oracle_evidence"
+          },
+          {
+            "block_hash": "6840dcca42376aad993d810809ae483f18b1f10ae82416cb5d2f0723686f6953",
+            "heading": "### Requirement: Pilot decisions use a functional core",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.functional_core"
+          },
+          {
+            "block_hash": "c08685d734e01376c7c14cc166f8b12ae493c19dcd3eb61f92f408f016c753e1",
+            "heading": "### Requirement: Pilot evidence binds execution and non-claims",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.evidence"
+          },
+          {
+            "block_hash": "68b970a32f7738dd7f9bb001c4fe05a5db9f42483a449fbfc9a9e3a0ba3d79d4",
+            "heading": "### Requirement: Benchmark admission is declared before execution",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.benchmark"
+          },
+          {
+            "block_hash": "c25f1dba323f43b3c0c06a6d92b47157159b66f54d1e01fe8cef5dcb229d4881",
+            "heading": "### Requirement: The pilot has positive and negative fixtures",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.fixtures"
+          },
+          {
+            "block_hash": "df676086ff3c31e0eb333c7d74b00a67fa7e78b963c044ca012b8ef6bda18e9c",
+            "heading": "### Requirement: Promotion is explicit and consumer-owned",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.promotion"
+          },
+          {
+            "block_hash": "035b8a709df0840e23d6594ce4a304196b761519937d551d3598f9a6a83b398b",
+            "heading": "### Requirement: Pilot validation is reviewable",
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.validation"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.cohort",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.workload",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.oracle",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.trellis_oracle_evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.functional_core",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.benchmark",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.fixtures",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.promotion",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "kamacite.bend_hvm2_pilot.validation",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/evaluate-bend-hvm2-pure-adapter/specs/bend-hvm2-evaluation-pilot/spec.md"
+      }
+    ]
+  },
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "19e852fb7598883c709f5db51344786bad6da423b4861ca76c6d45521b2fefef",
+          "exists": true,
+          "path": "./.cairn/specs/bend-hvm2-evaluation-pilot/spec.md"
+        }
+      ],
+      "manifest_hash": "5287892529b39e7ce2a9e4efbae60d1551a8492882bea34c1fe0ca0aacdd4cea"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/specs/bend-hvm2-evaluation-pilot/spec.md"
+        }
+      ],
+      "manifest_hash": "c49ad95f42f1d75944c08a8cd3782f00ce2a3c8d5ce1d9f402de549d27730ee6"
+    },
+    "kind": "sync",
+    "manifest_hash": "bc1cca0232d0f368b464f1b72fb820d4b9afa53f79274fc787fde3b371b6bb61"
+  },
+  "plan_hash": "c3ef09a8664b8d61cfdcfc25a1bbc29960019adf3f035900be7f96f896d0001b",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "431e9ba4cdd740dda12ea55d64c06577dc2c5e658cfe67908ba95356bbbe4c16"
+}

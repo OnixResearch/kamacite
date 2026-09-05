@@ -4,12 +4,12 @@
   "receipt_identity": {
     "domain": "receipt",
     "algorithm": "blake3",
-    "hex": "3ca391f9c6ad6c7ee540fc0f7b097ba2129fb2afee838c0db046470da468ad37"
+    "hex": "c69b5dd1ba624dd6ca6795f5e45ad10888aae1330e82586d50d3d7e5cffe5bdc"
   },
   "cohort_identity": {
     "domain": "compatibility",
     "algorithm": "blake3",
-    "hex": "4d5fde38ca2641cee324e2e8b47f19ee9b23dc3201ebca3346d2ca5e5510846c"
+    "hex": "ddf8f7adddadf0308cce0ff5ccf23aef1108863fca45e902f6e483ee7fc85b6c"
   },
   "canonical_value_identity": {
     "domain": "canonical-value",
@@ -20,17 +20,17 @@
     {
       "domain": "adapter",
       "algorithm": "blake3",
-      "hex": "ee2a0e26ed69761b8ee13ca051a704f991524d3221ebd1057705480e5c98b4dc"
+      "hex": "fb3b696925b442c93da5674ebca8ef8c1fbddfaf8a388ef1515ebe6133c841de"
     },
     {
       "domain": "adapter",
       "algorithm": "blake3",
-      "hex": "21578b30ddf8e53bd7600554525c76b83a784b1b22a20feb2ee7f834e7994a30"
+      "hex": "8a59ac1c1d45ae5b109ed0204ed5889b5eaa650c489475b77615128b9c254449"
     },
     {
       "domain": "adapter",
       "algorithm": "blake3",
-      "hex": "5c093e5d251fac9a7c9071b6dc9e2c0bc39507ec8568ed37565fa509de36a9ee"
+      "hex": "a264ccecbfb43a932fe3ddfdc3a31694f988abe9332a24c009eca2a42cd6bd5e"
     }
   ],
   "non_claims": [

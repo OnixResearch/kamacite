@@ -1,0 +1,325 @@
+{
+  "change_issues": [],
+  "changes": 2,
+  "cross_repo_dependencies": [],
+  "cross_repo_evidence_issues": [],
+  "findings": [],
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "resolution": {
+    "diagnostics": [],
+    "locator_consulted": false,
+    "registry_lookup": "local_locator_only",
+    "selected": {
+      "project_identity": null,
+      "root": ".",
+      "source": "explicit_root",
+      "store_id": null,
+      "store_identity": null
+    },
+    "valid": true
+  },
+  "spec_findings": [],
+  "spec_issues": [],
+  "spec_substance": [
+    {
+      "path": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/specs/spacewasm-mvp-adapter/spec.md",
+      "requirement_blocks": 14,
+      "scenario_blocks": 24,
+      "substantive_requirement_blocks": 14
+    },
+    {
+      "path": "./.cairn/changes/add-wit-component-adapter-suite/specs/wasm-adapter-suite/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 20,
+      "substantive_requirement_blocks": 12
+    },
+    {
+      "path": "./.cairn/specs/adapter-boundaries/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/adapter-conformance/spec.md",
+      "requirement_blocks": 25,
+      "scenario_blocks": 36,
+      "substantive_requirement_blocks": 25
+    },
+    {
+      "path": "./.cairn/specs/algebraic-effect-fixtures-and-stack/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 11,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/algebraic-effect-model/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 16,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/application-host-binding/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 11,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/bend-hvm2-evaluation-pilot/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 22,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/specs/documentation-pipeline/spec.md",
+      "requirement_blocks": 23,
+      "scenario_blocks": 66,
+      "substantive_requirement_blocks": 23
+    },
+    {
+      "path": "./.cairn/specs/finite-state-machine-fixtures-and-stack/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 16,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/finite-state-machine-model/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 23,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/specs/fixture-corpus/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 11,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/function-address-receipts/spec.md",
+      "requirement_blocks": 22,
+      "scenario_blocks": 27,
+      "substantive_requirement_blocks": 22
+    },
+    {
+      "path": "./.cairn/specs/identity-model/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/lossless-ir/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 18,
+      "substantive_requirement_blocks": 13
+    },
+    {
+      "path": "./.cairn/specs/nickel-adapter-suite/spec.md",
+      "requirement_blocks": 16,
+      "scenario_blocks": 28,
+      "substantive_requirement_blocks": 16
+    },
+    {
+      "path": "./.cairn/specs/packaging-and-validation-rails/spec.md",
+      "requirement_blocks": 14,
+      "scenario_blocks": 21,
+      "substantive_requirement_blocks": 14
+    },
+    {
+      "path": "./.cairn/specs/project-naming/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 5,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/reference-ir-boundary/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 11,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/rust-explicit-determinism/spec.md",
+      "requirement_blocks": 16,
+      "scenario_blocks": 43,
+      "substantive_requirement_blocks": 16
+    },
+    {
+      "path": "./.cairn/specs/schema-migration-pilot/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/schema-vocabulary/spec.md",
+      "requirement_blocks": 15,
+      "scenario_blocks": 27,
+      "substantive_requirement_blocks": 15
+    },
+    {
+      "path": "./.cairn/specs/semantic-effect-operation-identity/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/specs/semantic-effect-operation-stack/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/source-envelopes/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 5,
+      "substantive_requirement_blocks": 2
+    },
+    {
+      "path": "./.cairn/specs/stack-integration/spec.md",
+      "requirement_blocks": 18,
+      "scenario_blocks": 26,
+      "substantive_requirement_blocks": 18
+    },
+    {
+      "path": "./.cairn/specs/steel-adapter-suite/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 28,
+      "substantive_requirement_blocks": 12
+    },
+    {
+      "path": "./.cairn/specs/typed-core-discipline/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/validation-command/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 23,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/specs/validation-harness/spec.md",
+      "requirement_blocks": 15,
+      "scenario_blocks": 26,
+      "substantive_requirement_blocks": 15
+    }
+  ],
+  "specs_validated": 30,
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 25,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/specs/spacewasm-mvp-adapter/spec.md",
+      "requirement_blocks": 14,
+      "scenario_blocks": 24,
+      "substantive_lines": 87,
+      "substantive_requirement_blocks": 14,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 10,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-spacewasm-mvp-adapter-profile/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 10,
+      "task_done": 4,
+      "task_in_progress": 0,
+      "task_todo": 6
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wit-component-adapter-suite/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 32,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wit-component-adapter-suite/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 13,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wit-component-adapter-suite/specs/wasm-adapter-suite/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 20,
+      "substantive_lines": 73,
+      "substantive_requirement_blocks": 12,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 9,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wit-component-adapter-suite/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 9,
+      "task_done": 3,
+      "task_in_progress": 0,
+      "task_todo": 6
+    }
+  ],
+  "substance_findings": [],
+  "substance_issues": [],
+  "valid": true
+}

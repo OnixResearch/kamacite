@@ -1,9 +1,9 @@
 {
   "schema": "kamacite.world-commit-receipt-projection.v1",
-  "receipt_identity": "receipt:3ca391f9c6ad6c7ee540fc0f7b097ba2129fb2afee838c0db046470da468ad37",
+  "receipt_identity": "receipt:c69b5dd1ba624dd6ca6795f5e45ad10888aae1330e82586d50d3d7e5cffe5bdc",
   "canonical_value_identity": "canonical-value:63f1d2d914dd791247eadc516498c3cde39259eb66912fa50a5ac94be5134d94",
   "molten_world_commit_ref": "blake3:171c519d0028c48b45360f1c82889c18efa8fb765e3a8edb2a2f70d1810ef9fc",
-  "cohort_identity": "compatibility:4d5fde38ca2641cee324e2e8b47f19ee9b23dc3201ebca3346d2ca5e5510846c",
+  "cohort_identity": "compatibility:ddf8f7adddadf0308cce0ff5ccf23aef1108863fca45e902f6e483ee7fc85b6c",
   "adapter_count": 3,
   "verdict": "pass",
   "checked_laws": [
